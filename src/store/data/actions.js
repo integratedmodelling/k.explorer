@@ -8,4 +8,7 @@ export default {
   addStatus: ({ commit }, status) => {
     commit('ADD_STATUS', status);
   },
+  setSelected: ({ commit }, selected) => {
+    commit('SET_SELECTED', selected);
+  },
 };

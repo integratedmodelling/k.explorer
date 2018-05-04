@@ -38,7 +38,7 @@ export default {
     },
   },
   watch: {
-    activeLocale: function () {
+    activeLocale() {
       this.setLocale();
     },
   },

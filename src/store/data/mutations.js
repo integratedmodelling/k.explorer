@@ -8,5 +8,8 @@ export default {
   ADD_STATUS: (state, status) => {
     state.status.push(status);
   },
+  SET_SELECTED: (state, selected) => {
+    state.leafSelected = selected;
+  },
 };
 

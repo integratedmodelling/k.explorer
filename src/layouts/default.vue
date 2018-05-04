@@ -83,6 +83,11 @@ export default {
       isOnIde: ['ide'].indexOf(this.$route.name) > -1,
     };
   },
+  computed: {
+    ...mapGetters('view', [
+      'hasPalette',
+    ]),
+  },
   methods: {
     openURL,
     ...mapActions('view', [
@@ -92,37 +97,45 @@ export default {
   components: {
     AppLocaleSwitcher,
   },
-  computed: {
-    ...mapGetters('view', [
-      'hasPalette',
-    ]),
-  },
   mounted() {
     this.$store.state.data.tree = [
       {
         label: 'Satisfied customers',
+        lat: 43.12345,
+        lng: -2.1351,
         children: [
           {
             label: 'Good food',
+            lat: 43.12346,
+            lng: -2.13517,
             children: [
-              { label: 'Quality ingredients' },
-              { label: 'Good recipe' },
+              {
+                label: 'Quality ingredients',
+                lat: 43.12348,
+                lng: -2.13519,
+              },
+              {
+                label: 'Good recipe',
+                lat: 43.12355,
+                lng: -2.13526,
+              },
             ],
           },
           {
             label: 'Good service (disabled node)',
-            disabled: true,
+            lat: 43.12365,
+            lng: -2.13536,
             children: [
-              { label: 'Prompt attention' },
-              { label: 'Professional waiter' },
-            ],
-          },
-          {
-            label: 'Pleasant surroundings',
-            children: [
-              { label: 'Happy atmosphere' },
-              { label: 'Good table presentation' },
-              { label: 'Pleasing decor' },
+              {
+                label: 'Prompt attention',
+                lat: 43.12375,
+                lng: -2.13546,
+              },
+              {
+                label: 'Professional waiter',
+                lat: 43.12385,
+                lng: -2.13556,
+              },
             ],
           },
         ],

@@ -1,7 +1,7 @@
 <template>
   <q-page class="column">
       <div class="col row full-height">
-        <div class="col-3" v-if="hasTree">
+        <div class="col-3 no-padding" v-if="hasTree">
           <klab-tree></klab-tree>
         </div>
         <div class="col column no-padding">

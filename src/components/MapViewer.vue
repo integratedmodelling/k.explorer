@@ -5,8 +5,8 @@
       <vl-view :zoom.sync="zoom" :center.sync="center" :rotation.sync="rotation"></vl-view>
       <vl-geoloc @update:position="geolocPosition = $event">
         <template slot-scope="geoloc">
-          <vl-feature v-if="geoloc.position" id="position-feature">
-            <vl-geom-point :coordinates="geoloc.position"></vl-geom-point>
+          <vl-feature v-if="position" id="position-feature">
+            <vl-geom-point :coordinates="position"></vl-geom-point>
             <vl-style-box>
               <vl-style-icon src="statics/maps/marker.png" :scale="0.4" :anchor="[0.5, 1]">
 
@@ -25,17 +25,19 @@
 </template>
 
 <script>
+/* eslint-disable object-shorthand */
+
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 import VueLayers from 'vuelayers';
 import 'vuelayers/lib/style.css'; // needs css-loader
 // import 'vue-resize/dist/vue-resize.css';
 
 Vue.use(VueLayers);
 
-
 export default {
   name: 'MapViewer',
-  data() { /* eslint-disable object-shorthand */
+  data() {
     return {
       zoom: 7,
       center: [0, 0],
@@ -45,40 +47,31 @@ export default {
     };
   },
   computed: {
-    mierda() {
-      return JSON.stringify(this.$store.state.data.tree);
+    position: function () {
+      return this.treeSelected ?
+        [this.treeSelected.lng, this.treeSelected.lat] :
+        this.geolocPosition;
     },
+    ...mapGetters('data', [
+      'treeSelected',
+    ]),
   },
   methods: {
-    onMapCreated: function () {
-      console.log(`Created map!: ${this.$refs.map.$map}`);
+    onMapCreated() {
+      console.log(`Created map!: ${this.map}`);
       this.map = this.$refs.map.$map;
     },
-    handleResize: function () {
+    handleResize() {
       console.log('handleResize called!!!');
-      this.$refs.map.$map.updateSize();
+      this.map.updateSize();
     },
   },
   watch: {
-    geolocPosition: function () {
+    geolocPosition() {
       this.center = this.geolocPosition;
       console.log(`Encontrada posicion: ${this.geolocPosition}`);
     },
   },
-  /*
-  needMapReload: function (newVal) {
-    if (newVal) {
-      this.$refs.map.$map.updateSize();
-      this.setNeedReload(false);
-      console.log(`Update map, now setNeedReload is ${this.needMapReload}`);
-    } else {
-      console.log(`No Update map, now setNeedReload is ${this.needMapReload}`);
-    }
-  },
-  },
-  components: {
-    ResizeObserver,
-  }, */
 };
 </script>
 
