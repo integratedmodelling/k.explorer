@@ -20,13 +20,18 @@ import { mapGetters } from 'vuex';
 import mapViewer from 'components/MapViewer.vue';
 import chartViewer from 'components/CharViewer.vue';
 import klabTree from 'components/KLabTree.vue';
+import SockJS from 'sockjs-client';
+import Stomp from 'webstomp-client';
 
 export default {
   /* eslint-disable object-shorthand */
   name: 'PageIndex',
-  data: function () {
+  data() {
     return {
       actualViewer: 'mapViewer',
+      received_messages: [],
+      send_message: null,
+      connected: false,
     };
   },
   computed: {
@@ -35,13 +40,13 @@ export default {
       'saved',
       'status',
     ]),
-    hasTree: function () {
+    hasTree() {
       return this.tree.length;
     },
-    hasViews: function () {
+    hasViews() {
       return this.saved.length;
     },
-    hasLog: function () {
+    hasLog() {
       return this.status.length;
     },
   },
@@ -51,6 +56,38 @@ export default {
     klabTree,
   },
   methods: {
+    send() {
+      console.log(`Send message: + ${this.send_message}`);
+      if (this.stompClient && this.stompClient.connected) {
+        const msg = { name: this.send_message };
+        this.stompClient.send('/klab/message', JSON.stringify(msg), {});
+      }
+    },
+    connect() {
+      const socket = new SockJS('http://localhost:8283/modeler/message');
+      this.stompClient = Stomp.over(socket);
+      this.stompClient.connect(
+        {},
+        (frame) => {
+          this.connected = true;
+          console.log(frame);
+          this.stompClient.subscribe('/klab/message', (tick) => {
+            console.log(`tick: ${tick}`);
+            this.received_messages.push(JSON.parse(tick.body).content);
+          });
+        },
+        (error) => {
+          console.log(error);
+          this.connected = false;
+        },
+      );
+    },
+    disconnect() {
+      if (this.stompClient) {
+        this.stompClient.disconnect();
+      }
+      this.connected = false;
+    },
   },
   watch: {
   },

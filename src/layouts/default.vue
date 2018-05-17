@@ -73,7 +73,7 @@
 <script>
 import { openURL } from 'quasar';
 import { mapGetters, mapActions } from 'vuex';
-import AppLocaleSwitcher from '../components/AppLocaleSwitcher.vue';
+import AppLocaleSwitcher from 'components/AppLocaleSwitcher.vue';
 
 export default {
   name: 'LayoutDefault',

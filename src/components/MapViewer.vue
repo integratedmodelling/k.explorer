@@ -47,7 +47,7 @@ export default {
     };
   },
   computed: {
-    position: function () {
+    position() {
       return this.treeSelected ?
         [this.treeSelected.lng, this.treeSelected.lat] :
         this.geolocPosition;

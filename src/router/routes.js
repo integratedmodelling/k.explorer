@@ -5,7 +5,8 @@ export default [
     children: [
       { name: 'standalone', path: 'explorer', component: () => import('pages/index') },
       { name: 'ide', path: 'eclipse', component: () => import('pages/index') },
-      { path: '', redirect: 'eclipse' },
+      /* { path: '', redirect: 'eclipse', component: () => import('pages/index') }, */
+      { name: 'test', path: 'test', component: () => import('pages/test') },
     ],
   },
 

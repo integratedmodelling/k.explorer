@@ -1,4 +1,5 @@
 // Configuration for your app
+const path = require('path');
 
 module.exports = function (ctx) {
   return {
@@ -7,6 +8,8 @@ module.exports = function (ctx) {
       'i18n',
       'axios',
       'vue-i18n',
+      'vuex-stomp',
+      // 'q-test',
     ],
     css: [
       'app.styl',
@@ -18,12 +21,28 @@ module.exports = function (ctx) {
       // 'mdi',
       // 'fontawesome',
     ],
-    supportIE: true,
+    // supportIE: true,
     vendor: {
       add: [],
       remove: [],
     },
     build: {
+      env: { // and on build (production):
+        WS_URL: JSON.stringify('http://localhost:8283/modeler/message'),
+        WS_SUBSCRIBE: JSON.stringify('/klab/message'),
+        /* SAMPLES
+        ANOTHER: JSON.stringify('esta fuera'),
+        ...(ctx.dev)
+          ? { // so on dev we'll have
+            API: JSON.stringify('https://dev.api.com'),
+            OTRA_COSA: JSON.stringify('kakels'),
+          }
+          : { // and on build (production):
+            API: JSON.stringify('https://prod.api.com'),
+            OTRA_COSA: JSON.stringify('pipi'),
+          },
+           */
+      },
       scopeHoisting: true,
       vueRouterMode: 'history',
       // gzip: true,
@@ -37,6 +56,13 @@ module.exports = function (ctx) {
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/,
         });
+        /*
+        for (const rule of cfg.module.rules) {
+          if (rule.loader === 'babel-loader') {
+            rule.include.push(path.resolve(__dirname, 'node_modules/proxy-polyfill/'));
+          }
+        }
+        */
       },
     },
     devServer: {
@@ -138,6 +164,6 @@ module.exports = function (ctx) {
     },
 
     // leave this here for Quasar CLI
-    starterKit: '1.0.3'
-  }
-}
+    starterKit: '1.0.3',
+  };
+};
