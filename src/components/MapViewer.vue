@@ -1,8 +1,9 @@
 <template>
   <div class="fit no-padding klab-viewer">
     <vl-map ref="map" :load-tiles-while-animating="true" :load-tiles-while-interacting="true"
-            data-projection="EPSG:4326" @created="onMapCreated">
-      <vl-view :zoom.sync="zoom" :center.sync="center" :rotation.sync="rotation"></vl-view>
+            data-projection="EPSG:3857" @created="onMapCreated" @moveend="onMoveEnd($event)">
+      <vl-view @update:center="onCenterChange($event)" :zoom.sync="zoom"
+               :center.sync="center" :rotation.sync="rotation"></vl-view>
       <vl-geoloc @update:position="geolocPosition = $event">
         <template slot-scope="geoloc">
           <vl-feature v-if="position" id="position-feature">
@@ -64,6 +65,22 @@ export default {
     handleResize() {
       console.log('handleResize called!!!');
       this.map.updateSize();
+    },
+    onMoveEnd(event) {
+      // const { map } = event;
+      // const msg = { name: map.getView().calculateExtent(map.getSize()) };
+      console.log(event);
+    },
+    onCenterChange(center) {
+      const message = {
+        type: 'CENTER_CHANGE',
+        messageClass: 'EXTENT',
+        identity: this.$store.state.stomp.sessionId,
+        payloadClass: 'EXTENT',
+        payload: center,
+        inResponseTo: null,
+      };
+      this.sendStompMessage(message);
     },
   },
   watch: {

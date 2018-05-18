@@ -9,7 +9,6 @@ module.exports = function (ctx) {
       'axios',
       'vue-i18n',
       'vuex-stomp',
-      // 'q-test',
     ],
     css: [
       'app.styl',
@@ -30,6 +29,8 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         WS_URL: JSON.stringify('http://localhost:8283/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/klab/message'),
+        WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
+        SENDED_MSG_HIST_MAX_LENGTH: 10,
         /* SAMPLES
         ANOTHER: JSON.stringify('esta fuera'),
         ...(ctx.dev)

@@ -38,7 +38,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="item in received_messages" :key="item">
+            <tr v-for="(item, index) in sendedMessages" :key="index">
               <td>{{ item }}</td>
             </tr>
             </tbody>
@@ -81,6 +81,9 @@ export default {
     },
     message() {
       return this.$store.state.stomp.message;
+    },
+    sendedMessages() {
+      return this.$store.state.stomp.sendedMessages;
     },
   },
   sockets: {

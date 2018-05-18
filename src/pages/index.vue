@@ -2,6 +2,18 @@
   <q-page class="column">
       <div class="col row full-height">
         <div class="col-3 no-padding" v-if="hasTree">
+          <form class="form-inline">
+            <div class="form-group">
+              <label for="message">Send message</label>
+              <input type="text" id="message" class="form-control"
+                     :disabled="!isConnected" v-model="send_message"
+                     :placeholder=" isConnected ? 'Message here...':'Disconnected, wait...'">
+            </div>
+            <button id="send" class="btn btn-default"
+                    type="submit"
+                    :disabled="!isConnected"
+                    @click.prevent="send">Send</button>
+          </form>
           <klab-tree></klab-tree>
         </div>
         <div class="col column no-padding">
@@ -11,7 +23,15 @@
           <div class="col-2" v-if="hasViews">OLD-MAPS</div>
         </div>
       </div>
-      <div class="col-1" v-if="hasLog">STATUS</div>
+    <!-- v-if="hasLog" -->
+      <div class="col-1 row">
+        <div class="col-1 no-padding">
+          <q-icon name="label_important" :style="{color: isConnected ? 'green':'red'}"></q-icon>
+        </div>
+        <div class="col full-width no-padding message-log">
+          {{ sendedMessages.length>0 ? sendedMessages[0].payload || 'No payload' : 'No message' }}
+        </div>
+      </div>
   </q-page>
 </template>
 
@@ -20,8 +40,6 @@ import { mapGetters } from 'vuex';
 import mapViewer from 'components/MapViewer.vue';
 import chartViewer from 'components/CharViewer.vue';
 import klabTree from 'components/KLabTree.vue';
-import SockJS from 'sockjs-client';
-import Stomp from 'webstomp-client';
 
 export default {
   /* eslint-disable object-shorthand */
@@ -30,7 +48,7 @@ export default {
     return {
       actualViewer: 'mapViewer',
       received_messages: [],
-      send_message: null,
+      send_message: '',
       connected: false,
     };
   },
@@ -40,6 +58,12 @@ export default {
       'saved',
       'status',
     ]),
+    sendedMessages() {
+      return this.$store.state.stomp.sendedMessages;
+    },
+    isConnected() {
+      return this.$store.state.stomp.connected;
+    },
     hasTree() {
       return this.tree.length;
     },
@@ -57,36 +81,8 @@ export default {
   },
   methods: {
     send() {
-      console.log(`Send message: + ${this.send_message}`);
-      if (this.stompClient && this.stompClient.connected) {
-        const msg = { name: this.send_message };
-        this.stompClient.send('/klab/message', JSON.stringify(msg), {});
-      }
-    },
-    connect() {
-      const socket = new SockJS('http://localhost:8283/modeler/message');
-      this.stompClient = Stomp.over(socket);
-      this.stompClient.connect(
-        {},
-        (frame) => {
-          this.connected = true;
-          console.log(frame);
-          this.stompClient.subscribe('/klab/message', (tick) => {
-            console.log(`tick: ${tick}`);
-            this.received_messages.push(JSON.parse(tick.body).content);
-          });
-        },
-        (error) => {
-          console.log(error);
-          this.connected = false;
-        },
-      );
-    },
-    disconnect() {
-      if (this.stompClient) {
-        this.stompClient.disconnect();
-      }
-      this.connected = false;
+      const msg = { name: this.send_message };
+      this.sendStompMessage(msg);
     },
   },
   watch: {
@@ -101,6 +97,10 @@ export default {
   }
   .small {
     widht:10px;
+  }
+  .message-log {
+    height: 2em;
+    overflow: hidden;
   }
 </style>
 

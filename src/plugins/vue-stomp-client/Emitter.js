@@ -35,7 +35,6 @@ class Emitter {
   }
 
   emit(label, ...args) {
-    console.log(`Emit ${label}`);
     const listeners = this.listeners.get(label);
 
     if (listeners && listeners.length) {

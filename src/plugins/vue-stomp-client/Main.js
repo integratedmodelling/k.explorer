@@ -1,4 +1,4 @@
-/* eslint-disable prefer-destructuring */
+// If we need to use IE11, it must be uncommented and used proxy
 // import ProxyPolyfill from 'proxy-polyfill/src/proxy.js';
 // import ProxyPolyfill from 'proxy-polyfill/src/proxy.js';
 import Observer from './Observer';
@@ -7,7 +7,6 @@ import Emitter from './Emitter';
 export default {
 
   install(Vue, connection, opts = {}) {
-    console.log('Installing vue-stomp-client');
     if (!connection) { throw new Error('[vue-stomp-client] cannot locate connection'); }
 
     let observer = null;
@@ -33,16 +32,14 @@ export default {
 
     Vue.mixin({
       methods: {
-        sendStompMessage(message, destination = '/klab/message') {
-          if (observer.isConnected()) {
-            this.$stompClient.send(destination, JSON.stringify(message), {});
-          }
+        sendStompMessage(message, headers = {}, destination = '/klab/message') {
+          observer.send(destination, headers, message);
         },
       },
       created() {
         if (this.$options.sockets) {
           const vm = this;
-          const sockets = this.$options.sockets;
+          const { sockets } = this.$options;
           // this.$options.sockets = new ProxyPolyfill({}, {
           this.$options.sockets = new Proxy({}, {
             set(target, key, value) {
@@ -66,7 +63,7 @@ export default {
       },
       beforeDestroy() {
         if (this.$options.sockets) {
-          const sockets = this.$options.sockets;
+          const { sockets } = this.$options;
 
           if (sockets) {
             Object.keys(sockets).forEach((key) => {

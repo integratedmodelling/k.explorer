@@ -5,11 +5,8 @@
 </template>
 
 <script>
+// This is for IE11 Promise polyfill
 import 'es6-promise/auto';
-// import Vue from 'vue';
-// import VueStompClient from 'plugins/vue-stomp-client/Main';
-
-// Vue.use(VueStompClient, 'http://localhost:8283/modeler/message');
 
 export default {
   name: 'App',
@@ -30,6 +27,9 @@ export default {
     ondisconnect: () => {
       this.stompConnected = false;
       console.log('Disconnected');
+    },
+    onsend: ({ headers, message }) => {
+      console.log(`Send a message: ${message} with this headers: ${headers}`);
     },
   },
 };
