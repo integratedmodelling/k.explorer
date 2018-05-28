@@ -1,89 +1,131 @@
 <template>
-  <q-page class="column">
-      <div class="col row full-height">
-        <div class="col-3 no-padding" v-if="hasTree">
-          <form class="form-inline">
-            <div class="form-group">
-              <label for="message">Send message</label>
-              <input type="text" id="message" class="form-control"
-                     :disabled="!isConnected" v-model="send_message"
-                     :placeholder=" isConnected ? 'Message here...':'Disconnected, wait...'">
-            </div>
-            <button id="send" class="btn btn-default"
-                    type="submit"
-                    :disabled="!isConnected"
-                    @click.prevent="send">Send</button>
-          </form>
-          <klab-tree></klab-tree>
-        </div>
-        <div class="col column no-padding">
-          <div class="col no-padding full-height full-width">
-            <component :is="actualViewer"></component>
-          </div>
-          <div class="col-2" v-if="hasViews">OLD-MAPS</div>
-        </div>
+  <q-page class="column bg-red-1">
+    <div class="col row full-height bg-red-1">
+      <!--
+      <div class="col-2 no-padding bg-red-1 text-right" >
+        <q-btn
+          color="secondary"
+          round
+          inverted
+          size="md"
+          class="q-ma-sm"
+          @click="treeIsHidden = true"
+          icon="clear"
+        ></q-btn>
+        <klab-tree></klab-tree>
       </div>
-    <!-- v-if="hasLog" -->
-      <div class="col-1 row">
-        <div class="col-1 no-padding">
-          <q-icon name="label_important" :style="{color: isConnected ? 'green':'red'}"></q-icon>
-        </div>
-        <div class="col full-width no-padding message-log">
-          {{ sendedMessages.length>0 ? sendedMessages[0].payload || 'No payload' : 'No message' }}
-        </div>
+          -->
+      <viewer></viewer>
+    </div>
+    <div class="col-1 row bg-red-1">
+      <klab-log></klab-log>
+    </div>
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutLeft"
+    >
+      <q-btn
+        class="fixed shadow-1"
+        style="left:5vw; top:2vw;"
+        color="secondary"
+        round
+        size="sm"
+        @click="treeIsHidden = false"
+        icon="play_arrow"
+        v-show="hasTree && treeIsHidden"
+      ></q-btn>
+    </transition>
+    <transition
+      appear
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOutLeft"
+    >
+    <q-card
+      class="fixed bg-white shadow-1"
+      style="left:1vw; top:1vw;"
+      v-show="hasTree && !treeIsHidden"
+    >
+      <q-card-title>{{ $t('label.treeTitle') }}
+        <q-btn
+          slot="right"
+          color="secondary"
+          round
+          size="xs"
+          @click="treeIsHidden = true"
+          icon="clear"
+        ></q-btn>
+      </q-card-title>
+      <q-card-main>
+        <klab-tree></klab-tree>
+      </q-card-main>
+    </q-card>
+    </transition>
+    <q-modal
+        minimized
+        v-model="modalVisible"
+        no-esc-dismiss
+        no-backdrop-dismiss
+        :content-css="{padding: '50px', minWidth: '50vw'}"
+        :content-classes="['text-center','bg-white']"
+    >
+      <div v-show="connectionState === $constants.CONNECTION_DOWN" class="bg-white">
+        <div class="q-display-1 q-mb-md bg-warning round-modal">{{ modalText }}</div>
+          <q-btn
+            color="secondary"
+            @click="reconnect"
+          >{{ $t('label.reconnect') }}</q-btn>
       </div>
+      <div class="bg-red" v-show="connectionState === $constants.CONNECTION_ERROR ||
+          connectionState === $constants.CONNECTION_WORKING">
+        <div class="q-display-1 q-mb-md bg-white round-modal text-primary text-bold">
+          {{ modalText  }}
+        </div>
+        <q-spinner-radio color="white" :size="40" />
+      </div>
+    </q-modal>
   </q-page>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import mapViewer from 'components/MapViewer.vue';
-import chartViewer from 'components/CharViewer.vue';
-import klabTree from 'components/KLabTree.vue';
+import klabTree from 'components/KlabTree.vue';
+import klabLog from 'components/KlabLog.vue';
+import viewer from 'components/Viewer.vue';
 
 export default {
   /* eslint-disable object-shorthand */
-  name: 'PageIndex',
+  name: 'IndexPage',
   data() {
     return {
-      actualViewer: 'mapViewer',
-      received_messages: [],
-      send_message: '',
-      connected: false,
+      treeIsHidden: false,
+
     };
   },
   computed: {
     ...mapGetters('data', [
-      'tree',
-      'saved',
-      'status',
+      'hasTree',
+      'hasSaved',
     ]),
-    sendedMessages() {
-      return this.$store.state.stomp.sendedMessages;
+    ...mapGetters('stomp', [
+      'connectionState',
+    ]),
+    modalVisible() {
+      return this.connectionState !== this.$constants.CONNECTION_UP;
     },
-    isConnected() {
-      return this.$store.state.stomp.connected;
-    },
-    hasTree() {
-      return this.tree.length;
-    },
-    hasViews() {
-      return this.saved.length;
-    },
-    hasLog() {
-      return this.status.length;
+    modalText() {
+      return {
+        [this.$constants.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
+        [this.$constants.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
+        [this.$constants.CONNECTION_ERROR]: this.$t('errors.connectionError'),
+      }[this.connectionState];
     },
   },
+
   components: {
-    mapViewer,
-    chartViewer,
     klabTree,
-  },
-  methods: {
-    send() {
-      const msg = { name: this.send_message };
-      this.sendStompMessage(msg);
-    },
+    klabLog,
+    viewer,
   },
   watch: {
   },
@@ -95,12 +137,8 @@ export default {
     background: rgba(86, 61, 124, .15);
     border: 1px solid rgba(86, 61, 124, .2)
   }
-  .small {
-    widht:10px;
-  }
-  .message-log {
-    height: 2em;
-    overflow: hidden;
+  .round-modal {
+    border-radius: 20px;
   }
 </style>
 

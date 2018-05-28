@@ -1,0 +1,16 @@
+export default {
+  HIST_MAX_LENGTH: 50,
+
+  CONNECTION_UP: 1,
+  CONNECTION_DOWN: 0,
+  CONNECTION_WORKING: 2,
+  CONNECTION_ERROR: -1,
+
+  TYPE_ERROR: 'ERROR',
+  TYPE_MESSAGE: 'MSG',
+
+  PARAMS_MODE: 'mode',
+  PARAMS_SESSION: 'session',
+  PARAMS_MODE_IDE: 'ide',
+};
+

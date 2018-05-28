@@ -63,16 +63,15 @@
       <router-view />
     </q-page-container>
     <q-layout-footer v-if="!isOnIde">
-      <q-toolbar-title>
-        Layout Footer
-      </q-toolbar-title>
+      <div class="text-right text-primary q-ma-sm">{{ $t('label.footer') }}</div>
     </q-layout-footer>
   </q-layout>
 </template>
 
 <script>
 import { openURL } from 'quasar';
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
+import constants from 'helpers/constants';
 import AppLocaleSwitcher from 'components/AppLocaleSwitcher.vue';
 
 export default {
@@ -80,67 +79,23 @@ export default {
   data() {
     return {
       leftDrawerOpen: !this.$q.platform.is.desktop,
-      isOnIde: ['ide'].indexOf(this.$route.name) > -1,
     };
   },
   computed: {
     ...mapGetters('view', [
       'hasPalette',
     ]),
+    isOnIde() {
+      return this.$mode === constants.PARAMS_MODE_IDE;
+    },
   },
   methods: {
     openURL,
-    ...mapActions('view', [
-      'setOnIde',
-    ]),
   },
   components: {
     AppLocaleSwitcher,
   },
   mounted() {
-    this.$store.state.data.tree = [
-      {
-        label: 'Satisfied customers',
-        lat: 43.12345,
-        lng: -2.1351,
-        children: [
-          {
-            label: 'Good food',
-            lat: 43.12346,
-            lng: -2.13517,
-            children: [
-              {
-                label: 'Quality ingredients',
-                lat: 43.12348,
-                lng: -2.13519,
-              },
-              {
-                label: 'Good recipe',
-                lat: 43.12355,
-                lng: -2.13526,
-              },
-            ],
-          },
-          {
-            label: 'Good service (disabled node)',
-            lat: 43.12365,
-            lng: -2.13536,
-            children: [
-              {
-                label: 'Prompt attention',
-                lat: 43.12375,
-                lng: -2.13546,
-              },
-              {
-                label: 'Professional waiter',
-                lat: 43.12385,
-                lng: -2.13556,
-              },
-            ],
-          },
-        ],
-      },
-    ];
   },
 };
 </script>

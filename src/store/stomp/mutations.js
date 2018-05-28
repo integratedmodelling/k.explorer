@@ -1,36 +1,63 @@
+import { helpers, constants } from 'helpers/helpers';
+import moment from 'moment';
+
 export default {
-  SOCKET_ONCONNECT(state, frame) {
-    console.debug(`STORE ONCONNECT: ${JSON.stringify(frame)}`);
-    state.connected = true;
-  },
-  SOCKET_ONCLOSE(state) {
-    state.connected = false;
-  },
-  SOCKET_ONERROR(state, event) {
-    console.error(`STORE ONERROR: ${state}`, event);
-    state.connected = false;
-  },
-  // default handler called for all methods
-  SOCKET_ONMESSAGE(state, message) {
-    state.message = message;
-    /* TODO Things with answer */
-  },
-  SOCKET_ONSUBSCRIBE(state, subscribeId) {
-    state.subscribeId = subscribeId;
-  },
-  // mutations for reconnect methods
-  SOCKET_RECONNECT(state, count) {
-    console.info(`STORE RECONNECT: ${state}`, count);
-  },
-  SOCKET_RECONNECT_ERROR(state) {
-    state.reconnectError = true;
-  },
-  SOCKET_ONSEND(state, { message }) {
-    state.messageCounter += 1;
-    state.sendedMessages.unshift(message);
-    if (state.sendedMessages.length > process.env.SENDED_MSG_HIST_MAX_LENGTH) {
-      state.sendedMessages.pop();
+
+  STOMP_CONNECTION_STATE(state, connectionState) {
+    if (connectionState !== constants.CONNECTION_UP &&
+      connectionState !== constants.CONNECTION_DOWN &&
+      connectionState !== constants.CONNECTION_WORKING &&
+      connectionState !== constants.CONNECTION_ERROR) {
+      throw new Error(`Connection value is incorrect: ${connectionState}`);
     }
+    state.connectionState = connectionState;
+  },
+
+  STOMP_ERROR(state, error) {
+    // state.receivedMessages.push({
+    helpers.pushElementInFixedQueue(state.receivedMessages, {
+      date: moment().format('HH:mm:ss'),
+      type: constants.TYPE_ERROR,
+      message: error,
+    });
+  },
+
+  // default handler called for all methods
+  STOMP_MESSAGE(state, message) {
+    // console.log('STOMP MESSAGE');
+    helpers.pushElementInFixedQueue(state.receivedMessages, {
+      date: moment().format('HH:mm:ss'),
+      type: constants.TYPE_MESSAGE,
+      message,
+    });
+  },
+
+  STOMP_SEND_MESSAGE(state, message) {
+    helpers.pushElementInFixedQueue(state.sendedMessages, {
+      date: moment().format('HH:mm:ss'),
+      ...message,
+    });
+  },
+
+  STOMP_SUBSCRIBED(state, subscriber) {
+    state.subscriber = subscriber;
+  },
+
+  // mutations for reconnect methods
+  STOMP_RECONNECTIONS_ATTEMPT(state, value) {
+    state.reconnectionsAttempt = value;
+  },
+
+  STOMP_RECONNECTIONS_ATTEMPT_RESET(state) {
+    state.reconnectionsAttempt = 0;
+  },
+
+  STOMP_QUEUE_MESSAGE(state, message) {
+    state.queuedMessage = message;
+  },
+
+  STOMP_CLEAN_QUEUE(state) {
+    state.queuedMessage = null;
   },
 };
 

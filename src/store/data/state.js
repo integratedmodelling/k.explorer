@@ -3,4 +3,5 @@ export default {
   leafSelected: null,
   saved: [],
   status: [],
+  session: null,
 };

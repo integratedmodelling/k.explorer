@@ -1,11 +1,9 @@
 <template>
   <div class="locale-switcher">
-    <!-- {{ initLocale() }} -->
     <q-select
       v-model="activeLocale"
       :options="languages"
       inverted
-
     />
   </div>
 </template>

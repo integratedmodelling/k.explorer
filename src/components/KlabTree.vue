@@ -1,13 +1,13 @@
 <template>
   <div class="no-padding">
-  <q-tree
-    ref="klabTree"
-    :nodes="tree"
-    node-key="label"
-    default-expand-all
-    :selected.sync="selected"
+    <q-tree
+      ref="klabTree"
+      :nodes="tree"
+      node-key="label"
+      default-expand-all
+      :selected.sync="selected"
 
-  />
+    />
   </div>
 </template>
 

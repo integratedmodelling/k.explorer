@@ -78,6 +78,39 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
+"@material/mwc-base@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.1.0.tgz#507e8c8f31979fdb9d1d2c6f8ba3363e21982ef9"
+  dependencies:
+    "@polymer/lit-element" "^0.4.0"
+
+"@material/mwc-icon@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@material/mwc-icon/-/mwc-icon-0.1.1.tgz#9a97a3bdd7a1c42c4951b7ceb955259e9c457bf9"
+  dependencies:
+    "@material/mwc-base" "^0.1.0"
+    "@polymer/lit-element" "^0.4.0"
+
+"@polymer/lit-element@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.4.0.tgz#d10d99646270a45daf08ed0d936cdd25cdca4fa1"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.13"
+    lit-html "^0.9.0"
+
+"@polymer/lit-element@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.5.1.tgz#ab1b21391787082023852e95e65e60015dfdaa00"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.13"
+    lit-html "^0.10.0"
+
+"@polymer/polymer@^3.0.0-pre.13", "@polymer/polymer@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@polymer/polymer/-/polymer-3.0.2.tgz#626e6f9fae9716b0962ce0211e21df242153eab2"
+  dependencies:
+    "@webcomponents/shadycss" "^1.2.0"
+
 "@turf/bbox@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/bbox/-/bbox-5.1.5.tgz#3051df514ad4c50f4a4f9b8a2d15fd8b6840eda3"
@@ -153,6 +186,10 @@
     "@turf/explode" "^5.1.5"
     "@turf/helpers" "^5.1.5"
     "@turf/nearest-point" "^5.1.5"
+
+"@webcomponents/shadycss@^1.2.0":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.2.1.tgz#6e4a88534657807c8398b4bc196d0ca492182d54"
 
 abbrev@1:
   version "1.1.1"
@@ -4219,6 +4256,14 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
+lit-html@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.10.0.tgz#1c56efc7513faa8e12d0a5564dc3c67ee28fd617"
+
+lit-html@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.9.0.tgz#a445ecbb3da7d8b17690e6ade6c872c89385092a"
+
 load-json-file@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-1.1.0.tgz#956905708d58b4bab4c2261b04f59f31c99374c0"
@@ -4582,6 +4627,10 @@ mkdirp@0.5.1, mkdirp@0.5.x, mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkdirp@
 mkpath@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/mkpath/-/mkpath-0.1.0.tgz#7554a6f8d871834cc97b5462b122c4c124d6de91"
+
+moment@^2.22.1:
+  version "2.22.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
 
 mout@1.0.0:
   version "1.0.0"
@@ -7596,6 +7645,140 @@ widest-line@^2.0.0:
 window-size@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.0.tgz#5438cd2ea93b202efa3a19fe8887aee7c94f9c9d"
+
+wired-button@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/wired-button/-/wired-button-0.5.1.tgz#f1bfdad8599730cf850845180fdb9d3be21bfb15"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-card@^0.5.0, wired-card@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/wired-card/-/wired-card-0.5.1.tgz#8a318b5fa96ab83b298287184482c4df5e35cc30"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-checkbox@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-checkbox/-/wired-checkbox-0.5.0.tgz#ab80b6c5707db27ed23b58f35ac45f5ecb900feb"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-combo@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-combo/-/wired-combo-0.5.0.tgz#09a9a858812af37de92b7c5a59ef3b4b7a4ebd34"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-card "^0.5.0"
+    wired-item "^0.5.0"
+    wired-lib "^0.5.1"
+
+wired-elements@^0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/wired-elements/-/wired-elements-0.5.6.tgz#33e5b8c2f228725c3ec3f214fb643f8774cbea35"
+  dependencies:
+    wired-button "^0.5.1"
+    wired-card "^0.5.1"
+    wired-checkbox "^0.5.0"
+    wired-combo "^0.5.0"
+    wired-icon-button "^0.5.1"
+    wired-input "^0.5.0"
+    wired-item "^0.5.0"
+    wired-lib "^0.5.1"
+    wired-listbox "^0.5.0"
+    wired-progress "^0.5.0"
+    wired-radio "^0.5.1"
+    wired-radio-group "^0.5.0"
+    wired-slider "^0.5.5"
+    wired-textarea "^0.5.0"
+    wired-toggle "^0.5.0"
+    wired-tooltip "^0.5.1"
+
+wired-icon-button@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/wired-icon-button/-/wired-icon-button-0.5.1.tgz#51dcca96693f5975f2d8881ec100022b2462f2a1"
+  dependencies:
+    "@material/mwc-icon" "^0.1.1"
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-input@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-input/-/wired-input-0.5.0.tgz#7e1f4d3e5c68640f73d4f9c9c91c2ed367543417"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-item@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-item/-/wired-item-0.5.0.tgz#4d2fc9a78aeef742494216ddb51881f71cb29e16"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+
+wired-lib@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/wired-lib/-/wired-lib-0.5.1.tgz#c575737046ec5ad827d155d37b963a36187b83b4"
+
+wired-listbox@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-listbox/-/wired-listbox-0.5.0.tgz#0e2ccf418d71c37f969d31e1846b2bf22e2c93eb"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-item "^0.5.0"
+    wired-lib "^0.5.1"
+
+wired-progress@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-progress/-/wired-progress-0.5.0.tgz#e5d335514cd5c2a4a3531fc8d4afbe294cf74792"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-radio-group@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-radio-group/-/wired-radio-group-0.5.0.tgz#373fd2d1543232709bc2ee7501fafdcdf0bf8eaf"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-radio@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/wired-radio/-/wired-radio-0.5.1.tgz#504360753c516199eb706c87d91b0dcf329f33ac"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-slider@^0.5.5:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/wired-slider/-/wired-slider-0.5.5.tgz#ff917ff6de06d0b925caeeadceb0af14dfc4c879"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    "@polymer/polymer" "^3.0.2"
+    wired-lib "^0.5.1"
+
+wired-textarea@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-textarea/-/wired-textarea-0.5.0.tgz#9c14c091930ac92c9a9bb446eef3fe43c7b86bb0"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-toggle@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/wired-toggle/-/wired-toggle-0.5.0.tgz#24e56afa301ffd828181771a89b61762bcf1e963"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
+
+wired-tooltip@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/wired-tooltip/-/wired-tooltip-0.5.1.tgz#9781cbc3c9dd016f0e3a5da63f20ff722c37519f"
+  dependencies:
+    "@polymer/lit-element" "^0.5.1"
+    wired-lib "^0.5.1"
 
 wordwrap@0.0.2:
   version "0.0.2"

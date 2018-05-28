@@ -35,6 +35,11 @@ export default {
         sendStompMessage(message, headers = {}, destination = '/klab/message') {
           observer.send(destination, headers, message);
         },
+        reconnect() {
+          if (observer.StompClient && !observer.StompClient.connected) {
+            observer.reconnect();
+          }
+        },
       },
       created() {
         if (this.$options.sockets) {
@@ -71,10 +76,10 @@ export default {
               delete this.$options.sockets[key];
             });
           }
-          if (Vue.prototype.$stompClient) {
-            observer.close();
-            delete Vue.prototype.$stompClient;
-          }
+        }
+        if (Vue.prototype.$stompClient) {
+          observer.close();
+          delete Vue.prototype.$stompClient;
         }
       },
     });

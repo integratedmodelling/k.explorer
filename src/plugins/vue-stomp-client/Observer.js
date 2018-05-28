@@ -48,7 +48,7 @@ export default class {
     this.hasDebug = debug;
 
     // Init no opt
-    this.reconnectTimeoutId = 0;
+    this.reconnectTimeoutId = -1;
     this.reconnectionCount = 0;
 
     this.subscribeId = null;
@@ -116,11 +116,13 @@ export default class {
       clearTimeout(this.reconnectTimeoutId);
 
       this.reconnectTimeoutId = setTimeout(() => {
-        if (this.store) { this.passToStore('SOCKET_RECONNECT', this.reconnectionCount); }
-
+        console.log('Timeout!');
+        if (this.store) {
+          this.passToStore('stomp_reconnect', this.reconnectionCount);
+        }
         this.connect(this.connectionUrl, this.stompOptions);
       }, this.reconnectionDelay);
-    } else if (this.store) { this.passToStore('SOCKET_RECONNECT_ERROR', true); }
+    } else if (this.store) { this.passToStore('stomp_onerror', 'Reconnection error'); }
   }
 
   send(destination = this.defaultMessageDestination, headers = this.headers, message) {
@@ -132,6 +134,10 @@ export default class {
       });
       return true;
     }
+    this.doOnEvent('onerrorsend', {
+      headers,
+      message,
+    });
     return false;
   }
 
@@ -140,19 +146,23 @@ export default class {
       this.debug(`No listener for ${eventType}`);
     }
 
-    if (this.store) { this.passToStore(`SOCKET_${eventType}`, payload); }
+    if (this.store) { this.passToStore(`stomp_${eventType}`, payload); }
 
     if (this.reconnection && eventType === 'onoconnect') { this.reconnectionCount = 0; }
 
-    if (this.reconnection && eventType === 'onerror' && payload.type === 'close') { this.reconnect(); }
+    if (this.reconnection && eventType === 'onerror') { this.reconnect(); }
   }
 
   passToStore(eventName, event) {
-    if (!eventName.startsWith('SOCKET_')) { return; }
-    let method = 'commit';
-    let target = [this.storeNS || '', eventName.toUpperCase()].filter(e => !!e).join('/');
-    let msg = event;
-    if (this.format === 'json' && event.data) {
+    if (!eventName.startsWith('stomp_')) { return; }
+
+    // CHANGED THE TARGET TO ACTION
+    // Mutation are state changes and here we actuate on events
+    // let method = 'commit';
+    let method = 'dispatch';
+    let target = [this.storeNS || '', eventName.toLowerCase()].filter(e => !!e).join('/');
+    let msg = event || null;
+    if (event && event.data) {
       msg = JSON.parse(event.data);
       if (msg.mutation) {
         target = [msg.namespace || '', msg.mutation].filter(e => !!e).join('/');
@@ -167,7 +177,10 @@ export default class {
   close() {
     if (this.StompClient) {
       this.StompClient.disconnect();
-      this.doOnEvent('ondisconnect');
+      this.doOnEvent('onclose');
+    }
+    if (this.reconnectTimeoutId) {
+      clearTimeout(this.reconnectTimeoutId);
     }
   }
 }
