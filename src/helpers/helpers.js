@@ -1,4 +1,7 @@
+/* eslint-disable prefer-template */
+
 import constants from './constants';
+import { djvEnv } from 'plugins/djv';
 
 const helpers = {
 
@@ -20,13 +23,21 @@ const helpers = {
   },
 
   toKlabExtent: (olExtent) => {
-    const [south, west, north, east] = olExtent;
+    const [west, south, east, north] = olExtent;
     return {
       south,
       west,
       north,
       east,
     };
+  },
+
+  validateJsonSchema: (payload, payloadClass) => {
+    const valError = djvEnv.validate(payloadClass, payload);
+    if (typeof valError === 'undefined') {
+      return payload;
+    }
+    throw new Error(`Schema validation error: ${valError}`);
   },
 
 };

@@ -28,11 +28,11 @@
 /* eslint-disable object-shorthand */
 
 import Vue from 'vue';
-import { mapGetters } from 'vuex';
 import ol from 'openlayers';
 import VueLayers from 'vuelayers';
 import 'vuelayers/lib/style.css'; // needs css-loader
-import { MESSAGE_TYPES } from 'helpers/messagesConstants.js';
+import { mapGetters, mapActions } from 'vuex';
+import { MESSAGES_BUILDERS } from 'helpers/messagesConstants.js';
 // import 'vue-resize/dist/vue-resize.css';
 
 Vue.use(VueLayers);
@@ -60,6 +60,7 @@ export default {
     ]),
   },
   methods: {
+    ...mapActions('view', ['pushLogAction']),
     onMapCreated() {
       console.log(`Created map!: ${this.map}`);
       this.map = this.$refs.map.$map;
@@ -70,9 +71,26 @@ export default {
     },
     onMoveEnd(event) {
       const { map } = event;
-      const message = MESSAGE_TYPES.REGION_OF_INTEREST(ol.proj.transformExtent(map.getView()
-        .calculateExtent(map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
-      this.sendStompMessage(message);
+      let message = null;
+      try {
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(ol.proj.transformExtent(map.getView()
+          .calculateExtent(map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
+      } catch (error) {
+        this.pushLogAction({
+          type: this.$constants.TYPE_ERROR,
+          payload: error,
+        });
+      }
+      if (message) {
+        this.sendStompMessage(message);
+        this.pushLogAction({
+          type: this.$constants.TYPE_INFO,
+          payload: {
+            message: 'Message validated and sended',
+            other: message,
+          },
+        });
+      }
     },
   },
   watch: {
@@ -87,6 +105,12 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+  .ol-zoom {
+    position:absolute;
+    left: unset;
+    right: .5em;
+    top: .5em;
+  }
 
 </style>

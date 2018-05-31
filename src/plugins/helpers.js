@@ -2,8 +2,8 @@ import { helpers, constants } from 'helpers/helpers';
 import { Cookies } from 'quasar';
 import defaultTestTree from 'helpers/test_tree';
 
-// leave the export, even if you don't use it
 export default ({ Vue, store }) => {
+  // helpers and costants as global resources
   Vue.prototype.$constants = constants;
   Vue.prototype.$helpers = helpers;
   console.log('Loading session...');
@@ -13,6 +13,7 @@ export default ({ Vue, store }) => {
     || Cookies.get(constants.PARAMS_SESSION);
   const mode = urlParams.get(constants.PARAMS_MODE)
     || Cookies.get(constants.PARAMS_MODE);
+  // TODO only for test proposal
   const testTree = urlParams.get('test_tree') || false;
   if (testTree) {
     store.state.data.tree = defaultTestTree;

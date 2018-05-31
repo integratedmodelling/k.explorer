@@ -1,20 +1,6 @@
 <template>
   <q-page class="column bg-red-1">
     <div class="col row full-height bg-red-1">
-      <!--
-      <div class="col-2 no-padding bg-red-1 text-right" >
-        <q-btn
-          color="secondary"
-          round
-          inverted
-          size="md"
-          class="q-ma-sm"
-          @click="treeIsHidden = true"
-          icon="clear"
-        ></q-btn>
-        <klab-tree></klab-tree>
-      </div>
-          -->
       <viewer></viewer>
     </div>
     <div class="col-1 row bg-red-1">
@@ -27,12 +13,12 @@
     >
       <q-btn
         class="fixed shadow-1"
-        style="left:5vw; top:2vw;"
+        style="left:.5em; top:1.5em;"
         color="secondary"
         round
-        size="sm"
+        size="md"
         @click="treeIsHidden = false"
-        icon="play_arrow"
+        icon="ion-ios-bookmarks"
         v-show="hasTree && treeIsHidden"
       ></q-btn>
     </transition>
@@ -46,14 +32,14 @@
       style="left:1vw; top:1vw;"
       v-show="hasTree && !treeIsHidden"
     >
-      <q-card-title>{{ $t('label.treeTitle') }}
+      <q-card-title class="q-pa-sm">
+        <span class="q-pr-md">{{ $t('label.treeTitle') }}</span>
         <q-btn
-          slot="right"
           color="secondary"
           round
-          size="xs"
+          size="sm"
           @click="treeIsHidden = true"
-          icon="clear"
+          icon="ion-ios-arrow-back"
         ></q-btn>
       </q-card-title>
       <q-card-main>

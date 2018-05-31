@@ -78,6 +78,10 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
+"@korzio/djv-draft-04@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@korzio/djv-draft-04/-/djv-draft-04-2.0.0.tgz#9b459a6c72b2a9c50bf4ef1d249bdb58dd840566"
+
 "@material/mwc-base@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.1.0.tgz#507e8c8f31979fdb9d1d2c6f8ba3363e21982ef9"
@@ -2268,6 +2272,12 @@ dir-glob@^2.0.0:
   dependencies:
     arrify "^1.0.1"
     path-type "^3.0.0"
+
+djv@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/djv/-/djv-2.0.0.tgz#0918ca5830a7e666f13a1977764ddf1cc2998254"
+  optionalDependencies:
+    "@korzio/djv-draft-04" "^2.0.0"
 
 dns-equal@^1.0.0:
   version "1.0.0"

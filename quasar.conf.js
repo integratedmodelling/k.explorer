@@ -30,11 +30,13 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            WS_URL: JSON.stringify('http://localhost:8283/modeler/message'),
+            WS_BASE_URL: JSON.stringify('http://localhost:8283'),
           }
           : { // and on build (production):
-            WS_URL: JSON.stringify('/modeler/message'),
+            WS_BASE_URL: JSON.stringify(''),
           },
+        WSERVICE_URL: JSON.stringify('/modeler'),
+        WS_URL: JSON.stringify('/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/klab/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
       },
@@ -71,6 +73,7 @@ module.exports = function (ctx) {
       // https: true,
       port: 8080,
       open: true, // opens browser window automatically
+      openPage: '/viewer?mode=ide&session=&test_tree=true',
     },
     // framework: 'all' --- includes everything; for dev only!
     framework: {

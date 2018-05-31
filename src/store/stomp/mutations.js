@@ -4,12 +4,15 @@ import moment from 'moment';
 export default {
 
   STOMP_CONNECTION_STATE(state, connectionState) {
+    /* ¿NOT NEEDED?
     if (connectionState !== constants.CONNECTION_UP &&
       connectionState !== constants.CONNECTION_DOWN &&
       connectionState !== constants.CONNECTION_WORKING &&
-      connectionState !== constants.CONNECTION_ERROR) {
+      connectionState !== constants.CONNECTION_ERROR
+      connectionState !== constants.CONNECTION_UNKNOWN) {
       throw new Error(`Connection value is incorrect: ${connectionState}`);
     }
+    */
     state.connectionState = connectionState;
   },
 

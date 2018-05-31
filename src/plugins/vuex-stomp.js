@@ -5,7 +5,7 @@ export default ({ Vue, store }) => {
 
   const subscribeUrl = `${process.env.WS_SUBSCRIBE}/${store.getters['data/session']}`;
   console.log(`SubscribeURL: ${subscribeUrl}`);
-  Vue.use(VueStompClient, process.env.WS_URL, {
+  Vue.use(VueStompClient, process.env.WS_BASE_URL + process.env.WS_URL, {
     stompOptions: {
       subscribeUrl,
     },
