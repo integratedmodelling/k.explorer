@@ -5,9 +5,11 @@ export default {
   ADD_SAVED: (state, saved) => {
     state.saved.push(saved);
   },
+  /*
   ADD_STATUS: (state, status) => {
     state.status.push(status);
   },
+  */
   SET_SELECTED: (state, selected) => {
     state.leafSelected = selected;
   },

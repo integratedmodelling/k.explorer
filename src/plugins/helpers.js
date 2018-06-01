@@ -1,23 +1,25 @@
-import { helpers, constants } from 'helpers/helpers';
+import { Helpers, Constants } from 'shared/Helpers';
+import defaultTestTree from 'shared/test_tree';
 import { Cookies } from 'quasar';
-import defaultTestTree from 'helpers/test_tree';
+
 
 export default ({ Vue, store }) => {
   // helpers and costants as global resources
-  Vue.prototype.$constants = constants;
-  Vue.prototype.$helpers = helpers;
+  Vue.prototype.$constants = Constants;
+  Vue.prototype.$helpers = Helpers;
   console.log('Loading session...');
   // Session and mode
   const urlParams = new URLSearchParams(window.location.search);
-  const session = urlParams.get(constants.PARAMS_SESSION)
-    || Cookies.get(constants.PARAMS_SESSION);
-  const mode = urlParams.get(constants.PARAMS_MODE)
-    || Cookies.get(constants.PARAMS_MODE);
+  const session = urlParams.get(Constants.PARAMS_SESSION)
+    || Cookies.get(Constants.PARAMS_SESSION);
+  const mode = urlParams.get(Constants.PARAMS_MODE)
+    || Cookies.get(Constants.PARAMS_MODE);
   // TODO only for test proposal
   const testTree = urlParams.get('test_tree') || false;
   if (testTree) {
     store.state.data.tree = defaultTestTree;
   }
+  // session only is stored here and never touched, so directly changed
   store.state.data.session = session;
   Vue.prototype.$mode = mode;
   console.log(`Session: ${session} / mode: ${mode}`);

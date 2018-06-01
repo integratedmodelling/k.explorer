@@ -32,7 +32,7 @@ import ol from 'openlayers';
 import VueLayers from 'vuelayers';
 import 'vuelayers/lib/style.css'; // needs css-loader
 import { mapGetters, mapActions } from 'vuex';
-import { MESSAGES_BUILDERS } from 'helpers/messagesConstants.js';
+import { MESSAGES_BUILDERS } from 'shared/MessagesConstants.js';
 // import 'vue-resize/dist/vue-resize.css';
 
 Vue.use(VueLayers);
@@ -50,12 +50,12 @@ export default {
   },
   computed: {
     position() {
-      return this.treeSelected ?
-        [this.treeSelected.lng, this.treeSelected.lat] :
+      return this.leafSelected ?
+        [this.leafSelected.lng, this.leafSelected.lat] :
         this.geolocPosition;
     },
     ...mapGetters('data', [
-      'treeSelected',
+      'leafSelected',
       'session',
     ]),
   },
@@ -81,12 +81,12 @@ export default {
           payload: error,
         });
       }
-      if (message) {
-        this.sendStompMessage(message);
+      if (message && message.body) {
+        this.sendStompMessage(message.body);
         this.pushLogAction({
-          type: this.$constants.TYPE_INFO,
+          type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARN,
           payload: {
-            message: 'Message validated and sended',
+            message: `Message ${message.validated ? '' : 'not'} validated`,
             other: message,
           },
         });

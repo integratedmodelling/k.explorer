@@ -1,15 +1,15 @@
-import { helpers, constants } from 'helpers/helpers';
+import { Helpers, Constants } from 'shared/Helpers';
 import moment from 'moment';
 
 export default {
 
   STOMP_CONNECTION_STATE(state, connectionState) {
-    /* ¿NOT NEEDED?
-    if (connectionState !== constants.CONNECTION_UP &&
-      connectionState !== constants.CONNECTION_DOWN &&
-      connectionState !== constants.CONNECTION_WORKING &&
-      connectionState !== constants.CONNECTION_ERROR
-      connectionState !== constants.CONNECTION_UNKNOWN) {
+    /* TODO: is needed this check?
+    if (connectionState !== Constants.CONNECTION_UP &&
+      connectionState !== Constants.CONNECTION_DOWN &&
+      connectionState !== Constants.CONNECTION_WORKING &&
+      connectionState !== Constants.CONNECTION_ERROR
+      connectionState !== Constants.CONNECTION_UNKNOWN) {
       throw new Error(`Connection value is incorrect: ${connectionState}`);
     }
     */
@@ -18,9 +18,9 @@ export default {
 
   STOMP_ERROR(state, error) {
     // state.receivedMessages.push({
-    helpers.pushElementInFixedQueue(state.receivedMessages, {
+    Helpers.pushElementInFixedQueue(state.receivedMessages, {
       date: moment().format('HH:mm:ss'),
-      type: constants.TYPE_ERROR,
+      type: Constants.TYPE_ERROR,
       message: error,
     });
   },
@@ -28,15 +28,15 @@ export default {
   // default handler called for all methods
   STOMP_MESSAGE(state, message) {
     // console.log('STOMP MESSAGE');
-    helpers.pushElementInFixedQueue(state.receivedMessages, {
+    Helpers.pushElementInFixedQueue(state.receivedMessages, {
       date: moment().format('HH:mm:ss'),
-      type: constants.TYPE_MESSAGE,
+      type: Constants.TYPE_MESSAGE,
       message,
     });
   },
 
   STOMP_SEND_MESSAGE(state, message) {
-    helpers.pushElementInFixedQueue(state.sendedMessages, {
+    Helpers.pushElementInFixedQueue(state.sendedMessages, {
       date: moment().format('HH:mm:ss'),
       ...message,
     });

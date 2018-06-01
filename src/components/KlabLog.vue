@@ -3,12 +3,12 @@
     <div class="col-1 no-padding stomp-status bg-gray-1">
       <q-icon :name="connectionIndicator.icon" :color="connectionIndicator.color"></q-icon>
     </div>
-    <div class="col-4 message-log q-pt-xs stomp-message bg-gray-1">
+    <div class="col-3 message-log q-pt-xs stomp-message bg-gray-1">
       <q-icon name="call_received" :color="hasError ? 'negative' : 'positive'"></q-icon>
       <span :class="`text-${hasError ? 'negative' : 'positive'}`">{{ receivedMessage }}</span>
     </div>
     <div class="ic"></div>
-    <div class="col-3 message-log q-pt-xs stomp-message bg-gray-1">
+    <div class="col-4 message-log q-pt-xs stomp-message bg-gray-1">
       <q-icon name="call_made"></q-icon>
       <span>{{ sendedMessage }}</span>
     </div>
@@ -80,8 +80,10 @@ export default {
       if (action && action.payload) {
         return {
           text: action.payload.message || action.payload,
-          time: action.time || 'no time',
-          color: action.type === this.$constants.TYPE_ERROR ? 'negative' : 'positive',
+          time: action.time ? action.time.format('HH:mm:ss') : 'no time',
+          // eslint-disable-next-line no-nested-ternary
+          color: action.type === this.$constants.TYPE_ERROR ?
+            'negative' : action.type === this.$constants.TYPE_WARN ? 'warning' : 'positive',
         };
       }
       return this.$t('label.klabNoMessage');

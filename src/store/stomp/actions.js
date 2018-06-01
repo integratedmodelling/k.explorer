@@ -1,16 +1,20 @@
-import constants from 'helpers/constants';
+import Constants from 'shared/Constants';
 
+/**
+ * Names of actions are linked to Stomp client event name
+ */
 export default {
+
   stomp_onconnect: ({ commit }, frame) => {
-    commit('STOMP_CONNECTION_STATE', constants.CONNECTION_UP);
+    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_UP);
     commit('STOMP_RECONNECTIONS_ATTEMPT_RESET'); // Reset reconnections
     commit('STOMP_MESSAGE', frame);
   },
   stomp_onclose: ({ commit }) => {
-    commit('STOMP_CONNECTION_STATE', constants.CONNECTION_DOWN);
+    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_DOWN);
   },
   stomp_onerror: ({ commit }, error) => {
-    commit('STOMP_CONNECTION_STATE', constants.CONNECTION_ERROR);
+    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_ERROR);
     commit('STOMP_ERROR', error);
   },
   stomp_onmessage: ({ commit, rootState }, message) => {
@@ -24,7 +28,7 @@ export default {
   // mutations for reconnect methods
   stomp_reconnect: ({ commit }, count) => {
     commit('STOMP_RECONNECTIONS_ATTEMPT', count);
-    commit('STOMP_CONNECTION_STATE', constants.CONNECTION_WORKING);
+    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_WORKING);
   },
   /* TODO CHECK IF NEED
   SOCKET_RECONNECT_ERROR(state) {

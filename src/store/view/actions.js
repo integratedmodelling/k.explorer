@@ -5,7 +5,7 @@ export default {
     commit('PUSH_LOG_ACTION', {
       type,
       payload,
-      time: moment().valueOf(),
+      time: moment(),
     });
   },
   /*

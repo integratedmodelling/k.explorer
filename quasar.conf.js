@@ -1,4 +1,3 @@
-// Configuration for your app
 const path = require('path');
 
 module.exports = function (ctx) {
@@ -9,6 +8,7 @@ module.exports = function (ctx) {
       'axios',
       'vue-i18n',
       'helpers',
+      'djv',
       'vuex-stomp',
     ],
     css: [
@@ -40,7 +40,8 @@ module.exports = function (ctx) {
         WS_SUBSCRIBE: JSON.stringify('/klab/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
       },
-      distDir: 'dist/ui',
+      distDir: '/dist/ui',
+      // 'file:///C:/Users/user/eclipse-workspaces/k.LAB/klab/klab.engine/src/main/resources/static/ui',
       publicPath: '/modeler/ui/',
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -58,7 +59,7 @@ module.exports = function (ctx) {
         });
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
-          helpers: path.resolve(__dirname, './src/helpers'),
+          shared: path.resolve(__dirname, './src/shared'),
         };
         /*
         for (const rule of cfg.module.rules) {

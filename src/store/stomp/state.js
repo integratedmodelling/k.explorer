@@ -1,24 +1,41 @@
-import constants from 'helpers/constants';
+import Constants from 'shared/Constants';
 
 /**
  * In this state everything about stomp comm is stored.
  * Data retrieved and sended are stored in data
  */
 export default {
-  // Connection state
-  connectionState: constants.CONNECTION_DOWN,
-  // Reconnection counter if we are trying to reconnect
+
+  /**
+   * Connection state
+   */
+  connectionState: Constants.CONNECTION_UNKNOWN,
+  /**
+   * Reconnection counter if we are trying to reconnect
+   */
   reconnectionsAttempt: 0,
-  // errors received
-  // errors: [],
-  // when subscribed to a TOPIC, there is an ID and a function to unsuscribe
-  // subscriber.unsuscribe()
+
+  /**
+   * when subscribed to a TOPIC, there is an ID and a function to unsuscribe
+   * f.e. subscriber.unsuscribe()
+   */
   subscriber: null,
-  // Sended message (we need to think in a MAX_LENGTH implementation)
+
+  /**
+   * Sended message implemented MAX_LENGTH
+   */
   sendedMessages: [],
-  // Received message (we need to think in a MAX_LENGTH implementation)
+
+  /**
+   * Received message implemented MAX_LENGTH
+   */
   receivedMessages: [],
-  // Queue of wait for send messages
+
+  /**
+   * Message queued
+   * Only one because if cannot send a message we must stop working
+   * A sended message need answer to continue
+   */
   queuedMessage: null,
 };
 

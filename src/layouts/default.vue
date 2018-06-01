@@ -71,7 +71,7 @@
 <script>
 import { openURL } from 'quasar';
 import { mapGetters } from 'vuex';
-import constants from 'helpers/constants';
+import constants from 'shared/Constants';
 import AppLocaleSwitcher from 'components/AppLocaleSwitcher.vue';
 
 export default {

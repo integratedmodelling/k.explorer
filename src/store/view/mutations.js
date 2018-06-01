@@ -1,6 +1,8 @@
+import { Helpers } from 'shared/Helpers';
+
 export default {
   PUSH_LOG_ACTION: (state, action) => {
-    state.logActions.push(action);
+    Helpers.pushElementInFixedQueue(state.logActions, action);
   },
   /*
   SET_ON_IDE: (state, payload) => {

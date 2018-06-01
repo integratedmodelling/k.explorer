@@ -1,15 +1,15 @@
-import constants from 'helpers/constants';
+import Constants from 'shared/Constants';
 
 export default {
   lastError: (state) => {
     const filtered = state.receivedMessages
-      .filter(item => item.type === constants.TYPE_ERROR).slice(-1);
+      .filter(item => item.type === Constants.TYPE_ERROR).slice(-1);
     return filtered.length === 1 ? filtered[0] : null;
   },
 
   lastMessage: (state) => {
     const filtered = state.receivedMessages
-      .filter(item => item.type === constants.TYPE_MESSAGE).slice(-1);
+      .filter(item => item.type === Constants.TYPE_MESSAGE).slice(-1);
     return filtered.length === 1 ? filtered[0] : null;
   },
 

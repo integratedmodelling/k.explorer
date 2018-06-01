@@ -1,18 +1,38 @@
-import { helpers } from './helpers';
+import { Helpers } from './Helpers';
+import { djvValidator } from 'plugins/djv';
 import moment from 'moment';
 
-export function buildMessage(messageClass, type, payloadClass, payload, session) {
+/**
+ * Fuction to create message to Engine with default values
+ * Used in real message definitions
+ * @param messageClass
+ * @param type
+ * @param payloadClass
+ * @param payload
+ * @param session
+ * @returns {{messageClass: *, type: *, payloadClass: *, payload: *,
+ *          identity: *, timestamp: number, inResponseTo: null}}
+ */
+export function buildMessage(messageClass, type, payloadClass, toCheckPayload, session) {
+  const valid = djvValidator.validateJsonSchema(toCheckPayload, payloadClass);
   return {
-    messageClass,
-    type,
-    payloadClass,
-    payload: helpers.validateJsonSchema(payload, payloadClass),
-    identity: session,
-    timestamp: moment().valueOf(),
-    inResponseTo: null,
+    validated: valid,
+    body: {
+      messageClass,
+      type,
+      payloadClass,
+      payload: toCheckPayload,
+      identity: session,
+      timestamp: moment().valueOf(),
+      inResponseTo: null,
+    },
   };
 }
 
+/**
+ * Messages constants (classes, payloadClasses, etc)
+ * @type {Object}
+ */
 export const MESSAGES_CONSTANTS = Object.freeze({
 
   CLASS_USERCONTEXTCHANGE: 'UserContextChange',
@@ -29,20 +49,33 @@ export const MESSAGES_CONSTANTS = Object.freeze({
   TYPE_ERROR: 'Error',
 });
 
+/**
+ * Builders for real messages
+ */
 export const MESSAGES_BUILDERS = {
+  /**
+   * Region of interest
+   * @param olExtent extent in open layer style
+   * @param session session
+   * @constructor
+   */
   REGION_OF_INTEREST: (olExtent, session) => buildMessage(
     MESSAGES_CONSTANTS.CLASS_USERCONTEXTCHANGE,
     MESSAGES_CONSTANTS.TYPE_REGIONOFINTEREST,
     MESSAGES_CONSTANTS.PAYLOAD_CLASS_SPATIALEXTENT,
-    helpers.toKlabExtent(olExtent),
+    Helpers.toKlabExtent(olExtent),
     session,
   ),
 
+  /**
+   * Period of interest
+   */
   PERIOD_OF_INTEREST: {
     messageClass: 'UserContextChange',
     type: 'PeriodOfInterest',
     payloadClass: 'TemporalExtent',
   },
+
   DEBUG: {
     messageClass: 'Message',
     type: 'Debug',
