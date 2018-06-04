@@ -21,11 +21,7 @@ module.exports = function (ctx) {
       // 'mdi',
       // 'fontawesome',
     ],
-    // supportIE: true,
-    vendor: {
-      add: [],
-      remove: [],
-    },
+    supportIE: true,
     build: {
       env: { // and on build (production):
         ...(ctx.dev)
@@ -125,8 +121,8 @@ module.exports = function (ctx) {
     pwa: {
       cacheExt: 'js,html,css,ttf,eot,otf,woff,woff2,json,svg,gif,jpg,jpeg,png,wav,ogg,webm,flac,aac,mp4,mp3',
       manifest: {
-        name: 'Explorer Quasar',
-        short_name: 'Explorer',
+        name: 'k.explorer',
+        short_name: 'k.explorer',
         description: 'Explorer for k.LAB',
         display: 'standalone',
         orientation: 'portrait',
@@ -165,11 +161,13 @@ module.exports = function (ctx) {
       // id: 'org.cordova.quasar.app'
     },
     electron: {
-    // eslint-disable-next-line no-unused-vars
-      extendWebpack(cfg) {
-        // do something with cfg
+      // bundler: 'builder', // or 'packager'
+      extendWebpack (cfg) {
+        // do something with Electron process Webpack cfg
       },
       packager: {
+        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+
         // OS X / Mac App Store
         // appBundleId: '',
         // appCategoryType: '',
@@ -179,9 +177,11 @@ module.exports = function (ctx) {
         // Window only
         // win32metadata: { ... }
       },
-    },
+      builder: {
+        // https://www.electron.build/configuration/configuration
 
-    // leave this here for Quasar CLI
-    starterKit: '1.0.3',
-  };
-};
+        // appId: 'quasar-app'
+      }
+    }
+  }
+}
