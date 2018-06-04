@@ -40,9 +40,6 @@ export default {
             observer.reconnect();
           }
         },
-        checkMessage(message) {
-          return this.$djv.validate('SpatialExtent', message) === undefined;
-        },
       },
       created() {
         if (this.$options.sockets) {
