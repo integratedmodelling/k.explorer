@@ -52,9 +52,11 @@ module.exports = function (ctx) {
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/,
+          /*
           options: {
-            fix: !(ctx.dev), // auto fix only in dev
+            fix: true,
           },
+          */
         });
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
