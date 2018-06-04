@@ -52,6 +52,9 @@ module.exports = function (ctx) {
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/,
+          options: {
+            fix: !(ctx.dev), // auto fix only in dev
+          },
         });
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
@@ -162,7 +165,8 @@ module.exports = function (ctx) {
     },
     electron: {
       // bundler: 'builder', // or 'packager'
-      extendWebpack (cfg) {
+      // eslint-disable-next-line no-unused-vars
+      extendWebpack(cfg) {
         // do something with Electron process Webpack cfg
       },
       packager: {
@@ -181,7 +185,7 @@ module.exports = function (ctx) {
         // https://www.electron.build/configuration/configuration
 
         // appId: 'quasar-app'
-      }
-    }
-  }
-}
+      },
+    },
+  };
+};
