@@ -31,5 +31,12 @@ export default {
   PARAMS_MODE: 'mode',
   PARAMS_SESSION: 'session',
   PARAMS_MODE_IDE: 'ide',
+
+  /**
+   * Viewer components type
+   */
+  VIEW_MAP: 'MapViewer',
+  VIEW_CHART: 'ChartViewer',
+  VIEW_BLOB: 'BlobViewer',
 };
 

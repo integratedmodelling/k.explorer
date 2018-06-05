@@ -23,5 +23,9 @@ export default ({ Vue, store }) => {
   store.state.data.session = session;
   Vue.prototype.$mode = mode;
   console.log(`Session: ${session} / mode: ${mode}`);
+
+  // init viewer
+  store.state.data.viewerLayout = Helpers.VIEWER_DEFAULT;
+  console.log(`Init viewerLayout ${Helpers.VIEWER_DEFAULT}`);
 };
 

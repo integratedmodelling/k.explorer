@@ -106,11 +106,6 @@ export default {
 </script>
 
 <style>
-  .ol-zoom {
-    position:absolute;
-    left: unset;
-    right: .5em;
-    top: .5em;
-  }
+
 
 </style>

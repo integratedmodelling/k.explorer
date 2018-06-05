@@ -17,9 +17,9 @@ export default {
     commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_ERROR);
     commit('STOMP_ERROR', error);
   },
-  stomp_onmessage: ({ commit, rootState }, message) => {
+  stomp_onmessage: ({ commit/* , rootState */ }, message) => {
     commit('STOMP_MESSAGE', message);
-    console.log(`ROOTSTATE: ${rootState}`);
+    // console.log(`ROOTSTATE: ${rootState}`);
     /* TODO Things with answer in Data Store */
   },
   stomp_onsubscribe: ({ commit }, subscriber) => {

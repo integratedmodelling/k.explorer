@@ -2,8 +2,8 @@ export default {
   ADD_NODE: (state, node) => {
     state.tree.push(node);
   },
-  ADD_SAVED: (state, saved) => {
-    state.saved.push(saved);
+  ADD_VIEWER_ELEMENT: (state, viewerElement) => {
+    state.viewerLayout.push(viewerElement);
   },
   /*
   ADD_STATUS: (state, status) => {

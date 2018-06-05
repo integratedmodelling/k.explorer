@@ -27,9 +27,11 @@ export default {
     onerrorsend: (error) => {
       console.log(`Error on send: ${JSON.stringify(error)}`);
     },
+    /*
     onmessage: (frame) => {
-      console.log(`On message: ${JSON.stringify(frame, null, 4)}`);
+      console.log(); // (`On message: ${JSON.stringify(frame, null, 4)}`);
     },
+    */
     onsubscribe(message) {
       console.log(`Subscribe with subscribe id: ${JSON.stringify(message, null, 4)}`);
     },

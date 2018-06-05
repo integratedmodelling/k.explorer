@@ -66,6 +66,19 @@ const Helpers = {
     };
   },
 
+  /**
+   * DEFAULT Viewer on start
+   */
+  VIEWER_DEFAULT: [{
+    x: 0,
+    y: 0,
+    w: 12,
+    h: 1,
+    index: 1,
+    type: Constants.VIEW_MAP,
+    data: {},
+  }],
+
 };
 
 export { Constants, Helpers };

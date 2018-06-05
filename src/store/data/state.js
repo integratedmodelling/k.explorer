@@ -12,10 +12,20 @@ export default {
    */
   leafSelected: null,
   /**
-   * Observations saved. To use to show in small windows
+   * Viewer layout using vue-grid-layout
+   * {@link https://github.com/jbaysolutions/vue-grid-layout}
+   * Each element will be an object like this:
+   * {
+   *    "x":[x position],
+   *    "y":[y position],
+   *    "w":[weight in cell],
+   *    "h":[will be something],
+   *    "index":[index]
+   *    "type": element type
+   *    "data": element data
+   * }
    */
-  saved: [],
-  // status: [],
+  viewerLayout: [],
   /**
    * The session id given from url and used everywhere
    */

@@ -2,9 +2,14 @@ export default {
   addNode: ({ commit }, node) => {
     commit('ADD_NODE', node);
   },
-  addSaved: ({ commit }, saved) => {
-    commit('ADD_SAVED', saved);
+  addViewerElement: ({ commit }, element) => {
+    commit('ADD_VIEWER_ELEMENT', element);
   },
+  /*
+  setMain: ({ commit }, element) => {
+
+  },
+  */
   /*
   addStatus: ({ commit }, status) => {
     commit('ADD_STATUS', status);

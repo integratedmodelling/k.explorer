@@ -58,8 +58,13 @@ export default {
     receivedMessage() {
       if (this.lastReceivedMessage) {
         if (this.lastReceivedMessage.type === this.$constants.TYPE_ERROR) {
+          // eslint-disable-next-line no-nested-ternary
           return this.lastReceivedMessage.message.reason === '' ?
             this.$t('label.klabUnknownError') : this.lastReceivedMessage.message.reason;
+        }
+        if (this.lastReceivedMessage.message.body !== '') {
+          const body = JSON.parse(this.lastReceivedMessage.message.body);
+          return `${body.payload} - ${this.lastReceivedMessage.date}`;
         }
         return `${this.lastReceivedMessage.message.command} - ${this.lastReceivedMessage.date}`;
       }
