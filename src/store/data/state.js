@@ -27,6 +27,10 @@ export default {
    */
   viewerLayout: [],
   /**
+   * Every viewer has an autonumeric id
+   */
+  lastViewerId: 0,
+  /**
    * The session id given from url and used everywhere
    */
   session: null,

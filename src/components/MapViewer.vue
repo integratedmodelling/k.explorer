@@ -2,9 +2,9 @@
   <div class="fit no-padding klab-viewer">
     <vl-map ref="map" :load-tiles-while-animating="true" :load-tiles-while-interacting="true"
             data-projection="EPSG:4326" @created="onMapCreated" @moveend="onMoveEnd($event)">
-      <vl-view :zoom.sync="zoom"
-               :center.sync="center" :rotation.sync="rotation"></vl-view>
-      <vl-geoloc @update:position="geolocPosition = $event">
+      <vl-view :zoom="zoom"
+               :center="position" center.sync="center" :rotation.sync="rotation"></vl-view>
+      <vl-geoloc> <!-- @update:position="geolocPosition = $event"> -->
         <template slot-scope="geoloc">
           <vl-feature v-if="position" id="position-feature">
             <vl-geom-point :coordinates="position"></vl-geom-point>
@@ -24,6 +24,7 @@
   </div>
 </template>
 
+
 <script>
 /* eslint-disable object-shorthand */
 
@@ -39,23 +40,30 @@ Vue.use(VueLayers);
 
 export default {
   name: 'MapViewer',
+  props: ['observation'],
   data() {
     return {
-      zoom: 7,
       center: [0, 0],
       rotation: 0,
-      geolocPosition: undefined,
+      // geolocPosition: undefined,
       map: null,
+      leaf: this.observation,
     };
   },
   computed: {
     position() {
+      /*
       return this.leafSelected ?
         [this.leafSelected.lng, this.leafSelected.lat] :
         this.geolocPosition;
+      */
+      return [this.leaf.lng, this.leaf.lat];
+    },
+    zoom() {
+      return this.leaf.zoom;
     },
     ...mapGetters('data', [
-      'leafSelected',
+      // 'leafSelected',
       'session',
     ]),
   },
@@ -93,14 +101,29 @@ export default {
       }
     },
   },
+  sockets: {
+    onmessage: () => {
+      console.log('Received frame in mapviewer.vue'); // (`On message: ${JSON.stringify(frame, null, 4)}`);
+    },
+  },
   watch: {
+    /*
     geolocPosition() {
       this.center = this.geolocPosition;
       console.log(`Encontrada posicion: ${this.geolocPosition}`);
     },
+    */
+    /*
     position() {
       this.center = this.position;
     },
+    */
+  },
+  beforeDestroy() {
+    console.log('ME DESTRUYEN');
+  },
+  mounted() {
+    console.log(`Observation: ${this.leaf.lat},${this.leaf.lng},z ${this.leaf.zoom} - ${this.leaf.label}`);
   },
 };
 </script>

@@ -8,6 +8,7 @@
 // This is for IE11 Promise polyfill
 // import 'es6-promise/auto';
 import { mapGetters, mapActions } from 'vuex';
+import defaultTestTree from 'shared/test_tree';
 
 export default {
   name: 'App',
@@ -27,11 +28,9 @@ export default {
     onerrorsend: (error) => {
       console.log(`Error on send: ${JSON.stringify(error)}`);
     },
-    /*
-    onmessage: (frame) => {
-      console.log(); // (`On message: ${JSON.stringify(frame, null, 4)}`);
+    onmessage: () => {
+      console.log('Received frame in app.vue'); // (`On message: ${JSON.stringify(frame, null, 4)}`);
     },
-    */
     onsubscribe(message) {
       console.log(`Subscribe with subscribe id: ${JSON.stringify(message, null, 4)}`);
     },
@@ -55,6 +54,13 @@ export default {
     ...mapActions('stomp', {
       stompCleanQueue: 'stomp_cleanqueue',
     }),
+  },
+  beforeMount() {
+    // TODO only for test proposal
+    const testTree = this.$urlParams.get('test_tree') || false;
+    if (testTree) {
+      this.loadTree(defaultTestTree);
+    }
   },
 };
 

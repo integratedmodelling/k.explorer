@@ -70,11 +70,11 @@ const Helpers = {
    * DEFAULT Viewer on start
    */
   VIEWER_DEFAULT: [{
-    x: 0,
-    y: 0,
-    w: 12,
-    h: 1,
-    index: 1,
+    main: true,
+    type: Constants.VIEW_MAP,
+    data: {},
+  }, {
+    main: false,
     type: Constants.VIEW_MAP,
     data: {},
   }],

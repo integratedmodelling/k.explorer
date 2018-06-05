@@ -72,14 +72,11 @@ export default {
 
           if (sockets) {
             Object.keys(sockets).forEach((key) => {
+              console.log(`Remove listener ${key}`);
               Emitter.removeListener(key, this.$options.sockets[key], this);
               delete this.$options.sockets[key];
             });
           }
-        }
-        if (Vue.prototype.$stompClient) {
-          observer.close();
-          delete Vue.prototype.$stompClient;
         }
       },
     });

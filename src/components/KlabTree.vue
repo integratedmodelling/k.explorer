@@ -28,12 +28,12 @@ export default {
   },
   methods: {
     ...mapActions('data', [
-      'setSelected',
+      'setLeafSelected',
     ]),
   },
   watch: {
     selected() {
-      this.setSelected(this.$refs.klabTree.getNodeByKey(this.selected));
+      this.setLeafSelected(this.$refs.klabTree.getNodeByKey(this.selected));
     },
   },
 };
