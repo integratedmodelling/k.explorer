@@ -1,10 +1,19 @@
 <template>
   <div class="fit no-padding klab-viewer">
-    <vl-map ref="map" :load-tiles-while-animating="true" :load-tiles-while-interacting="true"
-            data-projection="EPSG:4326" @created="onMapCreated" @moveend="onMoveEnd($event)">
+    <vl-map
+      ref="map"
+      :load-tiles-while-animating="true"
+      :load-tiles-while-interacting="true"
+      data-projection="EPSG:4326"
+      @created="onMapCreated"
+      v-on="hasContext ? { moveend: onMoveEnd } : {}"
+    >
       <vl-view :zoom="zoom"
-               :center="position" center.sync="center" :rotation.sync="rotation"></vl-view>
-      <vl-geoloc> <!-- @update:position="geolocPosition = $event"> -->
+               :center="position"
+               center.sync="center"
+               :rotation.sync="rotation"
+      ></vl-view>
+      git <vl-geoloc> <!-- @update:position="geolocPosition = $event"> -->
         <template slot-scope="geoloc">
           <vl-feature v-if="position" id="position-feature">
             <vl-geom-point :coordinates="position"></vl-geom-point>
@@ -63,7 +72,7 @@ export default {
       return this.leaf.zoom;
     },
     ...mapGetters('data', [
-      // 'leafSelected',
+      'hasContext',
       'session',
     ]),
   },

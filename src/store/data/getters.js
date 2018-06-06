@@ -1,13 +1,39 @@
 export default {
+  /**
+   * The observations tree
+   */
   tree: state => state.tree,
-  hasTree: state => state.tree.length > 0,
+
+  /**
+   * The actual checked leaf in tree
+   * TODO: change to implement checkbox
+   */
+  leafSelected: state => state.leafSelected,
+
+  /**
+   * If no context, return null
+   */
+  hasContext: state => state.context !== null,
+
+  /**
+   * Created viewers
+   */
   viewerLayout: state => state.viewerLayout,
+
+  /**
+   * The unique viewer with main: true
+   */
   mainViewer: state => state.viewerLayout
     .find(viewer => viewer.main),
+
+  /* now is not useful, but in the future?
   thumbViewers: state => state.viewerLayout
     .filter(viewer => !viewer.main),
-  // status: state => state.status,
-  leafSelected: state => state.leafSelected,
+  */
+
+  /**
+   * The session, very important accessing it using getter
+   */
   session: state => state.session,
 };
 

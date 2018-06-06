@@ -79,10 +79,10 @@ export default class {
   connect(connectionUrl, stompOptions = {}) {
     // Create object and connect must be atomic (don't know why, is a webstomp-client "problem"
     // https://github.com/JSteunou/webstomp-client/issues/6
-    const { headers = {}, subscribeUrl, sockJSOptions = {} } = stompOptions;
+    const { headers = {}, subscribeUrl /* , sockJSOptions = {} */ } = stompOptions;
 
-    const sockJs = SockJS(connectionUrl, sockJSOptions);
-    this.StompClient = webstomp.over(sockJs);
+    const sockJs = SockJS(connectionUrl); // , sockJSOptions);
+    this.StompClient = webstomp.over(sockJs, stompOptions);
     this.StompClient.connect(
       headers,
       (frame) => {
@@ -116,13 +116,19 @@ export default class {
       clearTimeout(this.reconnectTimeoutId);
 
       this.reconnectTimeoutId = setTimeout(() => {
-        console.log('Timeout!');
+        this.debug('Timeout!');
+        this.doOnEvent('reconnect', this.reconnectionCount);
+        /*
         if (this.store) {
           this.passToStore('stomp_reconnect', this.reconnectionCount);
         }
+        */
         this.connect(this.connectionUrl, this.stompOptions);
       }, this.reconnectionDelay);
-    } else if (this.store) { this.passToStore('stomp_onerror', 'Reconnection error'); }
+    } else {
+      // if (this.store) { this.passToStore('stomp_onerror', 'Reconnection error'); }
+      this.doOnEvent('onerror', new Error('Reconnection error'));
+    }
   }
 
   send(destination = this.defaultMessageDestination, headers = this.headers, message) {
@@ -146,11 +152,17 @@ export default class {
       this.debug(`No listener for ${eventType}`);
     }
 
-    if (this.store) { this.passToStore(`stomp_${eventType}`, payload); }
+    if (this.store) {
+      this.passToStore(`stomp_${eventType}`, payload);
+    }
 
     if (this.reconnection && eventType === 'onoconnect') { this.reconnectionCount = 0; }
 
-    if (this.reconnection && eventType === 'onerror') { this.reconnect(); }
+    if (this.reconnection && eventType === 'onerror'
+      && payload instanceof Error && payload.message !== 'Reconnection error') {
+      // only if is a connection error
+      this.reconnect();
+    }
   }
 
   passToStore(eventName, event) {

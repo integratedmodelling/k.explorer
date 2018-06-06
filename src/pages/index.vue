@@ -19,7 +19,7 @@
         size="md"
         @click="showTree"
         icon="ion-ios-bookmarks"
-        v-show="hasTree && treeIsHidden"
+        v-show="hasContext && treeIsHidden"
       ></q-btn>
     </transition>
     <transition
@@ -30,7 +30,7 @@
     <q-card
       class="fixed bg-white shadow-1"
       style="left:1vw; top:1vw;"
-      v-show="hasTree && !treeIsHidden"
+      v-show="hasContext && !treeIsHidden"
       v-draggable="draggableValue"
     >
       <q-card-title class="q-pa-sm bg-primary" ref="dr-handler">
@@ -76,10 +76,10 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import klabTree from 'components/KlabTree.vue';
-import klabLog from 'components/KlabLog.vue';
-import viewer from 'components/Viewer.vue';
 import { Draggable } from 'draggable-vue-directive';
+import KlabTree from 'components/KlabTree.vue';
+import KlabLog from 'components/KlabLog.vue';
+import Viewer from 'components/Viewer.vue';
 
 export default {
   /* eslint-disable object-shorthand */
@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
-      'hasTree',
+      'hasContext',
     ]),
     ...mapGetters('stomp', [
       'connectionState',
@@ -128,9 +128,9 @@ export default {
   },
 
   components: {
-    klabTree,
-    klabLog,
-    viewer,
+    KlabTree,
+    KlabLog,
+    Viewer,
   },
   watch: {
   },

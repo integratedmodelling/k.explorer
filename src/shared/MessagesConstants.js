@@ -36,12 +36,26 @@ export function buildMessage(messageClass, type, payloadClass, toCheckPayload, s
 export const MESSAGES_CONSTANTS = Object.freeze({
 
   CLASS_USERCONTEXTCHANGE: 'UserContextChange',
+  CLASS_TASKLIFECYCLE: 'TaskLifecycle',
+  CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
 
+  PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
+  PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
+  PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
+
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_PERIODOFINTEREST: 'PeriodOfInterest',
+
+  TYPE_TASKSTARTED: 'TaskStarted',
+  TASK_TASKFINISHED: 'TaskFinished',
+  TASK_TASKABORTED: 'TaskAborted',
+  TASK_DATAFLOWCOMPILED: 'DataflowCompiled',
+
+  TASK_NEWOBSERVATION: 'NewObservation',
+  TASK_MODIFIEDOBSERVATION: 'ModifiedObservation',
 
   TYPE_DEBUG: 'Debug',
   TYPE_INFO: 'Info',

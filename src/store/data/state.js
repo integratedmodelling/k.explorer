@@ -7,6 +7,10 @@ export default {
    */
   tree: [],
   /**
+   * If not null, a context was established and saved in this object
+   */
+  context: null,
+  /**
    * Actual leaf selected in tree
    * Managed fro kLabTree component
    */
