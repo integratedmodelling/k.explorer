@@ -39,7 +39,7 @@ export default [
     ],
   },
   {
-    id: 1,
+    id: 2,
     label: 'Spain',
     lat: 40.172147,
     lng: -3.082058,
@@ -50,6 +50,22 @@ export default [
         label: 'Murcia',
         lat: 37.9805949,
         lng: -1.1621947,
+        zoom: 13,
+      },
+    ],
+  },
+  {
+    id: 3,
+    label: 'Ethiopia',
+    lat: 9.381763,
+    lng: 39.635625,
+    zoom: 6,
+    children: [
+      {
+        id: 300,
+        label: 'Melka Sede',
+        lat: 9.343971,
+        lng: 40.299841,
         zoom: 13,
       },
     ],

@@ -10,6 +10,7 @@ export default {
     footer: 'k.LAB Explorer - 2018',
     treeTitle: 'Osservazioni',
     reconnect: 'Riconnettere',
+    unknownLabel: 'Sconosciuto',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

@@ -91,7 +91,6 @@ export default {
   computed: {
     ...mapGetters('data', [
       'hasTree',
-      'hasSaved',
     ]),
     ...mapGetters('stomp', [
       'connectionState',

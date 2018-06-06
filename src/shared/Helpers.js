@@ -69,16 +69,17 @@ const Helpers = {
   /**
    * DEFAULT Viewer on start
    */
-  VIEWER_DEFAULT: [{
+  VIEWER_DEFAULT: {
     main: true,
     type: Constants.VIEW_MAP,
-    data: {},
-  }, {
-    main: false,
-    type: Constants.VIEW_MAP,
-    data: {},
-  }],
-
+    data: {
+      id: 1,
+      label: 'Default',
+      lat: 43.332019,
+      lng: -2.967827,
+      zoom: 17,
+    },
+  },
 };
 
 export { Constants, Helpers };

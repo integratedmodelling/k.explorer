@@ -20,7 +20,6 @@ export default ({ Vue, store }) => {
   Vue.mixin({
     methods: {
       loadTree(tree) {
-        // for now create 2 maps
         store.state.data.tree = tree;
         tree.forEach((leaf) => {
           store.dispatch('data/addViewerElement', {

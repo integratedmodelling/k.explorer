@@ -9,6 +9,7 @@
 // import 'es6-promise/auto';
 import { mapGetters, mapActions } from 'vuex';
 import defaultTestTree from 'shared/test_tree';
+import { Helpers } from 'shared/Helpers';
 
 export default {
   name: 'App',
@@ -60,6 +61,8 @@ export default {
     const testTree = this.$urlParams.get('test_tree') || false;
     if (testTree) {
       this.loadTree(defaultTestTree);
+    } else {
+      this.$store.dispatch('data/addViewerElement', Helpers.VIEWER_DEFAULT);
     }
   },
 };
