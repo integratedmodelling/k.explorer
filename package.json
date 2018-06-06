@@ -14,6 +14,7 @@
     "@korzio/djv-draft-04": "^2.0.0",
     "axios": "^0.18.0",
     "djv": "^2.0.0",
+    "draggable-vue-directive": "^1.2.0",
     "moment": "^2.22.1",
     "proxy-polyfill": "^0.2.0",
     "vue-i18n": "^7.6.0",

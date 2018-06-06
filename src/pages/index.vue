@@ -14,10 +14,10 @@
       <q-btn
         class="fixed shadow-1"
         style="left:.5em; top:1.5em;"
-        color="secondary"
+        color="primary"
         round
         size="md"
-        @click="treeIsHidden = false"
+        @click="showTree"
         icon="ion-ios-bookmarks"
         v-show="hasTree && treeIsHidden"
       ></q-btn>
@@ -31,14 +31,15 @@
       class="fixed bg-white shadow-1"
       style="left:1vw; top:1vw;"
       v-show="hasTree && !treeIsHidden"
+      v-draggable="draggableValue"
     >
-      <q-card-title class="q-pa-sm">
-        <span class="q-pr-md">{{ $t('label.treeTitle') }}</span>
+      <q-card-title class="q-pa-sm bg-primary" ref="dr-handler">
+        <span class="q-pr-md text-white">{{ $t('label.treeTitle') }}</span>
         <q-btn
-          color="secondary"
+          color="primary"
           round
           size="sm"
-          @click="treeIsHidden = true"
+          @click="hideTree"
           icon="ion-ios-arrow-back"
         ></q-btn>
       </q-card-title>
@@ -78,6 +79,7 @@ import { mapGetters } from 'vuex';
 import klabTree from 'components/KlabTree.vue';
 import klabLog from 'components/KlabLog.vue';
 import viewer from 'components/Viewer.vue';
+import { Draggable } from 'draggable-vue-directive';
 
 export default {
   /* eslint-disable object-shorthand */
@@ -85,7 +87,10 @@ export default {
   data() {
     return {
       treeIsHidden: false,
-
+      draggableValue: {
+        handle: undefined,
+        resetInitialPos: false,
+      },
     };
   },
   computed: {
@@ -107,12 +112,31 @@ export default {
     },
   },
 
+  methods: {
+    hideTree() {
+      this.draggableValue.resetInitialPos = false;
+      this.treeIsHidden = true;
+    },
+    showTree() {
+      this.draggableValue.resetInitialPos = true;
+      this.treeIsHidden = false;
+    },
+  },
+
+  directives: {
+    Draggable,
+  },
+
   components: {
     klabTree,
     klabLog,
     viewer,
   },
   watch: {
+  },
+
+  mounted() {
+    this.draggableValue.handle = this.$refs['dr-handler'];
   },
 };
 </script>

@@ -75,6 +75,7 @@ export default {
     thumbnails = [];
   },
   mounted() {
+    thumbnails = [];
   },
 };
 </script>

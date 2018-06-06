@@ -2514,6 +2514,10 @@ dot-prop@^4.1.1:
   dependencies:
     is-obj "^1.0.0"
 
+draggable-vue-directive@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/draggable-vue-directive/-/draggable-vue-directive-1.2.0.tgz#f784d23b93308a59ca38d809d3bd8069f615740d"
+
 duplexer@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.1.tgz#ace6ff808c1ce66b57d1ebf97977acb02334cfc1"
