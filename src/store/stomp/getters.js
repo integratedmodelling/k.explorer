@@ -27,5 +27,12 @@ export default {
 
   connectionState: state => (state.connectionState),
 
+  /**
+   * Return if a task is alive
+   */
+  taskIsAlive: state => (id) => { state.tasks.has(id); },
+
+  hasTasks: state => state.tasks.size !== 0,
+
 };
 

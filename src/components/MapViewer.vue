@@ -13,7 +13,7 @@
                center.sync="center"
                :rotation.sync="rotation"
       ></vl-view>
-      git <vl-geoloc> <!-- @update:position="geolocPosition = $event"> -->
+      <vl-geoloc> <!-- @update:position="geolocPosition = $event"> -->
         <template slot-scope="geoloc">
           <vl-feature v-if="position" id="position-feature">
             <vl-geom-point :coordinates="position"></vl-geom-point>
@@ -42,7 +42,7 @@ import ol from 'openlayers';
 import VueLayers from 'vuelayers';
 import 'vuelayers/lib/style.css'; // needs css-loader
 import { mapGetters, mapActions } from 'vuex';
-import { MESSAGES_BUILDERS } from 'shared/MessagesConstants.js';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 // import 'vue-resize/dist/vue-resize.css';
 
 Vue.use(VueLayers);
@@ -110,11 +110,14 @@ export default {
       }
     },
   },
+  /*
   sockets: {
     onmessage: () => {
-      console.log('Received frame in mapviewer.vue'); // (`On message: ${JSON.stringify(frame, null, 4)}`);
+      console.log('Received frame in mapviewer.vue');
+      // (`On message: ${JSON.stringify(frame, null, 4)}`);
     },
   },
+  */
   watch: {
     /*
     geolocPosition() {

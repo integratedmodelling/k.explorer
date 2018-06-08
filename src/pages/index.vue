@@ -6,48 +6,7 @@
     <div class="col-1 row bg-red-1">
       <klab-log></klab-log>
     </div>
-    <transition
-      appear
-      enter-active-class="animated fadeInLeft"
-      leave-active-class="animated fadeOutLeft"
-    >
-      <q-btn
-        class="fixed shadow-1"
-        style="left:.5em; top:1.5em;"
-        color="primary"
-        round
-        size="md"
-        @click="showTree"
-        icon="ion-ios-bookmarks"
-        v-show="hasContext && treeIsHidden"
-      ></q-btn>
-    </transition>
-    <transition
-      appear
-      enter-active-class="animated fadeInLeft"
-      leave-active-class="animated fadeOutLeft"
-    >
-    <q-card
-      class="fixed bg-white shadow-1"
-      style="left:1vw; top:1vw;"
-      v-show="hasContext && !treeIsHidden"
-      v-draggable="draggableValue"
-    >
-      <q-card-title class="q-pa-sm bg-primary" ref="dr-handler">
-        <span class="q-pr-md text-white">{{ $t('label.treeTitle') }}</span>
-        <q-btn
-          color="primary"
-          round
-          size="sm"
-          @click="hideTree"
-          icon="ion-ios-arrow-back"
-        ></q-btn>
-      </q-card-title>
-      <q-card-main>
-        <klab-tree></klab-tree>
-      </q-card-main>
-    </q-card>
-    </transition>
+    <klab-tree></klab-tree>
     <q-modal
         minimized
         v-model="modalVisible"
@@ -63,8 +22,7 @@
             @click="reconnect"
           >{{ $t('label.reconnect') }}</q-btn>
       </div>
-      <div class="bg-red" v-show="connectionState === $constants.CONNECTION_ERROR ||
-          connectionState === $constants.CONNECTION_WORKING">
+      <div class="bg-red" v-show="connectionState === $constants.CONNECTION_ERROR">
         <div class="q-display-1 q-mb-md bg-white round-modal text-primary text-bold">
           {{ modalText  }}
         </div>
@@ -76,7 +34,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { Draggable } from 'draggable-vue-directive';
+
 import KlabTree from 'components/KlabTree.vue';
 import KlabLog from 'components/KlabLog.vue';
 import Viewer from 'components/Viewer.vue';
@@ -84,19 +42,7 @@ import Viewer from 'components/Viewer.vue';
 export default {
   /* eslint-disable object-shorthand */
   name: 'IndexPage',
-  data() {
-    return {
-      treeIsHidden: false,
-      draggableValue: {
-        handle: undefined,
-        resetInitialPos: false,
-      },
-    };
-  },
   computed: {
-    ...mapGetters('data', [
-      'hasContext',
-    ]),
     ...mapGetters('stomp', [
       'connectionState',
     ]),
@@ -111,32 +57,13 @@ export default {
       }[this.connectionState];
     },
   },
-
-  methods: {
-    hideTree() {
-      this.draggableValue.resetInitialPos = false;
-      this.treeIsHidden = true;
-    },
-    showTree() {
-      this.draggableValue.resetInitialPos = true;
-      this.treeIsHidden = false;
-    },
-  },
-
-  directives: {
-    Draggable,
-  },
-
+  methods: {},
   components: {
     KlabTree,
     KlabLog,
     Viewer,
   },
   watch: {
-  },
-
-  mounted() {
-    this.draggableValue.handle = this.$refs['dr-handler'];
   },
 };
 </script>

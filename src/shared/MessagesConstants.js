@@ -1,62 +1,8 @@
-import { Helpers } from './Helpers';
-import { djvValidator } from 'plugins/djv';
-import moment from 'moment';
-
 /**
- * Fuction to create message to Engine with default values
- * Used in real message definitions
- * @param messageClass
- * @param type
- * @param payloadClass
- * @param payload
- * @param session
- * @returns {{messageClass: *, type: *, payloadClass: *, payload: *,
- *          identity: *, timestamp: number, inResponseTo: null}}
- */
-export function buildMessage(messageClass, type, payloadClass, toCheckPayload, session) {
-  const valid = djvValidator.validateJsonSchema(toCheckPayload, payloadClass);
-  return {
-    validated: valid,
-    body: {
-      messageClass,
-      type,
-      payloadClass,
-      payload: toCheckPayload,
-      identity: session,
-      timestamp: moment().valueOf(),
-      inResponseTo: null,
-    },
-  };
-}
-
-/**
- * Messages constants (classes, payloadClasses, etc)
+ * Messages constants shared between in messages and out messages
  * @type {Object}
  */
-export const MESSAGES_CONSTANTS = Object.freeze({
-
-  CLASS_USERCONTEXTCHANGE: 'UserContextChange',
-  CLASS_TASKLIFECYCLE: 'TaskLifecycle',
-  CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
-
-  PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
-  PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
-
-  PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
-  PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
-  PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
-
-  TYPE_REGIONOFINTEREST: 'RegionOfInterest',
-  TYPE_PERIODOFINTEREST: 'PeriodOfInterest',
-
-  TYPE_TASKSTARTED: 'TaskStarted',
-  TASK_TASKFINISHED: 'TaskFinished',
-  TASK_TASKABORTED: 'TaskAborted',
-  TASK_DATAFLOWCOMPILED: 'DataflowCompiled',
-
-  TASK_NEWOBSERVATION: 'NewObservation',
-  TASK_MODIFIEDOBSERVATION: 'ModifiedObservation',
-
+export const SHARED = Object.freeze({
   TYPE_DEBUG: 'Debug',
   TYPE_INFO: 'Info',
   TYPE_WARNING: 'Warning',
@@ -64,51 +10,38 @@ export const MESSAGES_CONSTANTS = Object.freeze({
 });
 
 /**
- * Builders for real messages
+ * Messages sended from k.explorer to k.LAB
+ * @type {Object}
  */
-export const MESSAGES_BUILDERS = {
-  /**
-   * Region of interest
-   * @param olExtent extent in open layer style
-   * @param session session
-   * @constructor
-   */
-  REGION_OF_INTEREST: (olExtent, session) => buildMessage(
-    MESSAGES_CONSTANTS.CLASS_USERCONTEXTCHANGE,
-    MESSAGES_CONSTANTS.TYPE_REGIONOFINTEREST,
-    MESSAGES_CONSTANTS.PAYLOAD_CLASS_SPATIALEXTENT,
-    Helpers.toKlabExtent(olExtent),
-    session,
-  ),
+export const OUT = Object.freeze({
 
-  /**
-   * Period of interest
-   */
-  PERIOD_OF_INTEREST: {
-    messageClass: 'UserContextChange',
-    type: 'PeriodOfInterest',
-    payloadClass: 'TemporalExtent',
-  },
+  CLASS_USERCONTEXTCHANGE: 'UserContextChange',
 
-  DEBUG: {
-    messageClass: 'Message',
-    type: 'Debug',
-    payloadClass: '',
-  },
+  PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
+  PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
 
-  ERROR: {
-    messageClass: 'Message',
-    type: 'Error',
-    payloadClass: '',
-  },
-  WARNING: {
-    messageClass: 'Message',
-    type: 'Warning',
-    payloadClass: '',
-  },
-  INFO: {
-    messageClass: 'Message',
-    type: 'Info',
-    payloadClass: '',
-  },
-};
+  TYPE_REGIONOFINTEREST: 'RegionOfInterest',
+  TYPE_PERIODOFINTEREST: 'PeriodOfInterest',
+});
+
+/**
+ * Messages sended from k.LAB to k.explorer
+ * @type {Object}
+ */
+export const IN = Object.freeze({
+
+  CLASS_TASKLIFECYCLE: 'TaskLifecycle',
+  CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
+
+  PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
+  PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
+  PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
+
+  TYPE_TASKSTARTED: 'TaskStarted',
+  TYPE_TASKFINISHED: 'TaskFinished',
+  TYPE_TASKABORTED: 'TaskAborted',
+
+  TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
+  TYPE_NEWOBSERVATION: 'NewObservation',
+  TYPE_MODIFIEDOBSERVATION: 'ModifiedObservation',
+});

@@ -13,7 +13,12 @@ export default {
       throw new Error(`Connection value is incorrect: ${connectionState}`);
     }
     */
+    // console.log(`Change connection state from ${state.connectionState} to ${connectionState}`);
+    // try {
     state.connectionState = connectionState;
+    // } catch (e) {
+    //   console.log(`Error change connection: ${JSON.stringify(e)}`);
+    // }
   },
 
   STOMP_ERROR(state, error) {
@@ -61,6 +66,18 @@ export default {
 
   STOMP_CLEAN_QUEUE(state) {
     state.queuedMessage = null;
+  },
+
+  TASK_START(state, task) {
+    state.tasks.set(task.id, task);
+  },
+
+  TASK_END(state, { id }) {
+    if (state.tasks.has(id)) {
+      state.tasks.delete(id);
+    } else {
+      console.debug(`Task with id = ${id} not founded`);
+    }
   },
 };
 

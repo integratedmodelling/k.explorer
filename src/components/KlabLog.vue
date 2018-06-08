@@ -1,7 +1,9 @@
 <template>
   <div class="row full-width bg-gray-1">
     <div class="col-1 no-padding stomp-status bg-gray-1">
-      <q-icon :name="connectionIndicator.icon" :color="connectionIndicator.color"></q-icon>
+      <q-icon
+        :name="CONN_INDICATOR[connectionState].icon"
+        :color="CONN_INDICATOR[connectionState].color"></q-icon>
     </div>
     <div class="col-3 message-log q-pt-xs stomp-message bg-gray-1">
       <q-icon name="call_received" :color="hasError ? 'negative' : 'positive'"></q-icon>
@@ -26,6 +28,17 @@ import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'KLabLog',
+  data() {
+    return {
+      CONN_INDICATOR: {
+        [this.$constants.CONNECTION_UP]: { icon: 'signal_wifi_4_bar', color: 'positive' },
+        [this.$constants.CONNECTION_DOWN]: { icon: 'signal_wifi_off', color: 'positive' },
+        [this.$constants.CONNECTION_WORKING]: { icon: 'sync', color: 'warning' },
+        [this.$constants.CONNECTION_UNKNOWN]: { icon: 'signal_wifi_4_bar', color: 'positive' },
+        [this.$constants.CONNECTION_ERROR]: { icon: 'signal_wifi_off', color: 'negative' },
+      },
+    };
+  },
   computed: {
     ...mapState('stomp', [
       'connectionState',
@@ -36,21 +49,7 @@ export default {
       'queuedMessage',
     ]),
     ...mapGetters('view', ['lastLogAction']),
-    connectionIndicator() {
-      let icon;
-      let color;
-      if (this.connectionState === this.$constants.CONNECTION_WORKING) {
-        icon = 'sync';
-        color = 'warning';
-      } else if (this.connectionState === this.$constants.CONNECTION_UP) {
-        icon = 'signal_wifi_4_bar';
-        color = 'positive';
-      } else {
-        icon = 'signal_wifi_off';
-        color = 'negative';
-      }
-      return { icon, color };
-    },
+
     hasError() {
       return this.lastReceivedMessage &&
         this.lastReceivedMessage.type === this.$constants.TYPE_ERROR;
@@ -64,7 +63,14 @@ export default {
         }
         if (this.lastReceivedMessage.message.body !== '') {
           const body = JSON.parse(this.lastReceivedMessage.message.body);
-          return `${body.payload} - ${this.lastReceivedMessage.date}`;
+          let toString;
+          if (typeof body.payload === 'string') {
+            toString = body.payload;
+          } else {
+            toString = body.type ||
+              this.lastReceivedMessage.message.body.command;
+          }
+          return `${toString} - ${this.lastReceivedMessage.date}`;
         }
         return `${this.lastReceivedMessage.message.command} - ${this.lastReceivedMessage.date}`;
       }
@@ -93,6 +99,8 @@ export default {
       }
       return this.$t('label.klabNoMessage');
     },
+  },
+  watch: {
   },
   mounted() {
   },

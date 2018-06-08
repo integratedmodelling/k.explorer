@@ -1,4 +1,5 @@
 import Constants from 'shared/Constants';
+import { parseAndExecute } from 'shared/MessagesParser';
 
 /**
  * Names of actions are linked to Stomp client event name
@@ -17,10 +18,11 @@ export default {
     commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_ERROR);
     commit('STOMP_ERROR', error);
   },
-  stomp_onmessage: ({ commit/* , rootState */ }, message) => {
+  stomp_onmessage: ({ commit, dispatch /* rootState */}, message) => {
+    // save it
     commit('STOMP_MESSAGE', message);
-    // console.log(`ROOTSTATE: ${rootState}`);
-    /* TODO Things with answer in Data Store */
+    parseAndExecute(message, dispatch);
+    // processing
   },
   stomp_onsubscribe: ({ commit }, subscriber) => {
     commit('STOMP_SUBSCRIBED', subscriber);
@@ -45,6 +47,15 @@ export default {
 
   stomp_cleanqueue: ({ commit }) => {
     commit('STOMP_CLEAN_QUEUE');
+  },
+
+  // TASKS LIFE
+  startTask: ({ commit }, task) => {
+    commit('TASK_START', task);
+  },
+
+  endTask: ({ commit }, task) => {
+    commit('TASK_END', task);
   },
 };
 

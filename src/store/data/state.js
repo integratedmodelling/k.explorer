@@ -2,6 +2,7 @@
  * Data states
  */
 export default {
+
   /**
    * Tree of observation
    */

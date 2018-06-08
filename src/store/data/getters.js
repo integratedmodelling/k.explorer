@@ -15,6 +15,12 @@ export default {
    */
   hasContext: state => state.context !== null,
 
+  contextLabel: (state) => {
+    if (state.context !== null) {
+      return state.context.label;
+    }
+    return null;
+  },
   /**
    * Created viewers
    */

@@ -9,7 +9,6 @@ import Constants from './Constants';
  * capitalizeFirstLetter: (function(*): string),
  * pushElementInFixedQueue: (function(*, *=)),
  * formatExtent: (function(*=)),
- * toKlabExtent: (function(*))
  * }}
  */
 const Helpers = {
@@ -47,23 +46,6 @@ const Helpers = {
         extent.north.toFixed(2), extent.east.toFixed(2)];
     }
     return null;
-  },
-
-  /**
-   * Transform ol extent [west, south, east, north] coord array
-   * to SpacialExtent object of k.lab with named properties
-   * @param olExtent open layer extent
-   * @returns {{south, west, north, east}} k.LAB SpacialExtent object
-   */
-  toKlabExtent: (olExtent) => {
-    const [west, south, east, north] = olExtent;
-    return {
-      south,
-      // west: `${west}w`,
-      west,
-      north,
-      east,
-    };
   },
 
   /**

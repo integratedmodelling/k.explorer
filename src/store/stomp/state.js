@@ -37,5 +37,11 @@ export default {
    * A sended message need answer to continue
    */
   queuedMessage: null,
+
+  /**
+   * From websocket we received complex tasks.
+   * Tasks in this array are alive and will be deleted on finish
+   */
+  tasks: new Map(),
 };
 
