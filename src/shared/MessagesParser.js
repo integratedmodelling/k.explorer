@@ -33,6 +33,9 @@ const PARSERS = {
       dispatch('data/addNode', observation, { root: true });
     }
   },
+  [IN.TYPE_INFO]: (info, dispatch) => {
+    addLogToStore(dispatch, SHARED.TYPE_INFO, `Received an info: ${JSON.stringify(info)}`);
+  },
 };
 
 /**

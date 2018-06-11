@@ -125,9 +125,9 @@ export default class {
         */
         this.connect(this.connectionUrl, this.stompOptions);
       }, this.reconnectionDelay);
-    } else {
-      // if (this.store) { this.passToStore('stomp_onerror', 'Reconnection error'); }
-      this.doOnEvent('onerror', new Error('Reconnection error'));
+    } else if (this.store) {
+      this.passToStore('stomp_onerror', 'Reconnection error');
+      // this.doOnEvent('onerror', new Error('Reconnection error'));
     }
   }
 
@@ -158,8 +158,8 @@ export default class {
 
     if (this.reconnection && eventType === 'onoconnect') { this.reconnectionCount = 0; }
 
-    if (this.reconnection && eventType === 'onerror'
-      && payload instanceof Error && payload.message !== 'Reconnection error') {
+    if (this.reconnection && eventType === 'onerror') {
+      // && payload instanceof Error && payload.message !== 'Reconnection error') {
       // only if is a connection error
       this.reconnect();
     }

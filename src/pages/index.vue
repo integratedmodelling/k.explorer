@@ -22,7 +22,8 @@
             @click="reconnect"
           >{{ $t('label.reconnect') }}</q-btn>
       </div>
-      <div class="bg-red" v-show="connectionState === $constants.CONNECTION_ERROR">
+      <div class="bg-red" v-show="connectionState === $constants.CONNECTION_ERROR ||
+                                  connectionState === $constants.CONNECTION_WORKING">
         <div class="q-display-1 q-mb-md bg-white round-modal text-primary text-bold">
           {{ modalText  }}
         </div>

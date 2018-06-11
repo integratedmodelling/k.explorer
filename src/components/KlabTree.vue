@@ -42,9 +42,10 @@
           <q-tree
             ref="klabTree"
             :nodes="tree"
-            node-key="label"
+            node-key="id"
             default-expand-all
             :selected.sync="selected"
+            :ticked.sync="ticked"
           />
           <q-spinner-cube
             color="primary"
@@ -67,6 +68,7 @@ export default {
   data() {
     return {
       selected: null,
+      ticked: [],
       treeIsHidden: false,
       draggableValue: {
         handle: undefined,

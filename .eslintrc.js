@@ -31,7 +31,7 @@ module.exports = {
     'import/extensions': 0,
     'import/no-unresolved': 0,
     'import/no-extraneous-dependencies': 0,
-    'max-len': [1, { "ignoreStrings": true }],
+    'max-len': 0, // [1, { "ignoreStrings": true }],
     // added for klab team
     // allow console during development
     'no-console': process.env.NODE_ENV === 'production' ? 2 : 0,

@@ -4,10 +4,10 @@ module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
     plugins: [
+      'initApp',
       'i18n',
       'axios',
       'vue-i18n',
-      'helpers',
       'djv',
       'vuex-stomp',
     ],
