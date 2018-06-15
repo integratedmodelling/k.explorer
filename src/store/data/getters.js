@@ -21,6 +21,9 @@ export default {
     }
     return null;
   },
+
+  fullContext: state => state.context,
+
   /**
    * Created viewers
    */
@@ -41,5 +44,7 @@ export default {
    * The session, very important accessing it using getter
    */
   session: state => state.session,
+
+  lastViewerId: state => state.lastViewerId,
 };
 

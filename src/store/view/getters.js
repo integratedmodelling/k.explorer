@@ -13,6 +13,7 @@ export default {
     }
     return null;
   },
+  contextLayer: state => state.contextLayer,
   /*
   isOnIde: state => !state.mainWin.headerVisible && !state.mainWin.footerVisible
       && !state.mainWin.paletteVisible,

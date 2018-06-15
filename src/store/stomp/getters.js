@@ -32,7 +32,7 @@ export default {
    */
   taskIsAlive: state => (id) => { state.tasks.has(id); },
 
-  hasTasks: state => state.tasks.size !== 0,
+  hasTasks: state => state.tasks.length !== 0,
 
 };
 

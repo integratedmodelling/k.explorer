@@ -1,3 +1,6 @@
+import Style from 'ol/style/style';
+import Fill from 'ol/style/fill';
+import Stroke from 'ol/style/stroke';
 /**
  * Useful constants in app
  */
@@ -38,5 +41,27 @@ export default {
   VIEW_MAP: 'MapViewer',
   VIEW_CHART: 'ChartViewer',
   VIEW_BLOB: 'BlobViewer',
+
+  /**
+   * Shapes types
+   */
+  SHAPE_POLYGON: 'POLYGON',
+
+  /**
+   * Maps utility
+   */
+  REGEXP_SHAPE_COORD: /[\d.-]+/g,
+  DEFAULT_PROJ_VIEW: 'EPSG:3857',
+  DEFAULT_PROJ_DATA: 'EPSG:4326',
+
+  POLYGON_STYLE: new Style({
+    stroke: new Stroke({
+      color: 'rgb(38, 166, 154)',
+      width: 3,
+    }),
+    fill: new Fill({
+      color: 'rgba(38, 166, 154, 0.1)',
+    }),
+  }),
 };
 

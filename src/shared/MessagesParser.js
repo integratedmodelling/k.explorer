@@ -25,7 +25,8 @@ const PARSERS = {
       SHARED.TYPE_DEBUG,
       `New observation received: ${JSON.stringify(observation)}`,
     );
-    if (observation.parentId === null) {
+    // TODO check the definitive condition
+    if (observation.parentId === null || observation.parentId === observation.id) {
       // new context
       dispatch('data/setContext', observation, { root: true });
     } else {

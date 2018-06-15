@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Helpers } from 'shared/Helpers';
 
 export default {
   pushLogAction: ({ commit }, { type, payload }) => {
@@ -7,6 +8,10 @@ export default {
       payload,
       time: moment(),
     });
+  },
+
+  setContextLayer: ({ commit }, contextData) => {
+    commit('SET_CONTEXT_LAYER', Helpers.getContextShapeObject(contextData));
   },
   /*
   setOnIde: ({ commit }, payload) => {

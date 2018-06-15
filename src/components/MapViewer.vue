@@ -1,29 +1,18 @@
 <template>
-  <div class="fit no-padding klab-viewer">
+  <div class="fit no-padding map-viewer">
     <vl-map
       ref="map"
       :load-tiles-while-animating="true"
       :load-tiles-while-interacting="true"
       data-projection="EPSG:4326"
       @created="onMapCreated"
-      v-on="hasContext ? { moveend: onMoveEnd } : {}"
+      v-on="hasContext ? {} : { moveend: onMoveEnd }"
     >
       <vl-view :zoom="zoom"
                :center="position"
                center.sync="center"
                :rotation.sync="rotation"
       ></vl-view>
-      <vl-geoloc> <!-- @update:position="geolocPosition = $event"> -->
-        <template slot-scope="geoloc">
-          <vl-feature v-if="position" id="position-feature">
-            <vl-geom-point :coordinates="position"></vl-geom-point>
-            <vl-style-box>
-              <vl-style-icon src="statics/maps/marker.png" :scale="0.4" :anchor="[0.5, 1]">
-              </vl-style-icon>
-            </vl-style-box>
-          </vl-feature>
-        </template>
-      </vl-geoloc>
       <vl-layer-tile id="osm">
         <vl-source-sputnik></vl-source-sputnik>
       </vl-layer-tile>
@@ -43,6 +32,7 @@ import VueLayers from 'vuelayers';
 import 'vuelayers/lib/style.css'; // needs css-loader
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+
 // import 'vue-resize/dist/vue-resize.css';
 
 Vue.use(VueLayers);
@@ -74,6 +64,9 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'session',
+    ]),
+    ...mapGetters('view', [
+      'contextLayer',
     ]),
   },
   methods: {
@@ -119,6 +112,12 @@ export default {
   },
   */
   watch: {
+    contextLayer(newContextLayer, oldContextLayer) {
+      this.$refs.map.$map.removeLayer(oldContextLayer);
+      const polygon = newContextLayer.getSource().getFeatures()[0].getGeometry();
+      this.$refs.map.$map.addLayer(newContextLayer);
+      this.$refs.map.$view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
+    },
     /*
     geolocPosition() {
       this.center = this.geolocPosition;
@@ -131,12 +130,7 @@ export default {
     },
     */
   },
-  beforeDestroy() {
-    console.log('ME DESTRUYEN');
-  },
-  mounted() {
-    console.log(`Observation: ${this.leaf.lat},${this.leaf.lng},z ${this.leaf.zoom} - ${this.leaf.label}`);
-  },
+  mounted() {},
 };
 </script>
 

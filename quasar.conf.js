@@ -99,7 +99,7 @@ module.exports = function (ctx) {
         'QResizeObservable',
         'QModal',
         'QSpinnerRadio',
-        'QSpinnerCube',
+        'QSpinnerBall',
         'QPageSticky',
         'QCard',
         'QCardTitle',

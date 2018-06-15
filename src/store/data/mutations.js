@@ -50,6 +50,7 @@ export default {
       type,
       data,
     });
+    return state.lastViewerId;
   },
 
   /**

@@ -46,12 +46,13 @@
             default-expand-all
             :selected.sync="selected"
             :ticked.sync="ticked"
-          />
-          <q-spinner-cube
-            color="primary"
-            :size="30"
+          ></q-tree>
+          <q-spinner-ball
+            color="secondary"
+            :size="40"
             v-show="hasTasks"
-          ></q-spinner-cube>
+            class="content-center full-width q-mt-md"
+          ></q-spinner-ball>
         </div>
       </q-card-main>
     </q-card>

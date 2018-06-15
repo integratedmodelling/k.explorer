@@ -1,14 +1,30 @@
+import Constants from 'shared/Constants';
+
 export default {
-  setContext: ({ commit }, context) => {
+  setContext: ({ commit, dispatch }, context) => {
+    // is better reset everything, I start with default
+    // if (state.context !== null) {
+    dispatch('resetContext');
+    // }
     commit('SET_CONTEXT', context);
+    dispatch('view/setContextLayer', context, { root: true });
+    dispatch('addViewerElement', {
+      main: true,
+      type: Constants.VIEW_MAP,
+      data: context,
+    });
   },
 
   resetContext: ({ commit }) => {
     commit('RESET_CONTEXT');
   },
 
-  addNode: ({ commit }, node) => {
-    commit('ADD_NODE', node);
+  addNode: ({ commit, getters }, node) => {
+    // TODO algorithm to decide if new viewer
+    commit('ADD_NODE', {
+      ...node,
+      viewerIdx: getters.lastViewerId,
+    });
   },
 
   addViewerElement: ({ commit }, { main = false, type, data }) => {

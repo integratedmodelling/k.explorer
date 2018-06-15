@@ -69,12 +69,13 @@ export default {
   },
 
   TASK_START(state, task) {
-    state.tasks.set(task.id, task);
+    state.tasks.push({ id: task.id, task });
   },
 
   TASK_END(state, { id }) {
-    if (state.tasks.has(id)) {
-      state.tasks.delete(id);
+    const idx = state.tasks.findIndex(element => element.id === id);
+    if (typeof idx !== 'undefined') {
+      state.tasks.splice(idx, 1);
     } else {
       console.debug(`Task with id = ${id} not founded`);
     }
