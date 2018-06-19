@@ -1,15 +1,15 @@
 <template>
   <div class="no-padding relative-position full-width">
-    <div v-for="(item) in viewerLayout"
+    <div v-for="(viewer) in viewersLayout"
        :class="['no-padding',
-           item.main ? 'absolute-top full-height full-width' : 'absolute thumb-view']"
-       :key="item.idx"
-       :style="viewerStyle(item)"
+           viewer.main ? 'absolute-top full-height full-width' : 'absolute thumb-view']"
+       :key="viewer.idx"
+       :style="viewerStyle(viewer)"
     >
-      <div class="thumb-viewer-title absolute-top" v-if="!item.main">
+      <div class="thumb-viewer-title absolute-top" v-if="!viewer.main">
         <div class="relative-position">
         <div class="thumb-viewer-label float-left q-ma-sm">
-          {{ item.data.label || $t('label.unknownLabel') }}
+          {{ viewer.observations[0].label || $t('label.unknownLabel') }}
         </div>
         <div class="float-right q-ma-sm">
           <q-btn
@@ -17,13 +17,13 @@
             round
             color="red-6"
             size="xs"
-            @click="setMainViewer(item.idx)"
+            @click="setMainViewer(viewer.idx)"
             icon="ion-ios-arrow-up"
           ></q-btn>
         </div>
         </div>
       </div>
-      <component :is="item.type" :observation="item.data"></component>
+      <component :is="viewer.type" :content="viewer"></component>
     </div>
   </div>
 </template>
@@ -43,13 +43,13 @@ export default {
   },
   */
   computed: {
-    ...mapGetters('data', [
-      'viewerLayout',
+    ...mapGetters('view', [
+      'viewersLayout',
       'mainViewer',
     ]),
   },
   methods: {
-    ...mapActions('data', [
+    ...mapActions('view', [
       'setMainViewer',
     ]),
     viewerStyle(viewer) {

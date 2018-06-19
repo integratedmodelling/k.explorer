@@ -25,6 +25,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
+import { Helpers } from 'shared/Helpers';
 
 export default {
   name: 'KLabLog',
@@ -81,7 +82,7 @@ export default {
         return this.$t('label.klabMessagesToSend');
       }
       return this.lastSendedMessage ?
-        `${this.lastSendedMessage.date} [${this.$helpers.formatExtent(this.lastSendedMessage.payload)}]`
+        `${this.lastSendedMessage.date} [${Helpers.formatExtent(this.lastSendedMessage.payload)}]`
         // JSON.stringify(this.lastSendedMessage)
         || this.$t('label.klabNoDate')
         : this.$t('label.klabNoMessage');

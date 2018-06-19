@@ -1,8 +1,8 @@
-import Constants from './Constants';
-
 import SourceVector from 'ol/source/vector';
 import LayerVector from 'ol/layer/vector';
 import WKT from 'ol/format/WKT';
+import Feature from 'ol/feature';
+import Constants from 'shared/Constants';
 
 
 /**
@@ -71,12 +71,21 @@ const Helpers = {
   },
   */
 
-  getContextShapeObject(context) {
-    const { /* shapeType, is not needed because load from WKT */ encodedShape, spatialProjection } = context;
+  getLayerShapeObject(observation) {
+    const { /*  shapeType, */ encodedShape } = observation;
+    const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
+    const regexShape = regexWKT.exec(encodedShape);
+    const dataProjection = regexShape[1] || Constants.PROJ_EPSG_4326;
 
-    const feature = new WKT().readFeature(encodedShape, {
-      dataProjection: spatialProjection || Constants.DEFAULT_PROJ_DATA,
-      featureProjection: Constants.DEFAULT_PROJ_VIEW,
+    const geometry = new WKT().readGeometry(regexShape[2], {
+      dataProjection,
+      featureProjection: Constants.PROJ_EPSG_3857,
+    });
+
+    const feature = new Feature({
+      geometry,
+      name: observation.label,
+      id: observation.id,
     });
 
     return new LayerVector({
@@ -93,13 +102,13 @@ const Helpers = {
   VIEWER_DEFAULT: {
     main: true,
     type: Constants.VIEW_MAP,
-    data: {
-      id: 1,
-      label: 'Default',
-      lat: 43.332019,
-      lng: -2.967827,
-      zoom: 17,
-    },
+    observations: [{
+      shapeType: 'POINT',
+      encodedShape: 'EPSG:4326 POLYGON ((-2.796 43.086, -4.946 43.086, -4.946 45.41, -3.796 45.41, -2.796 43.086))',
+      id: null,
+      label: 'DEFAULT',
+      parentId: -1,
+    }],
   },
 };
 

@@ -37,7 +37,7 @@ module.exports = function (ctx) {
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
       },
       // distDir: 'dist/ui',
-      distDir: '../k.LAB/klab/klab.engine/src/main/resources/static/ui',
+      distDir: '../klab/klab.engine/src/main/resources/static/ui',
       publicPath: '/modeler/ui/',
       scopeHoisting: true,
       vueRouterMode: 'history',

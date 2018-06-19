@@ -14,8 +14,17 @@ export default {
     return null;
   },
   contextLayer: state => state.contextLayer,
-  /*
-  isOnIde: state => !state.mainWin.headerVisible && !state.mainWin.footerVisible
-      && !state.mainWin.paletteVisible,
-  */
+  /**
+   * Created viewers
+   */
+  viewersLayout: state => state.viewersLayout,
+
+  /**
+   * The unique viewer with main: true
+   */
+  mainViewer: state => state.viewersLayout
+    .find(viewer => viewer.main),
+
+
+  lastViewerId: state => state.lastViewerId,
 };

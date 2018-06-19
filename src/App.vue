@@ -69,7 +69,7 @@ export default {
     if (testTree) {
       this.loadTree(defaultTestTree);
     } else {
-      this.$store.dispatch('data/addViewerElement', Helpers.VIEWER_DEFAULT);
+      this.$store.dispatch('view/addViewerElement', Helpers.VIEWER_DEFAULT, { root: true });
     }
   },
 };

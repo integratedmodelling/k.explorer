@@ -35,13 +35,24 @@ export default ({ Vue, store }) => {
   store.state.data.session = session;
   Vue.prototype.$mode = mode;
   console.log(`Session: ${session} / mode: ${mode}`);
+
+  Vue.prototype.$colors = {
+    primary: '#da1f26',
+    secondary: '#26A69A',
+    tertiary: '#555',
+    neutral: '#E0E1E2',
+    positive: '#21BA45',
+    negative: '#DB2828',
+    info: '#31CCEC',
+    warning: '#F2C037',
+  };
   /*
   // init viewer
   Helpers.VIEWER_DEFAULT.forEach((viewer) => {
     store.dispatch('data/addViewerElement', viewer);
   });
   */
-  // store.state.data.viewerLayout = Helpers.VIEWER_DEFAULT;
-  // console.log(`Init viewerLayout ${Helpers.VIEWER_DEFAULT}`);
+  // store.state.data.viewersLayout = Helpers.VIEWER_DEFAULT;
+  // console.log(`Init viewersLayout ${Helpers.VIEWER_DEFAULT}`);
 };
 

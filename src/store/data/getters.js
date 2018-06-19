@@ -25,26 +25,8 @@ export default {
   fullContext: state => state.context,
 
   /**
-   * Created viewers
-   */
-  viewerLayout: state => state.viewerLayout,
-
-  /**
-   * The unique viewer with main: true
-   */
-  mainViewer: state => state.viewerLayout
-    .find(viewer => viewer.main),
-
-  /* now is not useful, but in the future?
-  thumbViewers: state => state.viewerLayout
-    .filter(viewer => !viewer.main),
-  */
-
-  /**
    * The session, very important accessing it using getter
    */
   session: state => state.session,
-
-  lastViewerId: state => state.lastViewerId,
 };
 

@@ -27,8 +27,8 @@
         <div class="q-display-1 q-mb-md bg-white round-modal text-primary text-bold">
           {{ modalText  }}
         </div>
-        <q-spinner-radio color="white" :size="40" />
       </div>
+      <klab-spinner color="#da1f26" :size="200" />
     </q-modal>
   </q-page>
 </template>
@@ -39,6 +39,7 @@ import { mapGetters } from 'vuex';
 import KlabTree from 'components/KlabTree.vue';
 import KlabLog from 'components/KlabLog.vue';
 import Viewer from 'components/Viewer.vue';
+import KlabSpinner from 'components/KlabSpinner.vue';
 
 export default {
   /* eslint-disable object-shorthand */
@@ -63,8 +64,13 @@ export default {
     KlabTree,
     KlabLog,
     Viewer,
+    KlabSpinner,
   },
   watch: {
+  },
+  mounted() {
+    console.log('Check if session has things');
+    // TODO do it
   },
 };
 </script>

@@ -1,5 +1,14 @@
 <template>
   <q-page padding>
+    <svg width="250" height="250" viewBox="-120 -120 250 250"
+         version="1.1" xmlns="http://www.w3.org/2000/svg"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+      <image data-v-4a3160ec="" x="-100" y="-100" width="200" height="200"
+             xlink:href="assets/klab-spinner.svg">
+      </image>
+      <circle id="spinner" cx="0" cy="-90" r="10" style="fill: red;"></circle>
+    </svg>
+    <!--
     <div class="q-ma-md">
       <q-icon size="30px" name="ion-ios-add"></q-icon>
       <span class="q-ml-md">ion-ios-add</span>
@@ -2784,11 +2793,29 @@
       <q-icon size="30px" name="ion-md-woman"></q-icon>
       <span class="q-ml-md">ion-md-wine</span>
     </div>
+    -->
   </q-page>
 </template>
 
 <script>
 </script>
 
-<style>
+<style scoped>
+#spinner {
+  animation: spin 2s linear infinite;
+  /* width: 100px;
+  height: 100px; */
+}
+@keyframes spin {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(2.13);
+  }
+  100% {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+}
 </style>

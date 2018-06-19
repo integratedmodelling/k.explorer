@@ -46,13 +46,20 @@ export default {
    * Shapes types
    */
   SHAPE_POLYGON: 'POLYGON',
+  SHAPE_POINT: 'POINT',
 
   /**
    * Maps utility
    */
+  BING_KEY: '', // TODO we need it?
+  COORD_BC3: [-2.968226, 43.332125],
+  /*
   REGEXP_SHAPE_COORD: /[\d.-]+/g,
-  DEFAULT_PROJ_VIEW: 'EPSG:3857',
-  DEFAULT_PROJ_DATA: 'EPSG:4326',
+  // Group 1: projection, Group 2: geometry
+  REGEXP_WKT: /(EPSG:\d{4})?\s?(.*)/g,
+  */
+  PROJ_EPSG_4326: 'EPSG:4326',
+  PROJ_EPSG_3857: 'EPSG:3857',
 
   POLYGON_STYLE: new Style({
     stroke: new Stroke({

@@ -8,10 +8,47 @@ export default {
   SET_CONTEXT_LAYER: (state, contextLayer) => {
     state.contextLayer = contextLayer;
   },
-  /*
-  SET_ON_IDE: (state, payload) => {
-    Object.keys(state.mainWin).forEach((k) => { state.mainWin[k] = !payload; });
+
+  /**
+   * Set the main viewer by viewer index
+   * @param idx the viewer idx
+   */
+  SET_MAIN_VIEWER: (state, idx) => {
+    state.viewersLayout.forEach((viewer) => { viewer.main = viewer.idx === idx; });
   },
-  */
+
+  /**
+   * Add a viewer to Main Viewer
+   * @param main if true, is the main viewer
+   * @param type one of contstants.VIEWER_[TYPE]
+   * @param data content of viewer
+   */
+  ADD_VIEWER_ELEMENT: (state, { main, type, observations }) => {
+    // if first, than main
+    if (state.lastViewerId === 0) {
+      main = true;
+      // if new main, every before is false
+    } else if (main === true) {
+      state.viewersLayout.forEach((viewer) => { viewer.main = false; });
+    } // TODO do something if is false and all are false
+    // first viewer has index = 1
+    state.lastViewerId += 1;
+    state.viewersLayout.push({
+      idx: state.lastViewerId,
+      main,
+      type,
+      observations,
+    });
+  },
+
+
+  ADD_OBSERVATION: (state, { idx, observation }) => {
+    const viewer = state.viewersLayout.find(v => v.idx === idx);
+    if (typeof viewer !== 'undefined') {
+      viewer.observations.push(observation);
+    } else {
+      throw Error(`Viewer with idx ${idx} not founded`);
+    }
+  },
 };
 

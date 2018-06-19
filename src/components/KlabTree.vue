@@ -47,12 +47,15 @@
             :selected.sync="selected"
             :ticked.sync="ticked"
           ></q-tree>
+          <!--
           <q-spinner-ball
             color="secondary"
             :size="40"
             v-show="hasTasks"
             class="content-center full-width q-mt-md"
           ></q-spinner-ball>
+          -->
+          <klab-spinner color="#26A69A" :size="100"/>
         </div>
       </q-card-main>
     </q-card>
@@ -63,6 +66,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
+import KlabSpinner from 'components/KlabSpinner.vue';
 
 export default {
   name: 'klabTree',
@@ -110,6 +114,9 @@ export default {
   },
   directives: {
     Draggable,
+  },
+  components: {
+    KlabSpinner,
   },
 };
 </script>

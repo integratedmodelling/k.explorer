@@ -1,22 +1,6 @@
 <template>
   <div class="fit no-padding map-viewer">
-    <vl-map
-      ref="map"
-      :load-tiles-while-animating="true"
-      :load-tiles-while-interacting="true"
-      data-projection="EPSG:4326"
-      @created="onMapCreated"
-      v-on="hasContext ? {} : { moveend: onMoveEnd }"
-    >
-      <vl-view :zoom="zoom"
-               :center="position"
-               center.sync="center"
-               :rotation.sync="rotation"
-      ></vl-view>
-      <vl-layer-tile id="osm">
-        <vl-source-sputnik></vl-source-sputnik>
-      </vl-layer-tile>
-    </vl-map>
+    <div ref="map" id="map" class="fit"></div>
     <!-- <resize-observer @notify="handleResize"></resize-observer> -->
     <q-resize-observable @resize="handleResize" />
   </div>
@@ -26,41 +10,45 @@
 <script>
 /* eslint-disable object-shorthand */
 
-import Vue from 'vue';
-import ol from 'openlayers';
-import VueLayers from 'vuelayers';
-import 'vuelayers/lib/style.css'; // needs css-loader
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+import { DEFAULT_OPTIONS } from 'shared/MapOptions';
+import { Helpers } from 'shared/Helpers';
+import Map from 'ol/map';
+import View from 'ol/view';
+import Group from 'ol/layer/group';
+import Collection from 'ol/collection';
+import proj from 'ol/proj';
+import 'ol/ol.css';
 
 // import 'vue-resize/dist/vue-resize.css';
 
-Vue.use(VueLayers);
-
 export default {
   name: 'MapViewer',
-  props: ['observation'],
+  props: {
+    content: {
+      type: Object,
+    },
+  },
   data() {
     return {
-      center: [0, 0],
-      rotation: 0,
-      // geolocPosition: undefined,
+      center: DEFAULT_OPTIONS.center,
+      zoom: DEFAULT_OPTIONS.zoom,
+      observations: this.content.observations,
       map: null,
-      leaf: this.observation,
+      view: null,
+      layers: new Collection(),
     };
   },
   computed: {
+    /*
     position() {
-      /*
-      return this.leafSelected ?
-        [this.leafSelected.lng, this.leafSelected.lat] :
-        this.geolocPosition;
-      */
       return [this.leaf.lng, this.leaf.lat];
     },
     zoom() {
       return this.leaf.zoom;
     },
+    */
     ...mapGetters('data', [
       'hasContext',
       'session',
@@ -71,19 +59,20 @@ export default {
   },
   methods: {
     ...mapActions('view', ['pushLogAction']),
-    onMapCreated() {
-      console.log(`Created map!: ${this.map}`);
-      this.map = this.$refs.map.$map;
-    },
     handleResize() {
+      // if (this.map !== null) {
       console.log('handleResize called!!!');
       this.map.updateSize();
+      // }
     },
     onMoveEnd(event) {
+      if (this.hasContext) {
+        return;
+      }
       const { map } = event;
       let message = null;
       try {
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(ol.proj.transformExtent(map.getView()
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(proj.transformExtent(map.getView()
           .calculateExtent(map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         this.pushLogAction({
@@ -102,6 +91,36 @@ export default {
         });
       }
     },
+    drawContextLayer(oldContextLayer = null) {
+      if (this.contextLayer === null) {
+        return;
+      }
+      if (oldContextLayer !== null) {
+        this.map.removeLayer(oldContextLayer);
+        this.layers = new Collection();
+      }
+      const polygon = this.contextLayer.getSource().getFeatures()[0].getGeometry();
+      // this.map.addLayer(this.contextLayer);
+      this.layers.push(this.contextLayer);
+      this.view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
+    },
+    drawObservations(center = false) {
+      if (this.observations && this.observations.length > 0) {
+        let extent;
+        this.observations.forEach((observation) => {
+          const observationLayer = Helpers.getLayerShapeObject(observation);
+          // this.group.layers = this.group.getLayers().push(observationLayer);
+          // this.map.addLayer(observationLayer);
+          // const shape = this.contextLayer.getSource().getFeatures()[0].getGeometry();
+          this.layers.push(observationLayer);
+          extent = extent || observationLayer.getSource().getExtent();
+        });
+        if (center) {
+          // const transfExtent = ol.proj.transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
+          this.view.fit(extent);
+        }
+      }
+    },
   },
   /*
   sockets: {
@@ -112,11 +131,11 @@ export default {
   },
   */
   watch: {
-    contextLayer(newContextLayer, oldContextLayer) {
-      this.$refs.map.$map.removeLayer(oldContextLayer);
-      const polygon = newContextLayer.getSource().getFeatures()[0].getGeometry();
-      this.$refs.map.$map.addLayer(newContextLayer);
-      this.$refs.map.$view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
+    contextLayer() {
+      this.drawContextLayer();
+    },
+    observations() {
+      this.drawObservations();
     },
     /*
     geolocPosition() {
@@ -130,7 +149,25 @@ export default {
     },
     */
   },
-  mounted() {},
+  mounted() {
+    this.map = new Map({
+      view: new View({
+        center: this.center,
+        zoom: this.zoom,
+      }),
+      layers: DEFAULT_OPTIONS.layers,
+      target: 'map',
+      loadTilesWhileAnimating: true,
+      loadTilesWhileInteracting: true,
+    });
+    this.map.on('moveend', this.onMoveEnd);
+    this.view = this.map.getView();
+    this.map.addLayer(new Group({
+      layers: this.layers,
+    }));
+    this.drawContextLayer();
+    this.drawObservations(true);
+  },
 };
 </script>
 

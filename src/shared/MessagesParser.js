@@ -31,7 +31,7 @@ const PARSERS = {
       dispatch('data/setContext', observation, { root: true });
     } else {
       // TODO: esto no es nada banal, con calma
-      dispatch('data/addNode', observation, { root: true });
+      dispatch('data/addToTree', observation, { root: true });
     }
   },
   [IN.TYPE_INFO]: (info, dispatch) => {

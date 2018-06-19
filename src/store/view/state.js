@@ -15,5 +15,18 @@ export default {
    */
   logActions: [],
 
+  /**
+   * Active viewers
+   */
+  viewersLayout: [],
+
+  /**
+   * Every viewer has an autonumeric id
+   */
+  lastViewerId: 0,
+
+  /**
+   * Layer with the context shape shared between viewers
+   */
   contextLayer: null,
 };

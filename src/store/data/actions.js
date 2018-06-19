@@ -1,47 +1,39 @@
 import Constants from 'shared/Constants';
 
 export default {
+  /**
+   * Set the context for this session.
+   * If context doesn't exists, a map with a default context is shown.
+   * Every change of map size or position is sended to engine
+   * In one moment, only one context can exists
+   * @param context the temporal or spatial context
+   */
   setContext: ({ commit, dispatch }, context) => {
     // is better reset everything, I start with default
-    // if (state.context !== null) {
-    dispatch('resetContext');
-    // }
+    // here tree, viewers and everything related is deleted
+    commit('RESET_CONTEXT');
+    // set new context
     commit('SET_CONTEXT', context);
+
     dispatch('view/setContextLayer', context, { root: true });
-    dispatch('addViewerElement', {
+    dispatch('view/addViewerElement', {
       main: true,
       type: Constants.VIEW_MAP,
       data: context,
+    }, { root: true });
+  },
+
+  addToTree: ({ commit, dispatch }, node) => {
+    dispatch('view/assignViewer', node, { root: true }).then((response) => {
+      commit('ADD_NODE', {
+        ...node,
+        viewerIdx: response,
+      });
     });
   },
 
-  resetContext: ({ commit }) => {
-    commit('RESET_CONTEXT');
-  },
-
-  addNode: ({ commit, getters }, node) => {
-    // TODO algorithm to decide if new viewer
-    commit('ADD_NODE', {
-      ...node,
-      viewerIdx: getters.lastViewerId,
-    });
-  },
-
-  addViewerElement: ({ commit }, { main = false, type, data }) => {
-    commit('ADD_VIEWER_ELEMENT', { main, type, data });
-  },
-
-  setMainViewer: ({ commit }, idx) => {
-    commit('SET_MAIN_VIEWER', idx);
-  },
-
-  setLeafSelected: ({ commit, state }, leafSelected) => {
+  setLeafSelected: ({ commit, dispatch }, leafSelected) => {
     commit('SET_LEAF_SELECTED', leafSelected);
-    let find;
-    // eslint-disable-next-line no-cond-assign
-    if ((find = state.viewerLayout.find(viewer =>
-      viewer.data.label === leafSelected.label)) !== undefined) {
-      commit('SET_MAIN_VIEWER', find.idx);
-    }
+    dispatch('view/changeViewer', leafSelected.viewerIdx, { root: true });
   },
 };

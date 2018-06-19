@@ -16,27 +16,19 @@ export default {
    * Managed fro kLabTree component
    */
   leafSelected: null,
-  /**
-   * Viewer layout using vue-grid-layout
-   * {@link https://github.com/jbaysolutions/vue-grid-layout}
-   * Each element will be an object like this:
-   * {
-   *    "x":[x position],
-   *    "y":[y position],
-   *    "w":[weight in cell],
-   *    "h":[will be something],
-   *    "index":[index]
-   *    "type": element type
-   *    "data": element data
-   * }
-   */
-  viewerLayout: [],
-  /**
-   * Every viewer has an autonumeric id
-   */
-  lastViewerId: 0,
+
   /**
    * The session id given from url and used everywhere
    */
   session: null,
+  /**
+   * Old observations for this session
+   * Will be an array of object like
+   * {
+   *  time: [timestamp of saved]
+   *  context
+   *  tree
+   * }
+   */
+  history: [],
 };
