@@ -15,6 +15,7 @@ export default {
   messages: {
     connectionClosed: 'Conexión cerrada',
     connectionWorking: 'Probando a reconectar',
+    connectionUnknown: 'Inicializando...',
   },
   errors: {
     connectionError: 'Error de conexión',

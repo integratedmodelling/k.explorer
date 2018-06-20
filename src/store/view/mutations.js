@@ -6,6 +6,9 @@ export default {
   },
 
   SET_CONTEXT_LAYER: (state, contextLayer) => {
+    // when a new context exists, we must reset everything
+    state.viewersLayout.splice(0, state.viewersLayout.length);
+    state.lastViewerId = 0;
     state.contextLayer = contextLayer;
   },
 
@@ -19,11 +22,12 @@ export default {
 
   /**
    * Add a viewer to Main Viewer
+   * No observation added
    * @param main if true, is the main viewer
    * @param type one of contstants.VIEWER_[TYPE]
    * @param data content of viewer
    */
-  ADD_VIEWER_ELEMENT: (state, { main, type, observations }) => {
+  ADD_VIEWER_ELEMENT: (state, { main, type, callback }) => {
     // if first, than main
     if (state.lastViewerId === 0) {
       main = true;
@@ -37,8 +41,11 @@ export default {
       idx: state.lastViewerId,
       main,
       type,
-      observations,
+      observations: [],
     });
+    if (typeof callback === 'function') {
+      callback(state.lastViewerId);
+    }
   },
 
 

@@ -1,7 +1,6 @@
 import { Helpers, Constants } from 'shared/Helpers';
 
-import { Cookies } from 'quasar';
-
+import { Cookies, colors } from 'quasar';
 
 export default ({ Vue, store }) => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -22,11 +21,15 @@ export default ({ Vue, store }) => {
       loadTree(tree) {
         store.state.data.tree = tree;
         tree.forEach((leaf) => {
-          store.dispatch('data/addViewerElement', {
-            type: Constants.VIEW_MAP,
-            data: leaf,
-          });
+          store.dispatch('view/assignViewer', leaf);
         });
+      },
+      hexToRgb(color) {
+        if (typeof color !== 'undefined') {
+          const rgb = colors.hexToRgb(color);
+          return `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+        }
+        return 'black';
       },
     },
   });
@@ -35,7 +38,8 @@ export default ({ Vue, store }) => {
   store.state.data.session = session;
   Vue.prototype.$mode = mode;
   console.log(`Session: ${session} / mode: ${mode}`);
-
+  /*
+  Use color.getBrand(xxx)
   Vue.prototype.$colors = {
     primary: '#da1f26',
     secondary: '#26A69A',

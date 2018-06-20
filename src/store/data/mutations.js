@@ -4,17 +4,12 @@ export default {
 
   /**
    * Set context object
+   * As only a context can be active in a moment,
+   * first store existing context and then reset everything
    * TODO: check if everything is good
    * @param context the new context
    */
   SET_CONTEXT: (state, context) => {
-    state.context = context;
-  },
-
-  /**
-   * Reset everything
-   */
-  RESET_CONTEXT: (state) => {
     if (state.context !== null) {
       // save old observations in vuex store
       // TODO use the local storage?
@@ -24,11 +19,9 @@ export default {
         tree: state.tree,
       });
     }
-    state.context = null;
+    state.context = context;
     state.tree = [];
-    state.lastViewerId = 0;
     state.leafSelected = null;
-    state.viewersLayout = [];
   },
 
   /**

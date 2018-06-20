@@ -71,7 +71,6 @@
 <script>
 import { openURL } from 'quasar';
 import { mapGetters } from 'vuex';
-import constants from 'shared/Constants';
 import AppLocaleSwitcher from 'components/AppLocaleSwitcher.vue';
 
 export default {
@@ -86,7 +85,7 @@ export default {
       'hasPalette',
     ]),
     isOnIde() {
-      return this.$mode === constants.PARAMS_MODE_IDE;
+      return this.$mode === this.$constants.PARAMS_MODE_IDE;
     },
   },
   methods: {

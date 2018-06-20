@@ -1,5 +1,3 @@
-import Constants from 'shared/Constants';
-
 export default {
   /**
    * Set the context for this session.
@@ -9,22 +7,14 @@ export default {
    * @param context the temporal or spatial context
    */
   setContext: ({ commit, dispatch }, context) => {
-    // is better reset everything, I start with default
-    // here tree, viewers and everything related is deleted
-    commit('RESET_CONTEXT');
+    // If set context, everything is resetted
     // set new context
     commit('SET_CONTEXT', context);
-
     dispatch('view/setContextLayer', context, { root: true });
-    dispatch('view/addViewerElement', {
-      main: true,
-      type: Constants.VIEW_MAP,
-      data: context,
-    }, { root: true });
   },
 
   addToTree: ({ commit, dispatch }, node) => {
-    dispatch('view/assignViewer', node, { root: true }).then((response) => {
+    dispatch('view/assignViewer', { observation: node }, { root: true }).then((response) => {
       commit('ADD_NODE', {
         ...node,
         viewerIdx: response,
@@ -34,6 +24,6 @@ export default {
 
   setLeafSelected: ({ commit, dispatch }, leafSelected) => {
     commit('SET_LEAF_SELECTED', leafSelected);
-    dispatch('view/changeViewer', leafSelected.viewerIdx, { root: true });
+    dispatch('view/setMainViewer', leafSelected.viewerIdx, { root: true });
   },
 };

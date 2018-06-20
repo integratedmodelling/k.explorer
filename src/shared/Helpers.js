@@ -71,7 +71,7 @@ const Helpers = {
   },
   */
 
-  getLayerShapeObject(observation) {
+  getLayerObject(observation, isContext = false) {
     const { /*  shapeType, */ encodedShape } = observation;
     const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
     const regexShape = regexWKT.exec(encodedShape);
@@ -92,23 +92,21 @@ const Helpers = {
       source: new SourceVector({
         features: [feature],
       }),
-      style: Constants.POLYGON_STYLE,
+      style: isContext ?
+        Constants.POLYGON_CONTEXT_STYLE :
+        Constants.POLYGON_OBSERVATION_STYLE,
     });
   },
 
   /**
    * DEFAULT Viewer on start
    */
-  VIEWER_DEFAULT: {
-    main: true,
-    type: Constants.VIEW_MAP,
-    observations: [{
-      shapeType: 'POINT',
-      encodedShape: 'EPSG:4326 POLYGON ((-2.796 43.086, -4.946 43.086, -4.946 45.41, -3.796 45.41, -2.796 43.086))',
-      id: null,
-      label: 'DEFAULT',
-      parentId: -1,
-    }],
+  OBSERVATION_DEFAULT: {
+    shapeType: 'POINT',
+    encodedShape: 'EPSG:4326 POINT (40.299841 9.343971)',
+    id: null,
+    label: 'DEFAULT',
+    parentId: -1,
   },
 };
 

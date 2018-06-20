@@ -23,7 +23,7 @@
         </div>
         </div>
       </div>
-      <component :is="viewer.type" :content="viewer"></component>
+      <component :is="viewer.type" :idx="viewer.idx"></component>
     </div>
   </div>
 </template>

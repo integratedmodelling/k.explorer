@@ -1,6 +1,7 @@
 import Style from 'ol/style/style';
 import Fill from 'ol/style/fill';
 import Stroke from 'ol/style/stroke';
+// import { colors } from 'quasar';
 /**
  * Useful constants in app
  */
@@ -61,13 +62,23 @@ export default {
   PROJ_EPSG_4326: 'EPSG:4326',
   PROJ_EPSG_3857: 'EPSG:3857',
 
-  POLYGON_STYLE: new Style({
+  POLYGON_CONTEXT_STYLE: new Style({
     stroke: new Stroke({
       color: 'rgb(38, 166, 154)',
-      width: 3,
+      width: 6,
     }),
     fill: new Fill({
       color: 'rgba(38, 166, 154, 0.1)',
+    }),
+  }),
+  POLYGON_OBSERVATION_STYLE: new Style({
+    stroke: new Stroke({
+      // color: colors.getBrand('secondary'),
+      color: 'rgb(255, 102, 0)',
+      width: 1,
+    }),
+    fill: new Fill({
+      color: 'rgba(255, 102, 0, 0.1)',
     }),
   }),
 };

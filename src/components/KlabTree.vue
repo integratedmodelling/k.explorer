@@ -55,7 +55,7 @@
             class="content-center full-width q-mt-md"
           ></q-spinner-ball>
           -->
-          <klab-spinner color="#26A69A" :size="100"/>
+          <klab-spinner v-show="hasTasks" color="#26A69A" :size="100"/>
         </div>
       </q-card-main>
     </q-card>

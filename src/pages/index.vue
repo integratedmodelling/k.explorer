@@ -12,23 +12,31 @@
         v-model="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        :content-css="{padding: '50px', minWidth: '50vw'}"
-        :content-classes="['text-center','bg-white']"
+        v-show="connectionState === $constants.CONNECTION_UNKNOWN ||
+                connectionState === $constants.CONNECTION_ERROR ||
+                connectionState === $constants.CONNECTION_WORKING"
+        :content-css="{width: '30vw', 'background-color': `rgba(${hexToRgb(modalColor)}, .5)`}"
+        :content-classes="['text-center','round-modal','q-ma-sm']"
     >
-      <div v-show="connectionState === $constants.CONNECTION_DOWN" class="bg-white">
-        <div class="q-display-1 q-mb-md bg-warning round-modal">{{ modalText }}</div>
+      <div class="bg-white q-ma-md round-modal">
+        <div v-if="connectionState === $constants.CONNECTION_DOWN">
+          <div class="q-display-1 q-pa-md bg-opaque-white round-modal text-bol"
+               :style="{color: modalColor}">
+            {{ modalText }}
+          </div>
           <q-btn
             color="secondary"
             @click="reconnect"
-          >{{ $t('label.reconnect') }}</q-btn>
-      </div>
-      <div class="bg-red" v-show="connectionState === $constants.CONNECTION_ERROR ||
-                                  connectionState === $constants.CONNECTION_WORKING">
-        <div class="q-display-1 q-mb-md bg-white round-modal text-primary text-bold">
-          {{ modalText  }}
+          >{{ $t('label.reconnect') }}
+          </q-btn>
+        </div>
+        <div v-else>
+          <div class="q-display-1 q-pa-md round-modal text-bold" :style="{color: modalColor}">
+            {{ modalText  }}
+          </div>
+          <klab-spinner :color="modalColor" :size="200" />
         </div>
       </div>
-      <klab-spinner color="#da1f26" :size="200" />
     </q-modal>
   </q-page>
 </template>
@@ -40,6 +48,8 @@ import KlabTree from 'components/KlabTree.vue';
 import KlabLog from 'components/KlabLog.vue';
 import Viewer from 'components/Viewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
+
+import { colors } from 'quasar';
 
 export default {
   /* eslint-disable object-shorthand */
@@ -53,13 +63,23 @@ export default {
     },
     modalText() {
       return {
+        [this.$constants.CONNECTION_UNKNOWN]: this.$t('messages.connectionClosed'),
         [this.$constants.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
         [this.$constants.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
         [this.$constants.CONNECTION_ERROR]: this.$t('errors.connectionError'),
       }[this.connectionState];
     },
+    modalColor() {
+      return {
+        [this.$constants.CONNECTION_UNKNOWN]: colors.getBrand('warning'),
+        [this.$constants.CONNECTION_DOWN]: colors.getBrand('warning'),
+        [this.$constants.CONNECTION_WORKING]: colors.getBrand('info'),
+        [this.$constants.CONNECTION_ERROR]: colors.getBrand('negative'),
+      }[this.connectionState];
+    },
   },
-  methods: {},
+  methods: {
+  },
   components: {
     KlabTree,
     KlabLog,
@@ -69,19 +89,21 @@ export default {
   watch: {
   },
   mounted() {
-    console.log('Check if session has things');
-    // TODO do it
   },
 };
 </script>
 <style scoped>
-  .row div{
+  .row > div {
     padding: 10px 15px;
     background: rgba(86, 61, 124, .15);
-    border: 1px solid rgba(86, 61, 124, .2)
+    border: 1px solid rgba(86, 61, 124, .2);
   }
-  .round-modal {
-    border-radius: 20px;
+  .bg-opaque-white {
+    background: rgba(255, 255, 255, 0.5)
   }
+</style>
+<style lang="stylus">
+  .round-modal
+    border-radius 20px
 </style>
 
