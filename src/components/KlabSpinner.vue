@@ -4,7 +4,7 @@
        xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <image data-v-4a3160ec="" x="-100" y="-100" width="200" height="200"
-           xlink:href="assets/klab-spinner.svg">
+           xlink:href="~assets/klab-spinner.svg">
     </image>
     <circle id="spinner" cx="0" cy="-90" r="15" :style="{fill: color}"></circle>
   </svg>

@@ -25,13 +25,13 @@ export default {
     commit('SET_MAIN_VIEWER', idx);
   },
 
-  assignViewer: ({ commit, /* getters, */ dispatch }, { observation, main = false }) => new Promise((resolve, reject) => {
+  assignViewer: ({ commit, getters, dispatch }, { observation, main = false }) => new Promise((resolve, reject) => {
     // find type of viewer using observation attribute shapeType
     // TODO this will change when a temporal observation would exists
     if (observation && observation.shapeType) {
       // TODO do something better than this shit
       // find a map viewer
-      const viewer = undefined; // getters.viewersLayout.find(v => v.type === Constants.VIEW_MAP);
+      const viewer = getters.viewersLayout.find(v => v.type === Constants.VIEW_MAP);
 
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
@@ -54,5 +54,17 @@ export default {
       reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
     }
   }),
+
+  setVisible: (/* { commit, state }, id */) => {
+    /*
+    let obs = null;
+    state.viewersLayout.forEach((viewer) => {
+      obs = viewer.observations.find(observation => observation.id === id);
+    });
+    if (obs && !obs.visible) {
+      commit('SET_VISIBLE', {id);
+    }
+    */
+  },
 };
 

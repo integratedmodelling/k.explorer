@@ -26,8 +26,13 @@ export default {
   TYPE_LOG: 'LOG',
   TYPE_WARN: 'WARN',
   TYPE_ERROR: 'ERROR',
+  TYPE_INFO: 'INFO',
+
   TYPE_MESSAGE: 'MSG',
   TYPE_ALL: 'ALL',
+
+  TREE_FOLDER: 'FOLDER',
+  TREE_SHAPE: 'SHAPE',
 
   /**
    * URL params

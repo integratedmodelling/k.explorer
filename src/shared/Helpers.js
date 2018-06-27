@@ -53,6 +53,34 @@ const Helpers = {
     return null;
   },
 
+  /**
+   * Search the parent with the key
+   * @param tree the tree where to look for parent
+   * @param key the parent key
+   */
+  // eslint-disable-next-line consistent-return
+  findParent(tree, key = null) {
+    if (tree && key !== null) {
+      // eslint-disable-next-line prefer-destructuring
+      const reduce = [].reduce;
+      // eslint-disable-next-line consistent-return
+      const find = (result, node) => {
+        if (result || !node) {
+          return result;
+        }
+        if (Array.isArray(node)) {
+          return reduce.call(Object(node), find, result);
+        }
+        if (node.id === key) {
+          return node;
+        }
+        if (node.children && node.children.length > 0) {
+          return find(null, node.children);
+        }
+      };
+      return find(null, tree);
+    }
+  },
   /*
   getCoord: (allCoords, dataProjection = Constants.DEFAULT_PROJ_DATA) => {
     const coords = [];

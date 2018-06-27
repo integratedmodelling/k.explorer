@@ -88,12 +88,13 @@ export default {
         this.pushLogAction({
           type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARN,
           payload: {
-            message: `Message ${message.validated ? '' : 'not'} validated`,
+            message: `Message ${message.validated ? '' : 'not '} validated`,
             other: message,
           },
         });
       }
     },
+
     drawContextLayer(oldContextLayer = null) {
       if (this.contextLayer === null) {
         return;
@@ -121,16 +122,19 @@ export default {
             observation.layer = Helpers.getLayerObject(observation, false);
             this.layers.push(observation.layer);
           }
-          if (center) {
-            extent = observation.layer.getSource().getExtent();
-            switch (observation.shapeType) {
-              case this.$constants.SHAPE_POINT:
-                centerCoord = [extent[0], extent[1]];
-                break;
-              case this.$constants.SHAPE_POLYGON:
-                extent = observation.layer.getSource().getExtent();
-                break;
-              default:
+          observation.layer.setVisible(observation.visible);
+          if (observation.visible) {
+            if (center) {
+              extent = observation.layer.getSource().getExtent();
+              switch (observation.shapeType) {
+                case this.$constants.SHAPE_POINT:
+                  centerCoord = [extent[0], extent[1]];
+                  break;
+                case this.$constants.SHAPE_POLYGON:
+                  extent = observation.layer.getSource().getExtent();
+                  break;
+                default:
+              }
             }
           }
         });
@@ -156,8 +160,11 @@ export default {
     contextLayer() {
       this.drawContextLayer();
     },
-    observations() {
-      this.drawObservations();
+    observations: {
+      handler() {
+        this.drawObservations();
+      },
+      deep: true,
     },
     center() {
       this.view.setCenter(this.center);

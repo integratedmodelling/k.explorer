@@ -23,15 +23,15 @@ const PARSERS = {
     addLogToStore(
       dispatch,
       SHARED.TYPE_DEBUG,
-      `New observation received: ${JSON.stringify(observation)}`,
+      `New observation received: ${JSON.stringify(observation, null, 4)}`,
     );
+    console.log(`Observation:\n${JSON.stringify(observation, null, 4)}`);
     // TODO check the definitive condition
     if (observation.parentId === null || observation.parentId === observation.id) {
       // new context
       dispatch('data/setContext', observation, { root: true });
     } else {
-      // TODO: esto no es nada banal, con calma
-      dispatch('data/addToTree', observation, { root: true });
+      dispatch('data/addToTree', { node: observation }, { root: true });
     }
   },
   [IN.TYPE_INFO]: (info, dispatch) => {

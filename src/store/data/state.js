@@ -31,4 +31,10 @@ export default {
    * }
    */
   history: [],
+
+  /**
+   * if an observation is received without parent,
+   * it is stored in this array for later use
+   */
+  orphans: [],
 };

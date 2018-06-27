@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Helpers } from 'shared/Helpers';
 
 export default {
 
@@ -29,7 +30,21 @@ export default {
    * @param node
    */
   ADD_NODE: (state, node) => {
-    state.tree.push(node);
+    if (state.context.id === node.id) {
+      console.error('Try to add context to tree, check it!');
+      return;
+    }
+    if (node.folderId === null && state.context.id === node.parentId) {
+      // is a tree root node
+      state.tree.push(node);
+    } else {
+      const parent = Helpers.findParent(state.tree, node.folderId !== null ? node.folderId : node.parentId);
+      if (parent !== null) {
+        parent.children.push(node);
+      } else {
+        state.orphans.push(node);
+      }
+    }
   },
 
   /**
@@ -39,6 +54,7 @@ export default {
    */
   SET_LEAF_SELECTED: (state, leafSelected) => {
     state.leafSelected = leafSelected;
+    // leafSelected.visible = true;
   },
 };
 

@@ -67,6 +67,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
+import Constants from 'shared/Constants';
 
 export default {
   name: 'klabTree',
@@ -105,8 +106,19 @@ export default {
     },
   },
   watch: {
-    selected() {
-      this.setLeafSelected(this.$refs.klabTree.getNodeByKey(this.selected));
+    selected(newValue) {
+      if (newValue === null) {
+        return;
+      }
+      const node = this.$refs.klabTree.getNodeByKey(newValue);
+      if (!node) {
+        return;
+      }
+      if (node.type !== Constants.TREE_FOLDER) {
+        this.setLeafSelected(node);
+      } else {
+        console.log('Folder selected!');
+      }
     },
   },
   mounted() {

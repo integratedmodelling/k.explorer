@@ -52,10 +52,16 @@ export default {
   ADD_OBSERVATION: (state, { idx, observation }) => {
     const viewer = state.viewersLayout.find(v => v.idx === idx);
     if (typeof viewer !== 'undefined') {
-      viewer.observations.push(observation);
+      viewer.observations.push({
+        ...observation,
+        visible: false,
+      });
     } else {
       throw Error(`Viewer with idx ${idx} not founded`);
     }
+  },
+
+  SET_VISIBLE: () => {
   },
 };
 

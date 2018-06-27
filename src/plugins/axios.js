@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 export default ({ Vue, store }) => {
   if (store.state.data.session) {
     axios.defaults.headers.common['WWW-Authenticate'] = store.state.data.session;

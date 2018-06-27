@@ -73,7 +73,8 @@ export default class {
             throw Error('Error asking for JsonSchema(s): no data');
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
           clearTimeout(this.initTimeout);
           // try other time in 5 seconds
           this.initTimeout = setTimeout(() => {

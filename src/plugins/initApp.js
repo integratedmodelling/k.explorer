@@ -18,12 +18,14 @@ export default ({ Vue, store }) => {
 
   Vue.mixin({
     methods: {
+      /*
       loadTree(tree) {
         store.state.data.tree = tree;
         tree.forEach((leaf) => {
           store.dispatch('view/assignViewer', leaf);
         });
       },
+      */
       hexToRgb(color) {
         if (typeof color !== 'undefined') {
           const rgb = colors.hexToRgb(color);
