@@ -117,6 +117,7 @@ const Helpers = {
     });
 
     return new LayerVector({
+      id: observation.id,
       source: new SourceVector({
         features: [feature],
       }),
@@ -135,6 +136,7 @@ const Helpers = {
     id: null,
     label: 'DEFAULT',
     parentId: -1,
+    visible: true,
   },
 };
 

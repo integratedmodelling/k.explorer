@@ -8,7 +8,16 @@ export default {
    * The actual checked leaf in tree
    * TODO: change to implement checkbox
    */
-  leafSelected: state => state.leafSelected,
+  nodeSelected: state => state.nodeSelected,
+
+  /**
+   * Return observations of a viewer
+   * If viewer not exists, return empty array
+   */
+  observations: state => (viewerIdx) => {
+    const obs = state.observations.filter(observation => observation.viewerIdx === viewerIdx);
+    return obs;
+  },
 
   /**
    * If no context, return null

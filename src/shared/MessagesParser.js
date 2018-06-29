@@ -31,7 +31,7 @@ const PARSERS = {
       // new context
       dispatch('data/setContext', observation, { root: true });
     } else {
-      dispatch('data/addToTree', { node: observation }, { root: true });
+      dispatch('data/addObservation', { observation }, { root: true });
     }
   },
   [IN.TYPE_INFO]: (info, dispatch) => {

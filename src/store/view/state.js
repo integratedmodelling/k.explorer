@@ -18,7 +18,7 @@ export default {
   /**
    * Active viewers
    */
-  viewersLayout: [],
+  viewers: [],
 
   /**
    * Every viewer has an autonumeric id

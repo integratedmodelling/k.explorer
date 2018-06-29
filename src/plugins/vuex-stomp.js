@@ -1,4 +1,4 @@
-import VueStompClient from 'plugins/vue-stomp-client/Main';
+import VueStompClient from 'classes/vue-stomp-client/Main';
 
 export default ({ Vue, store }) => {
   // Starting VueStompClient connecting to WS_URL

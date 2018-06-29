@@ -62,6 +62,7 @@ module.exports = function (ctx) {
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           shared: path.resolve(__dirname, './src/shared'),
+          classes: path.resolve(__dirname, './src/classes'),
         };
         /*
         for (const rule of cfg.module.rules) {

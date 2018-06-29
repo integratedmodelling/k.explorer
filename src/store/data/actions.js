@@ -16,41 +16,76 @@ export default {
     dispatch('view/setContextLayer', context, { root: true });
   },
 
-  addToTree: ({ commit, dispatch }, { node, folderId = null }) => {
-    let needSiblings = false;
-    // first assign a viewer, then use viewer idx to select it
-    dispatch('view/assignViewer', { observation: node }, { root: true }).then((viewerIdx) => {
-      if (node.siblingCount > 1 && folderId === null) {
-        // create folder
-        folderId = Math.floor(Date.now() / 1000);
-        commit('ADD_NODE', {
-          id: folderId,
-          parentId: node.parentId,
-          label: `${node.observable} folder`,
-          siblingCount: 1,
-          type: Constants.TREE_FOLDER,
-          folderId: null,
-          folderName: null,
-          children: [],
-          siblings: [],
+  /**
+   * Add an observation do this:
+   * Add observation to store.observations
+   * Assign a viewer for observation
+   * Add observation to tree
+   * If there are siblings, add folder to tree and ask for them
+   * If there are childrens, ask for them and repeat operation
+   * @param observation observation to add
+   * @param folderId if null and has siblings, we must ask for them,
+   * else parentId is folderId
+   */
+  addObservation: ({ commit, dispatch }, {
+    observation,
+    folderId = null,
+    noTree = false,
+    main = false,
+  }) => {
+    dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
+      observation.viewerIdx = viewerIdx;
+      observation.visible = false;
+      commit('ADD_OBSERVATION', observation);
+      if (noTree) {
+        return;
+      }
+      let needSiblings = false;
+      if (observation.siblingCount > 1 && folderId === null) {
+        // siblings without folder
+        folderId = Math.floor(Date.now() / 1000); // TODO better name
+        dispatch('addToTree', {
+          node: {
+            id: folderId,
+            label: `${observation.observable} folder`,
+            type: Constants.TREE_FOLDER,
+            children: [],
+          },
+          parentId: observation.parentId,
         });
-        // ask for siblings if needed
         needSiblings = true;
       }
-      commit('ADD_NODE', {
-        ...node,
-        folderId,
-        children: [], // children are added using this method
-        viewerIdx,
+      dispatch('addToTree', {
+        node: {
+          id: observation.id,
+          label: observation.label,
+          type: observation.shapeType,
+          viewerIdx: observation.viewerIdx,
+          children: [],
+        },
+        parentId: folderId === null ? observation.parentId : folderId,
       });
-      if (node.children && node.children.length > 0) {
-        node.children.forEach((child) => {
-          dispatch('addToTree', { node: child });
+      if (observation.children.length > 0) {
+        observation.children.forEach((child) => {
+          dispatch('addObservation', { observation: child });
         });
       }
       if (needSiblings) {
-        dispatch('askForSiblings', { node, folderId });
+        dispatch('askForSiblings', { node: observation, folderId });
       }
+    });
+  },
+
+  addToTree: ({ commit }, { node, parentId }) => {
+    commit('ADD_NODE', {
+      node: {
+        id: node.id,
+        label: node.label,
+        type: node.shapeType || node.type,
+        children: [], // children are added using this method
+        viewerIdx: node.viewerIdx,
+      },
+      parentId,
     });
   },
 
@@ -65,8 +100,8 @@ export default {
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {
           data.siblings.forEach((sibling) => {
-            dispatch('addToTree', {
-              node: sibling,
+            dispatch('addObservation', {
+              observation: sibling,
               folderId,
             });
           });
@@ -74,9 +109,9 @@ export default {
       });
   },
 
-  setLeafSelected: ({ commit, dispatch }, leafSelected) => {
-    commit('SET_LEAF_SELECTED', leafSelected);
-    dispatch('view/setVisible', leafSelected.id, { root: true });
-    dispatch('view/setMainViewer', leafSelected.viewerIdx, { root: true });
+  setNodeSelected: ({ commit, dispatch }, nodeSelected) => {
+    commit('SET_NODE_SELECTED', nodeSelected);
+    commit('SET_VISIBLE', nodeSelected.id);
+    dispatch('view/setMainViewer', nodeSelected.viewerIdx, { root: true });
   },
 };

@@ -69,7 +69,11 @@ export default {
     if (testTree) {
       this.loadTree(defaultTestTree);
     } else {
-      this.$store.dispatch('view/assignViewer', { observation: Helpers.OBSERVATION_DEFAULT, main: true }, { root: true });
+      this.$store.dispatch('data/addObservation', {
+        observation: Helpers.OBSERVATION_DEFAULT,
+        main: true,
+        noTree: true,
+      }, { root: true });
     }
   },
 };
@@ -83,6 +87,6 @@ export default {
     display: block;
     width: 170px;
     height: 181px;
-    background-image: url('/static/klab-spinner-opt.gif');
+    background-image: url('statics/klab-spinner-opt.gif');
   }
 </style>

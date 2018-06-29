@@ -17,12 +17,12 @@ export default {
   /**
    * Created viewers
    */
-  viewersLayout: state => state.viewersLayout,
+  viewers: state => state.viewers,
 
   /**
    * The unique viewer with main: true
    */
-  mainViewer: state => state.viewersLayout
+  mainViewer: state => state.viewers
     .find(viewer => viewer.main),
 
 
@@ -32,21 +32,10 @@ export default {
    * Return a viewer identify by idx.
    */
   viewer: state => (idx) => {
-    if (state.viewersLayout.length > 0) {
-      return state.viewersLayout.find(v => v.idx === idx);
+    if (state.viewers.length > 0) {
+      return state.viewers.find(v => v.idx === idx);
     }
     return null;
   },
 
-  /**
-   * Return observations of a viewer
-   * If viewer not exists, return empty array
-   */
-  observations: (state, getters) => (idx) => {
-    const viewer = getters.viewer(idx);
-    if (viewer !== null) {
-      return viewer.observations;
-    }
-    return [];
-  },
 };

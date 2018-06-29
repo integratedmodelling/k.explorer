@@ -42,7 +42,7 @@ export default {
   },
   computed: {
     observations() {
-      return this.$store.getters['view/observations'](this.idx);
+      return this.$store.getters['data/observations'](this.idx);
     },
     /*
     position() {
@@ -95,43 +95,49 @@ export default {
       }
     },
 
-    drawContextLayer(oldContextLayer = null) {
+    findLayerById(id) {
+      if (this.layers && this.layers !== null) {
+        const layerArray = this.layers.getArray();
+        const found = layerArray.find(layer => layer.get('id') === id);
+        if (typeof found !== 'undefined') {
+          return found;
+        }
+        return null;
+      }
+      return null;
+    },
+
+    drawContextLayer() {
       if (this.contextLayer === null) {
         return;
-      }
-      if (oldContextLayer !== null) {
-        this.map.removeLayer(oldContextLayer);
-        this.layers = new Collection();
       }
       const polygon = this.contextLayer.getSource().getFeatures()[0].getGeometry();
       // this.map.addLayer(this.contextLayer);
       this.layers.push(this.contextLayer);
       this.view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
     },
+
     drawObservations(center = false) {
       if (this.observations && this.observations.length > 0) {
         let extent = null;
         let centerCoord = null;
         this.observations.forEach((observation) => {
-          if (!Object.prototype.hasOwnProperty.call(observation, 'layer')) {
-            console.log(`Painting observation: ${observation.label}`);
-            // TODO observations and layers must be synchronized!
-            // this.group.layers = this.group.getLayers().push(observationLayer);
-            // this.map.addLayer(observationLayer);
-            // const shape = this.contextLayer.getSource().getFeatures()[0].getGeometry();
-            observation.layer = Helpers.getLayerObject(observation, false);
-            this.layers.push(observation.layer);
+          let layer = this.findLayerById(observation.id);
+          if (layer === null) {
+            console.log(`Creating layer: ${observation.label}`);
+            layer = Helpers.getLayerObject(observation, false);
+            this.layers.push(layer);
           }
-          observation.layer.setVisible(observation.visible);
+          layer.setVisible(observation.visible);
           if (observation.visible) {
             if (center) {
-              extent = observation.layer.getSource().getExtent();
+              extent = layer.getSource().getExtent();
               switch (observation.shapeType) {
                 case this.$constants.SHAPE_POINT:
                   centerCoord = [extent[0], extent[1]];
                   break;
                 case this.$constants.SHAPE_POLYGON:
-                  extent = observation.layer.getSource().getExtent();
+                  extent = layer.getSource().getExtent();
                   break;
                 default:
               }
@@ -157,12 +163,12 @@ export default {
   },
   */
   watch: {
-    contextLayer() {
-      this.drawContextLayer();
+    contextLayer(newContextLayer, oldContextLayer) {
+      this.drawContextLayer(newContextLayer, oldContextLayer);
     },
     observations: {
       handler() {
-        this.drawObservations();
+        this.drawObservations(true);
       },
       deep: true,
     },

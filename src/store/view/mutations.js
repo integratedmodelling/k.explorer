@@ -7,7 +7,7 @@ export default {
 
   SET_CONTEXT_LAYER: (state, contextLayer) => {
     // when a new context exists, we must reset everything
-    state.viewersLayout.splice(0, state.viewersLayout.length);
+    state.viewers.splice(0, state.viewers.length);
     state.lastViewerId = 0;
     state.contextLayer = contextLayer;
   },
@@ -17,7 +17,7 @@ export default {
    * @param idx the viewer idx
    */
   SET_MAIN_VIEWER: (state, idx) => {
-    state.viewersLayout.forEach((viewer) => { viewer.main = viewer.idx === idx; });
+    state.viewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
   },
 
   /**
@@ -33,11 +33,11 @@ export default {
       main = true;
       // if new main, every before is false
     } else if (main === true) {
-      state.viewersLayout.forEach((viewer) => { viewer.main = false; });
+      state.viewers.forEach((viewer) => { viewer.main = false; });
     } // TODO do something if is false and all are false
     // first viewer has index = 1
     state.lastViewerId += 1;
-    state.viewersLayout.push({
+    state.viewers.push({
       idx: state.lastViewerId,
       main,
       type,
@@ -45,19 +45,6 @@ export default {
     });
     if (typeof callback === 'function') {
       callback(state.lastViewerId);
-    }
-  },
-
-
-  ADD_OBSERVATION: (state, { idx, observation }) => {
-    const viewer = state.viewersLayout.find(v => v.idx === idx);
-    if (typeof viewer !== 'undefined') {
-      viewer.observations.push({
-        ...observation,
-        visible: false,
-      });
-    } else {
-      throw Error(`Viewer with idx ${idx} not founded`);
     }
   },
 

@@ -38,25 +38,23 @@
         ></q-btn>
       </q-card-title>
       <q-card-main>
-        <div class="no-padding">
-          <q-tree
-            ref="klabTree"
-            :nodes="tree"
-            node-key="id"
-            default-expand-all
-            :selected.sync="selected"
-            :ticked.sync="ticked"
-          ></q-tree>
-          <!--
-          <q-spinner-ball
-            color="secondary"
-            :size="40"
-            v-show="hasTasks"
-            class="content-center full-width q-mt-md"
-          ></q-spinner-ball>
-          -->
-          <klab-spinner v-show="hasTasks" color="#26A69A" :size="100"/>
-        </div>
+        <q-tree
+          ref="klabTree"
+          :nodes="tree"
+          node-key="id"
+          default-expand-all
+          :selected.sync="selected"
+          :ticked.sync="ticked"
+        ></q-tree>
+        <!--
+        <q-spinner-ball
+          color="secondary"
+          :size="40"
+          v-show="hasTasks"
+          class="content-center full-width q-mt-md"
+        ></q-spinner-ball>
+        -->
+        <klab-spinner v-show="hasTasks" color="#26A69A" :size="100"/>
       </q-card-main>
     </q-card>
     </transition>
@@ -94,7 +92,7 @@ export default {
   },
   methods: {
     ...mapActions('data', [
-      'setLeafSelected',
+      'setNodeSelected',
     ]),
     hide() {
       this.draggableValue.resetInitialPos = false;
@@ -115,7 +113,7 @@ export default {
         return;
       }
       if (node.type !== Constants.TREE_FOLDER) {
-        this.setLeafSelected(node);
+        this.setNodeSelected(node);
       } else {
         console.log('Folder selected!');
       }
@@ -134,4 +132,8 @@ export default {
 </script>
 
 <style>
+  .q-card-main {
+    overflow: auto;
+    max-height: 70vh;
+  }
 </style>

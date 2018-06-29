@@ -1,6 +1,6 @@
 <template>
   <div class="no-padding relative-position full-width">
-    <div v-for="(viewer) in viewersLayout"
+    <div v-for="(viewer) in viewers"
        :class="['no-padding',
            viewer.main ? 'absolute-top full-height full-width' : 'absolute thumb-view']"
        :key="viewer.idx"
@@ -9,7 +9,8 @@
       <div class="thumb-viewer-title absolute-top" v-if="!viewer.main">
         <div class="relative-position">
         <div class="thumb-viewer-label float-left q-ma-sm">
-          {{ viewer.observations[0].label || $t('label.unknownLabel') }}
+          <!--  viewer.observations[0].label || $t('label.unknownLabel')  -->
+          {{ viewer.idx }}
         </div>
         <div class="float-right q-ma-sm">
           <q-btn
@@ -44,7 +45,7 @@ export default {
   */
   computed: {
     ...mapGetters('view', [
-      'viewersLayout',
+      'viewers',
       'mainViewer',
     ]),
   },

@@ -31,7 +31,7 @@ export default {
     if (observation && observation.shapeType) {
       // TODO do something better than this shit
       // find a map viewer
-      const viewer = getters.viewersLayout.find(v => v.type === Constants.VIEW_MAP);
+      const viewer = getters.viewers.find(v => v.type === Constants.VIEW_MAP);
 
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
@@ -39,12 +39,10 @@ export default {
           main,
           type: Constants.VIEW_MAP,
           callback: (idx) => {
-            commit('ADD_OBSERVATION', { idx, observation });
             resolve(idx);
           },
         });
       } else {
-        commit('ADD_OBSERVATION', { idx: viewer.idx, observation });
         if (main) {
           dispatch('setMainViewer', viewer.idx);
         }
@@ -54,17 +52,5 @@ export default {
       reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
     }
   }),
-
-  setVisible: (/* { commit, state }, id */) => {
-    /*
-    let obs = null;
-    state.viewersLayout.forEach((viewer) => {
-      obs = viewer.observations.find(observation => observation.id === id);
-    });
-    if (obs && !obs.visible) {
-      commit('SET_VISIBLE', {id);
-    }
-    */
-  },
 };
 
