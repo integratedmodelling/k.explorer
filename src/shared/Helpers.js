@@ -93,7 +93,7 @@ const Helpers = {
     }
     const polyCoords = [];
     coords.forEach((pair) => {
-      polyCoords.push(proj.transform([parseFloat(pair[0]), parseFloat(pair[1])], dataProjection, Constants.DEFAULT_PROJ_VIEW));
+      polyCoords.push(olProj.transform([parseFloat(pair[0]), parseFloat(pair[1])], dataProjection, Constants.DEFAULT_PROJ_VIEW));
     });
     return polyCoords;
   },

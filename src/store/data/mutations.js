@@ -62,9 +62,14 @@ export default {
     state.nodeSelected = nodeSelected;
   },
 
-  SET_VISIBLE: (state, id) => {
+  SET_VISIBLE: (state, { id, visible, callback = null }) => {
     state.observations.forEach((observation) => {
-      observation.visible = observation.id === id;
+      if (observation.id === id) {
+        observation.visible = visible;
+        if (callback !== null) {
+          callback(observation);
+        }
+      }
     });
   },
 };

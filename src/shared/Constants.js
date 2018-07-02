@@ -61,7 +61,7 @@ export default {
   COORD_BC3: [-2.968226, 43.332125],
   /*
   REGEXP_SHAPE_COORD: /[\d.-]+/g,
-  // Group 1: projection, Group 2: geometry
+  // olGroup 1: projection, olGroup 2: geometry
   REGEXP_WKT: /(EPSG:\d{4})?\s?(.*)/g,
   */
   PROJ_EPSG_4326: 'EPSG:4326',

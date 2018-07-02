@@ -14,11 +14,12 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS } from 'shared/MapOptions';
 import { Helpers } from 'shared/Helpers';
-import Map from 'ol/map';
-import View from 'ol/view';
-import Group from 'ol/layer/group';
-import Collection from 'ol/collection';
-import proj from 'ol/proj';
+import OlMap from 'ol/map';
+import OlView from 'ol/view';
+import OlGroup from 'ol/layer/group';
+import OlCollection from 'ol/collection';
+import olExtent from 'ol/extent';
+import olProj from 'ol/proj';
 import 'ol/ol.css';
 
 // import 'vue-resize/dist/vue-resize.css';
@@ -37,7 +38,7 @@ export default {
       zoom: DEFAULT_OPTIONS.zoom,
       map: null,
       view: null,
-      layers: new Collection(),
+      layers: new OlCollection(),
     };
   },
   computed: {
@@ -75,7 +76,7 @@ export default {
       const { map } = event;
       let message = null;
       try {
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(proj.transformExtent(map.getView()
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(olProj.transformExtent(map.getView()
           .calculateExtent(map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         this.pushLogAction({
@@ -131,13 +132,13 @@ export default {
           layer.setVisible(observation.visible);
           if (observation.visible) {
             if (center) {
-              extent = layer.getSource().getExtent();
+              const layerExtent = layer.getSource().getExtent();
               switch (observation.shapeType) {
                 case this.$constants.SHAPE_POINT:
                   centerCoord = [extent[0], extent[1]];
                   break;
                 case this.$constants.SHAPE_POLYGON:
-                  extent = layer.getSource().getExtent();
+                  extent = extent !== null ? olExtent.extend(extent, layerExtent) : layerExtent;
                   break;
                 default:
               }
@@ -188,8 +189,8 @@ export default {
     */
   },
   mounted() {
-    this.map = new Map({
-      view: new View({
+    this.map = new OlMap({
+      view: new OlView({
         center: this.center,
         zoom: this.zoom,
       }),
@@ -200,7 +201,7 @@ export default {
     });
     this.map.on('moveend', this.onMoveEnd);
     this.view = this.map.getView();
-    this.map.addLayer(new Group({
+    this.map.addLayer(new OlGroup({
       layers: this.layers,
     }));
     this.drawContextLayer();

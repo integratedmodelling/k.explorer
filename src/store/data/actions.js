@@ -33,43 +33,51 @@ export default {
     noTree = false,
     main = false,
   }) => {
+    // assign viewer
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
+      // add observation
       commit('ADD_OBSERVATION', observation);
       if (noTree) {
         return;
       }
       let needSiblings = false;
       if (observation.siblingCount > 1 && folderId === null) {
-        // siblings without folder
+        // if has siblings, create folder and ask for them
         folderId = Math.floor(Date.now() / 1000); // TODO better name
-        dispatch('addToTree', {
+        commit('ADD_NODE', {
           node: {
             id: folderId,
             label: `${observation.observable} folder`,
             type: Constants.TREE_FOLDER,
             children: [],
+            noTick: true,
+            // tickStrategy: 'leaf',
           },
           parentId: observation.parentId,
         });
         needSiblings = true;
       }
-      dispatch('addToTree', {
+      // add node to tree
+      commit('ADD_NODE', {
         node: {
           id: observation.id,
-          label: observation.label,
+          label: observation.literalValue || observation.label,
           type: observation.shapeType,
           viewerIdx: observation.viewerIdx,
           children: [],
+          noTick: observation.literalValue !== null,
         },
         parentId: folderId === null ? observation.parentId : folderId,
       });
+      // asj for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child });
         });
       }
+      // ask for siblings
       if (needSiblings) {
         dispatch('askForSiblings', { node: observation, folderId });
       }
@@ -89,13 +97,19 @@ export default {
     });
   },
 
-  askForSiblings({ dispatch }, { node, folderId }) {
+  askForSiblings({ dispatch /* , getters */ }, { node, folderId }) {
     axios.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${node.id}`, {
       params: {
         count: -1,
         offset: 0,
         childLevel: -1,
       },
+      /*
+      headers: {
+        'WWW-Authenticate': getters.session,
+        'Access-Control-Allow-Origin': '*',
+      },
+      */
     })
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {
@@ -109,9 +123,23 @@ export default {
       });
   },
 
-  setNodeSelected: ({ commit, dispatch }, nodeSelected) => {
-    commit('SET_NODE_SELECTED', nodeSelected);
-    commit('SET_VISIBLE', nodeSelected.id);
-    dispatch('view/setMainViewer', nodeSelected.viewerIdx, { root: true });
+  updateNodes: ({ commit, dispatch }, { newValues, oldValues }) => {
+    if (oldValues.length > newValues.length) {
+      const removed = oldValues.filter(n => newValues.indexOf(n) < 0);
+      if (removed.length === 1) {
+        commit('SET_VISIBLE', { id: removed[0], visible: false });
+      } else {
+        console.error(`Length of removed is strange: ${removed.length}`);
+      }
+    } else {
+      const { [newValues.length - 1]: added } = newValues;
+      commit('SET_VISIBLE', {
+        id: added,
+        visible: true,
+        callback: (observation) => {
+          dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
+        },
+      });
+    }
   },
 };

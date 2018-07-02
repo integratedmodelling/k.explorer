@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 /*
 import _ol_Map from 'ol/map';
-import View from "ol/view";
+import olView from "ol/view";
 import ol_Control from 'ol/control';
 import _ol_coordinate from 'ol/coordinate';
 import Constants from "./Constants";
@@ -13,7 +13,7 @@ import Layers from "./MapOptions";
 import LayerSwitcher from 'ol-ext/control/LayerSwitcherImage';
 import 'ol/ol.css';
 import 'ol-ext/control/LayerSwitcherImage.css';
-import ol_proj from "ol/proj";
+import ol_proj from "ol/olProj";
 import Overlay from "ol/overlay";
 import {Notify} from 'quasar';
 import store from '../../store';
@@ -33,7 +33,7 @@ class KLabMap extends _ol_Map {
 
     options = { DEFAULT_OPTIONS, ...options };
 
-    options.view = options.view || new View({
+    options.view = options.view || new olView({
       projection: options.projection,
       center: options.center,
       zoom: options.zoom,

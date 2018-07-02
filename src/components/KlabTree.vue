@@ -43,10 +43,11 @@
           :nodes="tree"
           node-key="id"
           default-expand-all
-          :selected.sync="selected"
           :ticked.sync="ticked"
+          tick-strategy="strict"
         ></q-tree>
         <!--
+        :selected.sync="selected"
         <q-spinner-ball
           color="secondary"
           :size="40"
@@ -65,13 +66,13 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import Constants from 'shared/Constants';
+// import Constants from 'shared/Constants';
 
 export default {
   name: 'klabTree',
   data() {
     return {
-      selected: null,
+      // selected: null,
       ticked: [],
       treeIsHidden: false,
       draggableValue: {
@@ -92,7 +93,7 @@ export default {
   },
   methods: {
     ...mapActions('data', [
-      'setNodeSelected',
+      'updateNodes',
     ]),
     hide() {
       this.draggableValue.resetInitialPos = false;
@@ -104,6 +105,7 @@ export default {
     },
   },
   watch: {
+    /*
     selected(newValue) {
       if (newValue === null) {
         return;
@@ -117,6 +119,10 @@ export default {
       } else {
         console.log('Folder selected!');
       }
+    },
+    */
+    ticked(newValues, oldValues) {
+      this.updateNodes({ newValues, oldValues });
     },
   },
   mounted() {

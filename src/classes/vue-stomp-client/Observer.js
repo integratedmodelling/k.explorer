@@ -99,10 +99,13 @@ export default class {
 
   subscribe(subscribeUrl) {
     if (subscribeUrl) {
-      this.subscribeId = this.StompClient.subscribe(subscribeUrl, message => this.doOnEvent('onmessage', message));
-      if (this.subscribeId) {
-        this.doOnEvent('onsubscribe', this.subscribeId);
-      }
+      this.StompClient.subscribe(subscribeUrl, (message) => {
+        this.doOnEvent('onmessage', message);
+        this.subscribeId = message;
+        if (this.subscribeId) {
+          this.doOnEvent('onsubscribe', this.subscribeId);
+        }
+      });
     }
   }
 
