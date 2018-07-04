@@ -34,7 +34,7 @@ export default class {
     const {
       reconnection = false,
       reconnectionAttempts = Infinity,
-      reconnectionDelay = 1000,
+      reconnectionDelay = 2000,
       debug = true,
       store,
       storeNS = '',

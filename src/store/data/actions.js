@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 
 export default {
@@ -98,7 +98,7 @@ export default {
   },
 
   askForSiblings({ dispatch /* , getters */ }, { node, folderId }) {
-    axios.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${node.id}`, {
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${node.id}`, {
       params: {
         count: -1,
         offset: 0,

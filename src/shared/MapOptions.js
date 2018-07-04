@@ -1,10 +1,10 @@
-import Tile from 'ol/layer/tile';
-import OSM from 'ol/source/osm';
+import Tile from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
-import XYZ from 'ol/source/xyz';
-import BingMaps from 'ol/source/bingmaps';
-import control from 'ol/control';
-import proj from 'ol/proj';
+import XYZ from 'ol/source/XYZ';
+import BingMaps from 'ol/source/BingMaps';
+import * as control from 'ol/control';
+import * as proj from 'ol/proj';
 import Constants from './Constants';
 
 

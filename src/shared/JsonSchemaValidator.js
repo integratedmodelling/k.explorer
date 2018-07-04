@@ -22,6 +22,7 @@ export default class {
     this.initialized = false;
     this.url = url;
     this.initTimeout = null;
+    this.axios = axios.create();
     console.debug('Load schema(s) on creation');
     // Better way will be not start until a connection exists?
     // wait 2 seconds for server to end starting
@@ -60,7 +61,8 @@ export default class {
    */
   init(url = this.url) {
     if (!this.initialized) {
-      axios.get(url)
+      delete this.axios.defaults.headers.common['WWW-Authenticate'];
+      this.axios.get(url)
         .then(({ data }) => {
           if (typeof data === 'object') {
             // eslint-disable-next-line no-restricted-syntax

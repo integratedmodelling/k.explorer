@@ -1,7 +1,7 @@
-import SourceVector from 'ol/source/vector';
-import LayerVector from 'ol/layer/vector';
+import SourceVector from 'ol/source/Vector';
+import LayerVector from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
-import Feature from 'ol/feature';
+import Feature from 'ol/Feature';
 import Constants from 'shared/Constants';
 
 
@@ -93,7 +93,7 @@ const Helpers = {
     }
     const polyCoords = [];
     coords.forEach((pair) => {
-      polyCoords.push(olProj.transform([parseFloat(pair[0]), parseFloat(pair[1])], dataProjection, Constants.DEFAULT_PROJ_VIEW));
+      polyCoords.push(proj.transform([parseFloat(pair[0]), parseFloat(pair[1])], dataProjection, Constants.DEFAULT_PROJ_VIEW));
     });
     return polyCoords;
   },

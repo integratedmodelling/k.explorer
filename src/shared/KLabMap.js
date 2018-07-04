@@ -13,7 +13,7 @@ import Layers from "./MapOptions";
 import LayerSwitcher from 'ol-ext/control/LayerSwitcherImage';
 import 'ol/ol.css';
 import 'ol-ext/control/LayerSwitcherImage.css';
-import ol_proj from "ol/olProj";
+import ol_proj from "ol/proj";
 import Overlay from "ol/overlay";
 import {Notify} from 'quasar';
 import store from '../../store';

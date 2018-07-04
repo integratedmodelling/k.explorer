@@ -14,12 +14,12 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS } from 'shared/MapOptions';
 import { Helpers } from 'shared/Helpers';
-import OlMap from 'ol/map';
-import OlView from 'ol/view';
-import OlGroup from 'ol/layer/group';
-import OlCollection from 'ol/collection';
-import olExtent from 'ol/extent';
-import olProj from 'ol/proj';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import Group from 'ol/layer/Group';
+import Collection from 'ol/Collection';
+import * as extent from 'ol/extent';
+import * as proj from 'ol/proj';
 import 'ol/ol.css';
 
 // import 'vue-resize/dist/vue-resize.css';
@@ -38,7 +38,7 @@ export default {
       zoom: DEFAULT_OPTIONS.zoom,
       map: null,
       view: null,
-      layers: new OlCollection(),
+      layers: new Collection(),
     };
   },
   computed: {
@@ -64,10 +64,10 @@ export default {
   methods: {
     ...mapActions('view', ['pushLogAction']),
     handleResize() {
-      // if (this.map !== null) {
-      console.log('handleResize called!!!');
-      this.map.updateSize();
-      // }
+      if (this.map !== null) {
+        console.log('handleResize called!!!');
+        this.map.updateSize();
+      }
     },
     onMoveEnd(event) {
       if (this.hasContext) {
@@ -76,7 +76,7 @@ export default {
       const { map } = event;
       let message = null;
       try {
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(olProj.transformExtent(map.getView()
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(proj.transformExtent(map.getView()
           .calculateExtent(map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         this.pushLogAction({
@@ -120,7 +120,7 @@ export default {
 
     drawObservations(center = false) {
       if (this.observations && this.observations.length > 0) {
-        let extent = null;
+        let totalExtent = null;
         let centerCoord = null;
         this.observations.forEach((observation) => {
           let layer = this.findLayerById(observation.id);
@@ -133,14 +133,10 @@ export default {
           if (observation.visible) {
             if (center) {
               const layerExtent = layer.getSource().getExtent();
-              switch (observation.shapeType) {
-                case this.$constants.SHAPE_POINT:
-                  centerCoord = [extent[0], extent[1]];
-                  break;
-                case this.$constants.SHAPE_POLYGON:
-                  extent = extent !== null ? olExtent.extend(extent, layerExtent) : layerExtent;
-                  break;
-                default:
+              if (observation.shapeType === this.$constants.SHAPE_POINT) {
+                centerCoord = [totalExtent[0], totalExtent[1]];
+              } else {
+                totalExtent = totalExtent !== null ? extent.extend(totalExtent, layerExtent) : layerExtent;
               }
             }
           }
@@ -148,8 +144,8 @@ export default {
         if (center) {
           if (centerCoord !== null) {
             this.center = centerCoord;
-          } else if (extent !== null) {
-            this.view.fit(extent);
+          } else if (totalExtent !== null) {
+            this.view.fit(totalExtent);
           }
         }
       }
@@ -189,8 +185,8 @@ export default {
     */
   },
   mounted() {
-    this.map = new OlMap({
-      view: new OlView({
+    this.map = new Map({
+      view: new View({
         center: this.center,
         zoom: this.zoom,
       }),
@@ -201,7 +197,7 @@ export default {
     });
     this.map.on('moveend', this.onMoveEnd);
     this.view = this.map.getView();
-    this.map.addLayer(new OlGroup({
+    this.map.addLayer(new Group({
       layers: this.layers,
     }));
     this.drawContextLayer();

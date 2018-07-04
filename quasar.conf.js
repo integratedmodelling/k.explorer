@@ -53,11 +53,9 @@ module.exports = function (ctx) {
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/,
-          /*
           options: {
             fix: true,
           },
-          */
         });
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
@@ -118,7 +116,7 @@ module.exports = function (ctx) {
         'Notify',
         'Cookies',
       ],
-      i18n: 'en-US',
+      i18n: 'en-us',
     },
     // animations: 'all' --- includes all animations
     animations: 'all',
