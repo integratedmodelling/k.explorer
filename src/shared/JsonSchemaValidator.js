@@ -61,8 +61,15 @@ export default class {
    */
   init(url = this.url) {
     if (!this.initialized) {
-      delete this.axios.defaults.headers.common['WWW-Authenticate'];
-      this.axios.get(url)
+      // delete this.axios.defaults.headers.common['WWW-Authenticate'];
+      this.axios.get(url, {
+        transformRequest: [
+          (data, headers) => {
+            delete headers.common['WWW-Authenticate'];
+            return data;
+          },
+        ],
+      })
         .then(({ data }) => {
           if (typeof data === 'object') {
             // eslint-disable-next-line no-restricted-syntax

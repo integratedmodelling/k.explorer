@@ -99,13 +99,12 @@ export default class {
 
   subscribe(subscribeUrl) {
     if (subscribeUrl) {
-      this.StompClient.subscribe(subscribeUrl, (message) => {
+      this.subscribeId = this.StompClient.subscribe(subscribeUrl, (message) => {
         this.doOnEvent('onmessage', message);
-        this.subscribeId = message;
-        if (this.subscribeId) {
-          this.doOnEvent('onsubscribe', this.subscribeId);
-        }
       });
+      if (this.subscribeId) {
+        this.doOnEvent('onsubscribe', this.subscribeId);
+      }
     }
   }
 
@@ -119,7 +118,6 @@ export default class {
       clearTimeout(this.reconnectTimeoutId);
 
       this.reconnectTimeoutId = setTimeout(() => {
-        this.debug('Timeout!');
         this.doOnEvent('reconnect', this.reconnectionCount);
         /*
         if (this.store) {

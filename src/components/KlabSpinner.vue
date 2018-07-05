@@ -27,15 +27,11 @@ export default {
     },
     color: {
       type: String,
+      default: colors.getBrand('primary'),
     },
     animated: {
       type: Boolean,
       default: true,
-    },
-  },
-  computed: {
-    computedColor() {
-      return this.color || colors.getBrand('primary');
     },
   },
 };

@@ -50,7 +50,7 @@ export default {
           node: {
             id: folderId,
             label: `${observation.observable} folder`,
-            type: Constants.TREE_FOLDER,
+            type: Constants.GEOMTYP_FOLDER,
             children: [],
             noTick: true,
             // tickStrategy: 'leaf',
@@ -104,12 +104,6 @@ export default {
         offset: 0,
         childLevel: -1,
       },
-      /*
-      headers: {
-        'WWW-Authenticate': getters.session,
-        'Access-Control-Allow-Origin': '*',
-      },
-      */
     })
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {

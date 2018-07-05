@@ -6,7 +6,7 @@
     <div class="col-1 row bg-red-1">
       <klab-log></klab-log>
     </div>
-    <klab-tree></klab-tree>
+    <klab-main-control></klab-main-control>
     <q-modal
         minimized
         v-model="modalVisible"
@@ -44,7 +44,7 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import KlabTree from 'components/KlabTree.vue';
+import KlabMainControl from 'components/KlabMainControl.vue';
 import KlabLog from 'components/KlabLog.vue';
 import Viewer from 'components/Viewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
@@ -81,7 +81,7 @@ export default {
   methods: {
   },
   components: {
-    KlabTree,
+    KlabMainControl,
     KlabLog,
     Viewer,
     KlabSpinner,

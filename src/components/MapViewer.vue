@@ -22,8 +22,6 @@ import * as extent from 'ol/extent';
 import * as proj from 'ol/proj';
 import 'ol/ol.css';
 
-// import 'vue-resize/dist/vue-resize.css';
-
 export default {
   name: 'MapViewer',
   props: {
@@ -165,7 +163,7 @@ export default {
     },
     observations: {
       handler() {
-        this.drawObservations(true);
+        this.drawObservations(false);
       },
       deep: true,
     },

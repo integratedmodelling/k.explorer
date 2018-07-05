@@ -2,6 +2,9 @@ import SourceVector from 'ol/source/Vector';
 import LayerVector from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
+import ImageLayer from 'ol/layer/Image';
+import Static from 'ol/source/ImageStatic';
+import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 
 
@@ -100,7 +103,7 @@ const Helpers = {
   */
 
   getLayerObject(observation, isContext = false) {
-    const { /*  shapeType, */ encodedShape } = observation;
+    const { geometryTypes, encodedShape } = observation;
     const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
     const regexShape = regexWKT.exec(encodedShape);
     const dataProjection = regexShape[1] || Constants.PROJ_EPSG_4326;
@@ -110,6 +113,47 @@ const Helpers = {
       featureProjection: Constants.PROJ_EPSG_3857,
     });
 
+    // check if the layer is a raster
+    if (geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined') {
+      const extent = geometry.getExtent();
+      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
+      // const url = 'http://localhost:8080/statics/klab-logo.png';
+      const source = new Static({
+        imageExtent: extent,
+        url,
+        imageLoadFunction: (image, src) => {
+          axiosInstance.get(src, {
+            params: {
+              format: Constants.GEOMTYP_RASTER,
+            },
+            responseType: 'blob',
+          })
+            .then((response) => {
+              if (response) {
+                /*
+                const type = response.headers['content-type'];
+                image.getImage().src = `data:${type};base64,${btoa(unescape(encodeURIComponent(response.data)))}`;
+                console.log(image.getImage().src);
+                */
+                const reader = new FileReader();
+                reader.readAsDataURL(response.data);
+                reader.onload = () => {
+                  image.getImage().src = reader.result;
+                  console.log(reader.result);
+                  // console.log(image.getImage().src);
+                };
+                reader.onerror = (error) => {
+                  console.log('Error: ', error);
+                };
+              }
+            });
+        },
+      });
+      return new ImageLayer({
+        id: observation.id,
+        source,
+      });
+    }
     const feature = new Feature({
       geometry,
       name: observation.label,

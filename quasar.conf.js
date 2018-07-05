@@ -53,9 +53,11 @@ module.exports = function (ctx) {
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
           exclude: /(node_modules|quasar)/,
+          /* used when CR+LF are changed from ide and everything breaks
           options: {
             fix: true,
           },
+          */
         });
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
