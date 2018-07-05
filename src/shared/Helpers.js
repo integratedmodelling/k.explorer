@@ -4,6 +4,7 @@ import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
 import ImageLayer from 'ol/layer/Image';
 import Static from 'ol/source/ImageStatic';
+// import * as proj from 'ol/proj';
 import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 
@@ -119,6 +120,7 @@ const Helpers = {
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
       const source = new Static({
+        // projection: proj.get(dataProjection),
         imageExtent: extent,
         url,
         imageLoadFunction: (image, src) => {
@@ -139,7 +141,7 @@ const Helpers = {
                 reader.readAsDataURL(response.data);
                 reader.onload = () => {
                   image.getImage().src = reader.result;
-                  console.log(reader.result);
+                  // console.log(reader.result);
                   // console.log(image.getImage().src);
                 };
                 reader.onerror = (error) => {
