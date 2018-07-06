@@ -12,7 +12,7 @@ export default {
 
   setContextLayer: ({ commit }, contextData) => {
     // If context layer change, mutation reset everything
-    commit('SET_CONTEXT_LAYER', Helpers.getLayerObject(contextData, true));
+    commit('SET_CONTEXT_LAYER', Helpers.getLayerObject(contextData, { isContext: true }));
   },
 
   /*
@@ -52,5 +52,9 @@ export default {
       reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
     }
   }),
+
+  setSpinner: ({ commit }, { animated, color }) => {
+    commit('SET_SPINNER', { animated, color });
+  },
 };
 

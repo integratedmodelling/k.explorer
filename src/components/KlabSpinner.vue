@@ -10,14 +10,15 @@
       cx="0"
       cy="-90"
       r="15"
-      :style="{fill: color}"
-      :class="{animated: this.animated}"
+      :style="{fill: realColor}"
+      :class="{moving: this.moving}"
     ></circle>
   </svg>
 </template>
 
 <script>
 import { colors } from 'quasar';
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -33,6 +34,21 @@ export default {
       type: Boolean,
       default: true,
     },
+    storeControlled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    ...mapGetters('view', [
+      'spinner',
+    ]),
+    moving() {
+      return this.storeControlled ? this.spinner.animated : this.animated;
+    },
+    realColor() {
+      return this.storeControlled ? this.spinner.colorValue : this.color;
+    },
   },
 };
 </script>
@@ -42,7 +58,7 @@ export default {
 #spinner {
   fill: $primary;
 }
-#spinner.animated {
+#spinner.moving {
   animation: spin 2s cubic-bezier(0.445, 0.050, 0.550, 0.950) infinite;
   animation-delay: 0.4s
 }

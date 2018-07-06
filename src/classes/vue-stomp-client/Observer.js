@@ -90,8 +90,9 @@ export default class {
         // const cl = this;
         this.subscribe(subscribeUrl);
       },
-      error => this.doOnEvent('onerror', error),
-
+      error => setTimeout(() => {
+        this.doOnEvent('onerror', error);
+      }, 1000),
     );
 
     return this.StompClient;

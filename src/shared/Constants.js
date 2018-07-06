@@ -1,6 +1,6 @@
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
-import Stroke from 'ol/style/Stroke';
+// import Stroke from 'ol/style/Stroke';
 // import { colors } from 'quasar';
 /**
  * Useful constants in app
@@ -92,23 +92,41 @@ export default {
   PROJ_EPSG_3857: 'EPSG:3857',
 
   POLYGON_CONTEXT_STYLE: new Style({
+    /*
     stroke: new Stroke({
       color: 'rgb(38, 166, 154)',
-      width: 6,
+      width: 1,
     }),
+    */
     fill: new Fill({
       color: 'rgba(38, 166, 154, 0.1)',
     }),
   }),
   POLYGON_OBSERVATION_STYLE: new Style({
+    /*
     stroke: new Stroke({
       // color: colors.getBrand('secondary'),
       color: 'rgb(255, 102, 0)',
       width: 1,
     }),
+    */
     fill: new Fill({
-      color: 'rgba(255, 102, 0, 0.1)',
+      color: 'rgba(255, 102, 0, 0.4)',
     }),
   }),
+
+  COLOR_PRIMARY: 'primary',
+  COLOR_SECONDARY: 'secondary',
+  COLOR_TERTIARY: 'tertiary',
+  COLOR_POSITIVE: 'positive',
+  COLOR_NEGATIVE: 'negative',
+  COLOR_INFO: 'info',
+  COLOR_WARNING: 'warning',
+  COLOR_LIGHT: 'light',
+  COLOR_DARK: 'dark',
+  COLOR_FADED: 'faded',
+
+  SPINNER_LOADING: { color: 'positive', animated: true },
+  SPINNER_STOPPED: { color: 'info', animated: false },
 };
 

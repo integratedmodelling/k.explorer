@@ -48,7 +48,14 @@ export default {
     }
   },
 
-  SET_VISIBLE: () => {
+  SET_SPINNER_ANIMATED: (state, animated) => {
+    state.spinner.animated = animated;
+  },
+  SET_SPINNER_COLOR: (state, color) => {
+    state.spinner.color = color;
+  },
+  SET_SPINNER: (state, { animated, color }) => {
+    state.spinner = { animated, color };
   },
 };
 

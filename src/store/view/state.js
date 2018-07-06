@@ -1,6 +1,8 @@
 /**
  * State of view
  */
+import Constants from 'shared/Constants';
+
 export default {
   mainWin: {
     /**
@@ -29,4 +31,9 @@ export default {
    * Layer with the context shape shared between viewers
    */
   contextLayer: null,
+
+  /**
+   * State of elephant
+   */
+  spinner: Constants.SPINNER_STOPPED,
 };

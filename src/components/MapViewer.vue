@@ -124,7 +124,7 @@ export default {
           let layer = this.findLayerById(observation.id);
           if (layer === null) {
             console.log(`Creating layer: ${observation.label}`);
-            layer = Helpers.getLayerObject(observation, false);
+            layer = Helpers.getLayerObject(observation, { projection: this.proj });
             this.layers.push(layer);
           }
           layer.setVisible(observation.visible);
@@ -195,6 +195,7 @@ export default {
     });
     this.map.on('moveend', this.onMoveEnd);
     this.view = this.map.getView();
+    this.proj = this.view.getProjection();
     this.map.addLayer(new Group({
       layers: this.layers,
     }));

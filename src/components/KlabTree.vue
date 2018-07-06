@@ -6,6 +6,10 @@
     default-expand-all
     :ticked.sync="ticked"
     tick-strategy="strict"
+    text-color="white"
+    control-color="white"
+    color="white"
+    :dark="true"
   ></q-tree>
 </template>
 

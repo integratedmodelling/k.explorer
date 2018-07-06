@@ -4,9 +4,11 @@ import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
 import ImageLayer from 'ol/layer/Image';
 import Static from 'ol/source/ImageStatic';
-// import * as proj from 'ol/proj';
+import * as proj from 'ol/proj';
 import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
+import store from 'store/index';
+// import * as extent from 'ol/extent';
 
 
 /**
@@ -49,10 +51,10 @@ const Helpers = {
    * @returns {*}
    */
   // formatExtent: extent => extent, -> Used in case of test of no validating message
-  formatExtent: (extent) => {
-    if (extent) {
-      return [extent.south.toFixed(2), extent.west.toFixed(2),
-        extent.north.toFixed(2), extent.east.toFixed(2)];
+  formatExtent: (localExtent) => {
+    if (localExtent) {
+      return [localExtent.south.toFixed(2), localExtent.west.toFixed(2),
+        localExtent.north.toFixed(2), localExtent.east.toFixed(2)];
     }
     return null;
   },
@@ -103,7 +105,7 @@ const Helpers = {
   },
   */
 
-  getLayerObject(observation, isContext = false) {
+  getLayerObject(observation, { isContext = false /* , projection = null */ }) {
     const { geometryTypes, encodedShape } = observation;
     const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
     const regexShape = regexWKT.exec(encodedShape);
@@ -116,14 +118,17 @@ const Helpers = {
 
     // check if the layer is a raster
     if (geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined') {
-      const extent = geometry.getExtent();
+      const layerExtent = geometry.getExtent();
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
       const source = new Static({
-        // projection: proj.get(dataProjection),
-        imageExtent: extent,
+        projection: proj.get('EPSG:3857'),
+        imageExtent: layerExtent,
+        // imageSize: [800, 800], // extent.getSize(layerExtent),
         url,
-        imageLoadFunction: (image, src) => {
+        style: Constants.POLYGON_OBSERVATION_STYLE,
+        imageLoadFunction: (imageWrapper, src) => {
+          store.dispatch('view/setSpinner', Constants.SPINNER_LOADING, { root: true });
           axiosInstance.get(src, {
             params: {
               format: Constants.GEOMTYP_RASTER,
@@ -132,17 +137,13 @@ const Helpers = {
           })
             .then((response) => {
               if (response) {
-                /*
-                const type = response.headers['content-type'];
-                image.getImage().src = `data:${type};base64,${btoa(unescape(encodeURIComponent(response.data)))}`;
-                console.log(image.getImage().src);
-                */
                 const reader = new FileReader();
                 reader.readAsDataURL(response.data);
                 reader.onload = () => {
-                  image.getImage().src = reader.result;
+                  const image = imageWrapper.getImage();
+                  image.src = reader.result;
+                  store.dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
                   // console.log(reader.result);
-                  // console.log(image.getImage().src);
                 };
                 reader.onerror = (error) => {
                   console.log('Error: ', error);
