@@ -36,13 +36,6 @@ import MapViewer from 'components/MapViewer.vue';
 let thumbnails = [];
 
 export default {
-  /*
-  data() {
-    return {
-      thumbnails: [],
-    };
-  },
-  */
   computed: {
     ...mapGetters('view', [
       'viewers',

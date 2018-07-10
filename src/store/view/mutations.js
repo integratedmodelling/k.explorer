@@ -57,5 +57,13 @@ export default {
   SET_SPINNER: (state, { animated, color }) => {
     state.spinner = { animated, color };
   },
+  /**
+   * Activate and deactivate search
+   * @param active if true, search is active
+   * @constructor
+   */
+  SEARCH_ACTIVE: (state, active) => {
+    state.searchActive = active;
+  },
 };
 

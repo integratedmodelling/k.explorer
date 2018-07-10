@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container">
+  <div ref="main-control-container" @search-on="searchActivated">
     <transition
       appear
       enter-active-class="animated fadeInLeft"
@@ -10,7 +10,7 @@
         style="left:.5em; top:1.5em;"
         :color="controlColor.name"
         round
-        size="md"
+        size="17px"
         @click="show"
         icon="ion-ios-bookmarks"
         v-show="isHidden"
@@ -22,8 +22,7 @@
       leave-active-class="animated fadeOutLeft"
     >
     <q-card
-      class="fixed no-box-shadow bg-transparent"
-      style="left:1vw; top:1vw;border-radius:20px;"
+      :class="['no-box','shadow','bg-transparent',hasContext ? 'with-context' : 'without-context']"
       :flat="true"
       v-show="!isHidden"
       v-draggable="draggableValue"
@@ -38,15 +37,27 @@
           id="spinner-div"
           :style="{ border: '2px solid '+controlColor.value }"
         >
-        <klab-spinner
-          id="main-spinner"
-          :store-controlled="true"
-          :color="controlColor.value"
-          :size="40"
-          @dblclick.native="hide"
-        />
+          <klab-spinner
+            id="main-spinner"
+            :store-controlled="true"
+            :color="controlColor.value"
+            :size="40"
+            :ball="25"
+            @dblclick.native="hide"
+          ></klab-spinner>
         </div>
-        <div id="text-div" class="q-pa-md text-white">{{ contextLabel }}
+        <div v-if="searchIsActive" id="search-div" class="q-pa-md">
+          <q-search
+            @keyup.enter.prevent="deactiveSearch"
+            v-model="searchInKeylab"
+            placeholder="not working"
+            :color="controlColor.name"
+            :autofocus="true"
+            :clearable="true"
+          ></q-search>
+        </div>
+        <div v-else id="text-div" class="q-pa-md text-white">
+          {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
         <q-btn
           :color="controlColor.name"
@@ -69,7 +80,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
@@ -81,9 +92,11 @@ export default {
       isHidden: false,
       draggableValue: {
         handle: undefined,
-        resetInitialPos: false,
+        resetInitialPos: true,
       },
       content: 'KlabTree',
+      searchActive: false,
+      searchInKeylab: '',
     };
   },
   computed: {
@@ -93,6 +106,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'spinner',
+      'searchIsActive',
     ]),
     controlColor() {
       return {
@@ -102,6 +116,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'deactiveSearch',
+    ]),
     hide() {
       this.draggableValue.resetInitialPos = false;
       this.isHidden = true;
@@ -109,6 +126,10 @@ export default {
     show() {
       this.draggableValue.resetInitialPos = true;
       this.isHidden = false;
+    },
+    searchActivated() {
+      this.searchActive = true;
+      console.log('Search activate!!!!');
     },
   },
   watch: {
@@ -128,22 +149,28 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  #text-div {
+  #text-div, #search-div {
     float: left;
     width: 300px;
     max-height: 85px;
-    padding: 10px;
     overflow-wrap: break-word;
     overflow: hidden;
     text-shadow: 1px 0 0 #aaa;
     text-align: center;
   }
+  #search-div {
+    padding:10px 10px 0 10px;
+  }
+  #text-div {
+    padding: 10px;
+  }
   #spinner-div {
     float: left;
     background-color: white;
-    -webkit-border-radius: 30px;
-    -moz-border-radius: 30px;
-    border-radius: 30px;
+    -webkit-border-radius: 40px;
+    -moz-border-radius: 40px;
+    border-radius: 40px;
+    padding:3px;
   }
   #hide-btn {
     position: absolute;
@@ -151,11 +178,20 @@ export default {
     right:18px;
     display:none;
   }
+  .q-card {
+    width: 400px;
+    top:1.5em;
+  }
+  .q-card.without-context {
+    left: 50%;
+    margin-left: -200px;
+  }
+  .q-card.with-context {
+    left: .5em;
+  }
   #q-card-title {
     background-color: alpha($indigo-5, 30%);
     border-radius: 30px;
-    border: 1px solid #ccc;
-    width: 400px;
     cursor: move;
   }
   #q-card-title.no-b-radius {
@@ -170,6 +206,8 @@ export default {
     max-height: 70vh;
     background-color: alpha($faded, 50%);
     padding-bottom:10px;
+    border-bottom-left-radius: 30px !important;
+    border-bottom-right-radius: 30px !important;
   }
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;

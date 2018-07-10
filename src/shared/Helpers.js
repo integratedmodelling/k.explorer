@@ -65,7 +65,7 @@ const Helpers = {
    * @param key the parent key
    */
   // eslint-disable-next-line consistent-return
-  findParent(tree, key = null) {
+  findNodeById(tree, key = null) {
     if (tree && key !== null) {
       // eslint-disable-next-line prefer-destructuring
       const reduce = [].reduce;
@@ -172,6 +172,15 @@ const Helpers = {
         Constants.POLYGON_CONTEXT_STYLE :
         Constants.POLYGON_OBSERVATION_STYLE,
     });
+  },
+
+  * reverseKeys(arr) {
+    let key = arr.length - 1;
+
+    while (key >= 0) {
+      yield key;
+      key -= 1;
+    }
   },
 
   /**

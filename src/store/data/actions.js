@@ -1,5 +1,5 @@
 import { axiosInstance } from 'plugins/axios';
-import Constants from 'shared/Constants';
+import { Constants } from 'shared/Helpers';
 
 export default {
   /**
@@ -52,8 +52,6 @@ export default {
             label: `${observation.observable} folder`,
             type: Constants.GEOMTYP_FOLDER,
             children: [],
-            noTick: true,
-            // tickStrategy: 'leaf',
           },
           parentId: observation.parentId,
         });
@@ -68,6 +66,7 @@ export default {
           viewerIdx: observation.viewerIdx,
           children: [],
           noTick: observation.literalValue !== null,
+          folderId,
         },
         parentId: folderId === null ? observation.parentId : folderId,
       });
@@ -117,23 +116,17 @@ export default {
       });
   },
 
-  updateNodes: ({ commit, dispatch }, { newValues, oldValues }) => {
-    if (oldValues.length > newValues.length) {
-      const removed = oldValues.filter(n => newValues.indexOf(n) < 0);
-      if (removed.length === 1) {
-        commit('SET_VISIBLE', { id: removed[0], visible: false });
-      } else {
-        console.error(`Length of removed is strange: ${removed.length}`);
-      }
-    } else {
-      const { [newValues.length - 1]: added } = newValues;
-      commit('SET_VISIBLE', {
-        id: added,
-        visible: true,
-        callback: (observation) => {
-          dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
-        },
-      });
-    }
+  hideNode: ({ commit }, nodeId) => {
+    commit('SET_VISIBLE', { id: nodeId, visible: false });
+  },
+
+  showNode: ({ commit, dispatch }, { nodeId, selectMainViewer = false }) => {
+    commit('SET_VISIBLE', {
+      id: nodeId,
+      visible: true,
+      callback: selectMainViewer ? (observation) => {
+        dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
+      } : null,
+    });
   },
 };

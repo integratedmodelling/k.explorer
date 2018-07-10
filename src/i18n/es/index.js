@@ -11,6 +11,8 @@ export default {
     treeTitle: 'Observaciones',
     reconnect: 'Reconectar',
     unknownLabel: 'Desconocido',
+    noContext: '',
+    noObservation: 'No hay observaciones',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',

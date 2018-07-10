@@ -45,7 +45,7 @@ export default {
       // is a tree root node
       state.tree.push(node);
     } else {
-      const parent = Helpers.findParent(state.tree, parentId);
+      const parent = Helpers.findNodeById(state.tree, parentId);
       if (parent !== null) {
         parent.children.push(node);
       } else {
@@ -64,6 +64,7 @@ export default {
   },
 
   SET_VISIBLE: (state, { id, visible, callback = null }) => {
+    // set observation visible (for layer)
     state.observations.forEach((observation) => {
       if (observation.id === id) {
         observation.visible = visible;
@@ -72,6 +73,11 @@ export default {
         }
       }
     });
+    // set node ticked (for tree view)
+    const node = Helpers.findNodeById(state.tree, id);
+    if (node) {
+      node.ticked = visible;
+    }
   },
 };
 

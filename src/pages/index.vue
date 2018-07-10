@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
 import KlabLog from 'components/KlabLog.vue';
@@ -57,6 +57,9 @@ export default {
   computed: {
     ...mapGetters('stomp', [
       'connectionState',
+    ]),
+    ...mapGetters('view', [
+      'searchIsActive',
     ]),
     modalVisible() {
       return this.connectionState !== this.$constants.CONNECTION_UP;
@@ -79,6 +82,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'activeSearch',
+    ]),
   },
   components: {
     KlabMainControl,
@@ -89,6 +95,13 @@ export default {
   watch: {
   },
   mounted() {
+    // const self = this
+    window.addEventListener('keypress', (e) => {
+      if (!this.searchIsActive) {
+        e.preventDefault();
+        this.activeSearch();
+      }
+    });
   },
 };
 </script>

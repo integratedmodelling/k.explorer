@@ -1,7 +1,6 @@
 <template>
   <div class="fit no-padding map-viewer">
     <div :ref="'map'+idx" :id="'map'+idx" class="fit"></div>
-    <!-- <resize-observer @notify="handleResize"></resize-observer> -->
     <q-resize-observable @resize="handleResize" />
   </div>
 </template>
@@ -43,14 +42,6 @@ export default {
     observations() {
       return this.$store.getters['data/observations'](this.idx);
     },
-    /*
-    position() {
-      return [this.leaf.lng, this.leaf.lat];
-    },
-    zoom() {
-      return this.leaf.zoom;
-    },
-    */
     ...mapGetters('data', [
       'hasContext',
       'session',
@@ -60,7 +51,10 @@ export default {
     ]),
   },
   methods: {
-    ...mapActions('view', ['pushLogAction']),
+    ...mapActions('view', [
+      'pushLogAction',
+      'setSpinner',
+    ]),
     handleResize() {
       if (this.map !== null) {
         console.log('handleResize called!!!');
@@ -125,6 +119,12 @@ export default {
           if (layer === null) {
             console.log(`Creating layer: ${observation.label}`);
             layer = Helpers.getLayerObject(observation, { projection: this.proj });
+            /*
+            layer.on('propertychange', (e) => {
+              console.log(`Property change for layer ${layer.get('id')}: ${e.target.get(e.key)}`);
+              this.setSpinner(Constants.SPINNER_STOPPED);
+            });
+            */
             this.layers.push(layer);
           }
           layer.setVisible(observation.visible);
@@ -149,14 +149,6 @@ export default {
       }
     },
   },
-  /*
-  sockets: {
-    onmessage: () => {
-      console.log('Received frame in mapviewer.vue');
-      // (`On message: ${JSON.stringify(frame, null, 4)}`);
-    },
-  },
-  */
   watch: {
     contextLayer(newContextLayer, oldContextLayer) {
       this.drawContextLayer(newContextLayer, oldContextLayer);
@@ -164,23 +156,13 @@ export default {
     observations: {
       handler() {
         this.drawObservations(false);
+        // TODO if true, it try to resize extent but not work. Check before delete it
       },
       deep: true,
     },
     center() {
       this.view.setCenter(this.center);
     },
-    /*
-    geolocPosition() {
-      this.center = this.geolocPosition;
-      console.log(`Encontrada posicion: ${this.geolocPosition}`);
-    },
-    */
-    /*
-    position() {
-      this.center = this.position;
-    },
-    */
   },
   mounted() {
     this.map = new Map({

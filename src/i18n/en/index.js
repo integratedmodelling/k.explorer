@@ -11,6 +11,8 @@ export default {
     treeTitle: 'Observation',
     reconnect: 'Reconnect',
     unknownLabel: 'Unknown',
+    noContext: '',
+    noObservation: 'No observations available',
   },
   messages: {
     connectionClosed: 'Connection closed',

@@ -6,14 +6,15 @@ function addLogToStore(dispatch, type, payload) {
 
 const PARSERS = {
   [IN.TYPE_TASKSTARTED]: (task, dispatch) => {
-    dispatch('stomp/startTask', task, { root: true });
+    dispatch('stomp/taskStart', task, { root: true });
     addLogToStore(dispatch, SHARED.TYPE_DEBUG, `Started task with id ${task.id}`);
   },
   [IN.TYPE_TASKABORTED]: (task, dispatch) => {
+    dispatch('stomp/taskAbort', task, { root: true });
     addLogToStore(dispatch, SHARED.TYPE_ERROR, `Aborted task with id ${task.id}`);
   },
   [IN.TYPE_TASKFINISHED]: (task, dispatch) => {
-    dispatch('stomp/endTask', task, { root: true });
+    dispatch('stomp/taskEnd', task, { root: true });
     addLogToStore(dispatch, SHARED.TYPE_DEBUG, `Ended task with id ${task.id}`);
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {

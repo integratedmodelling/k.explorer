@@ -36,4 +36,9 @@ export default {
    * State of elephant
    */
   spinner: Constants.SPINNER_STOPPED,
+
+  /**
+   * indicate if search option is active
+   */
+  searchActive: false,
 };

@@ -56,5 +56,13 @@ export default {
   setSpinner: ({ commit }, { animated, color }) => {
     commit('SET_SPINNER', { animated, color });
   },
+
+  activeSearch: ({ commit }) => {
+    commit('SEARCH_ACTIVE', true);
+  },
+
+  deactiveSearch: ({ commit }) => {
+    commit('SEARCH_ACTIVE', false);
+  },
 };
 

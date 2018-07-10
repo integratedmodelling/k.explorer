@@ -9,7 +9,7 @@
       id="spinner"
       cx="0"
       cy="-90"
-      r="15"
+      :r="ball"
       :style="{fill: realColor}"
       :class="{moving: this.moving}"
     ></circle>
@@ -25,6 +25,10 @@ export default {
     size: {
       type: Number,
       default: 200,
+    },
+    ball: {
+      type: Number,
+      default: 15,
     },
     color: {
       type: String,
@@ -48,6 +52,13 @@ export default {
     },
     realColor() {
       return this.storeControlled ? this.spinner.colorValue : this.color;
+    },
+  },
+  watch: {
+    spinner: {
+      handler() {
+      },
+      deep: false,
     },
   },
 };

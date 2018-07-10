@@ -46,4 +46,5 @@ export default {
     colorValue: colors.getBrand(state.spinner.color),
   }),
 
+  searchIsActive: state => state.searchActive,
 };

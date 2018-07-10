@@ -36,6 +36,10 @@ export default ({ Vue, store }) => {
     },
   });
 
+  Vue.config.keyCodes = {
+    searcheable: 114,
+  };
+
   // session only is stored here and never touched, so directly changed
   store.state.data.session = session;
   Vue.prototype.$mode = mode;

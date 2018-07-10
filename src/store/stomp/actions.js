@@ -50,12 +50,17 @@ export default {
   },
 
   // TASKS LIFE
-  startTask: ({ commit, dispatch }, task) => {
+  taskStart: ({ commit, dispatch }, task) => {
     dispatch('view/setSpinner', Constants.SPINNER_LOADING, { root: true });
     commit('TASK_START', task);
   },
 
-  endTask: ({ commit, dispatch }, task) => {
+  taskAbort: ({ commit, dispatch }, task) => {
+    commit('TASK_END', task);
+    dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
+  },
+
+  taskEnd: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
     dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
   },
