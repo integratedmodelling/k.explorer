@@ -22,10 +22,10 @@
       leave-active-class="animated fadeOutLeft"
     >
     <q-card
-      :class="['no-box','shadow','bg-transparent',hasContext ? 'with-context' : 'without-context']"
+      :class="['no-box','shadow','bg-transparent',hasContext ? 'with-context' : 'without-context', 'absolute-position']"
       :flat="true"
       v-show="!isHidden"
-      v-draggable="draggableValue"
+      v-draggable="draggableConfig"
     >
       <q-card-title
         id="q-card-title"
@@ -90,9 +90,10 @@ export default {
   data() {
     return {
       isHidden: false,
-      draggableValue: {
+      draggableConfig: {
         handle: undefined,
         resetInitialPos: true,
+        boundingElement: undefined,
       },
       content: 'KlabTree',
       searchActive: false,
@@ -120,11 +121,11 @@ export default {
       'deactiveSearch',
     ]),
     hide() {
-      this.draggableValue.resetInitialPos = false;
+      this.draggableConfig.resetInitialPos = false;
       this.isHidden = true;
     },
     show() {
-      this.draggableValue.resetInitialPos = true;
+      this.draggableConfig.resetInitialPos = true;
       this.isHidden = false;
     },
     searchActivated() {
@@ -135,7 +136,11 @@ export default {
   watch: {
   },
   mounted() {
-    this.draggableValue.handle = this.$refs['dr-handler'];
+    this.draggableConfig.handle = this.$refs['dr-handler'];
+    this.draggableConfig.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+    this.$eventBus.$on('map-size-changed', () => {
+      this.draggableConfig.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+    });
   },
   directives: {
     Draggable,
@@ -190,7 +195,7 @@ export default {
     left: .5em;
   }
   #q-card-title {
-    background-color: alpha($indigo-5, 30%);
+    background-color: alpha($indigo-5, 50%);
     border-radius: 30px;
     cursor: move;
   }
@@ -204,7 +209,7 @@ export default {
   .q-card-main {
     overflow: auto;
     max-height: 70vh;
-    background-color: alpha($faded, 50%);
+    background-color: alpha($faded, 75%);
     padding-bottom:10px;
     border-bottom-left-radius: 30px !important;
     border-bottom-right-radius: 30px !important;

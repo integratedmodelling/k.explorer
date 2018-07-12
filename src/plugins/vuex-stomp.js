@@ -10,6 +10,7 @@ export default ({ Vue, store }) => {
       subscribeUrl,
       debug: false,
       reconnection: true,
+      protocol: 'v12.stomp',
     },
     defaultMessageDestination: process.env.WS_MESSAGE_DESTINATION,
     store,

@@ -59,6 +59,7 @@ export default {
       if (this.map !== null) {
         console.log('handleResize called!!!');
         this.map.updateSize();
+        this.$eventBus.$emit('map-size-changed');
       }
     },
     onMoveEnd(event) {
@@ -100,12 +101,16 @@ export default {
       return null;
     },
 
-    drawContextLayer() {
+    drawContextLayer(newContextLayer, oldContextLayer) {
       if (this.contextLayer === null) {
         return;
       }
       const polygon = this.contextLayer.getSource().getFeatures()[0].getGeometry();
       // this.map.addLayer(this.contextLayer);
+      if (oldContextLayer !== null) {
+        // if context is changed, everything disappear
+        this.layers.clear();
+      }
       this.layers.push(this.contextLayer);
       this.view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
     },

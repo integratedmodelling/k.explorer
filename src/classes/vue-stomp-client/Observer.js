@@ -30,8 +30,8 @@ export default class {
     this.connectionUrl = connectionUrl;
 
     // using the JStenoun way for opts
-    const { stompOptions } = options;
     const {
+      stompOptions,
       reconnection = false,
       reconnectionAttempts = Infinity,
       reconnectionDelay = 2000,
@@ -82,6 +82,7 @@ export default class {
     const { headers = {}, subscribeUrl /* , sockJSOptions = {} */ } = stompOptions;
 
     const sockJs = SockJS(connectionUrl); // , sockJSOptions);
+    sockJs.protocol = stompOptions.protocol || '';
     this.StompClient = webstomp.over(sockJs, stompOptions);
     this.StompClient.connect(
       headers,

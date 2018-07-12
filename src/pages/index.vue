@@ -1,6 +1,6 @@
 <template>
   <q-page class="column bg-red-1">
-    <div class="col row full-height bg-red-1">
+    <div class="col row full-height bg-red-1" id="viewer-container">
       <viewer></viewer>
     </div>
     <div class="col-1 row bg-red-1">

@@ -99,7 +99,7 @@ export default {
     }),
     */
     fill: new Fill({
-      color: 'rgba(38, 166, 154, 0.1)',
+      color: 'rgba(38, 166, 154, 0.2)',
     }),
   }),
   POLYGON_OBSERVATION_STYLE: new Style({

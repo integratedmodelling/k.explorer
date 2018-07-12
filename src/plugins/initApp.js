@@ -36,9 +36,8 @@ export default ({ Vue, store }) => {
     },
   });
 
-  Vue.config.keyCodes = {
-    searcheable: 114,
-  };
+  // create an event bus. For now only to inform map change size
+  Vue.prototype.$eventBus = new Vue();
 
   // session only is stored here and never touched, so directly changed
   store.state.data.session = session;

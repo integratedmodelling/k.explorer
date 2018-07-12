@@ -12,13 +12,11 @@ export default {
    */
   SET_CONTEXT: (state, context) => {
     if (state.context !== null) {
-      // save old observations in vuex store
+      // save context id in vuex store to future use
       // TODO use the local storage?
       state.history.push({
         time: moment(),
-        context: state.context,
-        tree: state.tree,
-        observations: state.observations,
+        contextId: state.context.id,
       });
     }
     state.context = context;
