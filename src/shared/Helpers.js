@@ -142,20 +142,22 @@ const Helpers = {
                 reader.onload = () => {
                   const image = imageWrapper.getImage();
                   image.src = reader.result;
-                  store.dispatch('view/setSpinner', {
-                    ...Constants.SPINNER_STOPPED,
-                    errorMessage: 'TEST ERROR',
-                  }, { root: true });
+                  store.dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
                   // console.log(reader.result);
                 };
                 reader.onerror = (error) => {
-                  console.log('Error: ', error);
+                  store.dispatch('view/setSpinner', {
+                    ...Constants.SPINNER_ERROR,
+                    errorMessage: error,
+                  }, { root: true });
                 };
               }
             })
             .catch((error) => {
-              console.error(`Error loading image: ${error}`);
-              store.dispatch('view/setSpinner', Constants.SPINNER_ERROR, { root: true });
+              store.dispatch('view/setSpinner', {
+                ...Constants.SPINNER_ERROR,
+                errorMessage: error,
+              }, { root: true });
             });
         },
       });

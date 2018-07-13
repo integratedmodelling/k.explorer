@@ -58,7 +58,7 @@ export default {
     spinner: {
       handler() {
         if (this.spinner.errorMessage) {
-          alert(this.spinner.errorMessage);
+          console.error(this.spinner.errorMessage);
         }
       },
       deep: false,
