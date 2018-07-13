@@ -55,8 +55,19 @@ export default {
       }
     }),
 
-  setSpinner: ({ commit }, { animated, color }) => {
-    commit('SET_SPINNER', { animated, color });
+  setSpinner: ({ commit }, {
+    animated,
+    color,
+    time = null,
+    then = null,
+    errorMessage = null,
+  }) => {
+    commit('SET_SPINNER', { animated, color, errorMessage });
+    if (time !== null && then !== null) {
+      setTimeout(() => {
+        commit('SET_SPINNER', { animated: then.animated, color: then.color });
+      }, time * 1000);
+    }
   },
 
   activeSearch: ({ commit }) => {

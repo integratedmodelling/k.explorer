@@ -34,6 +34,11 @@ export default {
 
   /**
    * State of elephant
+   * option:
+   * color: one of named colors
+   * animated: true | false
+   * time: time in seconds of temporary state
+   * then: other option object to decide the state after time is gone
    */
   spinner: Constants.SPINNER_STOPPED,
 

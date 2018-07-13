@@ -128,5 +128,14 @@ export default {
 
   SPINNER_LOADING: { color: 'positive', animated: true },
   SPINNER_STOPPED: { color: 'info', animated: false },
+  SPINNER_ERROR: {
+    color: 'negative',
+    animated: false,
+    time: 2,
+    then: {
+      color: 'info',
+      animated: false,
+    },
+  },
 };
 

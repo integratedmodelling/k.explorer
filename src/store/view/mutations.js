@@ -54,8 +54,8 @@ export default {
   SET_SPINNER_COLOR: (state, color) => {
     state.spinner.color = color;
   },
-  SET_SPINNER: (state, { animated, color }) => {
-    state.spinner = { animated, color };
+  SET_SPINNER: (state, { animated, color, errorMessage = null }) => {
+    state.spinner = { animated, color, errorMessage };
   },
   /**
    * Activate and deactivate search

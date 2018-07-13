@@ -61,11 +61,15 @@ export default class {
    */
   init(url = this.url) {
     if (!this.initialized) {
-      // delete this.axios.defaults.headers.common['WWW-Authenticate'];
+      // delete this.axios.defaults.headers.common['Authorize'];
       this.axios.get(url, {
         transformRequest: [
           (data, headers) => {
-            delete headers.common['WWW-Authenticate'];
+            // we need to delete because we inherited it
+            // the problem is with Spring JSESSION cookie, it seems
+            // better to do this that change a lot of things to
+            // stop spring to generate its session id
+            delete headers.common.Authorize;
             return data;
           },
         ],

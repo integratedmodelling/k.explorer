@@ -36,16 +36,6 @@
           </execution>
 
           <execution>
-            <id>npm run quasar-dev</id>
-            <goals>
-              <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>run quasar-dev</arguments>
-            </configuration>
-          </execution>
-
-          <execution>
             <id>npm run quasar-build</id>
             <goals>
               <goal>npm</goal>
