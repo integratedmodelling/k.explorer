@@ -8,7 +8,9 @@
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "quasar-dev": ".node_modules/quasar-cli/bin/quasar dev",
+    "quasar-build": "./node_modules/quasar-cli/bin/quasar build"
   },
   "dependencies": {
     "@korzio/djv-draft-04": "^2.0.0",
