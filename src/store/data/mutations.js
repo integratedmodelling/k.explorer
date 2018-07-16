@@ -17,6 +17,7 @@ export default {
       state.history.push({
         time: moment(),
         contextId: state.context.id,
+        contextLabel: state.context.label,
       });
     }
     state.context = context;

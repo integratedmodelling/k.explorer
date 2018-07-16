@@ -83,7 +83,7 @@ export default {
   },
   methods: {
     ...mapActions('view', [
-      'activeSearch',
+      'searchStart',
     ]),
   },
   components: {
@@ -96,10 +96,10 @@ export default {
   },
   mounted() {
     // const self = this
-    window.addEventListener('keypress', (e) => {
+    window.addEventListener('keypress', () => {
       if (!this.searchIsActive) {
-        e.preventDefault();
-        this.activeSearch();
+        // e.preventDefault();
+        this.searchStart();
       }
     });
   },

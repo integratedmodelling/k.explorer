@@ -50,8 +50,8 @@ export default {
    * Will be an array of object like
    * {
    *  time: [timestamp of saved]
-   *  context
-   *  tree
+   *  contextId
+   *  contextLabel
    * }
    */
   history: [],

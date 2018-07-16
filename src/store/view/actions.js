@@ -70,11 +70,11 @@ export default {
     }
   },
 
-  activeSearch: ({ commit }) => {
+  searchStart: ({ commit }) => {
     commit('SEARCH_ACTIVE', true);
   },
 
-  deactiveSearch: ({ commit }) => {
+  searchStop: ({ commit }) => {
     commit('SEARCH_ACTIVE', false);
   },
 };

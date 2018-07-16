@@ -48,13 +48,15 @@
         </div>
         <div v-if="searchIsActive" id="search-div" class="q-pa-md">
           <q-search
-            @keyup.enter.prevent="deactiveSearch"
+            @keyup.esc.prevent="searchStop"
             v-model="searchInKeylab"
             placeholder="not working"
             :color="controlColor.name"
             :autofocus="true"
-            :clearable="true"
-          ></q-search>
+            :clearable="false"
+          >
+            <q-autocomplete></q-autocomplete>
+          </q-search>
         </div>
         <div v-else id="text-div" class="q-pa-md text-white">
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
@@ -118,7 +120,7 @@ export default {
   },
   methods: {
     ...mapActions('view', [
-      'deactiveSearch',
+      'searchStop',
     ]),
     hide() {
       this.draggableConfig.resetInitialPos = false;
@@ -129,8 +131,6 @@ export default {
       this.isHidden = false;
     },
     searchActivated() {
-      this.searchActive = true;
-      console.log('Search activate!!!!');
     },
   },
   watch: {
