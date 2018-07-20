@@ -37,5 +37,10 @@ export default {
    * The session, very important accessing it using getter
    */
   session: state => state.session,
+
+  /**
+   * The search results
+   */
+  searchResult: state => state.searchResult,
 };
 

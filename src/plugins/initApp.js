@@ -1,5 +1,4 @@
 import { Helpers, Constants } from 'shared/Helpers';
-
 import { Cookies, colors } from 'quasar';
 
 export default ({ Vue, store }) => {
@@ -43,6 +42,7 @@ export default ({ Vue, store }) => {
   store.state.data.session = session;
   Vue.prototype.$mode = mode;
   console.log(`Session: ${session} / mode: ${mode}`);
+
   /*
   Use color.getBrand(xxx)
   Vue.prototype.$colors = {

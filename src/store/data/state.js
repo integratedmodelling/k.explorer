@@ -61,4 +61,17 @@ export default {
    * it is stored in this array for later use
    */
   orphans: [],
+
+  /**
+   * Search results
+   */
+  searchResult: null,
+  /**
+   * Actual search context id
+   */
+  searchContextId: null,
+  /**
+   * Actula search request id
+   */
+  searchRequestId: null,
 };

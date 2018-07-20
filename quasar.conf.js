@@ -112,6 +112,10 @@ module.exports = function (ctx) {
         'QCardActions',
         'QSearch',
         'QAutocomplete',
+        'QChipsInput',
+        'QScrollArea',
+        'QInput',
+        'QChip',
       ],
       directives: [
         'Ripple',

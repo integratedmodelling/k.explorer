@@ -46,21 +46,7 @@
             @dblclick.native="hide"
           ></klab-spinner>
         </div>
-        <div v-if="searchIsActive" id="search-div" class="q-pa-md">
-          <q-search
-            @keyup.esc.prevent="searchStop"
-            v-model="searchInKeylab"
-            placeholder="not working"
-            :color="controlColor.name"
-            :autofocus="true"
-            :clearable="false"
-          >
-            <q-autocomplete></q-autocomplete>
-          </q-search>
-        </div>
-        <div v-else id="text-div" class="q-pa-md text-white">
-          {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
-        </div>
+        <klab-search></klab-search>
         <q-btn
           :color="controlColor.name"
           round
@@ -86,6 +72,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
+import KlabSearch from 'components/KlabSearch.vue';
 
 export default {
   name: 'klabMainControl',
@@ -98,18 +85,14 @@ export default {
         boundingElement: undefined,
       },
       content: 'KlabTree',
-      searchActive: false,
-      searchInKeylab: '',
     };
   },
   computed: {
     ...mapGetters('data', [
-      'contextLabel',
       'hasContext',
     ]),
     ...mapGetters('view', [
       'spinner',
-      'searchIsActive',
     ]),
     controlColor() {
       return {
@@ -148,27 +131,13 @@ export default {
   components: {
     KlabTree,
     KlabSpinner,
+    KlabSearch,
   },
 };
 </script>
 
 <style lang="stylus">
   @import '~variables'
-  #text-div, #search-div {
-    float: left;
-    width: 300px;
-    max-height: 85px;
-    overflow-wrap: break-word;
-    overflow: hidden;
-    text-shadow: 1px 0 0 #aaa;
-    text-align: center;
-  }
-  #search-div {
-    padding:10px 10px 0 10px;
-  }
-  #text-div {
-    padding: 10px;
-  }
   #spinner-div {
     float: left;
     background-color: white;
@@ -185,6 +154,7 @@ export default {
   }
   .q-card {
     width: 400px;
+    overflow: auto;
     top:1.5em;
   }
   .q-card.without-context {

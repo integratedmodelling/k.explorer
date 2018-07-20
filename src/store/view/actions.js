@@ -64,6 +64,7 @@ export default {
   }) => {
     commit('SET_SPINNER', { animated, color, errorMessage });
     if (time !== null && then !== null) {
+      // time and then for error are defined in Constants
       setTimeout(() => {
         commit('SET_SPINNER', { animated: then.animated, color: then.color });
       }, time * 1000);

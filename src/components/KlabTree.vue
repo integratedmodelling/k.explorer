@@ -111,5 +111,17 @@ export default {
 };
 </script>
 
-<style>
+<style lang="stylus">
+  #text-div, #search-div {
+    max-height: 85px;
+    overflow: hidden;
+    text-shadow: 1px 0 0 #aaa;
+    text-align: center;
+  }
+  #search-div {
+    padding:10px 10px 0 10px;
+  }
+  #text-div {
+    padding: 10px;
+  }
 </style>

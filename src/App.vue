@@ -49,7 +49,7 @@ export default {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
       }
-      console.log(`Send a message: ${message} with this headers: ${headers}`);
+      console.log(`Send a message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
     },
   },
   methods: {

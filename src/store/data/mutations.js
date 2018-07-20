@@ -78,5 +78,9 @@ export default {
       node.ticked = visible;
     }
   },
+
+  STORE_RAW_SEARCH_RESULT: (state, result) => {
+    state.searchResult = result;
+  },
 };
 

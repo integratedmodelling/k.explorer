@@ -13,6 +13,7 @@ export default {
     unknownLabel: 'Sconosciuto',
     noContext: 'Non è stato selezionato nessun contesto',
     noObservation: 'Nessuna osservazione disponibile',
+    searchPlaceholder: 'Cerca in k.LAB',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

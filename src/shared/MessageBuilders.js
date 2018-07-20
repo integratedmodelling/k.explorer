@@ -44,6 +44,18 @@ export const PAYLOAD_BUILDERS = {
     north,
     east,
   }),
+
+  SEARCH_REQUEST: ({
+    queryString,
+    requestId,
+    contextId = null,
+    matchTypes = null,
+  }) => ({
+    ...(contextId !== null && { contextId }),
+    ...(matchTypes !== null && { matchTypes }),
+    queryString,
+    requestId,
+  }),
 };
 
 /**
@@ -62,6 +74,29 @@ export const MESSAGES_BUILDERS = {
     OUT.TYPE_REGIONOFINTEREST,
     OUT.PAYLOAD_CLASS_SPATIALEXTENT,
     PAYLOAD_BUILDERS.SPATIAL_EXTENT(olExtent),
+    session,
+  ),
+
+  SUBMIT_SEARCH: ({
+    queryString,
+    requestId,
+    contextId = null,
+    matchTypes = null,
+    cancelSearch = false,
+    maxResults,
+    session,
+  }) => buildMessage(
+    OUT.CLASS_SEARCH,
+    OUT.TYPE_SUBMITSEARCH,
+    OUT.PAYLOAD_CLASS_SEARCHREQUEST,
+    {
+      ...(contextId !== null && { contextId }),
+      ...(matchTypes !== null && { matchTypes }),
+      queryString,
+      requestId,
+      cancelSearch,
+      maxResults,
+    },
     session,
   ),
 };

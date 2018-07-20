@@ -38,6 +38,10 @@ const PARSERS = {
   [IN.TYPE_INFO]: (info, dispatch) => {
     addLogToStore(dispatch, SHARED.TYPE_INFO, `Received an info: ${JSON.stringify(info)}`);
   },
+  [IN.TYPE_QUERYRESULT]: (results, dispatch) => {
+    addLogToStore(dispatch, SHARED.TYPE_INFO, `Received search results: ${JSON.stringify(results)}`);
+    dispatch('data/storeSearchResult', results, { root: true });
+  },
 };
 
 /**
@@ -46,11 +50,11 @@ const PARSERS = {
  * @param dispatch
  * @returns {*}
  */
-export const parseAndExecute = ({ body }, dispatch) => {
+export const parseAndExecute = ({ body }, dispatch = null) => {
   const parsedBody = JSON.parse(body);
   if (!Object.prototype.hasOwnProperty.call(PARSERS, parsedBody.type)) {
-    console.warn(`Unknown task ${parsedBody.type}`);
-    return false;
+    console.log(`Unknown parser ${parsedBody.type}`); // : return payload`);
+    return false; // parsedBody.payload;
   }
   return PARSERS[parsedBody.type](parsedBody.payload, dispatch);
 };

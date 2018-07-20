@@ -115,11 +115,20 @@ export default {
         }
       });
   },
-
+  /**
+   * Hide a node in a tree, this hide the relative layer too
+   * This will be in view?
+   * @param nodeId
+   */
   hideNode: ({ commit }, nodeId) => {
     commit('SET_VISIBLE', { id: nodeId, visible: false });
   },
 
+  /**
+   * Show a node in a tree, this show the relative layer too
+   * This will be in view?
+   * @param nodeId
+   */
   showNode: ({ commit, dispatch }, { nodeId, selectMainViewer = false }) => {
     commit('SET_VISIBLE', {
       id: nodeId,
@@ -129,4 +138,13 @@ export default {
       } : null,
     });
   },
+
+  storeSearchResult({ commit }, results) {
+    commit('STORE_RAW_SEARCH_RESULT', results);
+  },
+
+  deleteSearchResult({ commit }, { contextId, requestId }) {
+    commit('DELETE_SEARCH_RESULT', { contextId, requestId });
+  },
+
 };
