@@ -53,23 +53,21 @@ export default {
     }
   },
 
-  /**
-   * Set the selected leaf of tree
-   * TODO: change when checkbox will be implemented
-   * @param leafSelected the selected leaf
-   */
-  SET_NODE_SELECTED: (state, nodeSelected) => {
-    state.nodeSelected = nodeSelected;
-  },
-
-  SET_VISIBLE: (state, { id, visible, callback = null }) => {
+  SET_VISIBLE: (state, {
+    id,
+    visible,
+    callback = null,
+  }) => {
     // set observation visible (for layer)
     state.observations.forEach((observation) => {
       if (observation.id === id) {
         observation.visible = visible;
+        observation.top = visible;
         if (callback !== null) {
           callback(observation);
         }
+      } else {
+        observation.top = false;
       }
     });
     // set node ticked (for tree view)

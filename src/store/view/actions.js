@@ -106,10 +106,14 @@ export default {
   setSpinner: ({ commit }, {
     animated,
     color,
+    owner = null,
     time = null,
     then = null,
     errorMessage = null,
   }) => {
+    if (owner !== null) {
+      // TODO implement this, only owner can change animated to false
+    }
     commit('SET_SPINNER', { animated, color, errorMessage });
     if (time !== null && then !== null) {
       setTimeout(() => {

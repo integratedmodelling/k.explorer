@@ -37,6 +37,7 @@ export default {
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
+      observation.top = false;
       // add observation
       commit('ADD_OBSERVATION', observation);
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
@@ -114,5 +115,12 @@ export default {
         dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
       } : null,
     });
+  },
+
+  selectNode: ({ dispatch, state }, selectedId) => {
+    const selectedObservation = state.observations.find(observation => observation.id === selectedId);
+    if (selectedObservation && selectedObservation.visible && !selectedObservation.top) {
+      dispatch('showNode', { nodeId: selectedId });
+    }
   },
 };

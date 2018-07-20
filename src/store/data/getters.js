@@ -8,7 +8,7 @@ export default {
    * The actual checked leaf in tree
    * TODO: change to implement checkbox
    */
-  nodeSelected: state => state.nodeSelected,
+  selectedId: state => state.selectedId,
 
   /**
    * Return observations of a viewer
@@ -24,14 +24,9 @@ export default {
    */
   hasContext: state => state.context !== null,
 
-  contextLabel: (state) => {
-    if (state.context !== null) {
-      return state.context.label;
-    }
-    return null;
-  },
+  contextLabel: state => (state.context !== null ? state.context.label : null),
 
-  contextId: state => state.context.id,
+  contextId: state => (state.context !== null ? state.context.id : null),
 
   fullContext: state => state.context,
 
