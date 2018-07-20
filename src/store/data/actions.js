@@ -24,22 +24,22 @@ export default {
    * If there are siblings, add folder to tree and ask for them
    * If there are childrens, ask for them and repeat operation
    * @param observation observation to add
-   * @param folderId if null and has siblings, we must ask for them,
-   * else parentId is folderId
+   * @param folderId if null and has siblings, we must ask for them, else parentId is folderId
+   * @param fake if set to true, observation is fake, used when start without context
+   * and the default center point is used in map
+   * @main if true, indicate that this observation set his viewer as main
    */
   addObservation: ({ commit, dispatch }, {
     observation,
     folderId = null,
-    noTree = false,
     main = false,
   }) => {
-    // assign viewer
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
       // add observation
       commit('ADD_OBSERVATION', observation);
-      if (noTree) {
+      if (observation.observationType === Constants.OBSTYP_INITIAL) {
         return;
       }
       let needSiblings = false;
@@ -57,20 +57,7 @@ export default {
         });
         needSiblings = true;
       }
-      // add node to tree
-      commit('ADD_NODE', {
-        node: {
-          id: observation.id,
-          label: observation.literalValue || observation.label,
-          type: observation.shapeType,
-          viewerIdx: observation.viewerIdx,
-          children: [],
-          noTick: observation.literalValue !== null,
-          folderId,
-        },
-        parentId: folderId === null ? observation.parentId : folderId,
-      });
-      // asj for children
+      // ask for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child });
@@ -80,19 +67,18 @@ export default {
       if (needSiblings) {
         dispatch('askForSiblings', { node: observation, folderId });
       }
-    });
-  },
-
-  addToTree: ({ commit }, { node, parentId }) => {
-    commit('ADD_NODE', {
-      node: {
-        id: node.id,
-        label: node.label,
-        type: node.shapeType || node.type,
-        children: [], // children are added using this method
-        viewerIdx: node.viewerIdx,
-      },
-      parentId,
+      commit('ADD_NODE', {
+        node: {
+          id: observation.id,
+          label: observation.literalValue || observation.label,
+          type: observation.shapeType,
+          viewerIdx: observation.viewerIdx,
+          children: [],
+          noTick: observation.viewerIdx === null,
+          folderId,
+        },
+        parentId: folderId === null ? observation.parentId : folderId,
+      });
     });
   },
 

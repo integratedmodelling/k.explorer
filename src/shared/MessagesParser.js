@@ -38,6 +38,9 @@ const PARSERS = {
   [IN.TYPE_INFO]: (info, dispatch) => {
     addLogToStore(dispatch, SHARED.TYPE_INFO, `Received an info: ${JSON.stringify(info)}`);
   },
+  [IN.TYPE_DEBUG]: (message, dispatch) => {
+    addLogToStore(dispatch, SHARED.TYPE_DEBUG, JSON.stringify(message));
+  },
 };
 
 /**

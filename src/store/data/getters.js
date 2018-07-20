@@ -31,6 +31,8 @@ export default {
     return null;
   },
 
+  contextId: state => state.context.id,
+
   fullContext: state => state.context,
 
   /**

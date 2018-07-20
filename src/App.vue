@@ -72,7 +72,6 @@ export default {
       this.$store.dispatch('data/addObservation', {
         observation: Helpers.OBSERVATION_DEFAULT,
         main: true,
-        noTree: true,
       }, { root: true });
     }
   },
