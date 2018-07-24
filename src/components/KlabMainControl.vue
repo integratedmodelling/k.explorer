@@ -46,7 +46,10 @@
             @dblclick.native="hide"
           ></klab-spinner>
         </div>
-        <klab-search></klab-search>
+        <klab-search v-if="searchIsActive"></klab-search>
+        <div id="mc-text-div" class="q-pa-md text-white" v-else>
+          {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
+        </div>
         <q-btn
           :color="controlColor.name"
           round
@@ -90,9 +93,11 @@ export default {
   computed: {
     ...mapGetters('data', [
       'hasContext',
+      'contextLabel',
     ]),
     ...mapGetters('view', [
       'spinner',
+      'searchIsActive',
     ]),
     controlColor() {
       return {
@@ -168,6 +173,7 @@ export default {
     background-color: alpha($indigo-5, 50%);
     border-radius: 30px;
     cursor: move;
+    width: 100%;
   }
   #q-card-title.no-b-radius {
     border-bottom-left-radius: 0;
@@ -186,5 +192,10 @@ export default {
   }
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;
+  }
+  #mc-text-div {
+    max-height: 55px;
+    text-shadow: 1px 0 0 #aaa;
+    text-align: center;
   }
 </style>

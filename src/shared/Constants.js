@@ -60,6 +60,71 @@ export default {
   GEOMTYP_FOLDER: 'FOLDER', // used only in frontend
 
   /**
+   * Semantic Types
+   */
+  SEMANTIC_TYPES: {
+    QUALITY: {
+      label: 'Quality',
+      symbol: 'Q',
+      color: 'sem-quality',
+    },
+    SUBJECT: {
+      label: 'Subject',
+      symbol: 'S',
+      color: 'sem-subject',
+    },
+    IDENTITY: {
+      label: 'identity',
+      symbol: 'Id',
+      color: 'sem-identity',
+    },
+    ATTRIBUTE: {
+      label: 'Attribute',
+      symbol: 'A',
+      color: 'sem-attribute',
+    },
+    REALM: {
+      label: 'Realm',
+      symbol: 'R',
+      color: 'sem-realm',
+    },
+    TRAIT: {
+      label: 'Trait',
+      symbol: 'T',
+      color: 'sem-trait',
+    },
+    EVENT: {
+      label: 'Event',
+      symbol: 'E',
+      color: 'sem-event',
+    },
+    RELATIONSHIP: {
+      label: 'Relationship',
+      symbol: 'R',
+      color: 'sem-relationship',
+    },
+    PROCESS: {
+      label: 'Process',
+      symbol: 'P',
+      color: 'sem-process',
+    },
+    ROLE: {
+      label: 'Role',
+      symbol: 'R',
+      color: 'sem-role',
+    },
+    CONFIGURATION: {
+      label: 'Configuration',
+      symbol: 'C',
+      color: 'sem-configuration',
+    },
+    DOMAIN: {
+      label: 'Domain',
+      symbol: 'D',
+      color: 'sem-domain',
+    },
+  },
+  /**
    * URL params
    */
   PARAMS_MODE: 'mode',

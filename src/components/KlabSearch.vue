@@ -1,46 +1,29 @@
 <template>
-  <div v-if="searchIsActive" id="search-div" class="q-pa-md">
-    <!--
-    <q-chips-input
-      inverted-color="controlColor.value"
-      :value="tokenToString"
-      :placeholder="$t('label.searchPlaceholder')"
-      :autofocus="true"
-    >
-    -->
+  <div id="mc-search-div" ref="search-div">
+    <div id="left-shadow"></div>
     <div
-      contenteditable="true"
-      class="single-line text-left, float-left"
-      @focus="setEndOfContenteditable"
-      ref="tokens-div"
+      v-for="(token) in acceptedTokens"
+      :key="token.index"
+      :class="['tokens-accepted', 'tokens', 'text-'+token.leftColor]"
+    >{{ token.value }} </div>
+    <div class="tokens"><q-input
+      :autofocus="true"
+      :color="controlColor.name"
+      v-model="actualToken"
+      :placeholder="$t('label.searchPlaceholder')"
+      size="10"
       @keydown="filter"
-      >
-      <div
-        v-for="(token) in acceptedTokens"
-        :key="token.id"
-        style="display: inline-block"
-      >{{ token.value }} </div>
-      <q-input
-        :autofocus="true"
-        color="controlColor.name"
-        v-model="actualToken"
-        placeholder="Type 'fre'"
-        class="float-left"
-        style="width: auto"
-        ref="input-search"
-        id="input-search"
-      >
-        <q-autocomplete
-          @search="search"
-          @selected="selected"
-          :debounce="200"
-          :min-characters="2"
-        ></q-autocomplete>
-      </q-input>
+      @keyup.esc="searchStop"
+      id="search-input"
+    >
+      <q-autocomplete
+        @search="search"
+        @selected="selected"
+        :debounce="200"
+        :min-characters="2"
+      ></q-autocomplete>
+    </q-input>
     </div>
-  </div>
-  <div v-else id="text-div" class="q-pa-md text-white">
-    {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
   </div>
 </template>
 
@@ -48,6 +31,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
+import Vue from 'vue';
 
 export default {
   name: 'KlabSearch',
@@ -66,16 +50,17 @@ export default {
       result: null,
       acceptedTokens: [],
       actualToken: '',
+      searchDiv: null,
+      scrolled: 0,
+      acceptedTokensCounter: 0,
     };
   },
   computed: {
     ...mapGetters('data', [
-      'contextLabel',
       'searchResult',
     ]),
     ...mapGetters('view', [
       'spinner',
-      'searchIsActive',
     ]),
     tokenToString() {
       return this.acceptedTokens.reduce((accumulator, token) => `${accumulator} ${token}`, '');
@@ -88,30 +73,10 @@ export default {
     },
   },
   methods: {
-    setEndOfContenteditable() {
-      let range;
-      let selection;
-      const element = this.$refs['tokens-div'];
-      if (document.createRange) { // Firefox, Chrome, Opera, Safari, IE 9+
-        range = document.createRange();// Create a range (a range is a like the selection but invisible)
-        range.selectNodeContents(element);// Select the entire contents of the element with the range
-        range.collapse(false);// collapse the range to the end point. false means collapse to end rather than the start
-        selection = window.getSelection();// get the selection object (allows you to change selection)
-        selection.removeAllRanges();// remove any selections already made
-        selection.addRange(range);// make the range you have just created the visible selection
-      } else if (document.selection) { // IE 8 and lower
-        range = document.body.createTextRange();// Create a range (a range is a like the selection but invisible)
-        range.moveToElementText(element);// Select the entire contents of the element with the range
-        range.collapse(false);// collapse the range to the end point. false means collapse to end rather than the start
-        range.select();// Select the range (make it the visible selection
-      }
-    },
     filter(event) {
-      if (event.target.id === 'input-search') {
-        return;
-      }
-      if (event.keyCode < 33 || event.keyCode > 40) {
-        event.preventDefault();
+      if (event.target.id === 'search-input' && event.keyCode === 8
+        && this.actualToken === '' && this.acceptedTokens.length !== 0) {
+        this.acceptedTokens.pop();
       }
     },
     ...mapActions('view', [
@@ -172,24 +137,71 @@ export default {
       const { matches } = this.result;
       const results = [];
       matches.forEach((match) => {
+        const desc = Constants.SEMANTIC_TYPES[match.mainSemanticType];
         results.push({
           value: match.name,
           label: match.name,
           labelLines: 1,
           sublabel: match.description,
           sublabelLines: 1,
-          letter: match.matchType.charAt(0),
+          letter: desc.symbol,
           leftInverted: true,
-          color: 'primary',
+          leftColor: desc.color,
           id: match.id,
+          index: this.acceptedTokensCounter += 1,
         });
       });
       this.doneFunc(results);
       this.setSpinner(Constants.SPINNER_STOPPED);
     },
+    acceptedTokens() {
+      Vue.nextTick(() => {
+        const scrollValue = this.searchDiv.scrollWidth;
+        if (this.scrolled !== scrollValue) {
+          this.searchDiv.scrollLeft = scrollValue;
+          this.scrolled = scrollValue;
+        }
+      });
+    },
+  },
+  mounted() {
+    this.searchDiv = this.$refs['search-div'];
   },
 };
 </script>
 
 <style>
+  .tokens {
+    display: inline-block;
+    margin-right: 0.2em;
+    padding: 2px;
+  }
+  .tokens-accepted {
+    text-shadow: 0px 0 1px #fff;
+    font-weight: 600;
+  }
+  .tokens.selected {
+    color: #fff;
+  }
+  #mc-search-div {
+    width: 330px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    white-space: nowrap;
+    height: 55px;
+    float: left;
+    line-height: 55px;
+    margin-left: 5px;
+  }
+  #left-shadow {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&1+0,0+100 */
+    background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    width: 5px;
+    height: 20px;
+    margin: -3px 0;
+    padding: 0;
+    display: none;
+  }
 </style>
