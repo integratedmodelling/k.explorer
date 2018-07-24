@@ -38,6 +38,10 @@ export default {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
       observation.top = false;
+      // if observation isn't RASTER, add 100 to Z Index to force to stay on top
+      observation.zIndexOffset = observation.geometryTypes.indexOf(Constants.GEOMTYP_RASTER) < 0 ? 100 : 0;
+      // observation.zIndexTop = observation.geometryTypes.indexOf(Constants.GEOMTYP_RASTER) < 0 ? 1000 : 100; TODO: tiene sentido?
+      observation.zIndex = 0;
       // add observation
       commit('ADD_OBSERVATION', observation);
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
