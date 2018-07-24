@@ -126,7 +126,7 @@ export default {
             console.log(`Creating layer: ${observation.label}`);
             layer = Helpers.getLayerObject(observation, { projection: this.proj });
             this.zIndexCounter += 1;
-            observation.zIndex = this.zIndexCounter;
+            observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
             layer.setZIndex(observation.zIndex);
             /*
             layer.on('propertychange', (e) => {
@@ -138,7 +138,7 @@ export default {
           }
           layer.setVisible(observation.visible);
           if (observation.top) {
-            layer.setZIndex(999);
+            layer.setZIndex(observation.zIndexOffset + 100);
           } else {
             layer.setZIndex(observation.zIndex);
           }
