@@ -17,11 +17,6 @@ export default {
    * If not null, a context was established and saved in this object
    */
   context: null,
-  /**
-   * Actual node selected in tree
-   * Managed from kLabTree component
-   */
-  nodeSelected: null,
 
   /**
    * Store of all observation data

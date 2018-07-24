@@ -55,6 +55,7 @@ export const IN = Object.freeze({
   TYPE_TASKFINISHED: 'TaskFinished',
   TYPE_TASKABORTED: 'TaskAborted',
   TYPE_INFO: 'Info',
+  TYPE_DEBUG: 'Debug',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
   TYPE_NEWOBSERVATION: 'NewObservation',

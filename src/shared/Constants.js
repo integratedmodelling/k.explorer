@@ -32,7 +32,7 @@ export default {
   TYPE_ALL: 'ALL',
 
   /**
-   * Observatio types
+   * Observation types
    */
   OBSTYP_PROCESS: 'PROCESS',
   OBSTYP_STATE: 'STATE',
@@ -40,6 +40,7 @@ export default {
   OBSTYP_CONFIGURATION: 'CONFIGURATION',
   OBSTYP_EVENT: 'EVENT',
   OBSTYP_RELATIONSHIP: 'RELATIONSHIP',
+  OBSTYP_INITIAL: 'INITIAL', // wildcard for initial state
 
   /**
    * Value types
@@ -70,7 +71,10 @@ export default {
    */
   VIEW_MAP: 'MapViewer',
   VIEW_CHART: 'ChartViewer',
+  VIEW_GRAPH: 'GraphViewer',
   VIEW_BLOB: 'BlobViewer',
+  VIEW_UNKNOWN: 'UnknownViewer',
+  VIEW_INITIAL: 'MapViewer',
 
   /**
    * Shapes types

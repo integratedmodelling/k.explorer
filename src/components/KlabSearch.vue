@@ -192,21 +192,4 @@ export default {
 </script>
 
 <style>
-  [contenteditable="true"].single-line {
-    white-space: nowrap;
-    width:200px;
-    overflow: hidden;
-    border: none !important;
-  }
-  [contenteditable="true"].single-line br {
-    display:none;
-
-  }
-  [contenteditable="true"].single-line * {
-    display:inline;
-    white-space:nowrap;
-  }
-  [contenteditable]:focus {
-    outline: 0px solid transparent;
-  }
 </style>

@@ -36,6 +36,7 @@ export default {
       map: null,
       view: null,
       layers: new Collection(),
+      zIndexCounter: 0,
     };
   },
   computed: {
@@ -124,6 +125,9 @@ export default {
           if (layer === null) {
             console.log(`Creating layer: ${observation.label}`);
             layer = Helpers.getLayerObject(observation, { projection: this.proj });
+            this.zIndexCounter += 1;
+            observation.zIndex = this.zIndexCounter;
+            layer.setZIndex(observation.zIndex);
             /*
             layer.on('propertychange', (e) => {
               console.log(`Property change for layer ${layer.get('id')}: ${e.target.get(e.key)}`);
@@ -133,6 +137,11 @@ export default {
             this.layers.push(layer);
           }
           layer.setVisible(observation.visible);
+          if (observation.top) {
+            layer.setZIndex(999);
+          } else {
+            layer.setZIndex(observation.zIndex);
+          }
           if (observation.visible) {
             if (center) {
               const layerExtent = layer.getSource().getExtent();

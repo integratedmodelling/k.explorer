@@ -181,8 +181,8 @@ export default {
     max-height: 70vh;
     background-color: alpha($faded, 75%);
     padding-bottom:10px;
-    border-bottom-left-radius: 30px !important;
-    border-bottom-right-radius: 30px !important;
+    border-bottom-left-radius: 3px !important;
+    border-bottom-right-radius: 3px !important;
   }
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;

@@ -4,6 +4,7 @@
     :nodes="tree"
     node-key="id"
     :ticked.sync="ticked"
+    :selected.sync="selected"
     tick-strategy="strict"
     text-color="white"
     control-color="white"
@@ -26,6 +27,7 @@ export default {
   data() {
     return {
       ticked: [],
+      selected: null,
     };
   },
   computed: {
@@ -37,12 +39,17 @@ export default {
     ...mapActions('data', [
       'hideNode',
       'showNode',
+      'selectNode',
     ]),
     ...mapActions('view', [
       'setSpinner',
     ]),
   },
   watch: {
+    selected(selectedId) {
+      this.selectNode(selectedId);
+      this.selected = null;
+    },
     ticked(newValues, oldValues) {
       if (oldValues === newValues) {
         return;

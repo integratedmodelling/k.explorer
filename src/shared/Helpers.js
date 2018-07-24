@@ -64,7 +64,6 @@ const Helpers = {
    * @param tree the tree where to look for parent
    * @param key the parent key
    */
-  // eslint-disable-next-line consistent-return
   findNodeById(tree, key = null) {
     if (tree && key !== null) {
       // eslint-disable-next-line prefer-destructuring
@@ -86,6 +85,22 @@ const Helpers = {
       };
       return find(null, tree);
     }
+    return null;
+  },
+
+  addToTree: (commit, { observation, needViewer, folderId }) => {
+    commit('ADD_NODE', {
+      node: {
+        id: observation.id,
+        label: observation.literalValue || observation.label,
+        type: observation.shapeType,
+        viewerIdx: observation.viewerIdx,
+        children: [],
+        noTick: !needViewer,
+        folderId,
+      },
+      parentId: folderId === null ? observation.parentId : folderId,
+    });
   },
   /*
   getCoord: (allCoords, dataProjection = Constants.DEFAULT_PROJ_DATA) => {
@@ -202,6 +217,7 @@ const Helpers = {
     label: 'DEFAULT',
     parentId: -1,
     visible: true,
+    observationType: Constants.OBSTYP_INITIAL,
   },
 };
 
