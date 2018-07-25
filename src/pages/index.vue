@@ -60,6 +60,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'searchIsActive',
+      'searchIsFocused',
     ]),
     modalVisible() {
       return this.connectionState !== this.$constants.CONNECTION_UP;
@@ -84,6 +85,8 @@ export default {
   methods: {
     ...mapActions('view', [
       'searchStart',
+      'searchStop',
+      'searchFocus',
     ]),
   },
   components: {
@@ -96,10 +99,18 @@ export default {
   },
   mounted() {
     // const self = this
-    window.addEventListener('keypress', () => {
+    window.addEventListener('keypress', (event) => {
       if (!this.searchIsActive) {
         // e.preventDefault();
         this.searchStart();
+      } else {
+        if (event.keyCode === 27) {
+          this.searchStop();
+          return;
+        }
+        if (!this.searchIsFocused) {
+          this.searchFocus(true);
+        }
       }
     });
   },

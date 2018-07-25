@@ -65,5 +65,8 @@ export default {
   SEARCH_ACTIVE: (state, active) => {
     state.searchActive = active;
   },
+  SEARCH_FOCUS: (state, focused) => {
+    state.searchFocus = focused;
+  },
 };
 

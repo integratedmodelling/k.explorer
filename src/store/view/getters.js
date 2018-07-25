@@ -47,4 +47,5 @@ export default {
   }),
 
   searchIsActive: state => state.searchActive,
+  searchIsFocused: state => state.searchFocus,
 };

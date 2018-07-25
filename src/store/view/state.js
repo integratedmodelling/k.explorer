@@ -46,4 +46,9 @@ export default {
    * indicate if search option is active
    */
   searchActive: false,
+
+  /**
+   * indicate if search input has focused
+   */
+  searchFocus: false,
 };

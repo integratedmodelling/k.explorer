@@ -130,5 +130,9 @@ export default {
   searchStop: ({ commit }) => {
     commit('SEARCH_ACTIVE', false);
   },
+
+  searchFocus: ({ commit }, focused) => {
+    commit('SEARCH_FOCUS', focused);
+  },
 };
 
