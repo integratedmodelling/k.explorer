@@ -122,6 +122,7 @@ export default {
             nextFocusEl.focus();
           });
         }
+        event.preventDefault();
       }
     },
     searchInputOnKeyPressed(event) {
