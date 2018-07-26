@@ -14,15 +14,17 @@ export default {
     noContext: '',
     noObservation: 'No observations available',
     searchPlaceholder: 'Search in k.LAB',
-    noSpaceAllowedInSearch: 'It is not allowed to use spaces in search box',
   },
   messages: {
     connectionClosed: 'Connection closed',
     connectionWorking: 'Trying to reconnect',
     connectionUnknown: 'Starting...',
+    noSpaceAllowedInSearch: 'It is not allowed to use spaces in search box',
+    noSearchResults: 'No search results',
   },
   errors: {
     connectionError: 'Connection error',
+    searchTimeout: 'Search timeout',
   },
   langName: 'English',
 };

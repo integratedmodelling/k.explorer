@@ -48,6 +48,7 @@ export default {
   spinnerOwners: state => state.spinnerOwners,
 
   searchIsActive: state => state.searchActive,
-  searchFirstChar: state => state.searchFirstChar,
   searchIsFocused: state => state.searchFocus,
+  searchLostChar: state => state.searchLostChar,
+
 };

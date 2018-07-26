@@ -27,8 +27,8 @@
       ref="mc-search-input"
       :tabindex="acceptedTokens.length"
       :hide-underline="true"
-      @focus="searchFocus(true)"
-      @blur="searchFocus(false)"
+      @focus="searchFocus({focused: true})"
+      @blur="searchFocus({focused: false})"
       @keydown="searchInputOnKeyPressed"
       @keyup.esc="searchEnd"
     >
@@ -74,6 +74,7 @@ export default {
       scrolled: 0,
       acceptedTokensCounter: 0,
       suggestionShowed: false,
+      searchTimeout: null,
     };
   },
   computed: {
@@ -83,15 +84,8 @@ export default {
     ...mapGetters('view', [
       'spinner',
       'searchIsFocused',
+      'searchLostChar',
     ]),
-    searchFirstChar: {
-      get() {
-        return this.$store.state.view.searchFirstChar;
-      },
-      set(firstChar) {
-        this.$store.state.view.searchFirstChar = firstChar;
-      },
-    },
     controlColor() {
       return {
         value: this.spinner.colorValue,
@@ -104,6 +98,7 @@ export default {
       'searchStop',
       'setSpinner',
       'searchFocus',
+      'resetSearchLostChar',
     ]),
     onFocus(token, event) {
       token.selected = event.type === 'focus';
@@ -147,7 +142,7 @@ export default {
           }
           break;
         case 9: // TAB force to select with TAB
-          if (this.suggestionShowed) {
+          if (this.suggestionShowed && this.autocomplete.keyboardIndex !== -1) {
             this.autocomplete.setValue(this.autocomplete.results[this.autocomplete.keyboardIndex]);
           }
           event.preventDefault();
@@ -164,7 +159,7 @@ export default {
         case 32: // SPACE BAR is not allowed in search
           event.preventDefault();
           this.$q.notify({
-            message: this.$t('label.noSpaceAllowedInSearch'),
+            message: this.$t('messages.noSpaceAllowedInSearch'),
             type: 'warning',
             timeout: 1500,
           });
@@ -175,7 +170,10 @@ export default {
     },
     search(terms, done) {
       this.requestId += 1;
-      this.setSpinner({ ...Constants.SPINNER_LOADING, owner: this.$options.name });
+      this.setSpinner({
+        ...Constants.SPINNER_LOADING,
+        owner: this.$options.name,
+      });
       this.sendStompMessage(MESSAGES_BUILDERS.SUBMIT_SEARCH({
         requestId: this.requestId,
         contextId: this.contextId,
@@ -185,6 +183,19 @@ export default {
         queryString: this.actualToken, // terms split space
       }).body, {});
       this.doneFunc = done;
+      this.searchTimeout = setTimeout(() => {
+        this.setSpinner({
+          ...Constants.SPINNER_ERROR,
+          owner: this.$options.name,
+          errorMessage: this.$t('errors.searchTimeout'),
+          time: 2,
+          then: {
+            ...Constants.SPINNER_STOPPED,
+            owner: this.$options.name,
+          },
+        });
+        this.doneFunc([]);
+      }, 2000);
     },
     selected(item) {
       this.acceptedTokens.push(item);
@@ -215,6 +226,10 @@ export default {
   },
   watch: {
     searchResult(newResult) {
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = null;
+      }
       // check if the new result is good
       const { requestId, contextId } = newResult;
       if (this.contextId === null) {
@@ -270,6 +285,14 @@ export default {
           selected: false,
         });
       });
+      if (results.length === 0) {
+        this.$q.notify({
+          message: this.$t('messages.noSearchResults'),
+          type: 'info',
+          position: 'top',
+          timeout: 1000,
+        });
+      }
       this.doneFunc(results);
       this.setSpinner({ ...Constants.SPINNER_STOPPED, owner: this.$options.name });
     },
@@ -292,15 +315,18 @@ export default {
         this.searchInput.blur();
       }
     },
+    searchLostChar(newValue) {
+      if (newValue !== null) { // && this.actualToken === '') {
+        this.actualToken += newValue;
+        this.resetSearchLostChar();
+      }
+    },
   },
   mounted() {
     this.searchDiv = this.$refs['mc-search-div'];
     this.searchInput = this.$refs['mc-search-input'];
     this.autocomplete = this.$refs['mc-autocomplete'];
-    if (this.searchFirstChar !== null && this.actualToken === '') {
-      this.actualToken = this.searchFirstChar;
-      this.searchFirstChar = null;
-    }
+    this.actualToken = this.searchLostChar;
     /*
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {

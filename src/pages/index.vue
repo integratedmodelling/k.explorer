@@ -98,20 +98,22 @@ export default {
   watch: {
   },
   mounted() {
-    // const self = this
-    window.addEventListener('keypress', (event) => {
-      if (!this.searchIsActive) {
-        this.searchStart(event.key);
-        event.preventDefault();
-      } else {
-        if (event.keyCode === 27) {
-          this.searchStop();
+    // const self = this;
+    window.addEventListener('keydown', (event) => {
+      if (event.keyCode >= 65 && event.keyCode <= 90) {
+        if (!this.searchIsActive) {
+          this.searchStart(event.key);
           event.preventDefault();
-          return;
-        }
-        if (!this.searchIsFocused) {
-          this.searchFocus(true);
-          event.preventDefault();
+        } else {
+          if (event.keyCode === 27) {
+            this.searchStop();
+            event.preventDefault();
+            return;
+          }
+          if (!this.searchIsFocused) {
+            this.searchFocus({ char: event.key, focused: true });
+            event.preventDefault();
+          }
         }
       }
     });

@@ -53,16 +53,16 @@ export default {
     realColor() {
       return this.storeControlled ? this.spinner.colorValue : this.color;
     },
+    errorMessage() {
+      return this.spinner.errorMessage;
+    },
   },
   watch: {
-    spinner: {
-      handler() {
-        if (this.spinner.errorMessage) {
-          console.error(this.spinner.errorMessage);
-          this.$q.notify(this.spinner.errorMessage);
-        }
-      },
-      deep: false,
+    errorMessage(newValue) {
+      if (newValue !== null) {
+        console.error(newValue);
+        this.$q.notify(newValue);
+      }
     },
   },
 };

@@ -14,12 +14,13 @@ export default {
     noContext: '',
     noObservation: 'No hay observaciones',
     searchPlaceholder: 'Buscar in k.LAB',
-    noSpaceAllowedInSearch: 'No está permitido utilizar espacios en la búsqueda',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',
     connectionWorking: 'Intentando reconectar',
     connectionUnknown: 'Inicializando...',
+    noSpaceAllowedInSearch: 'No está permitido utilizar espacios en la búsqueda',
+    noSearchResults: 'No hay resultados',
   },
   errors: {
     connectionError: 'Error de conexión',

@@ -103,7 +103,7 @@ export default {
       }
     }),
 
-  setSpinner: ({ commit, getters }, {
+  setSpinner: ({ commit, getters, dispatch }, {
     animated,
     color,
     time = null,
@@ -129,7 +129,7 @@ export default {
     if (time !== null && then !== null) {
       // time and then for error are defined in Constants
       setTimeout(() => {
-        commit('SET_SPINNER', { animated: then.animated, color: then.color });
+        dispatch('setSpinner', then);
       }, time * 1000);
     }
   },
@@ -139,11 +139,15 @@ export default {
   },
 
   searchStop: ({ commit }) => {
-    commit('SEARCH_ACTIVE', false);
+    commit('SEARCH_ACTIVE', { active: false });
   },
 
-  searchFocus: ({ commit }, focused) => {
-    commit('SEARCH_FOCUS', focused);
+  searchFocus: ({ commit }, { focused, char = null }) => {
+    commit('SEARCH_FOCUS', { focused, char });
+  },
+
+  resetSearchLostChar: ({ commit }) => {
+    commit('RESET_SEARCH_LOST_CHAR');
   },
 };
 

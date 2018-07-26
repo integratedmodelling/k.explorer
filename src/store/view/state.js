@@ -48,12 +48,11 @@ export default {
    */
   searchActive: false,
   /**
-   * In firefox, first char is lost, so store it
-   */
-  searchFirstChar: null,
-
-  /**
    * indicate if search input has focused
    */
   searchFocus: false,
+  /**
+   * a char that will be lost
+   */
+  searchLostChar: null,
 };
