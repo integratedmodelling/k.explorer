@@ -103,16 +103,27 @@ export default {
       }
     }),
 
-  setSpinner: ({ commit }, {
+  setSpinner: ({ commit, getters }, {
     animated,
     color,
-    owner = null,
     time = null,
     then = null,
     errorMessage = null,
+    owner = null,
   }) => {
-    if (owner !== null) {
-      // TODO implement this, only owner can change animated to false
+    if (owner) {
+      if (animated) {
+        commit('ADD_TO_SPINNER_OWNERS', owner);
+      } else {
+        commit('REMOVE_FROM_SPINNER_OWNERS', owner);
+        if (getters.spinnerOwners.length !== 0) {
+          // there are other process waiting for spinner
+          animated = true;
+          if (color !== Constants.SPINNER_ERROR.color) {
+            ({ color } = Constants.SPINNER_LOADING);
+          }
+        }
+      }
     }
     commit('SET_SPINNER', { animated, color, errorMessage });
     if (time !== null && then !== null) {
@@ -123,8 +134,8 @@ export default {
     }
   },
 
-  searchStart: ({ commit }) => {
-    commit('SEARCH_ACTIVE', true);
+  searchStart: ({ commit }, char) => {
+    commit('SEARCH_ACTIVE', { active: true, char });
   },
 
   searchStop: ({ commit }) => {

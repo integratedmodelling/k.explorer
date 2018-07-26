@@ -41,11 +41,16 @@ export default {
    * then: other option object to decide the state after time is gone
    */
   spinner: Constants.SPINNER_STOPPED,
+  spinnerOwners: [],
 
   /**
    * indicate if search option is active
    */
   searchActive: false,
+  /**
+   * In firefox, first char is lost, so store it
+   */
+  searchFirstChar: null,
 
   /**
    * indicate if search input has focused

@@ -143,6 +143,7 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  $width = 500px;
   #spinner-div {
     float: left;
     background-color: white;
@@ -158,13 +159,13 @@ export default {
     display:none;
   }
   .q-card {
-    width: 400px;
+    width: $width;
     overflow: auto;
     top:1.5em;
   }
   .q-card.without-context {
     left: 50%;
-    margin-left: -200px;
+    margin-left: -($width / 2);
   }
   .q-card.with-context {
     left: .5em;

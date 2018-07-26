@@ -84,6 +84,14 @@ export default {
       'spinner',
       'searchIsFocused',
     ]),
+    searchFirstChar: {
+      get() {
+        return this.$store.state.view.searchFirstChar;
+      },
+      set(firstChar) {
+        this.$store.state.view.searchFirstChar = firstChar;
+      },
+    },
     controlColor() {
       return {
         value: this.spinner.colorValue,
@@ -102,6 +110,7 @@ export default {
     },
     tokenOnKeyPressed(event) {
       if (event.keyCode === 37 || event.keyCode === 39) {
+        event.preventDefault();
         const selected = this.acceptedTokens.findIndex(at => at.selected);
         let nextFocus = null;
         if (event.keyCode === 37 && selected > 0) {
@@ -122,7 +131,6 @@ export default {
             nextFocusEl.focus();
           });
         }
-        event.preventDefault();
       }
     },
     searchInputOnKeyPressed(event) {
@@ -130,19 +138,19 @@ export default {
         case 13: // ENTER
           if (!this.suggestionShowed) {
             this.askToKLab(event);
-            event.preventDefault();
           }
           break;
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) {
             this.acceptedTokens.pop();
+            event.preventDefault();
           }
           break;
         case 9: // TAB force to select with TAB
           if (this.suggestionShowed) {
             this.autocomplete.setValue(this.autocomplete.results[this.autocomplete.keyboardIndex]);
-            event.preventDefault();
           }
+          event.preventDefault();
           break;
         case 37: // left arrow
           if (!this.suggestionShowed && this.searchInput.$refs.input.selectionStart === 0) {
@@ -150,7 +158,16 @@ export default {
             Vue.nextTick(() => {
               this.$refs[`token-${token.index}`][0].focus();
             });
+            event.preventDefault();
           }
+          break;
+        case 32: // SPACE BAR is not allowed in search
+          event.preventDefault();
+          this.$q.notify({
+            message: this.$t('label.noSpaceAllowedInSearch'),
+            type: 'warning',
+            timeout: 1500,
+          });
           break;
         default:
           break;
@@ -158,14 +175,14 @@ export default {
     },
     search(terms, done) {
       this.requestId += 1;
-      this.setSpinner(Constants.SPINNER_LOADING);
+      this.setSpinner({ ...Constants.SPINNER_LOADING, owner: this.$options.name });
       this.sendStompMessage(MESSAGES_BUILDERS.SUBMIT_SEARCH({
         requestId: this.requestId,
         contextId: this.contextId,
         maxResults: this.maxResults,
         session: this.$store.state.data.session,
         cancelSearch: false,
-        queryString: terms,
+        queryString: this.actualToken, // terms split space
       }).body, {});
       this.doneFunc = done;
     },
@@ -207,6 +224,7 @@ export default {
         actual: ${this.contextId} / received: ${contextId}`);
         this.setSpinner({
           ...Constants.SPINNER_ERROR,
+          owner: this.$options.name,
           errorMessage: 'Different search context id',
         });
         return;
@@ -225,6 +243,7 @@ export default {
         actual: ${this.requestId} / received: ${requestId}\n`);
         this.setSpinner({
           ...Constants.SPINNER_ERROR,
+          owner: this.$options.name,
           errorMessage: 'Different search request id',
         });
         return;
@@ -252,7 +271,7 @@ export default {
         });
       });
       this.doneFunc(results);
-      this.setSpinner(Constants.SPINNER_STOPPED);
+      this.setSpinner({ ...Constants.SPINNER_STOPPED, owner: this.$options.name });
     },
     acceptedTokens() {
       Vue.nextTick(() => {
@@ -278,12 +297,17 @@ export default {
     this.searchDiv = this.$refs['mc-search-div'];
     this.searchInput = this.$refs['mc-search-input'];
     this.autocomplete = this.$refs['mc-autocomplete'];
-
+    if (this.searchFirstChar !== null && this.actualToken === '') {
+      this.actualToken = this.searchFirstChar;
+      this.searchFirstChar = null;
+    }
+    /*
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
         console.warn('Vue warn:', msg, vm, trace);
       }
     };
+    */
   },
 };
 </script>
@@ -304,13 +328,13 @@ export default {
     outline: none;
   }
   #mc-search-div {
-    width: 330px;
+    width: 85%;
     overflow-x: hidden;
     overflow-y: hidden;
     white-space: nowrap;
-    float: left;
+    position: absolute;
+    left: 55px;
     line-height: 30px;
-    margin-left: 5px;
     margin-top: 13px;
   }
   #left-shadow {

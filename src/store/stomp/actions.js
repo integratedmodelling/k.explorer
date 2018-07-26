@@ -51,18 +51,18 @@ export default {
 
   // TASKS LIFE
   taskStart: ({ commit, dispatch }, task) => {
-    dispatch('view/setSpinner', Constants.SPINNER_LOADING, { root: true });
+    dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: task.id }, { root: true });
     commit('TASK_START', task);
   },
 
   taskAbort: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
-    dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
+    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
 
   taskEnd: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
-    dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
+    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
 };
 

@@ -128,12 +128,6 @@ export default {
             this.zIndexCounter += 1;
             observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
             layer.setZIndex(observation.zIndex);
-            /*
-            layer.on('propertychange', (e) => {
-              console.log(`Property change for layer ${layer.get('id')}: ${e.target.get(e.key)}`);
-              this.setSpinner(Constants.SPINNER_STOPPED);
-            });
-            */
             this.layers.push(layer);
           }
           layer.setVisible(observation.visible);

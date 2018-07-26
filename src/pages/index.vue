@@ -101,15 +101,17 @@ export default {
     // const self = this
     window.addEventListener('keypress', (event) => {
       if (!this.searchIsActive) {
-        // e.preventDefault();
-        this.searchStart();
+        this.searchStart(event.key);
+        event.preventDefault();
       } else {
         if (event.keyCode === 27) {
           this.searchStop();
+          event.preventDefault();
           return;
         }
         if (!this.searchIsFocused) {
           this.searchFocus(true);
+          event.preventDefault();
         }
       }
     });

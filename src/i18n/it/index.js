@@ -14,6 +14,7 @@ export default {
     noContext: 'Non è stato selezionato nessun contesto',
     noObservation: 'Nessuna osservazione disponibile',
     searchPlaceholder: 'Cerca in k.LAB',
+    noSpaceAllowedInSearch: 'Non è permesso utilizare spazi nella ricerca',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

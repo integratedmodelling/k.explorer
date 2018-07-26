@@ -143,7 +143,7 @@ const Helpers = {
         url,
         style: Constants.POLYGON_OBSERVATION_STYLE,
         imageLoadFunction: (imageWrapper, src) => {
-          store.dispatch('view/setSpinner', Constants.SPINNER_LOADING, { root: true });
+          store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: src }, { root: true });
           axiosInstance.get(src, {
             params: {
               format: Constants.GEOMTYP_RASTER,
@@ -157,12 +157,13 @@ const Helpers = {
                 reader.onload = () => {
                   const image = imageWrapper.getImage();
                   image.src = reader.result;
-                  store.dispatch('view/setSpinner', Constants.SPINNER_STOPPED, { root: true });
+                  store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: src }, { root: true });
                   // console.log(reader.result);
                 };
                 reader.onerror = (error) => {
                   store.dispatch('view/setSpinner', {
                     ...Constants.SPINNER_ERROR,
+                    owner: src,
                     errorMessage: error,
                   }, { root: true });
                 };
@@ -171,6 +172,7 @@ const Helpers = {
             .catch((error) => {
               store.dispatch('view/setSpinner', {
                 ...Constants.SPINNER_ERROR,
+                owner: src,
                 errorMessage: error,
               }, { root: true });
             });

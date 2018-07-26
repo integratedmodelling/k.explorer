@@ -57,13 +57,26 @@ export default {
   SET_SPINNER: (state, { animated, color, errorMessage = null }) => {
     state.spinner = { animated, color, errorMessage };
   },
+  ADD_TO_SPINNER_OWNERS: (state, owner) => {
+    const index = state.spinnerOwners.indexOf(owner);
+    if (index === -1) {
+      state.spinnerOwners.push(owner);
+    }
+  },
+  REMOVE_FROM_SPINNER_OWNERS: (state, owner) => {
+    const index = state.spinnerOwners.indexOf(owner);
+    if (index !== -1) {
+      state.spinnerOwners.splice(index, 1);
+    }
+  },
   /**
    * Activate and deactivate search
    * @param active if true, search is active
    * @constructor
    */
-  SEARCH_ACTIVE: (state, active) => {
+  SEARCH_ACTIVE: (state, { active, char }) => {
     state.searchActive = active;
+    state.searchFirstChar = char;
   },
   SEARCH_FOCUS: (state, focused) => {
     state.searchFocus = focused;

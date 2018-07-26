@@ -45,7 +45,9 @@ export default {
     ...state.spinner,
     colorValue: colors.getBrand(state.spinner.color),
   }),
+  spinnerOwners: state => state.spinnerOwners,
 
   searchIsActive: state => state.searchActive,
+  searchFirstChar: state => state.searchFirstChar,
   searchIsFocused: state => state.searchFocus,
 };
