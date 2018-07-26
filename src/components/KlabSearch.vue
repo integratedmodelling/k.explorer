@@ -161,10 +161,14 @@ export default {
           this.$q.notify({
             message: this.$t('messages.noSpaceAllowedInSearch'),
             type: 'warning',
+            position: 'top-right',
             timeout: 1500,
           });
           break;
         default:
+          if (event.keyCode < 65 || event.keyCode > 90) {
+            event.preventDefault(); // only letters are permitted
+          }
           break;
       }
     },
