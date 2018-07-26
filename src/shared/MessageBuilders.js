@@ -77,7 +77,7 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  SUBMIT_SEARCH: ({
+  SEARCH_REQUEST: ({
     queryString,
     requestId,
     contextId = null,
@@ -96,6 +96,23 @@ export const MESSAGES_BUILDERS = {
       requestId,
       cancelSearch,
       maxResults,
+    },
+    session,
+  ),
+
+  OBSERVATION_REQUEST: ({
+    urn,
+    contextId,
+    searchContextId,
+    session,
+  }) => buildMessage(
+    OUT.CLASS_OBSERVATIONLIFECYCLE,
+    OUT.TYPE_REQUESTOBSERVATION,
+    OUT.PAYLOAD_CLASS_OBSERVATIONREQUEST,
+    {
+      urn,
+      ...(contextId !== null && { contextId }),
+      searchContextId,
     },
     session,
   ),

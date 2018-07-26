@@ -39,6 +39,7 @@
         @hide="suggestionShowed = false"
         :debounce="200"
         :min-characters="2"
+        :max-results="15"
         ref="mc-autocomplete"
       ></q-autocomplete>
     </q-input>
@@ -62,8 +63,8 @@ export default {
   },
   data() {
     return {
-      contextId: null,
-      requestId: 0,
+      searchContextId: null,
+      searchRequestId: 0,
       doneFunc: null,
       result: null,
       acceptedTokens: [],
@@ -80,6 +81,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'searchResult',
+      'contextId',
     ]),
     ...mapGetters('view', [
       'spinner',
@@ -173,19 +175,19 @@ export default {
       }
     },
     search(terms, done) {
-      this.requestId += 1;
+      this.searchRequestId += 1;
       this.setSpinner({
         ...Constants.SPINNER_LOADING,
         owner: this.$options.name,
       });
-      this.sendStompMessage(MESSAGES_BUILDERS.SUBMIT_SEARCH({
-        requestId: this.requestId,
-        contextId: this.contextId,
+      this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_REQUEST({
+        requestId: this.searchRequestId,
+        contextId: this.searchContextId,
         maxResults: this.maxResults,
         session: this.$store.state.data.session,
         cancelSearch: false,
         queryString: this.actualToken, // terms split space
-      }).body, {});
+      }).body);
       this.doneFunc = done;
       this.searchTimeout = setTimeout(() => {
         this.setSpinner({
@@ -210,15 +212,27 @@ export default {
     },
     askToKLab() {
       if (this.acceptedTokens.length > 0) {
-        console.log(`TODO ask for ${this.tokenToString()}`);
+        const urn = this.acceptedTokens.map(token => token.id).join(' ');
+        this.sendStompMessage(MESSAGES_BUILDERS.OBSERVATION_REQUEST({
+          urn,
+          contextId: this.contextId,
+          searchContextId: this.searchContextId,
+          session: this.$store.state.data.session,
+        }).body);
+        this.$q.notify({
+          message: this.$t('label.askForObservation', { urn: this.acceptedTokens.map(token => token.label).join(' ') }),
+          type: 'info',
+          position: 'top',
+          timeout: 2000,
+        });
       } else {
         console.log('Nothing to search for');
       }
       this.searchEnd();
     },
     searchEnd() {
-      this.contextId = null;
-      this.requestId = 0;
+      this.searchContextId = null;
+      this.searchRequestId = 0;
       this.doneFunc = null;
       this.result = null;
       this.acceptedTokens = [];
@@ -236,11 +250,11 @@ export default {
       }
       // check if the new result is good
       const { requestId, contextId } = newResult;
-      if (this.contextId === null) {
-        this.contextId = contextId;
-      } else if (contextId !== this.contextId) {
+      if (this.searchContextId === null) {
+        this.searchContextId = contextId;
+      } else if (contextId !== this.searchContextId) {
         console.warn(`Something strange was happened: differents search context ids:\n
-        actual: ${this.contextId} / received: ${contextId}`);
+        actual: ${this.searchContextId} / received: ${contextId}`);
         this.setSpinner({
           ...Constants.SPINNER_ERROR,
           owner: this.$options.name,
@@ -249,7 +263,7 @@ export default {
         return;
       }
       // is the same request
-      if (this.requestId === requestId) {
+      if (this.searchRequestId === requestId) {
         // there is a result and the new result has same id: is a increment of previous
         if (this.result !== null &&
           this.result.requestId === requestId) {
@@ -259,7 +273,7 @@ export default {
         this.result = newResult;
       } else {
         console.log(`Result discarded for bad request id:\n
-        actual: ${this.requestId} / received: ${requestId}\n`);
+        actual: ${this.searchRequestId} / received: ${requestId}\n`);
         this.setSpinner({
           ...Constants.SPINNER_ERROR,
           owner: this.$options.name,
@@ -269,7 +283,8 @@ export default {
       }
       const { matches } = this.result;
       const results = [];
-      matches.forEach((match) => {
+      // const totMatches = matches.length;
+      matches.forEach((match/* ,index */) => {
         const desc = Constants.SEMANTIC_TYPES[match.mainSemanticType];
         if (typeof desc === 'undefined') {
           console.warn(`Unknown semantic type: ${match.mainSemanticType}`);
@@ -287,6 +302,7 @@ export default {
           id: match.id,
           index: this.acceptedTokensCounter += 1,
           selected: false,
+          // stamp: `${index + 1}/${totMatches}`, TODO is useless?
         });
       });
       if (results.length === 0) {
@@ -331,13 +347,12 @@ export default {
     this.searchInput = this.$refs['mc-search-input'];
     this.autocomplete = this.$refs['mc-autocomplete'];
     this.actualToken = this.searchLostChar;
-    /*
+    // Only in dev: stop the annoying warning of letter
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
         console.warn('Vue warn:', msg, vm, trace);
       }
     };
-    */
   },
 };
 </script>

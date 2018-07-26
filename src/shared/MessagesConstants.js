@@ -24,16 +24,19 @@ export const OUT = Object.freeze({
 
   CLASS_USERCONTEXTCHANGE: 'UserContextChange',
   CLASS_SEARCH: 'Search',
+  CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
   PAYLOAD_CLASS_SEARCHREQUEST: 'SearchRequest',
   PAYLOAD_CLASS_SEARCHMATCHACTION: 'SearchMatchAction',
+  PAYLOAD_CLASS_OBSERVATIONREQUEST: 'ObservationRequest',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_PERIODOFINTEREST: 'PeriodOfInterest',
   TYPE_SUBMITSEARCH: 'SubmitSearch',
   TYPE_MATCHACTION: 'MatchAction',
+  TYPE_REQUESTOBSERVATION: 'RequestObservation',
 });
 
 /**

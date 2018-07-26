@@ -14,6 +14,7 @@ export default {
     noContext: '',
     noObservation: 'No hay observaciones',
     searchPlaceholder: 'Buscar in k.LAB',
+    askForObservation: 'Pidiendo {urn}',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',

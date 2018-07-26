@@ -61,12 +61,4 @@ export default {
    * Search results
    */
   searchResult: null,
-  /**
-   * Actual search context id
-   */
-  searchContextId: null,
-  /**
-   * Actula search request id
-   */
-  searchRequestId: null,
 };
