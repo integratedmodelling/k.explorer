@@ -84,7 +84,7 @@ export default {
       isHidden: false,
       draggableConfig: {
         handle: undefined,
-        resetInitialPos: true,
+        resetInitialPos: false,
         boundingElement: undefined,
       },
       content: 'KlabTree',
@@ -143,7 +143,6 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  $width = 500px;
   #spinner-div {
     float: left;
     background-color: white;
@@ -159,13 +158,13 @@ export default {
     display:none;
   }
   .q-card {
-    width: $width;
+    width: $main-control-width;
     overflow: auto;
     top:1.5em;
   }
   .q-card.without-context {
     left: 50%;
-    margin-left: -($width / 2);
+    margin-left: -($main-control-width / 2);
   }
   .q-card.with-context {
     left: .5em;

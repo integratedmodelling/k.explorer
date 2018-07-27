@@ -16,7 +16,17 @@
       @focus="onFocus(token,$event)"
       @blur="onFocus(token,$event)"
       @keydown="tokenOnKeyPressed"
-    >{{ token.value }}</div>
+    >{{ token.value }}
+      <q-tooltip
+        :delay="500"
+        :offset="[0, 20]"
+        self="top left"
+        anchor="bottom left"
+      >
+        <span v-if="token.sublabel.length > 0">{{ token.sublabel }}</span>
+        <span v-else>{{ $t('label.noTokenDescription' }}</span>
+      </q-tooltip>
+    </div>
     <div class="tokens"><q-input
       :autofocus="true"
       :color="controlColor.name"
@@ -357,7 +367,8 @@ export default {
 };
 </script>
 
-<style>
+<style lang="stylus">
+  @import '~variables'
   .tokens {
     display: inline-block;
     margin-right: 0.1em;
@@ -392,5 +403,9 @@ export default {
     margin: -3px 0;
     padding: 0;
     display: none;
+  }
+  .q-tooltip {
+    background-color: rgba(155, 155, 155, 0.5);
+    width: $main-control-width;
   }
 </style>
