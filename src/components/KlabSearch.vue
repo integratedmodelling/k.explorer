@@ -1,6 +1,6 @@
 <template>
   <div id="mc-search-div" ref="mc-search-div">
-    <div id="left-shadow"></div>
+    <div id="left-shadow"></div> <!-- TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
       :key="token.index"
