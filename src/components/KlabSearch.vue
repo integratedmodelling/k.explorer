@@ -7,10 +7,11 @@
       :class="[
         'tokens-accepted',
         'tokens',
+        'bg-semantic-elements',
         token.selected ? 'selected' : '',
         'text-'+token.leftColor,
-        token.selected ? 'bg-'+token.leftColor : ''
       ]"
+      :style="{ 'border-color': token.selected ? token.rgb : 'transparent' }"
       :ref="'token-'+token.index"
       :tabindex="index"
       @focus="onFocus(token,$event)"
@@ -19,7 +20,7 @@
     >{{ token.value }}
       <q-tooltip
         :delay="500"
-        :offset="[0, 20]"
+        :offset="[0, 15]"
         self="top left"
         anchor="bottom left"
       >
@@ -120,11 +121,13 @@ export default {
         event.preventDefault();
         const selected = this.acceptedTokens.findIndex(at => at.selected);
         let nextFocus = null;
-        if (event.keyCode === 37 && selected > 0) {
+        let isInput = false;
+        if (event.keyCode === 37 && selected > 0) { // left arrow
           nextFocus = `token-${this.acceptedTokens[selected - 1].index}`;
         } else if (event.keyCode === 39 && selected < this.acceptedTokens.length) {
           if (selected === this.acceptedTokens.length - 1) {
             nextFocus = 'mc-search-input';
+            isInput = true;
           } else {
             nextFocus = `token-${this.acceptedTokens[selected + 1].index}`;
           }
@@ -136,6 +139,28 @@ export default {
           }
           Vue.nextTick(() => {
             nextFocusEl.focus();
+            // calculate possible offset problems
+            let scrollOffset = null;
+            const cssLeft = this.searchDiv.offsetLeft;
+            if (event.keyCode === 37) { // left arrow
+              const leftElementPosition = (nextFocusEl.offsetLeft + cssLeft) - this.searchDiv.offsetLeft;
+              if (this.searchDiv.scrollLeft >= leftElementPosition) {
+                scrollOffset = leftElementPosition;
+              }
+            } else {
+              const el = isInput ? nextFocusEl.$el : nextFocusEl;
+              const rigthElementPosition = (isInput ? el.offsetLeft : nextFocusEl.offsetLeft) + cssLeft + el.offsetWidth;
+              const parentSize = this.searchDiv.offsetWidth + this.searchDiv.scrollLeft;
+              if (parentSize <= rigthElementPosition) {
+                scrollOffset = (this.searchDiv.scrollLeft + (rigthElementPosition - parentSize)) - cssLeft;
+              }
+            }
+            if (scrollOffset !== null) {
+              Vue.nextTick(() => {
+                // move the scroll
+                this.searchDiv.scrollLeft = scrollOffset;
+              });
+            }
           });
         }
       }
@@ -309,6 +334,7 @@ export default {
           letter: desc.symbol,
           leftInverted: true,
           leftColor: desc.color,
+          rgb: desc.rgb,
           id: match.id,
           index: this.acceptedTokensCounter += 1,
           selected: false,
@@ -323,8 +349,10 @@ export default {
           timeout: 1000,
         });
       }
-      this.doneFunc(results);
       this.setSpinner({ ...Constants.SPINNER_STOPPED, owner: this.$options.name });
+      Vue.nextTick(() => {
+        this.doneFunc(results);
+      });
     },
     acceptedTokens() {
       Vue.nextTick(() => {
@@ -371,17 +399,21 @@ export default {
   @import '~variables'
   .tokens {
     display: inline-block;
-    margin-right: 0.1em;
-    padding: 0 5px;
-    border-radius: 20px;
+    margin-right: 1px;
+    padding: 0 3px;
   }
   .tokens-accepted {
     text-shadow: 0px 0 1px #fff;
     font-weight: 600;
   }
   .tokens.selected {
-    color: #fff;
+    /* color: #fff; */
     outline: none;
+  }
+  .bg-semantic-elements {
+     border-radius: 10px;
+     border-style: solid;
+     border-width: 2px;
   }
   #mc-search-div {
     width: 85%;
@@ -389,7 +421,7 @@ export default {
     overflow-y: hidden;
     white-space: nowrap;
     position: absolute;
-    left: 55px;
+    left: 60px;
     line-height: 30px;
     margin-top: 13px;
   }
@@ -405,7 +437,13 @@ export default {
     display: none;
   }
   .q-tooltip {
-    background-color: rgba(155, 155, 155, 0.5);
+    /* background-color: rgba(155, 155, 155, 0.5); */
     max-width: $main-control-width;
+  }
+  .q-popover {
+    max-width: $main-control-width !important;
+    border-radius: 10px;
+
+
   }
 </style>

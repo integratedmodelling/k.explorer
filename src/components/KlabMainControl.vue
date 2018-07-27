@@ -76,6 +76,7 @@ import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
 import KlabSearch from 'components/KlabSearch.vue';
+import Vue from 'vue';
 
 export default {
   name: 'klabMainControl',
@@ -122,6 +123,12 @@ export default {
     },
   },
   watch: {
+    hasContext() { // TODO really???
+      this.draggableConfig.resetInitialPos = true;
+      Vue.nextTick(() => {
+        this.draggableConfig.resetInitialPos = false;
+      });
+    },
   },
   mounted() {
     this.draggableConfig.handle = this.$refs['dr-handler'];
@@ -164,10 +171,12 @@ export default {
   }
   .q-card.without-context {
     left: 50%;
+    top: 1.5em;
     margin-left: -($main-control-width / 2);
   }
   .q-card.with-context {
     left: .5em;
+    top: 1.5em;
   }
   #q-card-title {
     background-color: alpha($indigo-5, 50%);

@@ -91,5 +91,11 @@ export default {
   RESET_SEARCH_LOST_CHAR: (state) => {
     state.searchLostChar = null;
   },
+
+  RESET_SEARCH: (state) => {
+    state.searchActive = false;
+    state.searchFocus = false;
+    state.searchLostChar = false;
+  },
 };
 

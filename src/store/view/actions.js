@@ -13,6 +13,7 @@ export default {
   setContextLayer: ({ commit, dispatch }, contextData) => {
     // If context layer change, mutation reset everything
     commit('SET_CONTEXT_LAYER', Helpers.getLayerObject(contextData, { isContext: true }));
+    commit('RESET_SEARCH'); // stop any search, if new context, previous search has no sense
     // context need a viewer (if no observation, I need to see the context)
     dispatch('assignViewer', { observation: contextData, main: true });
   },
@@ -134,7 +135,7 @@ export default {
     }
   },
 
-  searchStart: ({ commit }, char) => {
+  searchStart: ({ commit }, char = null) => {
     commit('SEARCH_ACTIVE', { active: true, char });
   },
 
