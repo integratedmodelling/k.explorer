@@ -128,8 +128,19 @@ export default {
    * URL params
    */
   PARAMS_MODE: 'mode',
-  PARAMS_SESSION: 'session',
   PARAMS_MODE_IDE: 'ide',
+  PARAMS_SESSION: 'session',
+  PARAMS_LOG: 'log',
+  PARAMS_LOG_HIDDEN: 'hidden',
+  PARAMS_LOG_VISIBLE: 'visible',
+
+  /**
+   * Cookies name
+   */
+  COOKIE_LANG: 'klab_exp_lang',
+  COOKIE_SESSION: 'klab_session', // TODO will be useless?
+  COOKIE_MODE: 'klab_mode',
+  COOKIE_LOG: 'klab_log',
 
   /**
    * Viewer components type

@@ -4,7 +4,7 @@
       <viewer></viewer>
     </div>
     <div class="col-1 row bg-red-1">
-      <klab-log></klab-log>
+      <klab-log v-if="logVisible"></klab-log>
     </div>
     <klab-main-control></klab-main-control>
     <q-modal
@@ -12,7 +12,7 @@
         v-model="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        v-show="connectionState === $constants.CONNECTION_UNKNOWN ||
+        v-if="connectionState === $constants.CONNECTION_UNKNOWN ||
                 connectionState === $constants.CONNECTION_ERROR ||
                 connectionState === $constants.CONNECTION_WORKING"
         :content-css="{width: '30vw', 'background-color': `rgba(${hexToRgb(modalColor)}, .5)`}"
@@ -62,6 +62,9 @@ export default {
       'searchIsActive',
       'searchIsFocused',
     ]),
+    logVisible() {
+      return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
+    },
     modalVisible() {
       return this.connectionState !== this.$constants.CONNECTION_UP;
     },

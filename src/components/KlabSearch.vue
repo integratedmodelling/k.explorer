@@ -24,7 +24,7 @@
         anchor="bottom left"
       >
         <span v-if="token.sublabel.length > 0">{{ token.sublabel }}</span>
-        <span v-else>{{ $t('label.noTokenDescription' }}</span>
+        <span v-else>{{ $t('label.noTokenDescription') }}</span>
       </q-tooltip>
     </div>
     <div class="tokens"><q-input
@@ -406,6 +406,6 @@ export default {
   }
   .q-tooltip {
     background-color: rgba(155, 155, 155, 0.5);
-    width: $main-control-width;
+    max-width: $main-control-width;
   }
 </style>

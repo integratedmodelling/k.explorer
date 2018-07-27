@@ -15,6 +15,7 @@ export default {
     noObservation: 'No observations available',
     searchPlaceholder: 'Search in k.LAB',
     askForObservation: 'Asking for {urn}',
+    noTokenDescription: 'No description available',
   },
   messages: {
     connectionClosed: 'Connection closed',

@@ -11,6 +11,7 @@
 <script>
 /* eslint-disable object-shorthand */
 import { QSelect, Cookies } from 'quasar';
+import Constants from 'shared/Constants';
 // import VueCookie from 'vue-cookie';
 
 // Vue.use(VueCookie);
@@ -28,7 +29,7 @@ export default {
     setLocale() {
       this.$i18n.locale = this.activeLocale;
       // change cookie
-      Cookies.set('klab_exp_lang', this.activeLocale, {
+      Cookies.set(Constants.COOKIE_LANG, this.activeLocale, {
         expires: 30,
         path: '/',
       });

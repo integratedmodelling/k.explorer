@@ -11,9 +11,11 @@ export default ({ Vue, store }) => {
 
   // Session and mode
   const session = urlParams.get(Constants.PARAMS_SESSION)
-    || Cookies.get(Constants.PARAMS_SESSION);
+    || Cookies.get(Constants.COOKIE_SESSION);
   const mode = urlParams.get(Constants.PARAMS_MODE)
-    || Cookies.get(Constants.PARAMS_MODE);
+    || Cookies.get(Constants.COOKIE_MODE);
+  const log = urlParams.get(Constants.PARAMS_LOG)
+    || Cookies.get(Constants.COOKIE_LOG) || Constants.PARAMS_LOG_HIDDEN;
 
   Vue.mixin({
     methods: {
@@ -41,6 +43,15 @@ export default ({ Vue, store }) => {
   // session only is stored here and never touched, so directly changed
   store.state.data.session = session;
   Vue.prototype.$mode = mode;
+  Cookies.set(Constants.COOKIE_MODE, mode, {
+    expires: 30,
+    path: '/',
+  });
+  Vue.prototype.$logVisibility = log;
+  Cookies.set(Constants.COOKIE_LOG, log, {
+    expires: 30,
+    path: '/',
+  });
   console.log(`Session: ${session} / mode: ${mode}`);
 
   /*
