@@ -210,10 +210,6 @@ export default {
     },
     search(terms, done) {
       this.searchRequestId += 1;
-      this.setSpinner({
-        ...Constants.SPINNER_LOADING,
-        owner: this.$options.name,
-      });
       this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_REQUEST({
         requestId: this.searchRequestId,
         contextId: this.searchContextId,
@@ -222,6 +218,10 @@ export default {
         cancelSearch: false,
         queryString: this.actualToken, // terms split space
       }).body);
+      this.setSpinner({
+        ...Constants.SPINNER_LOADING,
+        owner: this.$options.name,
+      });
       this.doneFunc = done;
       this.searchTimeout = setTimeout(() => {
         this.setSpinner({
