@@ -157,6 +157,8 @@ export default {
     -moz-border-radius: 40px;
     border-radius: 40px;
     padding:3px;
+    width: 50px;
+    height: 50px;
   }
   #hide-btn {
     position: absolute;
@@ -203,7 +205,7 @@ export default {
     text-shadow: 1px 0 0 #aaa;
   }
   #mc-text-div {
-    max-height: 55px;
+    max-height: 50px;
     text-shadow: 1px 0 0 #aaa;
     text-align: center;
   }

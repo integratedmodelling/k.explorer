@@ -422,7 +422,7 @@ export default {
     white-space: nowrap;
     position: absolute;
     left: 60px;
-    line-height: 30px;
+    /* line-height: 30px; */
     margin-top: 13px;
   }
   #left-shadow {
