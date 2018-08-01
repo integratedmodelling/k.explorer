@@ -36,6 +36,10 @@ export default {
    * @param node
    */
   ADD_NODE: (state, { node, parentId }) => {
+    if (state.context === null) {
+      console.log('Context is null, is it just resetted?');
+      return;
+    }
     if (state.context.id === node.id) {
       console.error('Try to add context to tree, check it!');
       return;

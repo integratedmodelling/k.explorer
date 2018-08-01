@@ -14,6 +14,7 @@ export default {
     }
     return null;
   },
+  logActions: state => state.logActions,
   contextLayer: state => state.contextLayer,
   /**
    * Created viewers

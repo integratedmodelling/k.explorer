@@ -3,11 +3,6 @@
  * @type {Object}
  */
 export const SHARED = Object.freeze({
-  TYPE_DEBUG: 'Debug',
-  TYPE_INFO: 'Info',
-  TYPE_WARNING: 'Warning',
-  TYPE_ERROR: 'Error',
-
   SEARCH_TYPES: [
     { enumId: 'CONCEPT', name: 'CONCEPT', color: '#ff0000' },
     { enumId: 'OPERATOR', name: 'OPERATOR', color: '#ffff00' },
@@ -59,6 +54,7 @@ export const IN = Object.freeze({
   TYPE_TASKABORTED: 'TaskAborted',
   TYPE_INFO: 'Info',
   TYPE_DEBUG: 'Debug',
+  TYPE_ERROR: 'Error',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
   TYPE_NEWOBSERVATION: 'NewObservation',

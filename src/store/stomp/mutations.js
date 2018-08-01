@@ -80,5 +80,9 @@ export default {
       console.debug(`Task with id = ${id} not founded`);
     }
   },
+
+  TASK_RESET_ALL(state) {
+    state.tasks = [];
+  },
 };
 

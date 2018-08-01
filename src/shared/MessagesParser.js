@@ -1,4 +1,5 @@
-import { IN, SHARED } from './MessagesConstants';
+import { IN } from './MessagesConstants';
+import { Constants } from './Helpers';
 
 function addLogToStore(dispatch, type, payload) {
   dispatch('view/pushLogAction', { type, payload }, { root: true });
@@ -7,23 +8,23 @@ function addLogToStore(dispatch, type, payload) {
 const PARSERS = {
   [IN.TYPE_TASKSTARTED]: (task, dispatch) => {
     dispatch('stomp/taskStart', task, { root: true });
-    addLogToStore(dispatch, SHARED.TYPE_DEBUG, `Started task with id ${task.id}`);
+    addLogToStore(dispatch, Constants.TYPE_DEBUG, `Started task with id ${task.id}`);
   },
   [IN.TYPE_TASKABORTED]: (task, dispatch) => {
     dispatch('stomp/taskAbort', task, { root: true });
-    addLogToStore(dispatch, SHARED.TYPE_ERROR, `Aborted task with id ${task.id}`);
+    addLogToStore(dispatch, Constants.TYPE_ERROR, `Aborted task with id ${task.id}`);
   },
   [IN.TYPE_TASKFINISHED]: (task, dispatch) => {
     dispatch('stomp/taskEnd', task, { root: true });
-    addLogToStore(dispatch, SHARED.TYPE_DEBUG, `Ended task with id ${task.id}`);
+    addLogToStore(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {
-    addLogToStore(dispatch, SHARED.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
+    addLogToStore(dispatch, Constants.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, dispatch) => {
     addLogToStore(
       dispatch,
-      SHARED.TYPE_DEBUG,
+      Constants.TYPE_DEBUG,
       `New observation received: ${JSON.stringify(observation, null, 4)}`,
     );
     console.log(`Observation:\n${JSON.stringify(observation, null, 4)}`);
@@ -36,13 +37,16 @@ const PARSERS = {
     }
   },
   [IN.TYPE_INFO]: (info, dispatch) => {
-    addLogToStore(dispatch, SHARED.TYPE_INFO, `Received an info: ${JSON.stringify(info)}`);
+    addLogToStore(dispatch, Constants.TYPE_INFO, `Received an info: ${JSON.stringify(info)}`);
   },
   [IN.TYPE_DEBUG]: (message, dispatch) => {
-    addLogToStore(dispatch, SHARED.TYPE_DEBUG, JSON.stringify(message));
+    addLogToStore(dispatch, Constants.TYPE_DEBUG, JSON.stringify(message));
+  },
+  [IN.TYPE_ERROR]: (message, dispatch) => {
+    addLogToStore(dispatch, Constants.TYPE_ERROR, JSON.stringify(message));
   },
   [IN.TYPE_QUERYRESULT]: (results, dispatch) => {
-    addLogToStore(dispatch, SHARED.TYPE_INFO, `Received search results: ${JSON.stringify(results)}`);
+    addLogToStore(dispatch, Constants.TYPE_INFO, `Received search results: ${JSON.stringify(results)}`);
     dispatch('data/storeSearchResult', results, { root: true });
   },
 };

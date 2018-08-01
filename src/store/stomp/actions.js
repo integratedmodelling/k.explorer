@@ -64,5 +64,12 @@ export default {
     commit('TASK_END', task);
     dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
+  /**
+   * if we do a context reset while observations are being calculated, we need to end all.
+   * The way is ending every task, so when it really ends, we do nothing
+   */
+  taskForceEndAll: ({ commit }) => {
+    commit('TASK_RESET_ALL');
+  },
 };
 

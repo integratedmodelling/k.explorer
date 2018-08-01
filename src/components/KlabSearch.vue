@@ -198,7 +198,6 @@ export default {
           this.$q.notify({
             message: this.$t('messages.noSpaceAllowedInSearch'),
             type: 'warning',
-            position: 'top-right',
             timeout: 1500,
           });
           break;
@@ -257,7 +256,7 @@ export default {
         this.$q.notify({
           message: this.$t('label.askForObservation', { urn: this.acceptedTokens.map(token => token.label).join(' ') }),
           type: 'info',
-          position: 'top',
+          // position: 'top',
           timeout: 2000,
         });
       } else {
@@ -345,13 +344,14 @@ export default {
         this.$q.notify({
           message: this.$t('messages.noSearchResults'),
           type: 'info',
-          position: 'top',
+          // position: 'top',
           timeout: 1000,
         });
       }
       this.setSpinner({ ...Constants.SPINNER_STOPPED, owner: this.$options.name });
       Vue.nextTick(() => {
         this.doneFunc(results);
+        this.autocomplete.keyboardIndex = 0;
       });
     },
     acceptedTokens() {

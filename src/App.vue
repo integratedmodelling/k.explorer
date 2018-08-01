@@ -8,14 +8,19 @@
 // This is for IE11 Promise polyfill
 // import 'es6-promise/auto';
 import { mapGetters, mapActions } from 'vuex';
+// import Vue from 'vue';
 import defaultTestTree from 'shared/test_tree';
-import { Helpers } from 'shared/Helpers';
+import { Helpers, Constants } from 'shared/Helpers';
 
 export default {
   name: 'App',
   computed: {
     ...mapGetters('stomp', [
       'queuedMessage',
+    ]),
+    ...mapGetters('view', [
+      'lastLogAction',
+      'logActions',
     ]),
   },
   sockets: {
@@ -63,6 +68,20 @@ export default {
       stompCleanQueue: 'stomp_cleanqueue',
     }),
   },
+  watch: {
+    logActions() {
+      const lastLogActionObject = this.lastLogAction();
+      if (lastLogActionObject !== null && lastLogActionObject.type === Constants.TYPE_ERROR) {
+        // Vue.nextTick(() => {
+        this.$q.notify({
+          message: lastLogActionObject.payload,
+          type: 'negative',
+          timeout: 1000,
+        });
+        // });
+      }
+    },
+  },
   beforeMount() {
     // TODO only for test proposal
     const testTree = this.$urlParams.get('test_tree') || false;
@@ -87,5 +106,8 @@ export default {
     width: 170px;
     height: 181px;
     background-image: url('statics/klab-spinner-opt.gif');
+  }
+  .q-notify {
+    padding: 5px;
   }
 </style>

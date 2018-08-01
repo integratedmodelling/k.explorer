@@ -19,7 +19,7 @@
 
         <q-toolbar-title>
           {{$t('label.appTitle')}}
-          <div slot="subtitle">{{ $t('label.running',{ version: $q.version}) }}</div>
+          <div slot="subtitle">{{ $t('label.appRunning',{ version: $q.version}) }}</div>
         </q-toolbar-title>
         <app-locale-switcher></app-locale-switcher>
       </q-toolbar>
@@ -63,7 +63,7 @@
       <router-view />
     </q-page-container>
     <q-layout-footer v-if="!isOnIde">
-      <div class="text-right text-primary q-ma-sm">{{ $t('label.footer') }}</div>
+      <div class="text-right text-primary q-ma-sm">{{ $t('label.appFooter') }}</div>
     </q-layout-footer>
   </q-layout>
 </template>

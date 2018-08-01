@@ -78,12 +78,15 @@
           size="md"
           class="no-padding"
           id="btn-reset-context"
-          icon="ion-close"
-          color="white"
-          :style="{ 'background': `rgb(${hexToRgb(controlColor.value)})` }"
-          label="sti cazzi"
+          icon="ion-close-circle-outline"
+          :color="controlColor.name"
           @click="resetContext"
-        ></q-btn>
+        ><q-tooltip
+          :offset="[0, 5]"
+          self="top middle"
+          anchor="bottom middle"
+        >{{ $t('label.btnContextReset') }}</q-tooltip>
+        </q-btn>
       </q-card-actions>
     </q-card>
     </transition>

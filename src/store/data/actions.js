@@ -23,6 +23,7 @@ export default {
       observation: Helpers.OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
+    dispatch('stomp/taskForceEndAll', null, { root: true });
   },
 
   /**

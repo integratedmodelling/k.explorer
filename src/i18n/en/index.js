@@ -1,13 +1,13 @@
 export default {
   label: {
     appTitle: 'k.LAB Explorer EN',
-    running: 'Running on Quasar v{version}',
+    appRunning: 'Running on Quasar v{version}',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
     klabNoDate: 'No date',
     klabMessagesToSend: 'There are one message in queue',
     modalNoConnection: 'No connection, please wait',
-    footer: 'k.LAB Explorer - 2018',
+    appFooter: 'k.LAB Explorer - 2018',
     treeTitle: 'Observation',
     reconnect: 'Reconnect',
     unknownLabel: 'Unknown',
@@ -16,6 +16,7 @@ export default {
     searchPlaceholder: 'Search in k.LAB',
     askForObservation: 'Asking for {urn}',
     noTokenDescription: 'No description available',
+    btnContextReset: 'Reset context',
   },
   messages: {
     connectionClosed: 'Connection closed',
