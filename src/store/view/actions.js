@@ -18,6 +18,10 @@ export default {
     dispatch('assignViewer', { observation: contextData, main: true });
   },
 
+  resetContextLayer: ({ commit }) => {
+    commit('SET_CONTEXT_LAYER', null);
+    commit('RESET_SEARCH');
+  },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
     commit('ADD_VIEWER_ELEMENT', { main, type, callback: resolve });

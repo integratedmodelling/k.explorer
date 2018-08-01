@@ -118,4 +118,7 @@ export default {
 };
 </script>
 <style lang="stylus">
+  .q-tree > .q-tree-node-child > .q-tree-node-header {
+    padding-left: 10px;
+  }
 </style>

@@ -1,5 +1,5 @@
 import { axiosInstance } from 'plugins/axios';
-import { Constants } from 'shared/Helpers';
+import { Constants, Helpers } from 'shared/Helpers';
 
 export default {
   /**
@@ -14,6 +14,15 @@ export default {
     // set new context
     commit('SET_CONTEXT', context);
     dispatch('view/setContextLayer', context, { root: true });
+  },
+
+  resetContext: ({ commit, dispatch }) => {
+    commit('SET_CONTEXT', null);
+    dispatch('view/resetContextLayer', null, { root: true });
+    dispatch('data/addObservation', {
+      observation: Helpers.OBSERVATION_DEFAULT,
+      main: true,
+    }, { root: true });
   },
 
   /**

@@ -1,11 +1,12 @@
 <template>
   <q-page padding>
+    <!--
     <img src="statics/klab-logo.png"/>
     <input type="text" v-model="color" name="color"/><br/>
     <input type="checkbox" v-model="animated" name="animated"/><br/>
     <input type="number" v-model="size" name="size"/><br/>
     <klab-spinner :animated="animated" :color="color" :size="size" class="q-ma-md full-width"/>
-    <!--
+    -->
     <div class="q-ma-md">
       <q-icon size="30px" name="ion-ios-add"></q-icon>
       <span class="q-ml-md">ion-ios-add</span>
@@ -2790,7 +2791,6 @@
       <q-icon size="30px" name="ion-md-woman"></q-icon>
       <span class="q-ml-md">ion-md-wine</span>
     </div>
-    -->
   </q-page>
 </template>
 

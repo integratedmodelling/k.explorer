@@ -103,15 +103,15 @@ export default {
     },
 
     drawContextLayer(newContextLayer, oldContextLayer) {
+      if (oldContextLayer !== null) {
+        // if context is changed, everything disappear
+        this.layers.clear();
+      }
       if (this.contextLayer === null) {
         return;
       }
       const polygon = this.contextLayer.getSource().getFeatures()[0].getGeometry();
       // this.map.addLayer(this.contextLayer);
-      if (oldContextLayer !== null) {
-        // if context is changed, everything disappear
-        this.layers.clear();
-      }
       this.layers.push(this.contextLayer);
       this.view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
     },

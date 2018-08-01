@@ -29,7 +29,7 @@
     >
       <q-card-title
         id="q-card-title"
-        :class="[ hasContext ? 'no-b-radius': '', 'q-pa-xs', 'no-margin', 'q-ma-xs']"
+        :class="[ hasContext ? 'no-b-radius': '', 'q-pa-xs', 'no-margin']"
         ref="dr-handler"
         :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
       >
@@ -61,10 +61,30 @@
       </q-card-title>
       <q-card-main
         v-show="hasContext && !isHidden"
-        class="q-pa-xs no-margin"
+        class="no-margin"
       >
         <component :is="content"></component>
       </q-card-main>
+      <q-card-actions
+        v-show="hasContext && !isHidden"
+        class="no-margin"
+        id="context-control"
+        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
+        align="end"
+      >
+        <q-btn
+          flat
+          round
+          size="md"
+          class="no-padding"
+          id="btn-reset-context"
+          icon="ion-close"
+          color="white"
+          :style="{ 'background': `rgb(${hexToRgb(controlColor.value)})` }"
+          label="sti cazzi"
+          @click="resetContext"
+        ></q-btn>
+      </q-card-actions>
     </q-card>
     </transition>
   </div>
@@ -110,6 +130,9 @@ export default {
   methods: {
     ...mapActions('view', [
       'searchStop',
+    ]),
+    ...mapActions('data', [
+      'resetContext',
     ]),
     hide() {
       this.draggableConfig.resetInitialPos = false;
@@ -195,11 +218,10 @@ export default {
   }
   .q-card-main {
     overflow: auto;
+    line-height: inherit;
     max-height: 70vh;
     background-color: alpha($faded, 75%);
-    padding-bottom:10px;
-    border-bottom-left-radius: 3px !important;
-    border-bottom-right-radius: 3px !important;
+    padding: 0 0 6px 0;
   }
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;
@@ -208,5 +230,15 @@ export default {
     max-height: 50px;
     text-shadow: 1px 0 0 #aaa;
     text-align: center;
+  }
+  #context-control {
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    padding: 0
+  }
+  #btn-reset-context {
+    margin: 5px 15px 5px 0;
+    width: 2em;
+    height 2em;
   }
 </style>
