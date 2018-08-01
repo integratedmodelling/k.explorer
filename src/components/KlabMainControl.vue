@@ -72,6 +72,7 @@
         :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
         align="end"
       >
+        <div class="q-ma-xs">&nbsp;</div>
         <q-btn
           flat
           round
@@ -81,13 +82,15 @@
           icon="ion-close-circle-outline"
           :color="controlColor.name"
           @click="resetContext"
+          v-if="!hasTasks"
         ><q-tooltip
           :offset="[0, 5]"
           self="top middle"
           anchor="bottom middle"
         >{{ $t('label.btnContextReset') }}</q-tooltip>
         </q-btn>
-      </q-card-actions>
+      </q-card-actions
+        >
     </q-card>
     </transition>
   </div>
@@ -122,6 +125,9 @@ export default {
     ...mapGetters('view', [
       'spinner',
       'searchIsActive',
+    ]),
+    ...mapGetters('stomp', [
+      'hasTasks',
     ]),
     controlColor() {
       return {
@@ -224,7 +230,7 @@ export default {
     line-height: inherit;
     max-height: 70vh;
     background-color: alpha($faded, 75%);
-    padding: 0 0 6px 0;
+    padding: 0 0 10px 0;
   }
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;
