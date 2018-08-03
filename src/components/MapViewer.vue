@@ -64,15 +64,18 @@ export default {
         this.$eventBus.$emit('map-size-changed');
       }
     },
-    onMoveEnd(event) {
+    onMoveEnd() {
       if (this.hasContext) {
         return;
       }
-      const { map } = event;
+      // const { map } = event;
+      this.sendRegionOfInterest();
+    },
+    sendRegionOfInterest() {
       let message = null;
       try {
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(proj.transformExtent(map.getView()
-          .calculateExtent(map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(proj.transformExtent(this.map.getView()
+          .calculateExtent(this.map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         this.pushLogAction({
           type: this.$constants.TYPE_ERROR,
@@ -90,7 +93,6 @@ export default {
         });
       }
     },
-
     findLayerById(id) {
       if (this.layers && this.layers !== null) {
         const layerArray = this.layers.getArray();
@@ -103,12 +105,13 @@ export default {
       return null;
     },
 
-    drawContextLayer(newContextLayer, oldContextLayer) {
+    drawContextLayer(newContextLayer, oldContextLayer = null) {
       if (oldContextLayer !== null) {
         // if context is changed, everything disappear
         this.layers.clear();
       }
       if (this.contextLayer === null) {
+        this.sendRegionOfInterest();
         return;
       }
       const polygon = this.contextLayer.getSource().getFeatures()[0].getGeometry();
