@@ -74,14 +74,14 @@ export default {
    * @param active if true, search is active
    * @constructor
    */
-  SEARCH_ACTIVE: (state, { active, char = null }) => {
+  SEARCH_ACTIVE: (state, { active, char = '' }) => {
     if (state.searchActive !== active) {
       state.searchLostChar = char;
       state.searchActive = active;
     }
   },
 
-  SEARCH_FOCUS: (state, { focused, char = null }) => {
+  SEARCH_FOCUS: (state, { focused, char = '' }) => {
     if (state.searchFocus !== focused) {
       state.searchLostChar = char;
       state.searchFocus = focused;
@@ -89,13 +89,13 @@ export default {
   },
 
   RESET_SEARCH_LOST_CHAR: (state) => {
-    state.searchLostChar = null;
+    state.searchLostChar = '';
   },
 
   RESET_SEARCH: (state) => {
     state.searchActive = false;
     state.searchFocus = false;
-    state.searchLostChar = false;
+    state.searchLostChar = '';
   },
 };
 

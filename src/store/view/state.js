@@ -54,5 +54,5 @@ export default {
   /**
    * a char that will be lost
    */
-  searchLostChar: null,
+  searchLostChar: '',
 };

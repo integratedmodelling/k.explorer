@@ -1,6 +1,6 @@
 <template>
   <div id="mc-search-div" ref="mc-search-div">
-    <div id="left-shadow"></div> <!-- TODO is useless to generate an exit effect when search scroll to left -->
+    <!-- <div id="left-shadow"></div>  TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
       :key="token.index"
@@ -14,9 +14,9 @@
       :style="{ 'border-color': token.selected ? token.rgb : 'transparent' }"
       :ref="'token-'+token.index"
       :tabindex="index"
-      @focus="onFocus(token,$event)"
-      @blur="onFocus(token,$event)"
-      @keydown="tokenOnKeyPressed"
+      @focus="onTokenFocus(token,$event)"
+      @blur="onTokenFocus(token,$event)"
+      @keydown="onKeyPressedOnToken"
     >{{ token.value }}
       <q-tooltip
         :delay="500"
@@ -30,24 +30,23 @@
     </div>
     <div class="tokens"><q-input
       :autofocus="true"
-      :color="controlColor.name"
       v-model="actualToken"
       :placeholder="$t('label.searchPlaceholder')"
-      size="10"
+      size="20"
       id="mc-search-input"
       ref="mc-search-input"
       :tabindex="acceptedTokens.length"
       :hide-underline="true"
-      @focus="searchFocus({focused: true})"
-      @blur="searchFocus({focused: false})"
-      @keydown="searchInputOnKeyPressed"
+      @focus="onInputFocus(true)"
+      @blur="onInputFocus(false)"
+      @keydown="onKeyPressedOnSearchInput"
       @keyup.esc="searchEnd"
     >
       <q-autocomplete
         @search="search"
         @selected="selected"
         @show="suggestionShowed = true"
-        @hide="suggestionShowed = false"
+        @hide="onAutocompleteHide"
         :debounce="200"
         :min-characters="2"
         :max-results="15"
@@ -80,9 +79,11 @@ export default {
       result: null,
       acceptedTokens: [],
       actualToken: '',
+      actualSearchString: '',
+      noSearch: false,
       searchDiv: null,
       searchInput: null,
-      autocomplete: null,
+      autocompleteEl: null,
       scrolled: 0,
       acceptedTokensCounter: 0,
       suggestionShowed: false,
@@ -105,6 +106,14 @@ export default {
         name: this.spinner.color,
       };
     },
+    inputSearchColor: {
+      get() {
+        return this.searchInput ? this.searchInput.$refs.input.style.color : 'black';
+      },
+      set(color) {
+        this.searchInput.$refs.input.style.color = color;
+      },
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -113,10 +122,21 @@ export default {
       'searchFocus',
       'resetSearchLostChar',
     ]),
-    onFocus(token, event) {
+    onTokenFocus(token, event) {
       token.selected = event.type === 'focus';
     },
-    tokenOnKeyPressed(event) {
+    onInputFocus(focused) {
+      this.searchFocus({ focused });
+      this.actualToken = this.actualSearchString;
+    },
+    onAutocompleteHide() {
+      this.suggestionShowed = false;
+      if (this.actualToken !== this.actualSearchString) {
+        this.noSearch = true;
+        this.resetSearchInput();
+      }
+    },
+    onKeyPressedOnToken(event) {
       if (event.keyCode === 37 || event.keyCode === 39) {
         event.preventDefault();
         const selected = this.acceptedTokens.findIndex(at => at.selected);
@@ -165,22 +185,27 @@ export default {
         }
       }
     },
-    searchInputOnKeyPressed(event) {
+    onKeyPressedOnSearchInput(event) {
+      this.noSearch = false;
       switch (event.keyCode) {
         case 13: // ENTER
           if (!this.suggestionShowed) {
-            this.askToKLab(event);
+            this.searchInKLab(event);
           }
           break;
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) {
             this.acceptedTokens.pop();
             event.preventDefault();
+          } else if (this.actualSearchString !== '') {
+            event.preventDefault();
+            this.actualSearchString = this.actualSearchString.slice(0, -1);
+            // this.actualToken = this.actualSearchString; TODO change
           }
           break;
         case 9: // TAB force to select with TAB
-          if (this.suggestionShowed && this.autocomplete.keyboardIndex !== -1) {
-            this.autocomplete.setValue(this.autocomplete.results[this.autocomplete.keyboardIndex]);
+          if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
+            this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
           }
           event.preventDefault();
           break;
@@ -202,13 +227,35 @@ export default {
           });
           break;
         default:
-          if (event.keyCode < 65 || event.keyCode > 90) {
+          if (event.keyCode !== 39 && (event.keyCode < 65 || event.keyCode > 90)) {
             event.preventDefault(); // only letters are permitted
+          } else {
+            event.preventDefault();
+            this.actualSearchString += event.key;
+            // this.searchInput.$refs.input.style.color = 'black';
+            // this.actualToken = this.actualSearchString; todo change
+            // this.autocompleteEl.trigger();
           }
           break;
       }
     },
+    // call when autocomplete decide that an element is selected
+    selected(item, isNavigation) {
+      if (!isNavigation) {
+        this.acceptedTokens.push(item);
+        // this.actualToken = ''; TODO change
+        this.actualSearchString = '';
+      } else {
+        this.inputSearchColor = item.rgb;
+      }
+    },
+    // call when autocomplete want to search
     search(terms, done) {
+      if (this.noSearch) { // only to intercept unwanted reactivity
+        this.noSearch = false;
+        done([]);
+        return;
+      }
       this.searchRequestId += 1;
       this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_REQUEST({
         requestId: this.searchRequestId,
@@ -216,7 +263,7 @@ export default {
         maxResults: this.maxResults,
         session: this.$store.state.data.session,
         cancelSearch: false,
-        queryString: this.actualToken, // terms split space
+        queryString: this.actualSearchString, // terms split space
       }).body);
       this.setSpinner({
         ...Constants.SPINNER_LOADING,
@@ -237,14 +284,8 @@ export default {
         this.doneFunc([]);
       }, 2000);
     },
-    selected(item) {
-      this.acceptedTokens.push(item);
-      this.actualToken = '';
-    },
-    tokenToString() {
-      return this.acceptedTokens.reduce((accumulator, token) => `${accumulator} ${token.id}`, '');
-    },
-    askToKLab() {
+    // ask for token to keylab to obtain possibility
+    searchInKLab() {
       if (this.acceptedTokens.length > 0) {
         const urn = this.acceptedTokens.map(token => token.id).join(' ');
         this.sendStompMessage(MESSAGES_BUILDERS.OBSERVATION_REQUEST({
@@ -264,20 +305,35 @@ export default {
       }
       this.searchEnd();
     },
+    // search reset
     searchEnd() {
-      this.searchContextId = null;
-      this.searchRequestId = 0;
-      this.doneFunc = null;
-      this.result = null;
-      this.acceptedTokens = [];
-      this.actualToken = '';
-      this.scrolled = 0;
-      this.acceptedTokensCounter = 0;
-      this.searchStop();
+      if (!this.suggestionShowed) {
+        this.searchContextId = null;
+        this.searchRequestId = 0;
+        this.doneFunc = null;
+        this.result = null;
+        this.acceptedTokens = [];
+        this.actualSearchString = ''; // actualToken is changed using watcher
+        this.scrolled = 0;
+        this.acceptedTokensCounter = 0;
+        this.noSearch = false;
+        this.searchStop();
+      }
+    },
+    // helper to reset the input search field (if tomorrow will be more complex)
+    resetSearchInput() {
+      this.actualToken = this.actualSearchString;
+      this.inputSearchColor = 'black';
     },
   },
   watch: {
+    // sinchronize actualSearchString with actualToken
+    actualSearchString() {
+      this.resetSearchInput();
+    },
+    // obtained some results
     searchResult(newResult) {
+      // if we are waiting for a results, we can stop waiting
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
         this.searchTimeout = null;
@@ -351,9 +407,10 @@ export default {
       this.setSpinner({ ...Constants.SPINNER_STOPPED, owner: this.$options.name });
       Vue.nextTick(() => {
         this.doneFunc(results);
-        this.autocomplete.keyboardIndex = 0;
+        this.autocompleteEl.keyboardIndex = 0;
       });
     },
+    // we have new token, scroll behaviour
     acceptedTokens() {
       Vue.nextTick(() => {
         const scrollValue = this.searchDiv.scrollWidth;
@@ -363,6 +420,7 @@ export default {
         }
       });
     },
+    // synchronize with app main keyboard event interception
     searchIsFocused(newValue) {
       if (newValue) {
         this.searchInput.focus();
@@ -373,9 +431,10 @@ export default {
         this.searchInput.blur();
       }
     },
+    // if a char was pressed without search input focus, is possible that it will be not write, so we do it
     searchLostChar(newValue) {
       if (newValue !== null) { // && this.actualToken === '') {
-        this.actualToken += newValue;
+        this.actualSearchString += newValue;
         this.resetSearchLostChar();
       }
     },
@@ -383,8 +442,10 @@ export default {
   mounted() {
     this.searchDiv = this.$refs['mc-search-div'];
     this.searchInput = this.$refs['mc-search-input'];
-    this.autocomplete = this.$refs['mc-autocomplete'];
-    this.actualToken = this.searchLostChar;
+    this.autocompleteEl = this.$refs['mc-autocomplete'];
+    this.actualSearchString = (this.searchLostChar === null) ? '' : this.searchLostChar;
+    this.inputSearchColor = 'black';
+    // this.actualToken = this.actualSearchString; TODO Change
     // Only in dev: stop the annoying warning of letter
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
@@ -443,7 +504,5 @@ export default {
   .q-popover {
     max-width: $main-control-width !important;
     border-radius: 10px;
-
-
   }
 </style>

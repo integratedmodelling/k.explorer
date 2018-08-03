@@ -14,7 +14,7 @@ export default {
     noContext: '',
     noObservation: 'No observations available',
     searchPlaceholder: 'Search in k.LAB',
-    askForObservation: 'Asking for {urn}',
+    askForObservation: 'Observing {urn}',
     noTokenDescription: 'No description available',
     btnContextReset: 'Reset context',
   },
