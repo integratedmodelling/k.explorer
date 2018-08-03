@@ -120,7 +120,7 @@ const Helpers = {
   },
   */
 
-  getLayerObject(observation, { isContext = false /* , projection = null */ }) {
+  getLayerObject(observation, { isContext = false, viewport = Constants.PARAMS_DEFAULT_VIEWPORT /* , projection = null */ }) {
     const { geometryTypes, encodedShape } = observation;
     const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
     const regexShape = regexWKT.exec(encodedShape);
@@ -147,6 +147,7 @@ const Helpers = {
           axiosInstance.get(src, {
             params: {
               format: Constants.GEOMTYP_RASTER,
+              viewport,
             },
             responseType: 'blob',
           })

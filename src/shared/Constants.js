@@ -170,6 +170,8 @@ export default {
   SHAPE_POLYGON: 'POLYGON',
   SHAPE_POINT: 'POINT',
 
+  PARAM_VIEWPORT_SIZE: 800, // default viewport for image layer
+  PARAM_VIEWPORT_MULTIPLIER: 2, // default viewport multiplier
   /**
    * Maps utility
    */
