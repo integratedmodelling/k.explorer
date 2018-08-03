@@ -124,7 +124,7 @@ const Helpers = {
     const { geometryTypes, encodedShape } = observation;
     const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
     const regexShape = regexWKT.exec(encodedShape);
-    const dataProjection = regexShape[1] || Constants.PROJ_EPSG_4326;
+    const dataProjection = regexShape[1] || (observation.spatialProjection !== null ? observation.spatialProjection : Constants.PROJ_EPSG_4326);
 
     const geometry = new WKT().readGeometry(regexShape[2], {
       dataProjection,
