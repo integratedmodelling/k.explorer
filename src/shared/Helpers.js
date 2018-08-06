@@ -66,9 +66,7 @@ const Helpers = {
    */
   findNodeById(tree, key = null) {
     if (tree && key !== null) {
-      // eslint-disable-next-line prefer-destructuring
-      const reduce = [].reduce;
-      // eslint-disable-next-line consistent-return
+      const { reduce } = [];
       const find = (result, node) => {
         if (result || !node) {
           return result;
@@ -82,6 +80,7 @@ const Helpers = {
         if (node.children && node.children.length > 0) {
           return find(null, node.children);
         }
+        return null;
       };
       return find(null, tree);
     }

@@ -47,11 +47,12 @@ export default {
     if (self !== null) {
       dispatch('view/pushLogAction', {
         type: Constants.TYPE_WARN,
-        message: 'Observation exists in tree',
+        payload: 'Observation exists in tree',
       }, { root: true });
       console.warn(`Observation with id ${observation.id} exists in actual context`);
       return;
     }
+
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
@@ -70,7 +71,7 @@ export default {
       let needSiblings = false;
       if (observation.siblingCount > 1 && folderId === null) {
         // if has siblings, create folder and ask for them
-        folderId = Math.floor(Date.now() / 1000); // TODO better name
+        folderId = Math.floor(Date.now() / 1000).toString(); // TODO better name
         commit('ADD_NODE', {
           node: {
             id: folderId,
@@ -100,6 +101,7 @@ export default {
           viewerIdx: observation.viewerIdx,
           children: [],
           noTick: observation.viewerIdx === null,
+          actions: observation.actions,
           folderId,
         },
         parentId: folderId === null ? observation.parentId : folderId,

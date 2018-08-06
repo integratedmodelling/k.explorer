@@ -12,18 +12,36 @@
     control-color="white"
     color="white"
     :dark="true"
-  ></q-tree>
+  >
+    <div slot="default-header" slot-scope="prop">
+      <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+    </div>
+  </q-tree>
   </div>
   <div class="q-ma-md text-center text-white" v-else>
     {{ $t('label.noObservation') }}
   </div>
-
-  <q-context-menu v-show="enableContextMenu" ref="context">
-    <q-list link separator no-border style="min-width: 150px; max-height: 300px;"
-            @click="$refs.context.close()">
-      <q-item>
-        <q-item-main :label="itemName"/>
-      </q-item>
+  <!--
+  Actions JSON:
+  {
+    "actionLabel": null,
+    "actionId": null,
+    "enabled": true,
+    "separator": true,
+    "submenu": []
+  },
+  -->
+  <q-context-menu v-show="enableContextMenu" ref="observations-context">
+    <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
+      <template v-for="(action, index) in itemActions">
+        <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
+        <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
+          <q-item-main :label="action.actionLabel"></q-item-main>
+        </q-item>
+        <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
+          <q-item-main :label="action.actionLabel"></q-item-main>
+        </q-item>
+      </template>
     </q-list>
   </q-context-menu>
   </div>
@@ -41,12 +59,14 @@ export default {
       ticked: [],
       selected: null,
       enableContextMenu: false,
-      itemName: '',
+      itemActions: [],
+      itemObservationId: null,
     };
   },
   computed: {
     ...mapGetters('data', [
       'tree',
+      'treeNode',
     ]),
   },
   methods: {
@@ -60,12 +80,43 @@ export default {
     ]),
     rightClickHandler(e) {
       e.preventDefault();
-      if (e.target.tagName === 'SPAN') {
-        this.itemName = e.target.innerHTML;
-        this.enableContextMenu = true;
+      let spanNode = null;
+      if (e.target.className === 'node-element') {
+        spanNode = e.target;
+      } else {
+        const spanNodeArray = e.target.getElementsByClassName('node-element');
+        if (spanNodeArray.length === 1) {
+          [spanNode] = spanNodeArray;
+        }
+      }
+      if (spanNode !== null) {
+        const observationId = spanNode.id.substring(5);
+        const node = this.treeNode(observationId);
+        if (node && node !== null) {
+          if (node.actions && node.actions.length > 0) {
+            this.itemActions = node.actions.slice(0);
+            this.itemObservationId = observationId;
+          } else {
+            this.itemActions = [{
+              actionId: null,
+              actionLabel: this.$t('messages.noActionForObservation'),
+              enabled: false,
+              separator: false,
+            }];
+            this.itemObservationId = null;
+          }
+        } else {
+          this.itemActions = [];
+          this.itemObservationId = null;
+        }
+        this.enableContextMenu = (this.itemActions && this.itemActions.length > 0);
       } else {
         this.enableContextMenu = false;
       }
+    },
+    askForAction(observationId, actionId) {
+      console.log(`Will ask for ${actionId} of observation ${observationId}`);
+      this.enableContextMenu = false;
     },
   },
   watch: {

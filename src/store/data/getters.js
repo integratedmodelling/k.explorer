@@ -1,8 +1,12 @@
+import { Helpers } from 'shared/Helpers';
+
 export default {
   /**
    * The observations tree
    */
   tree: state => state.tree,
+
+  treeNode: state => id => Helpers.findNodeById(state.tree, id),
 
   /**
    * The actual checked leaf in tree

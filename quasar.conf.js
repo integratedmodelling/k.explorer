@@ -98,6 +98,7 @@ module.exports = function (ctx) {
         'QItem',
         'QItemMain',
         'QItemSide',
+        'QItemSeparator',
         'QTree',
         'QResizeObservable',
         'QModal',

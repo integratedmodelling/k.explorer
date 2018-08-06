@@ -24,6 +24,7 @@ export default {
     connectionUnknown: 'Inizializzando...',
     noSpaceAllowedInSearch: 'Non è permesso utilizare spazi nella ricerca',
     noSearchResults: 'Non esistono risultati',
+    noActionForObservation: 'Nessuna azione disponibile',
   },
   errors: {
     connectionError: 'Errore di connessione',

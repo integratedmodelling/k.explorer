@@ -71,14 +71,13 @@ export default {
   watch: {
     logActions() {
       const lastLogActionObject = this.lastLogAction();
-      if (lastLogActionObject !== null && lastLogActionObject.type === Constants.TYPE_ERROR) {
-        // Vue.nextTick(() => {
+      if (lastLogActionObject !== null && (lastLogActionObject.type === Constants.TYPE_ERROR ||
+          lastLogActionObject.type === Constants.TYPE_WARN)) {
         this.$q.notify({
           message: lastLogActionObject.payload,
-          type: 'negative',
+          type: lastLogActionObject.type === Constants.TYPE_ERROR ? 'negative' : 'warning',
           timeout: 1000,
         });
-        // });
       }
     },
   },
