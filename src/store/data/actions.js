@@ -38,11 +38,20 @@ export default {
    * and the default center point is used in map
    * @main if true, indicate that this observation set his viewer as main
    */
-  addObservation: ({ commit, dispatch }, {
+  addObservation: ({ commit, state, dispatch }, {
     observation,
     folderId = null,
     main = false,
   }) => {
+    const self = Helpers.findNodeById(state.tree, observation.id);
+    if (self !== null) {
+      dispatch('view/pushLogAction', {
+        type: Constants.TYPE_WARN,
+        message: 'Observation exists in tree',
+      }, { root: true });
+      console.warn(`Observation with id ${observation.id} exists in actual context`);
+      return;
+    }
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
