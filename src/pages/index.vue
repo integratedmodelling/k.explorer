@@ -65,8 +65,13 @@ export default {
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
     },
-    modalVisible() {
-      return this.connectionState !== this.$constants.CONNECTION_UP;
+    modalVisible: {
+      get() {
+        return this.connectionState !== this.$constants.CONNECTION_UP;
+      },
+      set(visible) {
+        console.warn(`try to set modalVisible as ${visible}`);
+      },
     },
     modalText() {
       return {

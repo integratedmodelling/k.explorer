@@ -60,8 +60,14 @@ export default {
   watch: {
     errorMessage(newValue) {
       if (newValue !== null) {
-        console.error(newValue);
-        this.$q.notify(newValue);
+        let errorMessage;
+        if (newValue instanceof Error) {
+          errorMessage = newValue.message;
+        } else {
+          errorMessage = newValue;
+        }
+        console.error(errorMessage);
+        this.$q.notify(errorMessage);
       }
     },
   },
