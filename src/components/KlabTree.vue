@@ -1,4 +1,6 @@
 <template>
+  <div>
+  <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
   <q-tree
     ref="klabTree"
     :nodes="tree"
@@ -10,10 +12,20 @@
     control-color="white"
     color="white"
     :dark="true"
-    v-if="tree.length > 0"
   ></q-tree>
+  </div>
   <div class="q-ma-md text-center text-white" v-else>
     {{ $t('label.noObservation') }}
+  </div>
+
+  <q-context-menu v-show="enableContextMenu" ref="context">
+    <q-list link separator no-border style="min-width: 150px; max-height: 300px;"
+            @click="$refs.context.close()">
+      <q-item>
+        <q-item-main :label="itemName"/>
+      </q-item>
+    </q-list>
+  </q-context-menu>
   </div>
 </template>
 
@@ -28,6 +40,8 @@ export default {
     return {
       ticked: [],
       selected: null,
+      enableContextMenu: false,
+      itemName: '',
     };
   },
   computed: {
@@ -44,6 +58,15 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
+    rightClickHandler(e) {
+      e.preventDefault();
+      if (e.target.tagName === 'SPAN') {
+        this.itemName = e.target.innerHTML;
+        this.enableContextMenu = true;
+      } else {
+        this.enableContextMenu = false;
+      }
+    },
   },
   watch: {
     selected(selectedId) {

@@ -116,6 +116,7 @@ module.exports = function (ctx) {
         'QScrollArea',
         'QInput',
         'QTooltip',
+        'QContextMenu',
       ],
       directives: [
         'Ripple',
