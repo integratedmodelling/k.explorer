@@ -171,6 +171,7 @@ export default {
   SHAPE_POINT: 'POINT',
 
   PARAM_VIEWPORT_SIZE: 800, // default viewport for image layer
+  PARAM_VIEWPORT_MAX_SIZE: 7680, // 8K, possibly highest on August 2018
   PARAM_VIEWPORT_MULTIPLIER: 2, // default viewport multiplier
   /**
    * Maps utility

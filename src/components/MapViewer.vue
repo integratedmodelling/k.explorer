@@ -12,7 +12,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS } from 'shared/MapOptions';
-import { Helpers, Constants } from 'shared/Helpers';
+import { Helpers } from 'shared/Helpers';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Group from 'ol/layer/Group';
@@ -37,7 +37,7 @@ export default {
       view: null,
       layers: new Collection(),
       zIndexCounter: 0,
-      contextViewport: Constants.PARAM_VIEWPORT_SIZE,
+      // contextViewport: Constants.PARAM_VIEWPORT_SIZE,
     };
   },
   computed: {
@@ -119,6 +119,7 @@ export default {
       this.layers.push(this.contextLayer);
       this.view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
       // calculate viewport
+      /*
       const contextExtent = this.contextLayer.getSource().getExtent();
       const topLeft = this.map.getPixelFromCoordinate(extent.getTopLeft(contextExtent));
       const bottomLeft = this.map.getPixelFromCoordinate(extent.getBottomLeft(contextExtent));
@@ -127,6 +128,7 @@ export default {
       const width = topRight[0] - topLeft[0];
       const height = bottomLeft[1] - topLeft[1];
       this.contextViewport = Math.round(Math.max(width, height)) * Constants.PARAM_VIEWPORT_MULTIPLIER;
+      */
     },
 
     drawObservations(center = false) {
@@ -137,7 +139,7 @@ export default {
           let layer = this.findLayerById(observation.id);
           if (layer === null) {
             console.log(`Creating layer: ${observation.label}`);
-            layer = Helpers.getLayerObject(observation, { projection: this.proj, viewport: this.contextViewport });
+            layer = Helpers.getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
             this.zIndexCounter += 1;
             observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
             layer.setZIndex(observation.zIndex);

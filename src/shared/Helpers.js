@@ -120,7 +120,7 @@ const Helpers = {
   },
   */
 
-  getLayerObject(observation, { isContext = false, viewport = Constants.PARAMS_DEFAULT_VIEWPORT /* , projection = null */ }) {
+  getLayerObject(observation, { isContext = false, viewport = null /* , projection = null */ }) {
     const { geometryTypes, encodedShape } = observation;
     const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
     const regexShape = regexWKT.exec(encodedShape);
@@ -133,6 +133,12 @@ const Helpers = {
 
     // check if the layer is a raster
     if (geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined') {
+      if (viewport === null) {
+        viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * Constants.PARAM_VIEWPORT_MULTIPLIER;
+        // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
+      } else if (viewport > Constants.PARAM_VIEWPORT_MAX_SIZE) {
+        viewport = Constants.PARAM_VIEWPORT_MAX_SIZE;
+      }
       const layerExtent = geometry.getExtent();
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
