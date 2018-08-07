@@ -42,6 +42,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    /**
+     * Necesary to know if the spinner is visible. If yes, q.notify work
+     */
+    wrapperId: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     ...mapGetters('view', [
@@ -57,7 +64,15 @@ export default {
       return this.spinner.errorMessage;
     },
     isVisible() {
-      return !(this.$el.parentNode.style.display === 'none');
+      let hiddenNode;
+      if (this.wrapperId !== null) {
+        hiddenNode = document.getElementById(this.wrapperId);
+        if (hiddenNode && hiddenNode != null && hiddenNode.style) {
+          return !(hiddenNode.style.display === 'none');
+        }
+        return false;
+      }
+      return false;
     },
   },
   watch: {

@@ -17,6 +17,7 @@
         :color="controlColor.value"
         :size="40"
         :ball="25"
+        wrapperId="spinner-lonely"
         @dblclick.native="show"
       ></klab-spinner>
       </div>
@@ -48,6 +49,7 @@
             :color="controlColor.value"
             :size="40"
             :ball="25"
+            wrapperId="spinner-main"
             @dblclick.native="hide"
           ></klab-spinner>
         </div>

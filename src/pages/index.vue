@@ -8,13 +8,11 @@
     </div>
     <klab-main-control></klab-main-control>
     <q-modal
+        id="modal-connection-status"
         minimized
         v-model="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        v-if="connectionState === $constants.CONNECTION_UNKNOWN ||
-                connectionState === $constants.CONNECTION_ERROR ||
-                connectionState === $constants.CONNECTION_WORKING"
         :content-css="{width: '30vw', 'background-color': `rgba(${hexToRgb(modalColor)}, .5)`}"
         :content-classes="['text-center','round-modal','q-ma-sm']"
     >
@@ -34,7 +32,7 @@
           <div class="q-display-1 q-pa-md round-modal text-bold" :style="{color: modalColor}">
             {{ modalText  }}
           </div>
-          <klab-spinner :color="modalColor" :size="200" />
+          <klab-spinner :color="modalColor" :size="200" wrapperId="modal-connection-status" />
         </div>
       </div>
     </q-modal>
