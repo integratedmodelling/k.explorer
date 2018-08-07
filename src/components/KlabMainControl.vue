@@ -141,7 +141,7 @@ export default {
         boundingElement: undefined,
       },
       content: 'KlabTree',
-      additionalContentType: 'Metadata',
+      additionalContentType: '', // 'Metadata',
       additionalContent: 'Test de additionalContent',
     };
   },
