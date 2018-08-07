@@ -5,16 +5,21 @@
       enter-active-class="animated fadeInLeft"
       leave-active-class="animated fadeOutLeft"
     >
-      <q-btn
-        class="fixed shadow-1"
-        style="left:.5em; top:1.5em;"
-        :color="controlColor.name"
-        round
-        size="17px"
-        @click="show"
-        icon="ion-ios-bookmarks"
-        v-show="isHidden"
-      ></q-btn>
+      <div
+        id="spinner-lonely"
+        class="spinner-div"
+        :style="{ border: '2px solid '+controlColor.value }"
+        v-if="isHidden"
+      >
+      <klab-spinner
+        id="lonely-spinner"
+        :store-controlled="true"
+        :color="controlColor.value"
+        :size="40"
+        :ball="25"
+        @dblclick.native="show"
+      ></klab-spinner>
+      </div>
     </transition>
     <transition
       appear
@@ -24,8 +29,8 @@
     <q-card
       :class="['no-box','shadow','bg-transparent',hasContext ? 'with-context' : 'without-context', 'absolute-position']"
       :flat="true"
-      v-show="!isHidden"
-      v-draggable="draggableConfig"
+      v-if="!isHidden"
+      v-draggable="draggableConfMain"
     >
       <q-card-title
         id="q-card-title"
@@ -34,11 +39,11 @@
         :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
       >
         <div
-          id="spinner-div"
+          id="spinner-main"
+          class="spinner-div"
           :style="{ border: '2px solid '+controlColor.value }"
         >
           <klab-spinner
-            id="main-spinner"
             :store-controlled="true"
             :color="controlColor.value"
             :size="40"
@@ -61,9 +66,24 @@
       </q-card-title>
       <q-card-main
         v-show="hasContext && !isHidden"
-        class="no-margin"
+        class="no-margin relative-position"
       >
-        <component :is="content"></component>
+        <klab-splitter :margin="0" :hidden="metadata === '' ? 'right' : ''" @close-metadata="metadata = ''">
+          <div slot="left-pane">
+            <component :is="content" id="mc-main-content"></component>
+          </div>
+          <div slot="right-pane" v-if="metadata !== ''">
+            <transition
+              appear
+              enter-active-class="animated fadeIn"
+              leave-active-class="animated fadeOut"
+            >
+            <div
+              id="mc-split-metadata"
+            >{{ metadata }}</div>
+            </transition>
+          </div>
+        </klab-splitter>
       </q-card-main>
       <q-card-actions
         v-show="hasContext && !isHidden"
@@ -102,19 +122,22 @@ import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
 import KlabSearch from 'components/KlabSearch.vue';
+import KlabSplitter from 'components/KlabSplitter.vue';
 import Vue from 'vue';
+
 
 export default {
   name: 'klabMainControl',
   data() {
     return {
       isHidden: false,
-      draggableConfig: {
+      draggableConfMain: {
         handle: undefined,
         resetInitialPos: false,
         boundingElement: undefined,
       },
       content: 'KlabTree',
+      metadata: '',
     };
   },
   computed: {
@@ -144,11 +167,11 @@ export default {
       'resetContext',
     ]),
     hide() {
-      this.draggableConfig.resetInitialPos = false;
+      this.draggableConfMain.resetInitialPos = false;
       this.isHidden = true;
     },
     show() {
-      this.draggableConfig.resetInitialPos = true;
+      this.draggableConfMain.resetInitialPos = true;
       this.isHidden = false;
     },
     searchActivated() {
@@ -156,17 +179,17 @@ export default {
   },
   watch: {
     hasContext() { // TODO really???
-      this.draggableConfig.resetInitialPos = true;
+      this.draggableConfMain.resetInitialPos = true;
       Vue.nextTick(() => {
-        this.draggableConfig.resetInitialPos = false;
+        this.draggableConfMain.resetInitialPos = false;
       });
     },
   },
   mounted() {
-    this.draggableConfig.handle = this.$refs['dr-handler'];
-    this.draggableConfig.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+    this.draggableConfMain.handle = this.$refs['dr-handler'];
+    this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
     this.$eventBus.$on('map-size-changed', () => {
-      this.draggableConfig.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+      this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
     });
   },
   directives: {
@@ -176,14 +199,14 @@ export default {
     KlabTree,
     KlabSpinner,
     KlabSearch,
+    KlabSplitter,
   },
 };
 </script>
 
 <style lang="stylus">
   @import '~variables'
-  #spinner-div {
-    float: left;
+  .spinner-div {
     background-color: white;
     -webkit-border-radius: 40px;
     -moz-border-radius: 40px;
@@ -191,6 +214,14 @@ export default {
     padding:3px;
     width: 50px;
     height: 50px;
+  }
+  #spinner-main {
+    float: left;
+  }
+  #spinner-lonely {
+    position:absolute;
+    left:.5em;
+    top:1.5em;
   }
   #hide-btn {
     position: absolute;
@@ -230,7 +261,7 @@ export default {
     line-height: inherit;
     max-height: 70vh;
     background-color: alpha($faded, 75%);
-    padding: 0 0 10px 0;
+    padding: 0; /* 0 0 10px 0;*/
   }
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;
@@ -249,5 +280,9 @@ export default {
     margin: 5px 15px 5px 0;
     width: 2em;
     height 2em;
+  }
+  #mc-split-metadata {
+    color:white;
+    padding: 2px 5px;
   }
 </style>
