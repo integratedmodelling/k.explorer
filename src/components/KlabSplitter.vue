@@ -1,41 +1,45 @@
 <template>
-  <div :style="{ cursor, userSelect, flexDirection }" class="vue-splitter" @mouseup.prevent="onUp" @mousemove.prevent="onMouseMove" @touchmove.prevent="onMove" @touchend.prevent="onUp">
+  <div :style="{ cursor, userSelect, flexDirection, controllerStyle }" class="vue-splitter" @mouseup.prevent="onUp" @mousemove.prevent="onMouseMove" @touchmove.prevent="onMove" @touchend.prevent="onUp">
     <div :style="leftPaneStyle" class="left-pane splitter-pane">
       <slot name="left-pane"></slot>
     </div>
     <template v-if="!hidden">
-    <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown.prevent="onDown" @touchstart.prevent="onDown">
-      <q-btn
-        flat
-        round
-        size="md"
-        class="no-padding splitter-actions"
-        id="splitter-to-right"
-        icon="ion-arrow-dropright-circle"
-        @click.native="percent = 100"
-      ></q-btn>
-      <q-btn
-        flat
-        round
-        size="md"
-        class="no-padding splitter-actions"
-        id="splitter-to-left"
-        icon="ion-arrow-dropleft-circle"
-        @click.native="percent = 50"
-      ></q-btn>
-      <q-btn
-        flat
-        round
-        size="md"
-        class="no-padding splitter-actions"
-        id="splitter-close"
-        icon="ion-close-circle"
-        @click.native="$emit('close-metadata')"
-      ></q-btn>
-    </div>
-    <div :style="rightPaneStyle" class="right-pane splitter-pane">
-      <slot name="right-pane"></slot>
-    </div>
+      <div class="splitter-controllers" v-if="controllers">
+        <q-btn
+          flat
+          round
+          size="md"
+          class="no-padding splitter-actions"
+          id="splitter-to-right"
+          icon="ion-arrow-dropright-circle"
+          :style="{ color: controlsColor}"
+          @click.native="percent = 100"
+        ></q-btn>
+        <q-btn
+          flat
+          round
+          size="md"
+          class="no-padding splitter-actions"
+          id="splitter-to-left"
+          icon="ion-arrow-dropleft-circle"
+          :style="{ color: controlsColor}"
+          @click.native="percent = 0"
+        ></q-btn>
+        <q-btn
+          flat
+          round
+          size="md"
+          class="no-padding splitter-actions"
+          id="splitter-close"
+          icon="ion-close-circle"
+          :style="{ color: controlsColor}"
+          @click.native="$emit('close-metadata')"
+        ></q-btn>
+      </div>
+      <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown.prevent="onDown" @touchstart.prevent="onDown"></div>
+      <div :style="rightPaneStyle" class="right-pane splitter-pane">
+        <slot name="right-pane"></slot>
+      </div>
     </template>
   </div>
 </template>
@@ -60,9 +64,17 @@ export default {
       type: String,
       default: 'rgba(0, 0, 0, 0.2)',
     },
+    controlsColor: {
+      type: String,
+      default: 'rgba(192, 192, 192)',
+    },
     splitterSize: {
       type: Number,
       default: 3,
+    },
+    controllers: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -91,6 +103,9 @@ export default {
     },
     cursor() {
       return this.active ? (this.horizontal ? 'ns-resize' : 'ew-resize') : '';
+    },
+    controllerStyle() {
+      return !{ 'margin-top': '1.3em' };
     },
   },
   methods: {
@@ -162,16 +177,15 @@ export default {
     position: absolute;
     height: 1.2em;
     width: 1.2em;
-    color: black;
     right: 10px;
   }
   #splitter-to-right {
-    top: 1.2em;
+    top: 3.1em;
   }
   #splitter-to-left {
-    top: 2.5em;
+    top: 1.8em;
   }
   #splitter-close {
-    top: 3.8em;
+    top: 0.5em;
   }
 </style>
