@@ -1,50 +1,50 @@
 <template>
-  <div>
-  <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
-  <q-tree
-    ref="klabTree"
-    :nodes="tree"
-    node-key="id"
-    :ticked.sync="ticked"
-    :selected.sync="selected"
-    tick-strategy="strict"
-    text-color="white"
-    control-color="white"
-    color="white"
-    :dark="true"
-  >
-    <div slot="default-header" slot-scope="prop">
-      <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+  <main>
+    <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
+      <q-tree
+        ref="klabTree"
+        :nodes="tree"
+        node-key="id"
+        :ticked.sync="ticked"
+        :selected.sync="selected"
+        tick-strategy="strict"
+        text-color="white"
+        control-color="white"
+        color="white"
+        :dark="true"
+      >
+        <div slot="default-header" slot-scope="prop">
+          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+        </div>
+      </q-tree>
     </div>
-  </q-tree>
-  </div>
-  <div class="q-ma-md text-center text-white" v-else>
-    {{ $t('label.noObservation') }}
-  </div>
-  <!--
-  Actions JSON:
-  {
-    "actionLabel": null,
-    "actionId": null,
-    "enabled": true,
-    "separator": true,
-    "submenu": []
-  },
-  -->
-  <q-context-menu v-show="enableContextMenu" ref="observations-context">
-    <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
-      <template v-for="(action, index) in itemActions">
-        <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
-        <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-          <q-item-main :label="action.actionLabel"></q-item-main>
-        </q-item>
-        <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-          <q-item-main :label="action.actionLabel"></q-item-main>
-        </q-item>
-      </template>
-    </q-list>
-  </q-context-menu>
-  </div>
+    <div class="q-ma-md text-center text-white" v-else>
+      {{ $t('label.noObservation') }}
+    </div>
+    <!--
+    Actions JSON:
+    {
+      "actionLabel": null,
+      "actionId": null,
+      "enabled": true,
+      "separator": true,
+      "submenu": []
+    },
+    -->
+    <q-context-menu v-show="enableContextMenu" ref="observations-context">
+      <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
+        <template v-for="(action, index) in itemActions">
+          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
+          <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
+            <q-item-main :label="action.actionLabel"></q-item-main>
+          </q-item>
+          <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
+            <q-item-main :label="action.actionLabel"></q-item-main>
+          </q-item>
+        </template>
+      </q-list>
+    </q-context-menu>
+  </main>
 </template>
 
 <script>
