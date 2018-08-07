@@ -64,10 +64,12 @@
           id="hide-btn"
         ></q-btn>
       </q-card-title>
+
       <q-card-main
         v-show="hasContext && !isHidden"
         class="no-margin relative-position"
       >
+        <div data-simplebar>
         <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-metadata="additionalContentType = ''">
           <div slot="left-pane">
             <component :is="content" id="mc-main-content"></component>
@@ -82,6 +84,7 @@
             </transition>
           </div>
         </klab-splitter>
+        </div>
       </q-card-main>
       <q-card-actions
         v-show="hasContext && !isHidden"
@@ -122,6 +125,8 @@ import KlabTree from 'components/KlabTree.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
 import Metadata from 'components/additional/Metadata.vue';
+import 'simplebar'; // or "import SimpleBar from 'simplebar';" if you want to use it manually.
+import 'simplebar/dist/simplebar.css';
 import Vue from 'vue';
 
 
