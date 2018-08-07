@@ -68,19 +68,17 @@
         v-show="hasContext && !isHidden"
         class="no-margin relative-position"
       >
-        <klab-splitter :margin="0" :hidden="metadata === '' ? 'right' : ''" @close-metadata="metadata = ''">
+        <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-metadata="additionalContentType = ''">
           <div slot="left-pane">
             <component :is="content" id="mc-main-content"></component>
           </div>
-          <div slot="right-pane" v-if="metadata !== ''">
+          <div slot="right-pane">
             <transition
               appear
               enter-active-class="animated fadeIn"
               leave-active-class="animated fadeOut"
             >
-            <div
-              id="mc-split-metadata"
-            >{{ metadata }}</div>
+            <component :is="additionalContentType" id="mc-additional-content">{{ additionalContent }}</component>
             </transition>
           </div>
         </klab-splitter>
@@ -123,6 +121,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
+import Metadata from 'components/additional/Metadata.vue';
 import Vue from 'vue';
 
 
@@ -137,7 +136,8 @@ export default {
         boundingElement: undefined,
       },
       content: 'KlabTree',
-      metadata: '',
+      additionalContentType: 'Metadata',
+      additionalContent: 'Test de additionalContent',
     };
   },
   computed: {
@@ -200,6 +200,7 @@ export default {
     KlabSpinner,
     KlabSearch,
     KlabSplitter,
+    Metadata,
   },
 };
 </script>
@@ -281,7 +282,7 @@ export default {
     width: 2em;
     height 2em;
   }
-  #mc-split-metadata {
+  #mc-additional-content {
     color:white;
     padding: 2px 5px;
   }
