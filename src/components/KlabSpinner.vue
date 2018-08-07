@@ -56,10 +56,13 @@ export default {
     errorMessage() {
       return this.spinner.errorMessage;
     },
+    isVisible() {
+      return !(this.$el.parentNode.style.display === 'none');
+    },
   },
   watch: {
     errorMessage(newValue) {
-      if (newValue !== null) {
+      if (this.isVisible && newValue !== null) {
         let errorMessage;
         if (newValue instanceof Error) {
           errorMessage = newValue.message;

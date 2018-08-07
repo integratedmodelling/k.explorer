@@ -9,7 +9,7 @@
         id="spinner-lonely"
         class="spinner-div"
         :style="{ border: '2px solid '+controlColor.value }"
-        v-if="isHidden"
+        v-show="isHidden"
       >
       <klab-spinner
         id="lonely-spinner"
@@ -29,7 +29,7 @@
     <q-card
       :class="['no-box','shadow','bg-transparent',hasContext ? 'with-context' : 'without-context', 'absolute-position']"
       :flat="true"
-      v-if="!isHidden"
+      v-show="!isHidden"
       v-draggable="draggableConfMain"
     >
       <q-card-title
