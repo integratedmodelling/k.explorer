@@ -1,5 +1,5 @@
 <template>
-  <svg :width="size" :height="size" viewBox="-120 -120 250 250"
+  <svg class="klab-spinner" :width="size" :height="size" viewBox="-120 -120 250 250"
        version="1.1" xmlns="http://www.w3.org/2000/svg"
        xmlns:xlink="http://www.w3.org/1999/xlink">
     <image x="-100" y="-100" width="200" height="200"
@@ -85,7 +85,11 @@ export default {
           errorMessage = newValue;
         }
         console.error(errorMessage);
-        this.$q.notify(errorMessage);
+        this.$q.notify({
+          message: errorMessage,
+          type: 'error',
+          timeout: 1000,
+        });
       }
     },
   },

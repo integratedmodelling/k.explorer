@@ -1,8 +1,8 @@
 import { IN } from './MessagesConstants';
 import { Constants } from './Helpers';
 
-function addLogToStore(dispatch, type, payload) {
-  dispatch('view/pushLogAction', { type, payload }, { root: true });
+function addLogToStore(dispatch, type, message) {
+  dispatch('view/pushLogAction', { type, payload: { message } }, { root: true });
 }
 
 const PARSERS = {

@@ -9,31 +9,28 @@
     <klab-main-control></klab-main-control>
     <q-modal
         id="modal-connection-status"
-        minimized
         v-model="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        :content-css="{width: '30vw', 'background-color': `rgba(${hexToRgb(modalColor)}, .5)`}"
-        :content-classes="['text-center','round-modal','q-ma-sm']"
+        :content-css="{'background-color': `rgba(${hexToRgb(modalColor)}, 0.3)`}"
+        :content-classes="['text-center','modal-borders', 'no-padding', 'no-margin']"
     >
-      <div class="bg-white q-ma-md round-modal">
-        <div v-if="connectionState === $constants.CONNECTION_DOWN">
-          <div class="q-display-1 q-pa-md bg-opaque-white round-modal text-bol"
-               :style="{color: modalColor}">
-            {{ modalText }}
+      <div class="bg-opaque-white modal-borders no-padding no-margin">
+          <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
+            <klab-spinner
+              :color="modalColor"
+              :size="40"
+              :ball="18"
+              wrapperId="modal-connection-status"
+            />
+            <span>{{ modalText  }}</span>
           </div>
           <q-btn
+            v-if="connectionState === $constants.CONNECTION_DOWN"
             color="secondary"
             @click="reconnect"
           >{{ $t('label.reconnect') }}
           </q-btn>
-        </div>
-        <div v-else>
-          <div class="q-display-1 q-pa-md round-modal text-bold" :style="{color: modalColor}">
-            {{ modalText  }}
-          </div>
-          <klab-spinner :color="modalColor" :size="200" wrapperId="modal-connection-status" />
-        </div>
       </div>
     </q-modal>
   </q-page>
@@ -133,11 +130,25 @@ export default {
     border: 1px solid rgba(86, 61, 124, .2);
   }
   .bg-opaque-white {
-    background: rgba(255, 255, 255, 0.5)
+    background: rgba(255, 255, 255, 0.3)
   }
 </style>
 <style lang="stylus">
-  .round-modal
-    border-radius 20px
+  .modal-borders {
+    border-radius 40px;
+  }
+  .klab-spinner {
+    display: inline;
+    vertical-align: middle
+  }
+  .modal-klab-content {
+    vertical-align: middle;
+  }
+  .modal-klab-content > span {
+    width 150px;
+    display inline-block;
+    text-align left
+    margin-left 15px
+  }
 </style>
 

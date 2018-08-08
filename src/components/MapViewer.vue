@@ -79,7 +79,10 @@ export default {
       } catch (error) {
         this.pushLogAction({
           type: this.$constants.TYPE_ERROR,
-          payload: error,
+          payload: {
+            message: error.message,
+            attach: error,
+          },
         });
       }
       if (message && message.body) {
@@ -88,7 +91,7 @@ export default {
           type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARN,
           payload: {
             message: `Message ${message.validated ? '' : 'not '} validated`,
-            other: message,
+            attach: message,
           },
         });
       }
