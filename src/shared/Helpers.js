@@ -1,4 +1,4 @@
-/* eslint-disable object-curly-newline */
+/* eslint-disable object-curly-newline,prefer-destructuring */
 import SourceVector from 'ol/source/Vector';
 import LayerVector from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
@@ -162,7 +162,16 @@ const Helpers = {
   async getLayerObject(observation, { isContext = false, viewport = null /* , projection = null */ }) {
     const { geometryTypes } = observation;
     const isRaster = geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
-    const { spatialProjection } = isRaster ? this.findNodeById(observation.parentId) : observation;
+    let spatialProjection;
+    if (isRaster) {
+      if (observation.parentId === store.state.data.context.id) {
+        spatialProjection = store.state.data.context.spatialProjection;
+      } else {
+        spatialProjection = this.findNodeById(store.state.data.tree, observation.parentId).spatialProjection;
+      }
+    } else {
+      spatialProjection = observation.spatialProjection;
+    }
 
     let dataProjection;
     if (spatialProjection !== null) {
@@ -171,8 +180,9 @@ const Helpers = {
         dataProjection = await this.registerProjection(spatialProjection);
       }
     } else {
-      dataProjection = getProjection(Constants.PROJ_EPSG_4326);
+      dataProjection = Constants.PROJ_EPSG_4326;
     }
+    console.log(` USING PROJECTION ----->>>>> ${dataProjection}`);
     const { encodedShape } = observation;
     const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,

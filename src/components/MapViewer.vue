@@ -17,7 +17,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import Group from 'ol/layer/Group';
 import Collection from 'ol/Collection';
-import * as extent from 'ol/extent';
+// import * as extent from 'ol/extent';
 import * as proj from 'ol/proj';
 import 'ol/ol.css';
 
@@ -154,9 +154,9 @@ export default {
           });
         });
       }
-      this.centerLayers();
+      // this.centerLayers();
     },
-
+    /*
     centerLayers() {
       let totalExtent = null;
       this.layers.forEach((layer) => {
@@ -169,6 +169,7 @@ export default {
         this.view.fit(totalExtent);
       }
     },
+    */
   },
   watch: {
     contextLayer(newContextLayer, oldContextLayer) {
