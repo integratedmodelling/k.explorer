@@ -96,16 +96,23 @@ export default {
         });
       }
     },
-    findLayerById(id) {
+
+    async findLayerById(observation) {
       if (this.layers && this.layers !== null) {
         const layerArray = this.layers.getArray();
-        const found = layerArray.find(layer => layer.get('id') === id);
+        const found = layerArray.find(layer => layer.get('id') === observation.id);
         if (typeof found !== 'undefined') {
           return found;
         }
-        return null;
       }
-      return null;
+      // need to create new layer
+      console.log(`Creating layer: ${observation.label}`);
+      const layer = await Helpers.getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
+      this.zIndexCounter += 1;
+      observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
+      layer.setZIndex(observation.zIndex);
+      this.layers.push(layer);
+      return layer;
     },
 
     drawContextLayer(newContextLayer, oldContextLayer = null) {
@@ -134,44 +141,32 @@ export default {
       */
     },
 
-    drawObservations(center = false) {
+    drawObservations() {
       if (this.observations && this.observations.length > 0) {
-        let totalExtent = null;
-        let centerCoord = null;
         this.observations.forEach((observation) => {
-          let layer = this.findLayerById(observation.id);
-          if (layer === null) {
-            console.log(`Creating layer: ${observation.label}`);
-            layer = Helpers.getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
-            this.zIndexCounter += 1;
-            observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
-            layer.setZIndex(observation.zIndex);
-            this.layers.push(layer);
-          }
-          layer.setVisible(observation.visible);
-          if (observation.top) {
-            layer.setZIndex(observation.zIndexOffset + 100);
-          } else {
-            layer.setZIndex(observation.zIndex);
-          }
-          if (observation.visible) {
-            if (center) {
-              const layerExtent = layer.getSource().getExtent();
-              if (observation.shapeType === this.$constants.SHAPE_POINT) {
-                centerCoord = [totalExtent[0], totalExtent[1]];
-              } else {
-                totalExtent = totalExtent !== null ? extent.extend(totalExtent, layerExtent) : layerExtent;
-              }
+          this.findLayerById(observation).then((layer) => {
+            layer.setVisible(observation.visible);
+            if (observation.top) {
+              layer.setZIndex(observation.zIndexOffset + 100);
+            } else {
+              layer.setZIndex(observation.zIndex);
             }
-          }
+          });
         });
-        if (center) {
-          if (centerCoord !== null) {
-            this.center = centerCoord;
-          } else if (totalExtent !== null) {
-            this.view.fit(totalExtent);
-          }
+      }
+      this.centerLayers();
+    },
+
+    centerLayers() {
+      let totalExtent = null;
+      this.layers.forEach((layer) => {
+        if (layer.getVisible()) {
+          const layerExtent = layer.getSource().getExtent();
+          totalExtent = totalExtent !== null ? extent.extend(totalExtent, layerExtent) : layerExtent;
         }
+      });
+      if (totalExtent !== null) {
+        this.view.fit(totalExtent);
       }
     },
   },
@@ -208,7 +203,7 @@ export default {
       layers: this.layers,
     }));
     this.drawContextLayer();
-    this.drawObservations(true);
+    this.drawObservations();
   },
 };
 </script>

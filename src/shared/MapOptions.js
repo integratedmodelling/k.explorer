@@ -74,6 +74,15 @@ export const Layers = {
     // visible: false,
   }),
 
+  MAPBOX_CALI_TERRAIN: new Tile({
+    title: 'k.LAB Mapbox Cali terrain',
+    baseLayer: true,
+    source: new XYZ({
+      crossOrigin: 'anonymous',
+      url: 'https://api.mapbox.com/styles/v1/k-lab/cjkwh1z9z06ok2rrn9unfpn2n/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoiay1sYWIiLCJhIjoiY2prd2d2dWNxMHlvcDNxcDVsY3FncDBydiJ9.zMQE3gu-0qPpkLapVfVhnA',
+    }),
+  }),
+
   /* NOT FREE
   DIGITAL_GLOBE_IMAGINERY: new Tile({
     title: 'DigitalGlobe Imagery',
@@ -122,6 +131,7 @@ export const DEFAULT_OPTIONS = {
     // Layers.GOOGLE_STREET,
     // Layers.GOOGLE_HYBRID,
     Layers.GOOGLE_TERRAIN,
+    // Layers.MAPBOX_CALI_TERRAIN,
   ],
   target: 'map',
   projection: Constants.PROJ_EPSG_4326,

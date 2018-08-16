@@ -1,6 +1,6 @@
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
-// import Stroke from 'ol/style/Stroke';
+import Stroke from 'ol/style/Stroke';
 // import { colors } from 'quasar';
 /**
  * Useful constants in app
@@ -207,6 +207,12 @@ export default {
     */
     fill: new Fill({
       color: 'rgba(255, 102, 0, 0.4)',
+    }),
+  }),
+  LNE_OBSERVATION_STYLE: new Style({
+    stroke: new Stroke({
+      color: 'rgb(255, 102, 0)',
+      width: 2,
     }),
   }),
 

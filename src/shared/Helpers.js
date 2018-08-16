@@ -1,14 +1,17 @@
+/* eslint-disable object-curly-newline */
 import SourceVector from 'ol/source/Vector';
 import LayerVector from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
 import ImageLayer from 'ol/layer/Image';
 import Static from 'ol/source/ImageStatic';
-import * as proj from 'ol/proj';
+import { applyTransform } from 'ol/extent.js';
+import { get as getProjection, getTransform } from 'ol/proj.js';
+import { register } from 'ol/proj/proj4.js';
+import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 import store from 'store/index';
-// import * as extent from 'ol/extent';
 
 
 /**
@@ -119,19 +122,65 @@ const Helpers = {
   },
   */
 
-  getLayerObject(observation, { isContext = false, viewport = null /* , projection = null */ }) {
-    const { geometryTypes, encodedShape } = observation;
-    const regexWKT = /(EPSG:\d{4})?\s?(.*)/g;
-    const regexShape = regexWKT.exec(encodedShape);
-    const dataProjection = regexShape[1] || (observation.spatialProjection !== null ? observation.spatialProjection : Constants.PROJ_EPSG_4326);
+  registerProjection(projection) { // projection in format ESPG:XXXXX
+    return new Promise((resolve, reject) => {
+      const toAsk = projection.substring(5);
+      fetch(`https://epsg.io/?format=json&q=${toAsk}`)
+        .then(response => response.json().then((json) => {
+          const { results } = json;
+          if (results && results.length > 0) {
+            for (let i = 0, ii = results.length; i < ii; i += 1) {
+              const result = results[i];
+              if (result) {
+                const { code, proj4: proj4def, bbox } = result;
+                if (code && code.length > 0 && proj4def && proj4def.length > 0 &&
+                  bbox && bbox.length === 4) {
+                  const newProjCode = `EPSG:${code}`;
+                  proj4.defs(newProjCode, proj4def);
+                  register(proj4);
+                  const newProj = getProjection(newProjCode);
+                  const fromLonLat = getTransform(Constants.PROJ_EPSG_4326, newProj);
+                  // very approximate calculation of projection extent
+                  const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
+                  newProj.setExtent(extent);
+                  resolve(newProj);
+                } else {
+                  reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
+                }
+              } else {
+                reject(new Error('Some error in projection search result: no results'));
+              }
+            }
+          } else {
+            reject(new Error(`Unknown projection: ${projection}`));
+          }
+        }));
+    });
+  },
 
-    const geometry = new WKT().readGeometry(regexShape[2], {
+
+  async getLayerObject(observation, { isContext = false, viewport = null /* , projection = null */ }) {
+    const { geometryTypes } = observation;
+    const isRaster = geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
+    const { spatialProjection } = isRaster ? this.findNodeById(observation.parentId) : observation;
+
+    let dataProjection;
+    if (spatialProjection !== null) {
+      dataProjection = getProjection(spatialProjection);
+      if (dataProjection === null) { // unknows projection, need ask for it
+        dataProjection = await this.registerProjection(spatialProjection);
+      }
+    } else {
+      dataProjection = getProjection(Constants.PROJ_EPSG_4326);
+    }
+    const { encodedShape } = observation;
+    const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,
       featureProjection: Constants.PROJ_EPSG_3857,
     });
 
     // check if the layer is a raster
-    if (geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined') {
+    if (isRaster) {
       if (viewport === null) {
         viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * Constants.PARAM_VIEWPORT_MULTIPLIER;
         // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
@@ -142,7 +191,7 @@ const Helpers = {
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
       const source = new Static({
-        projection: proj.get('EPSG:3857'),
+        projection: getProjection(Constants.PROJ_EPSG_3857),
         imageExtent: layerExtent,
         // imageSize: [800, 800], // extent.getSize(layerExtent),
         url,
@@ -189,6 +238,7 @@ const Helpers = {
         source,
       });
     }
+
     const feature = new Feature({
       geometry,
       name: observation.label,
@@ -220,11 +270,12 @@ const Helpers = {
    */
   OBSERVATION_DEFAULT: {
     shapeType: 'POINT',
-    encodedShape: 'EPSG:4326 POINT (40.299841 9.343971)',
+    encodedShape: 'POINT (40.299841 9.343971)',
     id: null,
     label: 'DEFAULT',
     parentId: -1,
     visible: true,
+    spatialProjection: 'EPSG:4326',
     observationType: Constants.OBSTYP_INITIAL,
   },
 };
