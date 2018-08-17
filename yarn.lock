@@ -4504,6 +4504,10 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
 
+ol-layerswitcher@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-3.0.0.tgz#8ddcb8626af26d0c3177eca0a0e039e1e52a416b"
+
 ol@^5.0.0:
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/ol/-/ol-5.1.3.tgz#43f8fd796914c0436852cbc2087223943c0d9c7b"

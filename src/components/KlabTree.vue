@@ -13,8 +13,12 @@
         color="white"
         :dark="true"
       >
-        <div slot="default-header" slot-scope="prop">
+        <div slot="header-default" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+        </div>
+        <div slot="header-folder" slot-scope="prop">
+          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
         </div>
       </q-tree>
     </div>
@@ -194,5 +198,9 @@ export default {
 <style lang="stylus">
   .q-tree > .q-tree-node-child > .q-tree-node-header {
     padding-left: 10px;
+  }
+  .q-chip.node-folder {
+    position:absolute;
+    right: 10px;
   }
 </style>

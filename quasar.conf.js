@@ -118,6 +118,7 @@ module.exports = function (ctx) {
         'QInput',
         'QTooltip',
         'QContextMenu',
+        'QChip',
       ],
       directives: [
         'Ripple',

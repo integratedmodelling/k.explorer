@@ -1,6 +1,7 @@
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
+import Icon from 'ol/style/Icon';
 // import { colors } from 'quasar';
 /**
  * Useful constants in app
@@ -213,6 +214,12 @@ export default {
     stroke: new Stroke({
       color: 'rgb(255, 102, 0)',
       width: 2,
+    }),
+  }),
+  POINT_OBSERVATION_STYLE: new Style({
+    image: new Icon({
+      anchor: [0.5, 1],
+      src: 'assets/marker.png',
     }),
   }),
 

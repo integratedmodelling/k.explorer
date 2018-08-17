@@ -77,6 +77,7 @@ export default {
             id: folderId,
             label: `${observation.observable} folder`,
             type: Constants.GEOMTYP_FOLDER,
+            header: 'folder',
             children: [],
           },
           parentId: observation.parentId,

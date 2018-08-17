@@ -17,72 +17,73 @@ import Constants from './Constants';
 export const Layers = {
   OSM_LAYER: new Tile({
     title: 'Open Street Map',
-    baseLayer: true,
+    type: 'base',
     source: new OSM(),
-    // visible: false,
+    visible: false,
   }),
 
   STAMEN_WATER_COLOR_LAYER: new Tile({
     title: 'Stamen Watercolor',
-    baseLayer: true,
+    type: 'base',
     source: new Stamen({
       layer: 'watercolor',
     }),
-    // visible: false,
+    visible: false,
   }),
 
   OPEN_TOPO_MAT: new Tile({
     title: 'Open Topo',
-    baseLayer: true,
+    type: 'base',
     source: new XYZ({
       url: '//{a-c}.tile.opentopomap.org/{z}/{x}/{y}.png',
       attribution: '© OpenTopoMap',
     }),
-    // visible: false,
+    visible: false,
   }),
 
   GOOGLE_HYBRID: new Tile({
     title: 'Google Hybrid',
-    baseLayer: true,
+    type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
       url: 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
       attribution: '© 2018 Google, Inc',
     }),
-    // visible: false,
+    visible: false,
   }),
 
   GOOGLE_STREET: new Tile({
     title: 'Google Street',
-    baseLayer: true,
+    type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
       url: 'http://mt{0-3}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
       attribution: '© 2018 Google, Inc',
     }),
-    // visible: false,
+    visible: false,
   }),
 
   GOOGLE_TERRAIN: new Tile({
     title: 'Google Terrain',
-    baseLayer: true,
+    type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
       url: 'https://mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}',
       attribution: '© 2018 Google, Inc',
     }),
-    // visible: false,
+    visible: false,
   }),
 
   MAPBOX_CALI_TERRAIN: new Tile({
     title: 'k.LAB Mapbox Cali terrain',
-    baseLayer: true,
+    type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
       url: 'https://api.mapbox.com/styles/v1/k-lab/cjkwh1z9z06ok2rrn9unfpn2n/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoiay1sYWIiLCJhIjoiY2prd2d2dWNxMHlvcDNxcDVsY3FncDBydiJ9.zMQE3gu-0qPpkLapVfVhnA',
+      attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
     }),
+    visible: true,
   }),
-
   /* NOT FREE
   DIGITAL_GLOBE_IMAGINERY: new Tile({
     title: 'DigitalGlobe Imagery',
@@ -109,7 +110,7 @@ export const Layers = {
 
   BING_IMAGINERY: new Tile({
     title: 'Bing Imagery',
-    baseLayer: true,
+    type: 'base',
     source: new BingMaps({
       crossOrigin: 'anonymous',
       maxZoom: 19,
@@ -117,20 +118,20 @@ export const Layers = {
       imagerySet: 'AerialWithLabels',
       attribution: '© 2017 Bing, Inc',
     }),
-    // visible: false,
+    visible: false,
   }),
 };
 
 export const DEFAULT_OPTIONS = {
   controls: control.defaults({ attribution: false }).extend([]),
   layers: [
-    // Layers.STAMEN_WATER_COLOR_LAYER,
-    // Layers.OSM_LAYER,
-    // Layers.OPEN_TOPO_MAT,
+    Layers.STAMEN_WATER_COLOR_LAYER,
+    Layers.OSM_LAYER,
+    Layers.OPEN_TOPO_MAT,
     // Layers.BING_IMAGINERY,
-    // Layers.GOOGLE_STREET,
-    // Layers.GOOGLE_HYBRID,
-    // Layers.GOOGLE_TERRAIN,
+    Layers.GOOGLE_STREET,
+    Layers.GOOGLE_HYBRID,
+    Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_CALI_TERRAIN,
   ],
   target: 'map',

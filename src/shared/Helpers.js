@@ -124,7 +124,7 @@ const Helpers = {
 
   registerProjection(projection) { // projection in format ESPG:XXXXX
     return new Promise((resolve, reject) => {
-      const toAsk = projection.substring(5);
+      const toAsk = projection.substring(5); // ask without ESPG
       fetch(`https://epsg.io/?format=json&q=${toAsk}`)
         .then(response => response.json().then((json) => {
           const { results } = json;
@@ -143,6 +143,7 @@ const Helpers = {
                   // very approximate calculation of projection extent
                   const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
                   newProj.setExtent(extent);
+                  console.log(`New projection registered: ${newProjCode}`);
                   resolve(newProj);
                 } else {
                   reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
@@ -182,8 +183,11 @@ const Helpers = {
     } else {
       dataProjection = Constants.PROJ_EPSG_4326;
     }
-    console.log(` USING PROJECTION ----->>>>> ${dataProjection}`);
     const { encodedShape } = observation;
+    // normalize encodedShape
+    if (encodedShape.indexOf('LINEARRING') === 0) {
+      encodedShape.replace('LINEARRING', 'LINESTRING');
+    }
     const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,
       featureProjection: Constants.PROJ_EPSG_3857,
@@ -249,6 +253,17 @@ const Helpers = {
       });
     }
 
+    let layerStyle;
+    if (isContext) {
+      layerStyle = Constants.POLYGON_CONTEXT_STYLE;
+    } else if (encodedShape.indexOf('LNESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
+      layerStyle = Constants.LNE_OBSERVATION_STYLE;
+    } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
+      layerStyle = Constants.POINT_OBSERVATION_STYLE;
+    } else {
+      layerStyle = Constants.POLYGON_OBSERVATION_STYLE;
+    }
+
     const feature = new Feature({
       geometry,
       name: observation.label,
@@ -260,9 +275,7 @@ const Helpers = {
       source: new SourceVector({
         features: [feature],
       }),
-      style: isContext ?
-        Constants.POLYGON_CONTEXT_STYLE :
-        Constants.POLYGON_OBSERVATION_STYLE,
+      style: layerStyle,
     });
   },
 
