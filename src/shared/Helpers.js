@@ -12,7 +12,8 @@ import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 import store from 'store/index';
-
+import Text from 'ol/style/Text';
+import Style from 'ol/style/Style';
 
 /**
  * Helpers functions shared between components.
@@ -263,8 +264,15 @@ const Helpers = {
       layerStyle = Constants.LNE_OBSERVATION_STYLE;
       observation.zIndexOffset = 10000;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
-      layerStyle = Constants.POINT_OBSERVATION_STYLE;
-      // layerStyle.getText().setText(observation.label);
+      layerStyle = new Style({
+        image: Constants.POINT_OBSERVATION_ICON,
+        text: new Text({
+          text: observation.label,
+          textAlign: 'center',
+          textBaseline: 'bottom',
+          offsetY: -20,
+        }),
+      });
       observation.zIndexOffset = 20000;
     } else {
       layerStyle = Constants.POLYGON_OBSERVATION_STYLE;

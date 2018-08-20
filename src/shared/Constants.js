@@ -1,7 +1,8 @@
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
-import Circle from 'ol/style/Circle';
+// import Circle from 'ol/style/Circle';
+import Text from 'ol/style/Text';
 import Icon from 'ol/style/Icon';
 // import { colors } from 'quasar';
 /**
@@ -225,18 +226,16 @@ export default {
       opacity: 0.8,
     }),
   }),
-  NEW_POINT_OBSERVATION_STYLE: new Style({
-    image: new Circle({
-      radius: 10,
-      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' }),
-      stroke: new Stroke({ color: 'red', width: 1 }),
-    }),
-    text: new Text({
-      textAlign: 'center',
-      textBaseline: 'middle',
-      fill: new Fill({ color: '#000' }),
-      stroke: new Stroke({ color: '#000', width: 2 }),
-    }),
+  POINT_OBSERVATION_ICON: new Icon({
+    anchor: [0.5, 1],
+    src: 'statics/maps/marker.png',
+    opacity: 0.8,
+    scale: 0.6,
+  }),
+  POINT_OBSERVATION_TEXT: new Text({
+    textAlign: 'center',
+    textBaseline: 'bottom',
+    offsetY: -20,
   }),
 
   COLOR_PRIMARY: 'primary',
