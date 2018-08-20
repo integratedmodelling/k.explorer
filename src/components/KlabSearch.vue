@@ -375,10 +375,21 @@ export default {
       const results = [];
       // const totMatches = matches.length;
       matches.forEach((match/* ,index */) => {
-        const desc = Constants.SEMANTIC_TYPES[match.mainSemanticType];
-        if (typeof desc === 'undefined') {
-          console.warn(`Unknown semantic type: ${match.mainSemanticType}`);
+        const matchType = Constants.MATCH_TYPES[match.matchType];
+        if (typeof matchType === 'undefined') {
+          console.warn(`Unknown semantic type: ${match.matchType}`);
           return;
+        }
+        let desc;
+        if (match.mainSemanticType === null) {
+          desc = {
+            label: match.matchType,
+            symbol: match.matchType.substr(0, 2),
+            color: 'sem-default',
+            rgb: 'rgb(0, 0, 0)',
+          };
+        } else {
+          desc = Constants.SEMANTIC_TYPES[match.mainSemanticType];
         }
         results.push({
           value: match.name,

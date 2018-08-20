@@ -65,6 +65,44 @@ export default {
   /**
    * Semantic Types
    */
+  MATCH_TYPES: {
+    CONCEPT: {
+      label: 'Concept',
+      symbol: 'C',
+      color: 'sem-quality',
+      rgb: 'rgb(0, 0, 0)',
+    },
+    PREFIX_OPERATOR: {
+      label: 'Prefix operator',
+      symbol: 'Po',
+      color: 'sem-quality',
+      rgb: 'rgb(0, 0, 0)',
+    },
+    INFIX_OPERATOR: {
+      label: 'Infix operator',
+      symbol: 'Io',
+      color: 'sem-quality',
+      rgb: 'rgb(0, 0, 0)',
+    },
+    OBSERVATION: {
+      label: 'Observation',
+      symbol: 'O',
+      color: 'sem-quality',
+      rgb: 'rgb(0, 0, 0)',
+    },
+    MODEL: {
+      label: 'Model',
+      symbol: 'Ml',
+      color: 'sem-quality',
+      rgb: 'rgb(0, 0, 0)',
+    },
+    MODIFIER: {
+      label: 'Modifier',
+      symbol: 'Mf',
+      color: 'sem-quality',
+      rgb: 'rgb(0, 0, 0)',
+    },
+  },
   SEMANTIC_TYPES: {
     QUALITY: {
       label: 'Quality',
