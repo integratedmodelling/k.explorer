@@ -57,11 +57,6 @@ export default {
       observation.viewerIdx = viewerIdx;
       observation.visible = false;
       observation.top = false;
-      // if observation has geometryTypes isn't RASTER, add 100 to Z Index to force to stay on top
-      if (observation.geometryTypes) {
-        observation.zIndexOffset = observation.geometryTypes.indexOf(Constants.GEOMTYP_RASTER) < 0 ? 100 : 0;
-      }
-      // observation.zIndexTop = observation.geometryTypes.indexOf(Constants.GEOMTYP_RASTER) < 0 ? 1000 : 100; TODO: tiene sentido?
       observation.zIndex = 0;
       // add observation
       commit('ADD_OBSERVATION', observation);
@@ -78,6 +73,7 @@ export default {
             label: `${observation.observable} folder`,
             type: Constants.GEOMTYP_FOLDER,
             header: 'folder',
+            siblingCount: observation.siblingCount,
             children: [],
           },
           parentId: observation.parentId,
@@ -101,7 +97,8 @@ export default {
           type: observation.shapeType,
           viewerIdx: observation.viewerIdx,
           children: [],
-          noTick: observation.viewerIdx === -1,
+          tickable: observation.viewerIdx !== null && !observation.empty,
+          // noTick: observation.viewerIdx === -1,
           disabled: observation.empty,
           actions: observation.actions,
           folderId,

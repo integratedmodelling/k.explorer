@@ -106,7 +106,7 @@ export default {
           resolve(viewer.idx);
         }
       } else {
-        resolve(-1);
+        resolve(null);
       }
     }),
 

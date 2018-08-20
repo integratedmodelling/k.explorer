@@ -1,6 +1,7 @@
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
+import Circle from 'ol/style/Circle';
 import Icon from 'ol/style/Icon';
 // import { colors } from 'quasar';
 /**
@@ -221,8 +222,20 @@ export default {
     image: new Icon({
       anchor: [0.5, 1],
       src: 'statics/maps/marker.png',
-      opacity: 1,
-      scale: 0.25,
+      opacity: 0.8,
+    }),
+  }),
+  NEW_POINT_OBSERVATION_STYLE: new Style({
+    image: new Circle({
+      radius: 10,
+      fill: new Fill({ color: 'rgba(255, 0, 0, 0.1)' }),
+      stroke: new Stroke({ color: 'red', width: 1 }),
+    }),
+    text: new Text({
+      textAlign: 'center',
+      textBaseline: 'middle',
+      fill: new Fill({ color: '#000' }),
+      stroke: new Stroke({ color: '#000', width: 2 }),
     }),
   }),
 

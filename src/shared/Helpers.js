@@ -90,6 +90,7 @@ const Helpers = {
     return null;
   },
 
+  /*
   addToTree: (commit, { observation, needViewer, folderId }) => {
     commit('ADD_NODE', {
       node: {
@@ -104,7 +105,7 @@ const Helpers = {
       parentId: folderId === null ? observation.parentId : folderId,
     });
   },
-  /*
+
   getCoord: (allCoords, dataProjection = Constants.DEFAULT_PROJ_DATA) => {
     const coords = [];
     for (let i = 0, j = 0; i < allCoords.length; i += 1) {
@@ -192,9 +193,10 @@ const Helpers = {
       dataProjection,
       featureProjection: Constants.PROJ_EPSG_3857,
     });
-
     // check if the layer is a raster
     if (isRaster) {
+      // z-index offset = 0, raster is down
+      observation.zIndexOffset = 0;
       if (viewport === null) {
         viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * Constants.PARAM_VIEWPORT_MULTIPLIER;
         // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
@@ -256,12 +258,17 @@ const Helpers = {
     let layerStyle;
     if (isContext) {
       layerStyle = Constants.POLYGON_CONTEXT_STYLE;
+      observation.zIndexOffset = 0;
     } else if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
       layerStyle = Constants.LNE_OBSERVATION_STYLE;
+      observation.zIndexOffset = 10000;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
       layerStyle = Constants.POINT_OBSERVATION_STYLE;
+      // layerStyle.getText().setText(observation.label);
+      observation.zIndexOffset = 20000;
     } else {
       layerStyle = Constants.POLYGON_OBSERVATION_STYLE;
+      observation.zIndexOffset = 1000;
     }
 
     const feature = new Feature({

@@ -18,7 +18,7 @@
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
+          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
         </div>
       </q-tree>
     </div>
@@ -141,7 +141,7 @@ export default {
             const unselectedIds = [];
             const unselectChildren = (children) => {
               children.forEach((n) => {
-                if (!n.noTick) {
+                if (n.tickable) {
                   unselectedIds.push(n.id);
                   this.hideNode(n.id);
                 }
@@ -170,7 +170,7 @@ export default {
           const selectChildren = (children) => {
             let selectMainViewer = true;
             children.forEach((n) => {
-              if (!n.noTick) {
+              if (n.tickable) {
                 selectedIds.push(n.id);
                 this.showNode({ nodeId: n.id, selectMainViewer });
                 if (selectMainViewer) {
