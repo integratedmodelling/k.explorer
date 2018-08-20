@@ -6,18 +6,18 @@
       leave-active-class="animated fadeOutLeft"
     >
       <div
-        id="spinner-lonely"
+        id="spinner-lonely-div"
         class="spinner-div"
         :style="{ border: '2px solid '+controlColor.value }"
         v-show="isHidden"
       >
       <klab-spinner
-        id="lonely-spinner"
+        id="spinner-lonely"
         :store-controlled="true"
         :color="controlColor.value"
         :size="40"
         :ball="25"
-        wrapperId="spinner-lonely"
+        wrapperId="spinner-lonely-div"
         @dblclick.native="show"
       ></klab-spinner>
       </div>
@@ -42,7 +42,6 @@
         <div
           id="spinner-main"
           class="spinner-div"
-          :style="{ border: '2px solid '+controlColor.value }"
         >
           <klab-spinner
             :store-controlled="true"
@@ -220,13 +219,15 @@ export default {
     -moz-border-radius: 40px;
     border-radius: 40px;
     padding:3px;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
+    margin: 2px;
   }
   #spinner-main {
     float: left;
+    border: none;
   }
-  #spinner-lonely {
+  #spinner-lonely-div {
     position:absolute;
     left:.5em;
     top:1.5em;

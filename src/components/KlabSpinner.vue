@@ -12,6 +12,7 @@
       :r="ball"
       :style="{fill: realColor}"
       :class="{moving: this.moving}"
+      :stroke="stroke"
     ></circle>
   </svg>
 </template>
@@ -33,6 +34,10 @@ export default {
     color: {
       type: String,
       default: colors.getBrand('primary'),
+    },
+    stroke: {
+      type: String,
+      default: 'none',
     },
     animated: {
       type: Boolean,
