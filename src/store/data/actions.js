@@ -102,7 +102,7 @@ export default {
           viewerIdx: observation.viewerIdx,
           children: [],
           noTick: observation.viewerIdx === -1,
-          disabled: observation.shapeType === Constants.SHAPE_EMPTY,
+          disabled: observation.empty,
           actions: observation.actions,
           folderId,
         },
