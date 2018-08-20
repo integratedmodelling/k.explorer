@@ -120,7 +120,6 @@ export default {
       },
     })
       .then(({ data }) => {
-        console.log(JSON.stringify(data));
         if (data && data.siblingCount > 1 && data.siblings) {
           data.siblings.forEach((sibling) => {
             dispatch('addObservation', {
