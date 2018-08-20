@@ -220,7 +220,9 @@ export default {
   POINT_OBSERVATION_STYLE: new Style({
     image: new Icon({
       anchor: [0.5, 1],
-      src: 'assets/marker.png',
+      src: 'statics/maps/marker.png',
+      opacity: 1,
+      scale: 0.25,
     }),
   }),
 
