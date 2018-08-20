@@ -67,7 +67,7 @@ export default class {
   }
 
   debug(...args) {
-    if (this.hasDebug) console.log(...args);
+    if (this.hasDebug) console.debug(...args);
   }
 
   /**
