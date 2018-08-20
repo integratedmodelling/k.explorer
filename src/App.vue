@@ -28,6 +28,7 @@ export default {
       console.log(`On connect app: ${JSON.stringify(frame, null, 4)}`);
       this.sendQueue();
     },
+    /*
     onerror: (error) => {
       console.log(`Error: ${JSON.stringify(error)}`);
     },
@@ -40,7 +41,7 @@ export default {
       if (frame.body) {
         body = JSON.parse(frame.body);
       }
-      */
+      *
       console.log(`Received frame:\n${JSON.stringify(frame, null, 4)}`);
       //  ${body !== '' ? `\nBody:\n${JSON.stringify(body, null, 4)}` : ''}`); // (`On message: ${JSON.stringify(frame, null, 4)}`);
     },
@@ -50,6 +51,7 @@ export default {
     onclose: () => {
       console.log('Disconnected');
     },
+    */
     onsend({ headers, message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();

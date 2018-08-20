@@ -183,10 +183,10 @@ const Helpers = {
     } else {
       dataProjection = Constants.PROJ_EPSG_4326;
     }
-    const { encodedShape } = observation;
+    let { encodedShape } = observation;
     // normalize encodedShape
     if (encodedShape.indexOf('LINEARRING') === 0) {
-      encodedShape.replace('LINEARRING', 'LINESTRING');
+      encodedShape = encodedShape.replace('LINEARRING', 'LINESTRING');
     }
     const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,
@@ -256,7 +256,7 @@ const Helpers = {
     let layerStyle;
     if (isContext) {
       layerStyle = Constants.POLYGON_CONTEXT_STYLE;
-    } else if (encodedShape.indexOf('LNESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
+    } else if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
       layerStyle = Constants.LNE_OBSERVATION_STYLE;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
       layerStyle = Constants.POINT_OBSERVATION_STYLE;

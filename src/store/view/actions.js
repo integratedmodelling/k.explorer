@@ -42,7 +42,7 @@ export default {
   }, { observation, main = false }) =>
     new Promise((resolve, reject) => {
       // check what we need to do with observation based on his type
-      let viewerType;
+      let viewerType = null;
       // set the viewer type.
       // TODO now using observation type, better way will be need
       if (observation.observationType) {
@@ -106,7 +106,7 @@ export default {
           resolve(viewer.idx);
         }
       } else {
-        resolve(null);
+        resolve(-1);
       }
     }),
 
