@@ -170,7 +170,12 @@ const Helpers = {
       if (observation.parentId === store.state.data.context.id) {
         spatialProjection = store.state.data.context.spatialProjection;
       } else {
-        spatialProjection = this.findNodeById(store.state.data.tree, observation.parentId).spatialProjection;
+        const parent = this.findNodeById(store.state.data.tree, observation.parentId);
+        if (parent !== null && parent.spatialProjection) {
+          spatialProjection = parent.spatialProjection;
+        } else {
+          console.log(`Unknown parent with id ${observation.parentId}`);
+        }
       }
     } else {
       spatialProjection = observation.spatialProjection;
@@ -197,7 +202,7 @@ const Helpers = {
     // check if the layer is a raster
     if (isRaster) {
       // z-index offset = 0, raster is down
-      observation.zIndexOffset = 0;
+      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_RASTER;
       if (viewport === null) {
         viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * Constants.PARAM_VIEWPORT_MULTIPLIER;
         // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
@@ -262,7 +267,7 @@ const Helpers = {
       observation.zIndexOffset = 0;
     } else if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
       layerStyle = Constants.LNE_OBSERVATION_STYLE;
-      observation.zIndexOffset = 10000;
+      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_LINES;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
       layerStyle = new Style({
         image: Constants.POINT_OBSERVATION_ICON,
@@ -273,10 +278,10 @@ const Helpers = {
           offsetY: -20,
         }),
       });
-      observation.zIndexOffset = 20000;
+      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_POINTS;
     } else {
       layerStyle = Constants.POLYGON_OBSERVATION_STYLE;
-      observation.zIndexOffset = 1000;
+      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_POLYGONS;
     }
 
     const feature = new Feature({

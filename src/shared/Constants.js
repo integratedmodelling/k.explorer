@@ -69,38 +69,38 @@ export default {
     CONCEPT: {
       label: 'Concept',
       symbol: 'C',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 0, 0)',
+      color: 'sem-types',
+      rgb: 'rgb(38, 50, 56)',
     },
     PREFIX_OPERATOR: {
       label: 'Prefix operator',
       symbol: 'Po',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 0, 0)',
+      color: 'sem-types',
+      rgb: 'rgb(38, 50, 56)',
     },
     INFIX_OPERATOR: {
       label: 'Infix operator',
       symbol: 'Io',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 0, 0)',
+      color: 'sem-types',
+      rgb: 'rgb(38, 50, 56)',
     },
     OBSERVATION: {
       label: 'Observation',
       symbol: 'O',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 0, 0)',
+      color: 'sem-types',
+      rgb: 'rgb(38, 50, 56)',
     },
     MODEL: {
       label: 'Model',
       symbol: 'Ml',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 0, 0)',
+      color: 'sem-types',
+      rgb: 'rgb(38, 50, 56)',
     },
     MODIFIER: {
       label: 'Modifier',
       symbol: 'Mf',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 0, 0)',
+      color: 'sem-types',
+      rgb: 'rgb(38, 50, 56)',
     },
   },
   SEMANTIC_TYPES: {
@@ -298,5 +298,11 @@ export default {
       animated: false,
     },
   },
+
+  ZINDEX_OFFSET: 10000,
+  ZINDEX_MULTIPLIER_RASTER: 0,
+  ZINDEX_MULTIPLIER_POLYGONS: 1,
+  ZINDEX_MULTIPLIER_LINES: 2,
+  ZINDEX_MULTIPLIER_POINTS: 3,
 };
 

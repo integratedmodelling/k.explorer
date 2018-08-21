@@ -12,12 +12,11 @@
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS } from 'shared/MapOptions';
-import { Helpers } from 'shared/Helpers';
+import { Helpers, Constants } from 'shared/Helpers';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Group from 'ol/layer/Group';
 import Collection from 'ol/Collection';
-// import * as extent from 'ol/extent';
 import * as proj from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
@@ -160,7 +159,7 @@ export default {
             if (layer !== null) {
               layer.setVisible(observation.visible);
               if (observation.top) {
-                layer.setZIndex(observation.zIndexOffset + 100);
+                layer.setZIndex(observation.zIndexOffset + (Constants.ZINDEX_OFFSET - 1));
               } else {
                 layer.setZIndex(observation.zIndex);
               }

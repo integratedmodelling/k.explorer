@@ -377,19 +377,15 @@ export default {
       matches.forEach((match/* ,index */) => {
         const matchType = Constants.MATCH_TYPES[match.matchType];
         if (typeof matchType === 'undefined') {
-          console.warn(`Unknown semantic type: ${match.matchType}`);
+          console.warn(`Unknown type: ${match.matchType}`);
           return;
         }
-        let desc;
-        if (match.mainSemanticType === null) {
-          desc = {
-            label: match.matchType,
-            symbol: match.matchType.substr(0, 2),
-            color: 'sem-default',
-            rgb: 'rgb(0, 0, 0)',
-          };
-        } else {
-          desc = Constants.SEMANTIC_TYPES[match.mainSemanticType];
+        let desc = matchType;
+        if (match.mainSemanticType !== null) {
+          const mainSemanticType = Constants.SEMANTIC_TYPES[match.mainSemanticType];
+          if (typeof mainSemanticType !== 'undefined') {
+            desc = mainSemanticType;
+          }
         }
         results.push({
           value: match.name,
