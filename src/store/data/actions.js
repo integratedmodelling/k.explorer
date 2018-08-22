@@ -42,6 +42,7 @@ export default {
     observation,
     folderId = null,
     main = false,
+    addToTree = true,
   }) => new Promise((resolve) => {
     const self = Helpers.findNodeById(state.tree, observation.id);
     if (self !== null) {
@@ -81,7 +82,6 @@ export default {
         });
         needSiblings = true;
       }
-      dispatch('addNode', { observation, folderId });
       // ask for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
@@ -96,6 +96,9 @@ export default {
           offset: 0,
           count: Constants.SIBLINGS_TO_ASK_FOR,
         });
+      }
+      if (addToTree) {
+        dispatch('addNode', { observation, folderId });
       }
       return resolve();
     });
@@ -125,6 +128,7 @@ export default {
     folderId,
     offset = 0,
     count = Constants.SIBLINGS_TO_ASK_FOR,
+    addToTree = true,
   }) => new Promise((resolve) => {
     console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
@@ -141,16 +145,20 @@ export default {
               dispatch('addObservation', {
                 observation: sibling,
                 folderId,
+                addToTree,
               }).then(() => {
                 if (index === array.length - 1) {
                   // last element
-                  commit('ADD_LAST', {
-                    folderId,
-                    observationId: sibling.id,
-                    offsetToAdd: data.siblings.length,
-                    total: data.siblingCount,
-                  });
+                  if (addToTree) {
+                    commit('ADD_LAST', {
+                      folderId,
+                      observationId: sibling.id,
+                      offsetToAdd: data.siblings.length,
+                      total: data.siblingCount,
+                    });
+                  }
                   dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: nodeId }, { root: true });
+                  resolve();
                 }
               });
             });
