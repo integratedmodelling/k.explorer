@@ -81,27 +81,13 @@ export default {
         });
         needSiblings = true;
       }
+      dispatch('addNode', { observation, folderId });
       // ask for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child });
         });
       }
-      commit('ADD_NODE', {
-        node: {
-          id: observation.id,
-          label: observation.literalValue || observation.label,
-          type: observation.shapeType,
-          viewerIdx: observation.viewerIdx,
-          children: [],
-          tickable: observation.viewerIdx !== null && !observation.empty,
-          disabled: observation.empty,
-          actions: observation.actions,
-          header: 'default',
-          folderId,
-        },
-        parentId: folderId === null ? observation.parentId : folderId,
-      });
       // ask for siblings
       if (needSiblings) {
         dispatch('askForSiblings', {
@@ -115,6 +101,24 @@ export default {
     });
     return null;
   }),
+
+  addNode: ({ commit }, { observation, folderId }) => {
+    commit('ADD_NODE', {
+      node: {
+        id: observation.id,
+        label: observation.literalValue || observation.label,
+        type: observation.shapeType,
+        viewerIdx: observation.viewerIdx,
+        children: [],
+        tickable: observation.viewerIdx !== null && !observation.empty,
+        disabled: observation.empty,
+        actions: observation.actions,
+        header: 'default',
+        folderId,
+      },
+      parentId: folderId === null ? observation.parentId : folderId,
+    });
+  },
 
   askForSiblings: ({ commit, dispatch /* , getters */ }, {
     nodeId,
@@ -132,7 +136,6 @@ export default {
     })
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {
-          console.warn('SPINNER LOADING');
           dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: nodeId }, { root: true }).then(() => {
             data.siblings.forEach((sibling, index, array) => {
               dispatch('addObservation', {
@@ -148,7 +151,6 @@ export default {
                     total: data.siblingCount,
                   });
                   dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: nodeId }, { root: true });
-                  console.warn('SPINNER STOPPED');
                 }
               });
             });
