@@ -78,16 +78,17 @@ export default {
       'hideNode',
       'showNode',
       'selectNode',
+      'loadAllObservations',
     ]),
     ...mapActions('view', [
       'setSpinner',
     ]),
     itemCounter(node) {
       if (node && node !== null) {
-        if (node.siblingCount === node.children.length) {
+        if (node.siblingCount === node.siblingsInTree) {
           return node.siblingCount;
         }
-        return this.$t('label.itemCounter', { loaded: node.children.length, total: node.siblingCount });
+        return this.$t('label.itemCounter', { loaded: node.siblingsInTree, total: node.siblingCount });
       }
       return '';
     },
@@ -138,7 +139,7 @@ export default {
       this.selected = null;
     },
     ticked(newValues, oldValues) {
-      if (oldValues === newValues) {
+      if (oldValues === newValues) { // nothing change
         return;
       }
       if (oldValues.length > newValues.length) {
@@ -172,9 +173,14 @@ export default {
           }
         }
       } else {
+        // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
         const selectedNode = Helpers.findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
+          // is a folder
+          if (selectedNode.siblingsLoaded < selectedNode.siblingCount) {
+            this.loadAllObservations(selectedNode);
+          }
           let selectedIds = [];
           const selectChildren = (children) => {
             let selectMainViewer = true;

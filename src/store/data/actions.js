@@ -43,6 +43,7 @@ export default {
     folderId = null,
     main = false,
     addToTree = true,
+    visible = false,
   }) => new Promise((resolve) => {
     const self = Helpers.findNodeById(state.tree, observation.id);
     if (self !== null) {
@@ -56,7 +57,7 @@ export default {
 
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
-      observation.visible = false;
+      observation.visible = visible;
       observation.top = false;
       observation.zIndex = 0;
       // add observation
@@ -75,13 +76,15 @@ export default {
             type: Constants.GEOMTYP_FOLDER,
             header: 'folder',
             siblingCount: observation.siblingCount,
-            siblingAsked: 0,
+            siblingsLoaded: 1,
+            siblingsInTree: 1,
             children: [],
           },
           parentId: observation.parentId,
         });
         needSiblings = true;
       }
+      observation.folderId = folderId;
       // ask for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
@@ -123,12 +126,13 @@ export default {
     });
   },
 
-  askForSiblings: ({ commit, dispatch /* , getters */ }, {
+  askForSiblings: ({ commit, dispatch, state /* , getters */ }, {
     nodeId,
     folderId,
     offset = 0,
     count = Constants.SIBLINGS_TO_ASK_FOR,
     addToTree = true,
+    visible = false,
   }) => new Promise((resolve) => {
     console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
@@ -146,6 +150,7 @@ export default {
                 observation: sibling,
                 folderId,
                 addToTree,
+                visible,
               }).then(() => {
                 if (index === array.length - 1) {
                   // last element
@@ -162,6 +167,13 @@ export default {
                 }
               });
             });
+            const folder = Helpers.findNodeById(state.tree, folderId);
+            if (folder !== null) {
+              folder.siblingsLoaded += data.siblings.length;
+              if (addToTree) {
+                folder.siblingsInTree += data.siblings.length;
+              }
+            }
           });
         }
         resolve();
@@ -195,6 +207,20 @@ export default {
     const selectedObservation = state.observations.find(observation => observation.id === selectedId);
     if (selectedObservation && selectedObservation.visible && !selectedObservation.top) {
       dispatch('showNode', { nodeId: selectedId });
+    }
+  },
+
+  loadAllObservations: ({ dispatch, state }, folder) => {
+    const last = state.lasts.find(l => l.folderId === folder.id);
+    if (last && last !== null) {
+      dispatch('askForSiblings', {
+        nodeId: last.observationId,
+        folderId: folder.id,
+        offset: last.offsetToAdd,
+        count: -1,
+        addToTree: false,
+        visible: true,
+      });
     }
   },
 
