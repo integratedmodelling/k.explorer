@@ -203,25 +203,28 @@ export default {
       this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
     });
     this.scrollElement = (new SimpleBar(document.getElementById('simplebar-div'))).getScrollElement();
-    this.scrollElement.addEventListener('scroll', () => {
+    this.scrollElement.addEventListener('scroll', (event) => {
       if (this.askingForSiblings || this.lasts.length === 0) {
+        event.preventDefault();
         return;
       }
       const { bottom } = this.scrollElement.getBoundingClientRect(); // - this.scrollElement.getBoundingClientRect().top;
       this.lasts.forEach((last) => {
         const ltc = document.getElementById(`node-${last.observationId}`);
-        if (ltc !== null && ltc.getBoundingClientRect().bottom < bottom) {
-          console.log('Ask for more siblings');
-          this.askingForSiblings = true;
-          this.askForSiblings({
-            nodeId: last.observationId,
-            folderId: last.folderId,
-            offset: last.offset,
-            count: Constants.SIBLINGS_TO_ASK_FOR,
-            callback: () => {
+        if (ltc !== null) {
+          const ltcBoundingClinetRect = ltc.getBoundingClientRect();
+          if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
+            console.log('Ask for more siblings');
+            this.askingForSiblings = true;
+            this.askForSiblings({
+              nodeId: last.observationId,
+              folderId: last.folderId,
+              offset: last.offset,
+              count: Constants.SIBLINGS_TO_ASK_FOR,
+            }).then(() => {
               this.askingForSiblings = false;
-            },
-          });
+            });
+          }
         }
       });
     });

@@ -17,6 +17,7 @@ export default {
     askForObservation: 'Chiedendo {urn}',
     noTokenDescription: 'Descrizione non disponibile',
     btnContextReset: 'Reinizializzare il contesto',
+    itemCounter: '{loaded} di {total}',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

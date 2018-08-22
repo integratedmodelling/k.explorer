@@ -27,7 +27,8 @@ export default {
   },
 
   ADD_OBSERVATION: (state, observation) => {
-    console.log(`Added observation:\n${JSON.stringify(observation, null, 2)}`);
+    // console.log(`Added observation:\n${JSON.stringify(observation, null, 2)}`);
+    console.log(`Added observation: ${observation.label}`);
     state.observations.push(observation);
   },
 

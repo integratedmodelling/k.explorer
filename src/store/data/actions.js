@@ -42,7 +42,7 @@ export default {
     observation,
     folderId = null,
     main = false,
-  }) => {
+  }) => new Promise((resolve) => {
     const self = Helpers.findNodeById(state.tree, observation.id);
     if (self !== null) {
       dispatch('view/pushLogAction', {
@@ -50,7 +50,7 @@ export default {
         payload: 'Observation exists in tree',
       }, { root: true });
       console.warn(`Observation with id ${observation.id} exists in actual context`);
-      return;
+      return resolve();
     }
 
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
@@ -61,7 +61,7 @@ export default {
       // add observation
       commit('ADD_OBSERVATION', observation);
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
-        return;
+        return resolve();
       }
       let needSiblings = false;
       if (observation.siblingCount > 1 && folderId === null) {
@@ -87,15 +87,6 @@ export default {
           dispatch('addObservation', { observation: child });
         });
       }
-      // ask for siblings
-      if (needSiblings) {
-        dispatch('askForSiblings', {
-          nodeId: observation.id,
-          folderId,
-          offset: 0,
-          count: Constants.SIBLINGS_TO_ASK_FOR,
-        });
-      }
       commit('ADD_NODE', {
         node: {
           id: observation.id,
@@ -111,16 +102,26 @@ export default {
         },
         parentId: folderId === null ? observation.parentId : folderId,
       });
+      // ask for siblings
+      if (needSiblings) {
+        dispatch('askForSiblings', {
+          nodeId: observation.id,
+          folderId,
+          offset: 0,
+          count: Constants.SIBLINGS_TO_ASK_FOR,
+        });
+      }
+      return resolve();
     });
-  },
+    return null;
+  }),
 
-  askForSiblings({ commit, dispatch /* , getters */ }, {
+  askForSiblings: ({ commit, dispatch /* , getters */ }, {
     nodeId,
     folderId,
     offset = 0,
     count = Constants.SIBLINGS_TO_ASK_FOR,
-    callback = null,
-  }) {
+  }) => new Promise((resolve) => {
     console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
       params: {
@@ -131,27 +132,31 @@ export default {
     })
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {
-          data.siblings.forEach((sibling, index, array) => {
-            dispatch('addObservation', {
-              observation: sibling,
-              folderId,
-            });
-            if (index === array.length - 1) {
-              // last element
-              commit('ADD_LAST', {
+          console.warn('SPINNER LOADING');
+          dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: nodeId }, { root: true }).then(() => {
+            data.siblings.forEach((sibling, index, array) => {
+              dispatch('addObservation', {
+                observation: sibling,
                 folderId,
-                observationId: sibling.id,
-                offsetToAdd: data.siblings.length,
-                total: data.siblingCount,
+              }).then(() => {
+                if (index === array.length - 1) {
+                  // last element
+                  commit('ADD_LAST', {
+                    folderId,
+                    observationId: sibling.id,
+                    offsetToAdd: data.siblings.length,
+                    total: data.siblingCount,
+                  });
+                  dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: nodeId }, { root: true });
+                  console.warn('SPINNER STOPPED');
+                }
               });
-            }
+            });
           });
         }
-        if (callback !== null) {
-          callback();
-        }
+        resolve();
       });
-  },
+  }),
   /**
    * Hide a node in a tree, this hide the relative layer too
    * This will be in view?

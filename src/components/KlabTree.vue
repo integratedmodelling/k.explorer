@@ -18,7 +18,7 @@
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }} - ({{ prop.node.children.length }})</q-chip>
+          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ itemCounter(prop.node) }}</q-chip>
         </div>
       </q-tree>
     </div>
@@ -82,6 +82,15 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
+    itemCounter(node) {
+      if (node && node !== null) {
+        if (node.siblingCount === node.children.length) {
+          return node.siblingCount;
+        }
+        return this.$t('label.itemCounter', { loaded: node.children.length, total: node.siblingCount });
+      }
+      return '';
+    },
     rightClickHandler(e) {
       e.preventDefault();
       let spanNode = null;

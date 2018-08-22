@@ -116,9 +116,9 @@ export default {
     time = null,
     then = null,
     errorMessage = null,
-    owner = null,
-  }) => {
-    if (owner) {
+    owner,
+  }) => new Promise((resolve) => {
+    if (owner && owner !== null) {
       if (animated) {
         commit('ADD_TO_SPINNER_OWNERS', owner);
       } else {
@@ -131,15 +131,18 @@ export default {
           }
         }
       }
+      commit('SET_SPINNER', { animated, color, errorMessage });
+      if (time !== null && then !== null) {
+        // time and then for error are defined in Constants
+        setTimeout(() => {
+          dispatch('setSpinner', { ...then, owner });
+        }, time * 1000);
+      }
+      resolve();
+    } else {
+      throw new Error('No spinner owner!');
     }
-    commit('SET_SPINNER', { animated, color, errorMessage });
-    if (time !== null && then !== null) {
-      // time and then for error are defined in Constants
-      setTimeout(() => {
-        dispatch('setSpinner', then);
-      }, time * 1000);
-    }
-  },
+  }),
 
   searchStart: ({ commit }, char = null) => {
     commit('SEARCH_ACTIVE', { active: true, char });

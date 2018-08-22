@@ -278,7 +278,6 @@ export default {
           time: 2,
           then: {
             ...Constants.SPINNER_STOPPED,
-            owner: this.$options.name,
           },
         });
         this.doneFunc([]);
