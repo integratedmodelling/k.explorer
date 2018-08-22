@@ -70,7 +70,7 @@
         v-show="hasContext && !isHidden"
         class="no-margin relative-position"
       >
-        <div data-simplebar>
+        <div id="simplebar-div">
         <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-metadata="additionalContentType = ''">
           <div slot="left-pane">
             <component :is="content" id="mc-main-content"></component>
@@ -119,17 +119,17 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
+import Constants from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
 import Metadata from 'components/additional/Metadata.vue';
-import 'simplebar'; // or "import SimpleBar from 'simplebar';" if you want to use it manually.
+import SimpleBar from 'simplebar';
 import 'simplebar/dist/simplebar.css';
-import Vue from 'vue';
-
 
 export default {
   name: 'klabMainControl',
@@ -144,12 +144,16 @@ export default {
       content: 'KlabTree',
       additionalContentType: '', // 'Metadata',
       additionalContent: 'Test de additionalContent',
+      scrollElement: null,
+      askingForSiblings: false,
     };
   },
   computed: {
     ...mapGetters('data', [
       'hasContext',
       'contextLabel',
+      'lasts',
+      'tree',
     ]),
     ...mapGetters('view', [
       'spinner',
@@ -171,6 +175,7 @@ export default {
     ]),
     ...mapActions('data', [
       'resetContext',
+      'askForSiblings',
     ]),
     hide() {
       this.draggableConfMain.resetInitialPos = false;
@@ -196,6 +201,29 @@ export default {
     this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+    });
+    this.scrollElement = (new SimpleBar(document.getElementById('simplebar-div'))).getScrollElement();
+    this.scrollElement.addEventListener('scroll', () => {
+      if (this.askingForSiblings || this.lasts.length === 0) {
+        return;
+      }
+      const { bottom } = this.scrollElement.getBoundingClientRect(); // - this.scrollElement.getBoundingClientRect().top;
+      this.lasts.forEach((last) => {
+        const ltc = document.getElementById(`node-${last.observationId}`);
+        if (ltc !== null && ltc.getBoundingClientRect().bottom < bottom) {
+          console.log('Ask for more siblings');
+          this.askingForSiblings = true;
+          this.askForSiblings({
+            nodeId: last.observationId,
+            folderId: last.folderId,
+            offset: last.offset,
+            count: Constants.SIBLINGS_TO_ASK_FOR,
+            callback: () => {
+              this.askingForSiblings = false;
+            },
+          });
+        }
+      });
     });
   },
   directives: {

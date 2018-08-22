@@ -18,7 +18,7 @@
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
+          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }} - ({{ prop.node.children.length }})</q-chip>
         </div>
       </q-tree>
     </div>

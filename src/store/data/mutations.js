@@ -84,5 +84,44 @@ export default {
   STORE_RAW_SEARCH_RESULT: (state, result) => {
     state.searchResult = result;
   },
+
+  ADD_LAST: (state, {
+    folderId,
+    observationId,
+    offsetToAdd,
+    total,
+  }) => {
+    const lastIdx = state.lasts.findIndex(l => folderId === l.folderId);
+    if (lastIdx !== -1) {
+      const last = state.lasts[lastIdx];
+      if (last.offset + offsetToAdd + 1 >= last.total) {
+        state.lasts.splice(lastIdx, 1);
+        console.log(`Delete folder ${folderId}`);
+      } else {
+        last.observationId = observationId;
+        last.offset += offsetToAdd;
+        console.log(`Change folder ${folderId}. Now offset is ${last.offset} `);
+      }
+    } else {
+      if (offsetToAdd + 1 === total) {
+        console.log(`Nothin to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
+        return;
+      }
+      state.lasts.push({
+        folderId,
+        observationId,
+        offset: offsetToAdd,
+        total,
+      });
+      console.log(`Added folder ${folderId}. Offset is ${offsetToAdd} `);
+    }
+  },
+
+  REMOVE_LAST: (state, folderId) => {
+    const idxToRemove = state.lasts.findIndex(l => l.folderId === folderId);
+    if (idxToRemove !== -1) {
+      state.lasts.splice(idxToRemove, 1);
+    }
+  },
 };
 

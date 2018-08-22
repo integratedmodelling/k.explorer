@@ -66,7 +66,7 @@ export default {
       let needSiblings = false;
       if (observation.siblingCount > 1 && folderId === null) {
         // if has siblings, create folder and ask for them
-        folderId = Math.floor(Date.now() / 1000).toString(); // TODO better name
+        folderId = `f${Math.floor(Date.now() / 1000)}`; // TODO better name
         commit('ADD_NODE', {
           node: {
             id: folderId,
@@ -74,6 +74,7 @@ export default {
             type: Constants.GEOMTYP_FOLDER,
             header: 'folder',
             siblingCount: observation.siblingCount,
+            siblingAsked: 0,
             children: [],
           },
           parentId: observation.parentId,
@@ -88,7 +89,12 @@ export default {
       }
       // ask for siblings
       if (needSiblings) {
-        dispatch('askForSiblings', { node: observation, folderId });
+        dispatch('askForSiblings', {
+          nodeId: observation.id,
+          folderId,
+          offset: 0,
+          count: Constants.SIBLINGS_TO_ASK_FOR,
+        });
       }
       commit('ADD_NODE', {
         node: {
@@ -98,9 +104,9 @@ export default {
           viewerIdx: observation.viewerIdx,
           children: [],
           tickable: observation.viewerIdx !== null && !observation.empty,
-          // noTick: observation.viewerIdx === -1,
           disabled: observation.empty,
           actions: observation.actions,
+          header: 'default',
           folderId,
         },
         parentId: folderId === null ? observation.parentId : folderId,
@@ -108,22 +114,41 @@ export default {
     });
   },
 
-  askForSiblings({ dispatch /* , getters */ }, { node, folderId }) {
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${node.id}`, {
+  askForSiblings({ commit, dispatch /* , getters */ }, {
+    nodeId,
+    folderId,
+    offset = 0,
+    count = Constants.SIBLINGS_TO_ASK_FOR,
+    callback = null,
+  }) {
+    console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
       params: {
-        count: -1,
-        offset: 0,
+        count,
+        offset,
         childLevel: -1,
       },
     })
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {
-          data.siblings.forEach((sibling) => {
+          data.siblings.forEach((sibling, index, array) => {
             dispatch('addObservation', {
               observation: sibling,
               folderId,
             });
+            if (index === array.length - 1) {
+              // last element
+              commit('ADD_LAST', {
+                folderId,
+                observationId: sibling.id,
+                offsetToAdd: data.siblings.length,
+                total: data.siblingCount,
+              });
+            }
           });
+        }
+        if (callback !== null) {
+          callback();
         }
       });
   },
