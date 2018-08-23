@@ -51,7 +51,11 @@ export default {
     } else {
       const parent = Helpers.findNodeById(state.tree, parentId);
       if (parent !== null) {
-        parent.children.push(node);
+        parent.children.push({
+          ...node,
+          idx: parent.children.length,
+          siblingCount: parent.siblingCount,
+        });
       } else {
         state.orphans.push(node);
       }

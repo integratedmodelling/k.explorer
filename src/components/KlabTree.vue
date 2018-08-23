@@ -14,11 +14,12 @@
         :dark="true"
       >
         <div slot="header-default" slot-scope="prop">
-          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <span class="node-element" :id="`node-${prop.node.id}`" @click="showProp(prop)">{{ prop.node.label }}</span>
+          <q-chip class="node-chip transparent" small dense text-color="grey-9">{{ $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) }}</q-chip>
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ itemCounter(prop.node) }}</q-chip>
+          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
         </div>
       </q-tree>
     </div>
@@ -85,14 +86,8 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
-    itemCounter(node) {
-      if (node && node !== null) {
-        // if (node.siblingCount === node.siblingsVisibleInTree) {
-        return node.siblingCount;
-        // }
-        // return this.$t('label.itemCounter', { loaded: node.siblingsVisibleInTree, total: node.siblingCount });
-      }
-      return '';
+    showProp(prop) {
+      console.dir(prop);
     },
     rightClickHandler(e) {
       e.preventDefault();
@@ -253,7 +248,7 @@ export default {
   .q-tree > .q-tree-node-child > .q-tree-node-header {
     padding-left: 24px;
   }
-  .q-chip.node-folder {
+  .q-chip.node-chip {
     position:absolute;
     right: 10px;
   }
