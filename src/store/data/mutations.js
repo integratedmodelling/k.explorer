@@ -58,6 +58,32 @@ export default {
     }
   },
 
+  SET_FOLDER_VISIBLE: (state, {
+    folderId,
+    visible,
+    callback = null,
+  }) => {
+    state.observations.forEach((observation) => {
+      if (observation.folderId === folderId) {
+        observation.visible = visible;
+        observation.top = visible;
+        if (callback !== null) {
+          callback(observation);
+        }
+      } else {
+        observation.top = false;
+      }
+    });
+    // set node ticked (for tree view)
+    const node = Helpers.findNodeById(state.tree, folderId);
+    if (node && node !== null && node.children.length > 0) {
+      node.children.forEach((n) => {
+        n.ticked = visible;
+      });
+      node.ticked = visible;
+    }
+  },
+
   SET_VISIBLE: (state, {
     id,
     visible,
@@ -105,7 +131,7 @@ export default {
       }
     } else {
       if (offsetToAdd + 1 === total) {
-        console.log(`Nothin to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
+        console.log(`Nothing to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
         return;
       }
       state.lasts.push({

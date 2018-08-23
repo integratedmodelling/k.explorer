@@ -122,7 +122,7 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import Constants from 'shared/Constants';
+import { Helpers, Constants } from 'shared/Helpers';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTree from 'components/KlabTree.vue';
 import KlabSearch from 'components/KlabSearch.vue';
@@ -216,13 +216,16 @@ export default {
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
             console.log('Ask for more siblings');
             this.askingForSiblings = true;
+            const folder = Helpers.findNodeById(this.tree, last.folderId);
             this.askForSiblings({
               nodeId: last.observationId,
               folderId: last.folderId,
               offset: last.offset,
               count: Constants.SIBLINGS_TO_ASK_FOR,
+              visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
             }).then(() => {
               this.askingForSiblings = false;
+              this.$eventBus.$emit('updateFolder', { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
             });
           }
         }

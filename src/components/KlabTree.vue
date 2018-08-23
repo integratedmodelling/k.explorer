@@ -71,6 +71,7 @@ export default {
     ...mapGetters('data', [
       'tree',
       'treeNode',
+      'lasts',
     ]),
   },
   methods: {
@@ -78,17 +79,18 @@ export default {
       'hideNode',
       'showNode',
       'selectNode',
-      'loadAllObservations',
+      'askForSiblings',
+      'setFolderVisibility',
     ]),
     ...mapActions('view', [
       'setSpinner',
     ]),
     itemCounter(node) {
       if (node && node !== null) {
-        if (node.siblingCount === node.siblingsInTree) {
-          return node.siblingCount;
-        }
-        return this.$t('label.itemCounter', { loaded: node.siblingsInTree, total: node.siblingCount });
+        // if (node.siblingCount === node.siblingsVisibleInTree) {
+        return node.siblingCount;
+        // }
+        // return this.$t('label.itemCounter', { loaded: node.siblingsVisibleInTree, total: node.siblingCount });
       }
       return '';
     },
@@ -148,6 +150,9 @@ export default {
         const unselectedNode = Helpers.findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
           if (unselectedNode.type === Constants.GEOMTYP_FOLDER) {
+            this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
+            this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
+            /*
             const unselectedIds = [];
             const unselectChildren = (children) => {
               children.forEach((n) => {
@@ -164,6 +169,7 @@ export default {
             if (unselectedIds.length > 0) {
               this.ticked = this.ticked.filter(n => unselectedIds.indexOf(n) === -1);
             }
+            */
           } else {
             if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
               // we unselect the folder
@@ -177,10 +183,28 @@ export default {
         const { [newValues.length - 1]: selectedId } = newValues;
         const selectedNode = Helpers.findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
-          // is a folder
+          const tickAll = () => {
+            this.setFolderVisibility({ folderId: selectedNode.id, visible: true });
+            this.ticked.push(...(selectedNode.children.map(child => child.id)));
+          };
           if (selectedNode.siblingsLoaded < selectedNode.siblingCount) {
-            this.loadAllObservations(selectedNode);
+            const node = this.lasts.find(l => l.folderId === selectedNode.id);
+            this.askForSiblings({
+              nodeId: node.observationId,
+              folderId: node.folderId,
+              offset: selectedNode.siblingsLoaded - 1,
+              count: -1,
+              addToTree: false,
+              visible: true,
+            }).then(() => {
+              tickAll();
+            });
+          } else {
+            tickAll();
           }
+
+          // is a folder
+          /*
           let selectedIds = [];
           const selectChildren = (children) => {
             let selectMainViewer = true;
@@ -200,19 +224,34 @@ export default {
               selectedIds = selectedIds.filter(n => this.ticked.indexOf(n) === -1);
               this.ticked.push(...selectedIds);
             }
-          };
-          selectChildren(selectedNode.children);
+
+          }
+          */
         } else {
           this.showNode({ nodeId: selectedId, selectMainViewer: true });
         }
       }
     },
   },
+  mounted() {
+    this.$eventBus.$on('updateFolder', (event) => {
+      if (event && event.folderId) {
+        const folder = Helpers.findNodeById(this.tree, event.folderId);
+        if (folder && folder !== null) {
+          if (event.visible) {
+            this.ticked.push(...(folder.children.map(child => child.id)));
+          } else {
+            this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
+          }
+        }
+      }
+    });
+  },
 };
 </script>
 <style lang="stylus">
   .q-tree > .q-tree-node-child > .q-tree-node-header {
-    padding-left: 10px;
+    padding-left: 24px;
   }
   .q-chip.node-folder {
     position:absolute;

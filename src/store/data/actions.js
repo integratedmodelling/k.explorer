@@ -45,13 +45,20 @@ export default {
     addToTree = true,
     visible = false,
   }) => new Promise((resolve) => {
-    const self = Helpers.findNodeById(state.tree, observation.id);
-    if (self !== null) {
-      dispatch('view/pushLogAction', {
-        type: Constants.TYPE_WARN,
-        payload: 'Observation exists in tree',
-      }, { root: true });
-      console.warn(`Observation with id ${observation.id} exists in actual context`);
+    const existingObservation = state.observations.find(obs => obs.id === observation.id);
+    if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
+      const self = Helpers.findNodeById(state.tree, observation.id);
+      if (self !== null) {
+        dispatch('view/pushLogAction', {
+          type: Constants.TYPE_WARN,
+          payload: {
+            message: `Observation with id ${observation.id} exists in actual context`,
+          },
+        }, { root: true });
+        return resolve();
+      }
+      // not exists in tree, so only add to tree
+      dispatch('addToTree', existingObservation);
       return resolve();
     }
 
@@ -77,7 +84,7 @@ export default {
             header: 'folder',
             siblingCount: observation.siblingCount,
             siblingsLoaded: 1,
-            siblingsInTree: 1,
+            siblingsVisibleInTree: 1,
             children: [],
           },
           parentId: observation.parentId,
@@ -88,7 +95,7 @@ export default {
       // ask for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
-          dispatch('addObservation', { observation: child });
+          dispatch('addObservation', { observation: child, addToTree });
         });
       }
       // ask for siblings
@@ -101,14 +108,14 @@ export default {
         });
       }
       if (addToTree) {
-        dispatch('addNode', { observation, folderId });
+        dispatch('addToTree', observation);
       }
       return resolve();
     });
     return null;
   }),
 
-  addNode: ({ commit }, { observation, folderId }) => {
+  addToTree: ({ commit }, observation) => {
     commit('ADD_NODE', {
       node: {
         id: observation.id,
@@ -120,9 +127,9 @@ export default {
         disabled: observation.empty,
         actions: observation.actions,
         header: 'default',
-        folderId,
+        folderId: observation.folderId,
       },
-      parentId: folderId === null ? observation.parentId : folderId,
+      parentId: observation.folderId === null ? observation.parentId : observation.folderId,
     });
   },
 
@@ -171,7 +178,7 @@ export default {
             if (folder !== null) {
               folder.siblingsLoaded += data.siblings.length;
               if (addToTree) {
-                folder.siblingsInTree += data.siblings.length;
+                folder.siblingsVisibleInTree += data.siblings.length;
               }
             }
           });
@@ -203,24 +210,25 @@ export default {
     });
   },
 
+  /**
+   * Apply a visibility to all folder (all observation yet not in tree)
+   * @param folderId folder to change visibility
+   * @param visible hide (false) or show (true)
+   */
+  setFolderVisibility: ({ commit, dispatch }, { folderId, visible, selectMainViewer = false }) => {
+    commit('SET_FOLDER_VISIBLE', {
+      folderId,
+      visible,
+      callback: visible && selectMainViewer ? (observation) => {
+        dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
+      } : null,
+    });
+  },
+
   selectNode: ({ dispatch, state }, selectedId) => {
     const selectedObservation = state.observations.find(observation => observation.id === selectedId);
     if (selectedObservation && selectedObservation.visible && !selectedObservation.top) {
       dispatch('showNode', { nodeId: selectedId });
-    }
-  },
-
-  loadAllObservations: ({ dispatch, state }, folder) => {
-    const last = state.lasts.find(l => l.folderId === folder.id);
-    if (last && last !== null) {
-      dispatch('askForSiblings', {
-        nodeId: last.observationId,
-        folderId: folder.id,
-        offset: last.offsetToAdd,
-        count: -1,
-        addToTree: false,
-        visible: true,
-      });
     }
   },
 
