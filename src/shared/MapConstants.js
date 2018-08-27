@@ -3,10 +3,79 @@ import OSM from 'ol/source/OSM';
 import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
 import BingMaps from 'ol/source/BingMaps';
+import Style from 'ol/style/Style';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
+import Text from 'ol/style/Text';
+import Icon from 'ol/style/Icon';
 import * as control from 'ol/control';
-import * as proj from 'ol/proj';
-import Constants from './Constants';
+import { transform } from 'ol/proj';
 
+
+export const MAP_CONSTANTS = {
+  BING_KEY: '', // TODO we need it?
+  COORD_BC3: [-2.968226, 43.332125],
+
+  PROJ_EPSG_4326: 'EPSG:4326',
+  PROJ_EPSG_3857: 'EPSG:3857',
+
+  ZINDEX_OFFSET: 10000,
+  ZINDEX_MULTIPLIER_RASTER: 0,
+  ZINDEX_MULTIPLIER_POLYGONS: 1,
+  ZINDEX_MULTIPLIER_LINES: 2,
+  ZINDEX_MULTIPLIER_POINTS: 3,
+};
+
+export const MAP_ELEMENTS = {
+  MARKER_SVG: ({ fill = 'white', stroke = 'black', strokeWidth = '5px' }) => `<svg width="85" height="85" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path style="fill: ${fill}; stroke: ${stroke}; stroke-width: ${strokeWidth}" d="M40,0C26.191,0,15,11.194,15,25c0,23.87,25,55,25,55s25-31.13,25-55C65,11.194,53.807,0,40,0z 
+  M40,38.8c-7.457,0-13.5-6.044-13.5-13.5S32.543,11.8,40,11.8c7.455,0,13.5,6.044,13.5,13.5S47.455,38.8,40,38.8z"/></svg>`,
+};
+
+export const MAP_STYLE_ELEMENTS = {
+  POINT_OBSERVATION_ICON: new Icon({
+    anchor: [0.5, 1],
+    src: 'statics/maps/marker.png',
+    opacity: 0.8,
+    scale: 0.6,
+  }),
+  POINT_OBSERVATION_SVG_ICON: style => new Icon({
+    opacity: 1,
+    src: `data:image/svg+xml;utf8,${MAP_ELEMENTS.MARKER_SVG(style)}`,
+    scale: 0.3,
+  }),
+  POINT_OBSERVATION_TEXT: new Text({
+    textAlign: 'center',
+    textBaseline: 'bottom',
+    offsetY: -20,
+  }),
+};
+
+export const MAP_STYLES = {
+  POLYGON_CONTEXT_STYLE: new Style({
+    fill: new Fill({
+      color: 'rgba(38, 166, 154, 0.2)',
+    }),
+  }),
+  POLYGON_OBSERVATION_STYLE: new Style({
+    /*
+    stroke: new Stroke({
+      // color: colors.getBrand('secondary'),
+      color: 'rgb(255, 102, 0)',
+      width: 1,
+    }),
+    */
+    fill: new Fill({
+      color: 'rgba(255, 102, 0, 0.4)',
+    }),
+  }),
+  LNE_OBSERVATION_STYLE: new Style({
+    stroke: new Stroke({
+      color: 'rgb(255, 102, 0)',
+      width: 2,
+    }),
+  }),
+};
 
 /**
  * Define different basemaps
@@ -121,7 +190,7 @@ export const Layers = {
     source: new BingMaps({
       crossOrigin: 'anonymous',
       maxZoom: 19,
-      key: Constants.BING_KEY,
+      key: MAP_CONSTANTS.BING_KEY,
       imagerySet: 'AerialWithLabels',
       attribution: '© 2017 Bing, Inc',
     }),
@@ -143,8 +212,8 @@ export const DEFAULT_OPTIONS = {
     Layers.MAPBOX_CALI_TERRAIN,
   ],
   target: 'map',
-  projection: Constants.PROJ_EPSG_4326,
-  center: proj.transform(Constants.COORD_BC3, Constants.PROJ_EPSG_4326, Constants.PROJ_EPSG_3857),
+  projection: MAP_CONSTANTS.PROJ_EPSG_4326,
+  center: transform(MAP_CONSTANTS.COORD_BC3, MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
   zoom: 13,
   /*
   tools: {

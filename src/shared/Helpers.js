@@ -12,8 +12,9 @@ import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 import store from 'store/index';
-import Text from 'ol/style/Text';
 import Style from 'ol/style/Style';
+import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from './MapConstants';
+
 
 /**
  * Helpers functions shared between components.
@@ -91,39 +92,14 @@ const Helpers = {
     return null;
   },
 
-  /*
-  addToTree: (commit, { observation, needViewer, folderId }) => {
-    commit('ADD_NODE', {
-      node: {
-        id: observation.id,
-        label: observation.literalValue || observation.label,
-        type: observation.shapeType,
-        viewerIdx: observation.viewerIdx,
-        children: [],
-        noTick: !needViewer,
-        folderId,
-      },
-      parentId: folderId === null ? observation.parentId : folderId,
-    });
-  },
-
-  getCoord: (allCoords, dataProjection = Constants.DEFAULT_PROJ_DATA) => {
-    const coords = [];
-    for (let i = 0, j = 0; i < allCoords.length; i += 1) {
-      if (i >= 2 && i % 2 === 0) {
-        j += 1;
-      }
-      coords[j] = coords[j] || [];
-      coords[j].push(allCoords[i]);
-    }
-    const polyCoords = [];
-    coords.forEach((pair) => {
-      polyCoords.push(proj.transform([parseFloat(pair[0]), parseFloat(pair[1])], dataProjection, Constants.DEFAULT_PROJ_VIEW));
-    });
-    return polyCoords;
-  },
-  */
-
+  /**
+   * If we need a new projection, a call to epsg.io is maded to retrieve
+   * projection definition and register it.
+   * For now, it live until browser close
+   * TODO implement browser database support
+   * @param projection
+   * @returns {Promise}
+   */
   registerProjection(projection) { // projection in format ESPG:XXXXX
     return new Promise((resolve, reject) => {
       const toAsk = projection.substring(5); // ask without ESPG
@@ -141,7 +117,7 @@ const Helpers = {
                   proj4.defs(newProjCode, proj4def);
                   register(proj4);
                   const newProj = getProjection(newProjCode);
-                  const fromLonLat = getTransform(Constants.PROJ_EPSG_4326, newProj);
+                  const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, newProj);
                   // very approximate calculation of projection extent
                   const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
                   newProj.setExtent(extent);
@@ -161,7 +137,13 @@ const Helpers = {
     });
   },
 
-
+  /**
+   * Build a layer object. If needed ask for projection (reason for async function)
+   * @param observation the observations: needed for projection ad type of representation
+   * @param isContext if is context, a lot of thing are not needed
+   * @param viewport not used for now. If not setted, for now is the double of height/width of browser
+   * @returns {Promise.<void>}
+   */
   async getLayerObject(observation, { isContext = false, viewport = null /* , projection = null */ }) {
     const { geometryTypes } = observation;
     const isRaster = geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
@@ -188,7 +170,7 @@ const Helpers = {
         dataProjection = await this.registerProjection(spatialProjection);
       }
     } else {
-      dataProjection = Constants.PROJ_EPSG_4326;
+      dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
     }
     let { encodedShape } = observation;
     // normalize encodedShape
@@ -197,12 +179,12 @@ const Helpers = {
     }
     const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,
-      featureProjection: Constants.PROJ_EPSG_3857,
+      featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
     });
     // check if the layer is a raster
     if (isRaster) {
       // z-index offset = 0, raster is down
-      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_RASTER;
+      observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_RASTER;
       if (viewport === null) {
         viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * Constants.PARAM_VIEWPORT_MULTIPLIER;
         // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
@@ -213,11 +195,11 @@ const Helpers = {
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
       const source = new Static({
-        projection: getProjection(Constants.PROJ_EPSG_3857),
+        projection: getProjection(MAP_CONSTANTS.PROJ_EPSG_3857),
         imageExtent: layerExtent,
         // imageSize: [800, 800], // extent.getSize(layerExtent),
         url,
-        style: Constants.POLYGON_OBSERVATION_STYLE,
+        style: MAP_STYLES.POLYGON_OBSERVATION_STYLE,
         imageLoadFunction: (imageWrapper, src) => {
           store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: src }, { root: true });
           axiosInstance.get(src, {
@@ -263,25 +245,24 @@ const Helpers = {
 
     let layerStyle;
     if (isContext) {
-      layerStyle = Constants.POLYGON_CONTEXT_STYLE;
+      layerStyle = MAP_STYLES.POLYGON_CONTEXT_STYLE;
       observation.zIndexOffset = 0;
     } else if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
-      layerStyle = Constants.LNE_OBSERVATION_STYLE;
-      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_LINES;
+      layerStyle = MAP_STYLES.LNE_OBSERVATION_STYLE;
+      observation.zIndexOffset = MAP_STYLES.ZINDEX_OFFSET * MAP_STYLES.ZINDEX_MULTIPLIER_LINES;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
+      const text = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_TEXT.clone();
+      const image = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_SVG_ICON({ fill: '#eee', stroke: '#333', strokeWidth: '4px' }).clone();
+
+      text.setText(observation.label);
       layerStyle = new Style({
-        image: Constants.POINT_OBSERVATION_ICON,
-        text: new Text({
-          text: observation.label,
-          textAlign: 'center',
-          textBaseline: 'bottom',
-          offsetY: -20,
-        }),
+        image,
+        text,
       });
-      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_POINTS;
+      observation.zIndexOffset = MAP_STYLES.ZINDEX_OFFSET * MAP_STYLES.ZINDEX_MULTIPLIER_POINTS;
     } else {
-      layerStyle = Constants.POLYGON_OBSERVATION_STYLE;
-      observation.zIndexOffset = Constants.ZINDEX_OFFSET * Constants.ZINDEX_MULTIPLIER_POLYGONS;
+      layerStyle = MAP_STYLES.POLYGON_OBSERVATION_STYLE;
+      observation.zIndexOffset = MAP_STYLES.ZINDEX_OFFSET * MAP_STYLES.ZINDEX_MULTIPLIER_POLYGONS;
     }
 
     const feature = new Feature({

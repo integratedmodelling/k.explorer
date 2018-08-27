@@ -1,13 +1,8 @@
-import Style from 'ol/style/Style';
-import Fill from 'ol/style/Fill';
-import Stroke from 'ol/style/Stroke';
-// import Circle from 'ol/style/Circle';
-import Text from 'ol/style/Text';
-import Icon from 'ol/style/Icon';
-// import { colors } from 'quasar';
 /**
  * Useful constants in app
  */
+
+
 export default {
   /**
    * Max length of an array contains history (f.e. log)
@@ -220,66 +215,6 @@ export default {
   PARAM_VIEWPORT_SIZE: 800, // default viewport for image layer
   PARAM_VIEWPORT_MAX_SIZE: 7680, // 8K, possibly highest on August 2018
   PARAM_VIEWPORT_MULTIPLIER: 2, // default viewport multiplier
-  /**
-   * Maps utility
-   */
-  BING_KEY: '', // TODO we need it?
-  COORD_BC3: [-2.968226, 43.332125],
-  /*
-  REGEXP_SHAPE_COORD: /[\d.-]+/g,
-  // olGroup 1: projection, olGroup 2: geometry
-  REGEXP_WKT: /(EPSG:\d{4})?\s?(.*)/g,
-  */
-  PROJ_EPSG_4326: 'EPSG:4326',
-  PROJ_EPSG_3857: 'EPSG:3857',
-
-  POLYGON_CONTEXT_STYLE: new Style({
-    /*
-    stroke: new Stroke({
-      color: 'rgb(38, 166, 154)',
-      width: 1,
-    }),
-    */
-    fill: new Fill({
-      color: 'rgba(38, 166, 154, 0.2)',
-    }),
-  }),
-  POLYGON_OBSERVATION_STYLE: new Style({
-    /*
-    stroke: new Stroke({
-      // color: colors.getBrand('secondary'),
-      color: 'rgb(255, 102, 0)',
-      width: 1,
-    }),
-    */
-    fill: new Fill({
-      color: 'rgba(255, 102, 0, 0.4)',
-    }),
-  }),
-  LNE_OBSERVATION_STYLE: new Style({
-    stroke: new Stroke({
-      color: 'rgb(255, 102, 0)',
-      width: 2,
-    }),
-  }),
-  POINT_OBSERVATION_STYLE: new Style({
-    image: new Icon({
-      anchor: [0.5, 1],
-      src: 'statics/maps/marker.png',
-      opacity: 0.8,
-    }),
-  }),
-  POINT_OBSERVATION_ICON: new Icon({
-    anchor: [0.5, 1],
-    src: 'statics/maps/marker.png',
-    opacity: 0.8,
-    scale: 0.6,
-  }),
-  POINT_OBSERVATION_TEXT: new Text({
-    textAlign: 'center',
-    textBaseline: 'bottom',
-    offsetY: -20,
-  }),
 
   COLOR_PRIMARY: 'primary',
   COLOR_SECONDARY: 'secondary',
@@ -304,10 +239,5 @@ export default {
     },
   },
 
-  ZINDEX_OFFSET: 10000,
-  ZINDEX_MULTIPLIER_RASTER: 0,
-  ZINDEX_MULTIPLIER_POLYGONS: 1,
-  ZINDEX_MULTIPLIER_LINES: 2,
-  ZINDEX_MULTIPLIER_POINTS: 3,
 };
 

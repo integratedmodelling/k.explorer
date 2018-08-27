@@ -11,13 +11,13 @@
 
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { DEFAULT_OPTIONS } from 'shared/MapOptions';
-import { Helpers, Constants } from 'shared/Helpers';
+import { DEFAULT_OPTIONS, MAP_CONSTANTS } from 'shared/MapConstants';
+import { Helpers } from 'shared/Helpers';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Group from 'ol/layer/Group';
 import Collection from 'ol/Collection';
-import * as proj from 'ol/proj';
+import { transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 import 'ol/ol.css';
@@ -75,7 +75,7 @@ export default {
     sendRegionOfInterest() {
       let message = null;
       try {
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(proj.transformExtent(this.map.getView()
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(this.map.getView()
           .calculateExtent(this.map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         this.pushLogAction({
@@ -159,7 +159,7 @@ export default {
             if (layer !== null) {
               layer.setVisible(observation.visible);
               if (observation.top) {
-                layer.setZIndex(observation.zIndexOffset + (Constants.ZINDEX_OFFSET - 1));
+                layer.setZIndex(observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1));
               } else {
                 layer.setZIndex(observation.zIndex);
               }
