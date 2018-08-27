@@ -13,6 +13,11 @@ export default {
    * children: array of children. Empty on node add
    */
   tree: [],
+
+  /**
+   * Last elements in folder that need more siblings
+   */
+  lasts: [],
   /**
    * If not null, a context was established and saved in this object
    */

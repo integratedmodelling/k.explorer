@@ -8,6 +8,8 @@ export default {
 
   treeNode: state => id => Helpers.findNodeById(state.tree, id),
 
+  lasts: state => state.lasts,
+
   /**
    * The actual checked leaf in tree
    * TODO: change to implement checkbox

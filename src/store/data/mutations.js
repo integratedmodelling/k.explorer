@@ -27,7 +27,8 @@ export default {
   },
 
   ADD_OBSERVATION: (state, observation) => {
-    console.log(`Added observation:\n${JSON.stringify(observation, null, 2)}`);
+    // console.log(`Added observation:\n${JSON.stringify(observation, null, 2)}`);
+    console.log(`Added observation: ${observation.label}`);
     state.observations.push(observation);
   },
 
@@ -50,10 +51,40 @@ export default {
     } else {
       const parent = Helpers.findNodeById(state.tree, parentId);
       if (parent !== null) {
-        parent.children.push(node);
+        parent.children.push({
+          ...node,
+          idx: parent.children.length,
+          siblingCount: parent.siblingCount,
+        });
       } else {
         state.orphans.push(node);
       }
+    }
+  },
+
+  SET_FOLDER_VISIBLE: (state, {
+    folderId,
+    visible,
+    callback = null,
+  }) => {
+    state.observations.forEach((observation) => {
+      if (observation.folderId === folderId) {
+        observation.visible = visible;
+        observation.top = visible;
+        if (callback !== null) {
+          callback(observation);
+        }
+      } else {
+        observation.top = false;
+      }
+    });
+    // set node ticked (for tree view)
+    const node = Helpers.findNodeById(state.tree, folderId);
+    if (node && node !== null && node.children.length > 0) {
+      node.children.forEach((n) => {
+        n.ticked = visible;
+      });
+      node.ticked = visible;
     }
   },
 
@@ -83,6 +114,45 @@ export default {
 
   STORE_RAW_SEARCH_RESULT: (state, result) => {
     state.searchResult = result;
+  },
+
+  ADD_LAST: (state, {
+    folderId,
+    observationId,
+    offsetToAdd,
+    total,
+  }) => {
+    const lastIdx = state.lasts.findIndex(l => folderId === l.folderId);
+    if (lastIdx !== -1) {
+      const last = state.lasts[lastIdx];
+      if (last.offset + offsetToAdd + 1 >= last.total) {
+        state.lasts.splice(lastIdx, 1);
+        console.log(`Delete folder ${folderId}`);
+      } else {
+        last.observationId = observationId;
+        last.offset += offsetToAdd;
+        console.log(`Change folder ${folderId}. Now offset is ${last.offset} `);
+      }
+    } else {
+      if (offsetToAdd + 1 === total) {
+        console.log(`Nothing to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
+        return;
+      }
+      state.lasts.push({
+        folderId,
+        observationId,
+        offset: offsetToAdd,
+        total,
+      });
+      console.log(`Added folder ${folderId}. Offset is ${offsetToAdd} `);
+    }
+  },
+
+  REMOVE_LAST: (state, folderId) => {
+    const idxToRemove = state.lasts.findIndex(l => l.folderId === folderId);
+    if (idxToRemove !== -1) {
+      state.lasts.splice(idxToRemove, 1);
+    }
   },
 };
 

@@ -84,6 +84,13 @@ export const Layers = {
     }),
     visible: true,
   }),
+
+  EMPTY_LAYER: new Tile({
+    title: 'No background',
+    type: 'base',
+    visible: false,
+  }),
+
   /* NOT FREE
   DIGITAL_GLOBE_IMAGINERY: new Tile({
     title: 'DigitalGlobe Imagery',
@@ -125,6 +132,7 @@ export const Layers = {
 export const DEFAULT_OPTIONS = {
   controls: control.defaults({ attribution: false }).extend([]),
   layers: [
+    Layers.EMPTY_LAYER,
     Layers.STAMEN_WATER_COLOR_LAYER,
     Layers.OSM_LAYER,
     Layers.OPEN_TOPO_MAT,

@@ -26,12 +26,14 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_SEARCHREQUEST: 'SearchRequest',
   PAYLOAD_CLASS_SEARCHMATCHACTION: 'SearchMatchAction',
   PAYLOAD_CLASS_OBSERVATIONREQUEST: 'ObservationRequest',
+  PAYLOAD_CLASS_EMPTY: 'String',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_PERIODOFINTEREST: 'PeriodOfInterest',
   TYPE_SUBMITSEARCH: 'SubmitSearch',
   TYPE_MATCHACTION: 'MatchAction',
   TYPE_REQUESTOBSERVATION: 'RequestObservation',
+  TYPE_RESETCONTEXT: 'ResetContext',
 });
 
 /**
@@ -43,11 +45,13 @@ export const IN = Object.freeze({
   CLASS_TASKLIFECYCLE: 'TaskLifecycle',
   CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
   CLASS_QUERY: 'Query',
+  CLASS_USERCONTEXTCHANGE: 'UserContextChange',
 
   PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
   PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
   PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
   PAYLOAD_CLASS_SEARCHRESPONSE: 'SearchResponse',
+  PAYLOAD_CLASS_EMPTY: 'String',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -60,4 +64,5 @@ export const IN = Object.freeze({
   TYPE_NEWOBSERVATION: 'NewObservation',
   TYPE_MODIFIEDOBSERVATION: 'ModifiedObservation',
   TYPE_QUERYRESULT: 'QueryResult',
+  TYPE_RESETCONTEXT: 'ResetContext',
 });

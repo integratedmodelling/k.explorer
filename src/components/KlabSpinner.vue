@@ -6,13 +6,12 @@
            xlink:href="~assets/klab-spinner.svg">
     </image>
     <circle
-      id="spinner"
+      id="spinner-circle"
       cx="0"
       cy="-90"
       :r="ball"
       :style="{fill: realColor}"
-      :class="{moving: this.moving}"
-      :stroke="stroke"
+      :class="{moving}"
     ></circle>
   </svg>
 </template>
@@ -81,6 +80,12 @@ export default {
     },
   },
   watch: {
+    /*
+    spinner() {
+      const spinnerClass = document.getElementById('spinner-circle').classList;
+      console.log(`I'm into ${this.wrapperId} and I'm ${this.isVisible ? 'Visible' : 'Hidden'} and with class ${spinnerClass} and moving: ${this.moving}`);
+    },
+    */
     errorMessage(newValue) {
       if (this.isVisible && newValue !== null) {
         let errorMessage;
@@ -103,10 +108,10 @@ export default {
 
 <style scoped lang="stylus">
 @import '~variables'
-#spinner {
+#spinner-circle {
   fill: $primary;
 }
-#spinner.moving {
+#spinner-circle.moving {
   animation: spin 2s cubic-bezier(0.445, 0.050, 0.550, 0.950) infinite;
   animation-delay: 0.4s
 }

@@ -15,10 +15,13 @@
       >
         <div slot="header-default" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-chip class="node-chip transparent" small dense text-color="grey-9">
+            {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
+          </q-chip>
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-folder" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
+          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
         </div>
       </q-tree>
     </div>
@@ -71,6 +74,7 @@ export default {
     ...mapGetters('data', [
       'tree',
       'treeNode',
+      'lasts',
     ]),
   },
   methods: {
@@ -78,6 +82,8 @@ export default {
       'hideNode',
       'showNode',
       'selectNode',
+      'askForSiblings',
+      'setFolderVisibility',
     ]),
     ...mapActions('view', [
       'setSpinner',
@@ -129,7 +135,7 @@ export default {
       this.selected = null;
     },
     ticked(newValues, oldValues) {
-      if (oldValues === newValues) {
+      if (oldValues === newValues) { // nothing change
         return;
       }
       if (oldValues.length > newValues.length) {
@@ -138,6 +144,9 @@ export default {
         const unselectedNode = Helpers.findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
           if (unselectedNode.type === Constants.GEOMTYP_FOLDER) {
+            this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
+            this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
+            /*
             const unselectedIds = [];
             const unselectChildren = (children) => {
               children.forEach((n) => {
@@ -154,6 +163,7 @@ export default {
             if (unselectedIds.length > 0) {
               this.ticked = this.ticked.filter(n => unselectedIds.indexOf(n) === -1);
             }
+            */
           } else {
             if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
               // we unselect the folder
@@ -163,9 +173,32 @@ export default {
           }
         }
       } else {
+        // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
         const selectedNode = Helpers.findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
+          const tickAll = () => {
+            this.setFolderVisibility({ folderId: selectedNode.id, visible: true });
+            this.ticked.push(...(selectedNode.children.map(child => child.id)));
+          };
+          if (selectedNode.siblingsLoaded < selectedNode.siblingCount) {
+            const node = this.lasts.find(l => l.folderId === selectedNode.id);
+            this.askForSiblings({
+              nodeId: node.observationId,
+              folderId: node.folderId,
+              offset: selectedNode.siblingsLoaded - 1,
+              count: -1,
+              addToTree: false,
+              visible: true,
+            }).then(() => {
+              tickAll();
+            });
+          } else {
+            tickAll();
+          }
+
+          // is a folder
+          /*
           let selectedIds = [];
           const selectChildren = (children) => {
             let selectMainViewer = true;
@@ -185,13 +218,28 @@ export default {
               selectedIds = selectedIds.filter(n => this.ticked.indexOf(n) === -1);
               this.ticked.push(...selectedIds);
             }
-          };
-          selectChildren(selectedNode.children);
+
+          }
+          */
         } else {
           this.showNode({ nodeId: selectedId, selectMainViewer: true });
         }
       }
     },
+  },
+  mounted() {
+    this.$eventBus.$on('updateFolder', (event) => {
+      if (event && event.folderId) {
+        const folder = Helpers.findNodeById(this.tree, event.folderId);
+        if (folder && folder !== null) {
+          if (event.visible) {
+            this.ticked.push(...(folder.children.map(child => child.id)));
+          } else {
+            this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
+          }
+        }
+      }
+    });
   },
 };
 </script>
@@ -199,7 +247,7 @@ export default {
   .q-tree > .q-tree-node-child > .q-tree-node-header {
     padding-left: 24px;
   }
-  .q-chip.node-folder {
+  .q-chip.node-chip {
     position:absolute;
     right: 10px;
   }

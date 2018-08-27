@@ -49,6 +49,10 @@ const PARSERS = {
     addLogToStore(dispatch, Constants.TYPE_INFO, `Received search results: ${JSON.stringify(results)}`);
     dispatch('data/storeSearchResult', results, { root: true });
   },
+  [IN.TYPE_RESETCONTEXT]: (message, dispatch) => {
+    addLogToStore(dispatch, Constants.TYPE_INFO, 'Received context reset');
+    dispatch('data/resetContext', null, { root: true });
+  },
 };
 
 /**

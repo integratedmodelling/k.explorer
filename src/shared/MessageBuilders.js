@@ -14,7 +14,7 @@ import moment from 'moment';
  *          identity: *, timestamp: number, inResponseTo: null}}
  */
 function buildMessage(messageClass, type, payloadClass, toCheckPayload, session) {
-  const valid = djvValidator.validateJsonSchema(toCheckPayload, payloadClass);
+  const valid = payloadClass !== OUT.PAYLOAD_CLASS_EMPTY ? djvValidator.validateJsonSchema(toCheckPayload, payloadClass) : toCheckPayload;
   return {
     validated: valid,
     body: {
@@ -114,6 +114,14 @@ export const MESSAGES_BUILDERS = {
       ...(contextId !== null && { contextId }),
       searchContextId,
     },
+    session,
+  ),
+
+  RESET_CONTEXT: session => buildMessage(
+    OUT.CLASS_USERCONTEXTCHANGE,
+    OUT.TYPE_RESETCONTEXT,
+    OUT.PAYLOAD_CLASS_EMPTY,
+    '',
     session,
   ),
 };

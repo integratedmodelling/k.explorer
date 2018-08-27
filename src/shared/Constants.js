@@ -15,6 +15,11 @@ export default {
   HIST_MAX_LENGTH: 50,
 
   /**
+   * Default siblings to ask for
+   */
+  SIBLINGS_TO_ASK_FOR: 25,
+
+  /**
    * Connections states
    */
   CONNECTION_UNKNOWN: 'UNKNOWN',
