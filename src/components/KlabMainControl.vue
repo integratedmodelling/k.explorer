@@ -130,6 +130,7 @@ import KlabSplitter from 'components/KlabSplitter.vue';
 import Metadata from 'components/additional/Metadata.vue';
 import SimpleBar from 'simplebar';
 import 'simplebar/dist/simplebar.css';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 export default {
   name: 'klabMainControl',
@@ -174,9 +175,11 @@ export default {
       'searchStop',
     ]),
     ...mapActions('data', [
-      'resetContext',
       'askForSiblings',
     ]),
+    resetContext() {
+      this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+    },
     hide() {
       this.draggableConfMain.resetInitialPos = false;
       this.isHidden = true;

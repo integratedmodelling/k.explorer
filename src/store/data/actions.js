@@ -16,13 +16,17 @@ export default {
     dispatch('view/setContextLayer', context, { root: true });
   },
 
-  resetContext: ({ commit, dispatch }) => {
-    commit('SET_CONTEXT', null);
-    dispatch('view/resetContextLayer', null, { root: true });
-    dispatch('data/addObservation', {
-      observation: Helpers.OBSERVATION_DEFAULT,
-      main: true,
-    }, { root: true });
+  resetContext: ({ commit, dispatch, state }) => {
+    if (state.context !== null) {
+      commit('SET_CONTEXT', null);
+      dispatch('view/resetContextLayer', null, { root: true });
+      dispatch('data/addObservation', {
+        observation: Helpers.OBSERVATION_DEFAULT,
+        main: true,
+      }, { root: true });
+    } else {
+      console.warn('Try to reset null context');
+    }
   },
 
   /**
