@@ -14,8 +14,10 @@
         :dark="true"
       >
         <div slot="header-default" slot-scope="prop">
-          <span class="node-element" :id="`node-${prop.node.id}`" @click="showProp(prop)">{{ prop.node.label }}</span>
-          <q-chip class="node-chip transparent" small dense text-color="grey-9">{{ $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) }}</q-chip>
+          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-chip class="node-chip transparent" small dense text-color="grey-9">
+            {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
+          </q-chip>
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
@@ -86,9 +88,6 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
-    showProp(prop) {
-      console.dir(prop);
-    },
     rightClickHandler(e) {
       e.preventDefault();
       let spanNode = null;
