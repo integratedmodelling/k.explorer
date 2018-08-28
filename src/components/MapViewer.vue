@@ -12,7 +12,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS } from 'shared/MapConstants';
-import { Helpers } from 'shared/Helpers';
+import { Helpers, Constants } from 'shared/Helpers';
+import { Cookies } from 'quasar';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Group from 'ol/layer/Group';
@@ -200,6 +201,20 @@ export default {
     },
   },
   mounted() {
+    DEFAULT_OPTIONS.layers.forEach((l) => {
+      if (l.get('name') === this.$baseLayer) {
+        l.setVisible(true);
+      }
+      const layer = l;
+      layer.on('propertychange', (event) => {
+        if (event.type === 'propertychange' && event.key === 'visible' && event.target.get(event.key)) {
+          Cookies.set(Constants.COOKIE_BASELAYER, layer.get('name'), {
+            expires: 30,
+            path: '/',
+          });
+        }
+      });
+    });
     this.map = new Map({
       view: new View({
         center: this.center,

@@ -24,6 +24,8 @@ export const MAP_CONSTANTS = {
   ZINDEX_MULTIPLIER_POLYGONS: 1,
   ZINDEX_MULTIPLIER_LINES: 2,
   ZINDEX_MULTIPLIER_POINTS: 3,
+
+  DEFAULT_BASELAYER: 'mapbox_cali_terrain',
 };
 
 export const MAP_ELEMENTS = {
@@ -104,6 +106,7 @@ export const MAP_STYLES = {
  */
 export const Layers = {
   OSM_LAYER: new Tile({
+    name: 'osm_layer',
     title: 'Open Street Map',
     type: 'base',
     source: new OSM(),
@@ -111,6 +114,7 @@ export const Layers = {
   }),
 
   STAMEN_WATER_COLOR_LAYER: new Tile({
+    name: 'stamen_water_color_layer',
     title: 'Stamen Watercolor',
     type: 'base',
     source: new Stamen({
@@ -120,6 +124,7 @@ export const Layers = {
   }),
 
   OPEN_TOPO_MAT: new Tile({
+    name: 'open_topo_mat',
     title: 'Open Topo',
     type: 'base',
     source: new XYZ({
@@ -130,6 +135,7 @@ export const Layers = {
   }),
 
   GOOGLE_HYBRID: new Tile({
+    name: 'google_hybrid',
     title: 'Google Hybrid',
     type: 'base',
     source: new XYZ({
@@ -141,6 +147,7 @@ export const Layers = {
   }),
 
   GOOGLE_STREET: new Tile({
+    name: 'google_street',
     title: 'Google Street',
     type: 'base',
     source: new XYZ({
@@ -152,6 +159,7 @@ export const Layers = {
   }),
 
   GOOGLE_TERRAIN: new Tile({
+    name: 'google_terrain',
     title: 'Google Terrain',
     type: 'base',
     source: new XYZ({
@@ -163,6 +171,7 @@ export const Layers = {
   }),
 
   MAPBOX_CALI_TERRAIN: new Tile({
+    name: 'mapbox_cali_terrain',
     title: 'k.LAB Mapbox Cali terrain',
     type: 'base',
     source: new XYZ({
@@ -170,10 +179,11 @@ export const Layers = {
       url: 'https://api.mapbox.com/styles/v1/k-lab/cjkwh1z9z06ok2rrn9unfpn2n/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoiay1sYWIiLCJhIjoiY2prd2d2dWNxMHlvcDNxcDVsY3FncDBydiJ9.zMQE3gu-0qPpkLapVfVhnA',
       attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
     }),
-    visible: true,
+    visible: false,
   }),
 
   EMPTY_LAYER: new Tile({
+    name: 'empty_layer',
     title: 'No background',
     type: 'base',
     visible: false,
@@ -204,6 +214,7 @@ export const Layers = {
   */
 
   BING_IMAGINERY: new Tile({
+    name: 'bing_imaginery',
     title: 'Bing Imagery',
     type: 'base',
     source: new BingMaps({

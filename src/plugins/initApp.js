@@ -1,4 +1,5 @@
 import { Helpers, Constants } from 'shared/Helpers';
+import { MAP_CONSTANTS } from 'shared/MapConstants';
 import { Cookies, colors } from 'quasar';
 
 export default ({ Vue, store }) => {
@@ -16,6 +17,7 @@ export default ({ Vue, store }) => {
     || Cookies.get(Constants.COOKIE_MODE);
   const log = urlParams.get(Constants.PARAMS_LOG)
     || Cookies.get(Constants.COOKIE_LOG) || Constants.PARAMS_LOG_HIDDEN;
+  const baseLayer = Cookies.get(Constants.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;
 
   Vue.mixin({
     methods: {
@@ -49,6 +51,11 @@ export default ({ Vue, store }) => {
   });
   Vue.prototype.$logVisibility = log;
   Cookies.set(Constants.COOKIE_LOG, log, {
+    expires: 30,
+    path: '/',
+  });
+  Vue.prototype.$baseLayer = baseLayer;
+  Cookies.set(Constants.COOKIE_BASELAYER, baseLayer, {
     expires: 30,
     path: '/',
   });

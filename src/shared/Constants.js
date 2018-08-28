@@ -194,6 +194,7 @@ export default {
   COOKIE_SESSION: 'klab_session', // TODO will be useless?
   COOKIE_MODE: 'klab_mode',
   COOKIE_LOG: 'klab_log',
+  COOKIE_BASELAYER: 'klab_baselayer',
 
   /**
    * Viewer components type
