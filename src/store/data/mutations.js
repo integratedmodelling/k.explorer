@@ -67,20 +67,26 @@ export default {
     visible,
     callback = null,
   }) => {
-    state.observations.forEach((observation) => {
-      if (observation.folderId === folderId) {
-        observation.visible = visible;
-        observation.top = visible;
-        if (callback !== null) {
-          callback(observation);
+    const observation = state.observations.find(o => o.folderId === folderId);
+    if (typeof observation !== 'undefined') {
+      const offset = observation.zIndexOffset;
+      state.observations.forEach((o) => {
+        if (o.folderId === folderId) {
+          o.visible = visible;
+          o.top = visible;
+          if (callback !== null) {
+            callback(o);
+          }
+        } else if (visible && o.zIndexOffset === offset) {
+          o.top = false;
         }
-      } else {
-        observation.top = false;
-      }
-    });
+      });
+    } else {
+      console.warn(`Folder with id ${folderId} has no elements`);
+    }
     // set node ticked (for tree view)
     const node = Helpers.findNodeById(state.tree, folderId);
-    if (node && node !== null && node.children.length > 0) {
+    if (typeof node !== 'undefined' && node !== null && node.children.length > 0) {
       node.children.forEach((n) => {
         n.ticked = visible;
       });
@@ -94,21 +100,30 @@ export default {
     callback = null,
   }) => {
     // set observation visible (for layer)
-    state.observations.forEach((observation) => {
-      if (observation.id === id) {
-        observation.visible = visible;
-        observation.top = visible;
-        if (callback !== null) {
-          callback(observation);
-        }
-      } else {
-        observation.top = false;
+    const observation = state.observations.find(o => o.id === id);
+    if (typeof observation !== 'undefined') {
+      // store the offset, we need to set top to false only for observations with same offset
+      const offset = observation.zIndexOffset;
+      observation.visible = visible;
+      observation.top = visible;
+      if (callback !== null) {
+        callback(observation);
       }
-    });
-    // set node ticked (for tree view)
-    const node = Helpers.findNodeById(state.tree, id);
-    if (node) {
-      node.ticked = visible;
+      // if hide, nothing else, else need to put down others
+      if (visible) {
+        state.observations.forEach((o) => {
+          if (o.id !== id && o.zIndexOffset === offset) {
+            o.top = false;
+          }
+        });
+      }
+      // set node ticked (for tree view)
+      const node = Helpers.findNodeById(state.tree, id);
+      if (node) {
+        node.ticked = visible;
+      }
+    } else {
+      console.warn(`Try to change visibility to no existing observations with id ${id}`);
     }
   },
 

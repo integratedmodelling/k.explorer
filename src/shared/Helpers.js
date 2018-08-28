@@ -249,7 +249,7 @@ const Helpers = {
       observation.zIndexOffset = 0;
     } else if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
       layerStyle = MAP_STYLES.LNE_OBSERVATION_STYLE;
-      observation.zIndexOffset = MAP_STYLES.ZINDEX_OFFSET * MAP_STYLES.ZINDEX_MULTIPLIER_LINES;
+      observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_LINES;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
       const text = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_TEXT.clone();
       const image = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_SVG_ICON({ fill: '#eee', stroke: '#333', strokeWidth: '4px' }).clone();
@@ -259,10 +259,10 @@ const Helpers = {
         image,
         text,
       });
-      observation.zIndexOffset = MAP_STYLES.ZINDEX_OFFSET * MAP_STYLES.ZINDEX_MULTIPLIER_POINTS;
+      observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POINTS;
     } else {
       layerStyle = MAP_STYLES.POLYGON_OBSERVATION_STYLE;
-      observation.zIndexOffset = MAP_STYLES.ZINDEX_OFFSET * MAP_STYLES.ZINDEX_MULTIPLIER_POLYGONS;
+      observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POLYGONS;
     }
 
     const feature = new Feature({
