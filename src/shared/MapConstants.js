@@ -27,8 +27,9 @@ export const MAP_CONSTANTS = {
 };
 
 export const MAP_ELEMENTS = {
-  MARKER_SVG: ({ fill = 'yellow', stroke = 'black', strokeWidth = '5px' }) => `<svg width="80" height="80" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-  <path class="svg-marker" style="fill: ${fill}; stroke: ${stroke}; stroke-width: ${strokeWidth}" d="M40,0C26.191,0,15,11.194,15,25c0,23.87,25,55,25,55s25-31.13,25-55C65,11.194,53.807,0,40,0z
+  MARKER_SVG: ({ fill = 'yellow', stroke = 'black', strokeWidth = '5' }) => `<svg width="80" height="80" version="1.1" xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 -${strokeWidth} 80 ${(strokeWidth * 2) + 80}">
+  <path fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}" d="M40,0C26.191,0,15,11.194,15,25c0,23.87,25,55,25,55s25-31.13,25-55C65,11.194,53.807,0,40,0z
   M40,38.8c-7.457,0-13.5-6.044-13.5-13.5S32.543,11.8,40,11.8c7.455,0,13.5,6.044,13.5,13.5S47.455,38.8,40,38.8z"/></svg>`,
   /*
     `<?xml version="1.0" encoding="iso-8859-1"?>
