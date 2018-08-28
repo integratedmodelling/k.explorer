@@ -15,6 +15,7 @@ export default {
     return null;
   },
   logActions: state => state.logActions,
+  reverseLogActions: state => state.logActions.slice().reverse(),
   contextLayer: state => state.contextLayer,
   /**
    * Created viewers

@@ -18,6 +18,8 @@ export default {
     noTokenDescription: 'No description available',
     btnContextReset: 'Reset context',
     itemCounter: '{loaded} of {total}',
+    logTab: 'Log',
+    treeTab: 'Tree',
   },
   messages: {
     connectionClosed: 'Connection closed',

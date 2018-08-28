@@ -70,30 +70,22 @@
         v-show="hasContext && !isHidden"
         class="no-margin relative-position"
       >
-        <div id="simplebar-div">
-        <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-metadata="additionalContentType = ''">
-          <div slot="left-pane">
-            <component :is="content" id="mc-main-content"></component>
-          </div>
-          <div slot="right-pane">
-            <transition
-              appear
-              enter-active-class="animated fadeIn"
-              leave-active-class="animated fadeOut"
-            >
-            <component :is="additionalContentType" id="mc-additional-content">{{ additionalContent }}</component>
-            </transition>
-          </div>
-        </klab-splitter>
-        </div>
+        <keep-alive>
+          <transition name="component-fade" mode="out-in">
+            <component :is="selectedTab"></component>
+          </transition>
+        </keep-alive>
       </q-card-main>
       <q-card-actions
         v-show="hasContext && !isHidden"
         class="no-margin"
         id="context-control"
         :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
-        align="end"
       >
+        <q-tabs class="no-padding no-margin" inverted v-model="selectedTab" position="bottom" no-pane-border>
+          <q-tab slot="title" :label="$t('label.logTab')" name="klab-log-pane" icon="ion-md-paper" :color="controlColor.name" />
+          <q-tab slot="title" :label="$t('label.treeTab')" name="klab-tree-container" icon="ion-ios-list" :color="controlColor.name" />
+        </q-tabs>
         <div class="q-ma-xs">&nbsp;</div>
         <q-btn
           flat
@@ -122,14 +114,10 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import { Helpers, Constants } from 'shared/Helpers';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import KlabTree from 'components/KlabTree.vue';
+import KlabTreeContainer from 'components/KlabTreeContainer.vue';
+import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
-import KlabSplitter from 'components/KlabSplitter.vue';
-import Metadata from 'components/additional/Metadata.vue';
-import SimpleBar from 'simplebar';
-import 'simplebar/dist/simplebar.css';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 export default {
@@ -142,11 +130,7 @@ export default {
         resetInitialPos: false,
         boundingElement: undefined,
       },
-      content: 'KlabTree',
-      additionalContentType: '', // 'Metadata',
-      additionalContent: 'Test de additionalContent',
-      scrollElement: null,
-      askingForSiblings: false,
+      selectedTab: 'klab-tree-container',
     };
   },
   computed: {
@@ -173,9 +157,6 @@ export default {
   methods: {
     ...mapActions('view', [
       'searchStop',
-    ]),
-    ...mapActions('data', [
-      'askForSiblings',
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
@@ -205,45 +186,15 @@ export default {
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
     });
-    this.scrollElement = (new SimpleBar(document.getElementById('simplebar-div'))).getScrollElement();
-    this.scrollElement.addEventListener('scroll', (event) => {
-      if (this.askingForSiblings || this.lasts.length === 0) {
-        event.preventDefault();
-        return;
-      }
-      const { bottom } = this.scrollElement.getBoundingClientRect(); // - this.scrollElement.getBoundingClientRect().top;
-      this.lasts.forEach((last) => {
-        const ltc = document.getElementById(`node-${last.observationId}`);
-        if (ltc !== null) {
-          const ltcBoundingClinetRect = ltc.getBoundingClientRect();
-          if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
-            console.log('Ask for more siblings');
-            this.askingForSiblings = true;
-            const folder = Helpers.findNodeById(this.tree, last.folderId);
-            this.askForSiblings({
-              nodeId: last.observationId,
-              folderId: last.folderId,
-              offset: last.offset,
-              count: Constants.SIBLINGS_TO_ASK_FOR,
-              visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
-            }).then(() => {
-              this.askingForSiblings = false;
-              this.$eventBus.$emit('updateFolder', { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
-            });
-          }
-        }
-      });
-    });
   },
   directives: {
     Draggable,
   },
   components: {
-    KlabTree,
+    KlabTreeContainer,
+    KlabLogPane,
     KlabSpinner,
     KlabSearch,
-    KlabSplitter,
-    Metadata,
   },
 };
 </script>
@@ -309,9 +260,6 @@ export default {
     background-color: alpha($faded, 75%);
     padding: 0; /* 0 0 10px 0;*/
   }
-  .q-tree .text-white {
-    text-shadow: 1px 0 0 #aaa;
-  }
   #mc-text-div {
     max-height: 50px;
     text-shadow: 1px 0 0 #aaa;
@@ -327,8 +275,10 @@ export default {
     width: 2em;
     height 2em;
   }
-  #mc-additional-content {
-    color:white;
-    padding: 2px 5px;
+  .component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+  }
+  .component-fade-enter, .component-fade-leave-to {
+    opacity: 0;
   }
 </style>

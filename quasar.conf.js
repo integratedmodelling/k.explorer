@@ -98,6 +98,7 @@ module.exports = function (ctx) {
         'QItem',
         'QItemMain',
         'QItemSide',
+        'QItemTile',
         'QItemSeparator',
         'QTree',
         'QResizeObservable',
@@ -119,6 +120,8 @@ module.exports = function (ctx) {
         'QTooltip',
         'QContextMenu',
         'QChip',
+        'QTabs',
+        'QTab',
       ],
       directives: [
         'Ripple',

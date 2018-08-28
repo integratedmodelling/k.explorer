@@ -1,8 +1,8 @@
 import { IN } from './MessagesConstants';
 import { Constants } from './Helpers';
 
-function addLogToStore(dispatch, type, message) {
-  dispatch('view/pushLogAction', { type, payload: { message } }, { root: true });
+function addLogToStore(dispatch, type, message, attach) {
+  dispatch('view/pushLogAction', { type, payload: { message, attach } }, { root: true });
 }
 
 const PARSERS = {
@@ -25,7 +25,8 @@ const PARSERS = {
     addLogToStore(
       dispatch,
       Constants.TYPE_DEBUG,
-      `New observation received: ${JSON.stringify(observation, null, 4)}`,
+      `New observation received with id ${observation.id}`,
+      JSON.stringify(observation, null, 4),
     );
     console.log(`Observation:\n${JSON.stringify(observation, null, 4)}`);
     // TODO check the definitive condition
@@ -37,7 +38,7 @@ const PARSERS = {
     }
   },
   [IN.TYPE_INFO]: (info, dispatch) => {
-    addLogToStore(dispatch, Constants.TYPE_INFO, `Received an info: ${JSON.stringify(info)}`);
+    addLogToStore(dispatch, Constants.TYPE_INFO, JSON.stringify(info));
   },
   [IN.TYPE_DEBUG]: (message, dispatch) => {
     addLogToStore(dispatch, Constants.TYPE_DEBUG, JSON.stringify(message));
@@ -46,7 +47,7 @@ const PARSERS = {
     addLogToStore(dispatch, Constants.TYPE_ERROR, JSON.stringify(message));
   },
   [IN.TYPE_QUERYRESULT]: (results, dispatch) => {
-    addLogToStore(dispatch, Constants.TYPE_INFO, `Received search results: ${JSON.stringify(results)}`);
+    addLogToStore(dispatch, Constants.TYPE_INFO, 'Received search results', JSON.stringify(results));
     dispatch('data/storeSearchResult', results, { root: true });
   },
   [IN.TYPE_RESETCONTEXT]: (message, dispatch) => {

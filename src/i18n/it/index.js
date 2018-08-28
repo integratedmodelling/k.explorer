@@ -18,6 +18,8 @@ export default {
     noTokenDescription: 'Descrizione non disponibile',
     btnContextReset: 'Reinizializzare il contesto',
     itemCounter: '{loaded} di {total}',
+    logTab: 'Log',
+    treeTab: 'Albero',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
