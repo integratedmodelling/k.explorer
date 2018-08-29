@@ -13,7 +13,7 @@
       <q-item class="log-item">
         <q-item-side>
           <q-item-tile icon="ion-ios-information-circle" :color="action.type === $constants.TYPE_ERROR ?
-            'negative' : action.type === $constants.TYPE_WARN ? 'warning' : 'positive'" />
+            'negative' : action.type === $constants.TYPE_WARNING ? 'warning' : 'positive'" />
         </q-item-side>
         <q-item-main>
           <q-item-tile>{{ logActionText(action) }}</q-item-tile>

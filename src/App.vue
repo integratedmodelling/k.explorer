@@ -74,7 +74,7 @@ export default {
     logActions() {
       const lastLogActionObject = this.lastLogAction();
       if (lastLogActionObject !== null && (lastLogActionObject.type === Constants.TYPE_ERROR ||
-          lastLogActionObject.type === Constants.TYPE_WARN)) {
+          lastLogActionObject.type === Constants.TYPE_WARNING)) {
         this.$q.notify({
           message: lastLogActionObject.payload.message,
           type: lastLogActionObject.type === Constants.TYPE_ERROR ? 'negative' : 'warning',

@@ -46,6 +46,7 @@ export const IN = Object.freeze({
   CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
   CLASS_QUERY: 'Query',
   CLASS_USERCONTEXTCHANGE: 'UserContextChange',
+  CLASS_NOTIFICATION: 'Notification',
 
   PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
   PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
@@ -56,8 +57,9 @@ export const IN = Object.freeze({
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
   TYPE_TASKABORTED: 'TaskAborted',
-  TYPE_INFO: 'Info',
   TYPE_DEBUG: 'Debug',
+  TYPE_INFO: 'Info',
+  TYPE_WARNING: 'Warning',
   TYPE_ERROR: 'Error',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',

@@ -26,8 +26,8 @@ export default {
   /**
    * Messages types
    */
-  TYPE_LOG: 'LOG',
-  TYPE_WARN: 'WARN',
+  TYPE_DEBUG: 'LOG',
+  TYPE_WARNING: 'WARNING',
   TYPE_ERROR: 'ERROR',
   TYPE_INFO: 'INFO',
 

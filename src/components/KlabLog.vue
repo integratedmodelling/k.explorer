@@ -95,7 +95,7 @@ export default {
           time: action.time ? action.time.format('HH:mm:ss') : 'no time',
           // eslint-disable-next-line no-nested-ternary
           color: action.type === this.$constants.TYPE_ERROR ?
-            'negative' : action.type === this.$constants.TYPE_WARN ? 'warning' : 'positive',
+            'negative' : action.type === this.$constants.TYPE_WARNING ? 'warning' : 'positive',
         };
       }
       return this.$t('label.klabNoMessage');

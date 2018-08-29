@@ -37,11 +37,14 @@ const PARSERS = {
       dispatch('data/addObservation', { observation }, { root: true });
     }
   },
+  [IN.TYPE_DEBUG]: (message, dispatch) => {
+    addLogToStore(dispatch, Constants.TYPE_DEBUG, JSON.stringify(message));
+  },
   [IN.TYPE_INFO]: (info, dispatch) => {
     addLogToStore(dispatch, Constants.TYPE_INFO, JSON.stringify(info));
   },
-  [IN.TYPE_DEBUG]: (message, dispatch) => {
-    addLogToStore(dispatch, Constants.TYPE_DEBUG, JSON.stringify(message));
+  [IN.TYPE_WARNING]: (message, dispatch) => {
+    addLogToStore(dispatch, Constants.TYPE_WARNING, JSON.stringify(message));
   },
   [IN.TYPE_ERROR]: (message, dispatch) => {
     addLogToStore(dispatch, Constants.TYPE_ERROR, JSON.stringify(message));

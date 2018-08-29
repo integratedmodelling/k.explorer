@@ -90,7 +90,7 @@ export default {
       if (message && message.body) {
         this.sendStompMessage(message.body);
         this.pushLogAction({
-          type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARN,
+          type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARNING,
           payload: {
             message: `Message ${message.validated ? '' : 'not '} validated`,
             attach: message,

@@ -54,7 +54,7 @@ export default {
       const self = Helpers.findNodeById(state.tree, observation.id);
       if (self !== null) {
         dispatch('view/pushLogAction', {
-          type: Constants.TYPE_WARN,
+          type: Constants.TYPE_WARNING,
           payload: {
             message: `Observation with id ${observation.id} exists in actual context`,
           },
