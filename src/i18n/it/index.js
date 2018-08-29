@@ -28,6 +28,7 @@ export default {
     noSpaceAllowedInSearch: 'Non è permesso utilizare spazi nella ricerca',
     noSearchResults: 'Non esistono risultati',
     noActionForObservation: 'Nessuna azione disponibile',
+    noTime: 'senza informazione di ora',
   },
   errors: {
     connectionError: 'Errore di connessione',

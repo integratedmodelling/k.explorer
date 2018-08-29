@@ -11,11 +11,28 @@ export default {
     paletteVisible: true,
   },
   /**
-   * Array with actions ocurred from app start
+   * Array with app logs
    * Using an array of MAX_LENGTH
-   * Log action object structure is:
+   * Log object structure is:
+   * type: [TYPE_[DEBUG | INFO | WARNING | ERROR]
+   * time: moment object
+   * payload: {
+   *  message: message
+   *  attach: more info in various mode
+   * }
    */
-  logActions: [],
+  kexplorerLog: [],
+
+  /**
+   * Array with engine logs
+   * Using an array of MAX_LENGTH
+   * Log object structure is:
+   * type: [TYPE_[DEBUG | INFO | WARNING | ERROR]
+   * timestamp: timestamp from engine
+   * payload: message
+   * id: engine id for message
+   */
+  klabLog: [],
 
   /**
    * Active viewers

@@ -19,8 +19,8 @@ export default {
       'queuedMessage',
     ]),
     ...mapGetters('view', [
-      'lastLogAction',
-      'logActions',
+      'lastKexplorerLog',
+      'kexplorerLog',
     ]),
   },
   sockets: {
@@ -71,13 +71,13 @@ export default {
     }),
   },
   watch: {
-    logActions() {
-      const lastLogActionObject = this.lastLogAction();
-      if (lastLogActionObject !== null && (lastLogActionObject.type === Constants.TYPE_ERROR ||
-          lastLogActionObject.type === Constants.TYPE_WARNING)) {
+    kexplorerLog() {
+      const lastKexplorerLog = this.lastKexplorerLog();
+      if (lastKexplorerLog !== null && (lastKexplorerLog.type === Constants.TYPE_ERROR ||
+          lastKexplorerLog.type === Constants.TYPE_WARNING)) {
         this.$q.notify({
-          message: lastLogActionObject.payload.message,
-          type: lastLogActionObject.type === Constants.TYPE_ERROR ? 'negative' : 'warning',
+          message: lastKexplorerLog.payload.message,
+          type: lastKexplorerLog.type === Constants.TYPE_ERROR ? 'negative' : 'warning',
           timeout: 1000,
         });
       }

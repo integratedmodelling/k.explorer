@@ -2,11 +2,22 @@ import moment from 'moment';
 import { Helpers, Constants } from 'shared/Helpers';
 
 export default {
-  pushLogAction: ({ commit }, { type, payload }) => {
-    commit('PUSH_LOG_ACTION', {
+  addToKexplorerLog: ({ commit }, { type, payload }) => {
+    commit('ADD_TO_KEXPLORER_LOG', {
       type,
       payload,
       time: moment(),
+    });
+  },
+
+  addToKlabLog: ({ commit }, {
+    type, id, payload, timestamp,
+  }) => {
+    commit('ADD_TO_KLAB_LOG', {
+      type,
+      id,
+      payload,
+      time: moment(timestamp),
     });
   },
 

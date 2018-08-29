@@ -50,6 +50,26 @@ const Helpers = {
   },
 
   /**
+   * Return last element of log array filtered by type (or not)
+   * @param log the log array
+   * @param type one of Constants.TYPE_[DEBUG | INFO | WARNING | ERROR | ALL]
+   * @returns last element of type or null if log is empry
+   */
+  lastFilteredLogElement: (log, type) => {
+    if (log.length === 0) {
+      return null;
+    }
+    if (type === undefined) {
+      return log[log.length - 1];
+    }
+    const last = [...log].reverse().find(logAction => logAction.type === type);
+    if (typeof last !== 'undefined') {
+      return last;
+    }
+    return null;
+  },
+
+  /**
    * Utility method to print coordinates with only 2 decimals
    * TODO: probably not needed
    * @param extent

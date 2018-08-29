@@ -49,7 +49,9 @@ export default {
       'lastReceivedMessage',
       'queuedMessage',
     ]),
-    ...mapGetters('view', ['lastLogAction']),
+    ...mapGetters('view', [
+      'lastKexplorerLog',
+    ]),
 
     hasError() {
       return this.lastReceivedMessage &&
@@ -88,14 +90,14 @@ export default {
         : this.$t('label.klabNoMessage');
     },
     lastLogActionMessage() {
-      const action = this.lastLogAction();
-      if (action && action.payload) {
+      const kexplorerLog = this.lastKexplorerLog();
+      if (typeof kexplorerLog !== 'undefined' && kexplorerLog.payload) {
         return {
-          text: action.payload.message || action.payload,
-          time: action.time ? action.time.format('HH:mm:ss') : 'no time',
+          text: kexplorerLog.payload.message || kexplorerLog.payload,
+          time: kexplorerLog.time ? kexplorerLog.time.format('HH:mm:ss') : 'no time',
           // eslint-disable-next-line no-nested-ternary
-          color: action.type === this.$constants.TYPE_ERROR ?
-            'negative' : action.type === this.$constants.TYPE_WARNING ? 'warning' : 'positive',
+          color: kexplorerLog.type === this.$constants.TYPE_ERROR ?
+            'negative' : kexplorerLog.type === this.$constants.TYPE_WARNING ? 'warning' : 'positive',
         };
       }
       return this.$t('label.klabNoMessage');

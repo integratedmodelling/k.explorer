@@ -1,8 +1,12 @@
 import { Helpers } from 'shared/Helpers';
 
 export default {
-  PUSH_LOG_ACTION: (state, action) => {
-    Helpers.pushElementInFixedQueue(state.logActions, action);
+  ADD_TO_KEXPLORER_LOG: (state, log) => {
+    Helpers.pushElementInFixedQueue(state.kexplorerLog, log);
+  },
+
+  ADD_TO_KLAB_LOG: (state, log) => {
+    Helpers.pushElementInFixedQueue(state.klabLog, log);
   },
 
   SET_CONTEXT_LAYER: (state, contextLayer) => {

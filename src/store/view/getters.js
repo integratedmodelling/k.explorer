@@ -1,21 +1,30 @@
-import Constants from 'shared/Constants';
+import { Helpers } from 'shared/Helpers';
 import { colors } from 'quasar';
 
 export default {
   hasPalette: state => state.mainWin.paletteVisible,
-  lastLogAction: state => (type) => {
+
+  /**
+   * LOGS
+   */
+  kexplorerLog: state => state.kexplorerLog,
+  lastKexplorerLog: state => type => Helpers.lastFilteredLogElement(state.kexplorerLog, type),
+  // reverseLogActions: state => state.kexplorerLog.slice().reverse(),
+  klabLog: state => state.klabLog,
+  klabLogReversedAndFiltered: state => (type) => {
+    if (state.klabLog.length === 0) {
+      return state.klabLog;
+    }
+    const reversed = [...state.klabLog].reverse();
     if (type === undefined) {
-      type = Constants.TYPE_ALL;
+      return reversed;
     }
-    if (state.logActions.length > 0) {
-      return (type === Constants.TYPE_ALL) ?
-        state.logActions[state.logActions.length - 1] :
-        [...state.logActions].reverse().find(logAction => logAction.type === type);
-    }
-    return null;
+    return reversed.find(log => log.type === type);
   },
-  logActions: state => state.logActions,
-  reverseLogActions: state => state.logActions.slice().reverse(),
+
+  /**
+   * Context layer
+   */
   contextLayer: state => state.contextLayer,
   /**
    * Created viewers

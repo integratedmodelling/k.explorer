@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     ...mapActions('view', [
-      'pushLogAction',
+      'addToKexplorerLog',
       'setSpinner',
     ]),
     handleResize() {
@@ -79,7 +79,7 @@ export default {
         message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(this.map.getView()
           .calculateExtent(this.map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
-        this.pushLogAction({
+        this.addToKexplorerLog({
           type: this.$constants.TYPE_ERROR,
           payload: {
             message: error.message,
@@ -89,7 +89,7 @@ export default {
       }
       if (message && message.body) {
         this.sendStompMessage(message.body);
-        this.pushLogAction({
+        this.addToKexplorerLog({
           type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARNING,
           payload: {
             message: `Message ${message.validated ? '' : 'not '} validated`,

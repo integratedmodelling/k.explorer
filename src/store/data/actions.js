@@ -53,7 +53,7 @@ export default {
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
       const self = Helpers.findNodeById(state.tree, observation.id);
       if (self !== null) {
-        dispatch('view/pushLogAction', {
+        dispatch('view/addToKexplorerLog', {
           type: Constants.TYPE_WARNING,
           payload: {
             message: `Observation with id ${observation.id} exists in actual context`,
