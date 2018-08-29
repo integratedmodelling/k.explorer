@@ -84,7 +84,7 @@
       >
         <q-tabs class="no-padding no-margin" inverted v-model="selectedTab" position="bottom" no-pane-border>
           <q-tab slot="title" :label="$t('label.logTab')" name="klab-log-pane" icon="ion-md-paper" :color="controlColor.name" />
-          <q-tab slot="title" :label="$t('label.treeTab')" name="klab-tree-container" icon="ion-ios-list" :color="controlColor.name" />
+          <q-tab slot="title" :label="$t('label.treeTab')" name="klab-tree-pane" icon="ion-ios-list" :color="controlColor.name" />
         </q-tabs>
         <div class="q-ma-xs">&nbsp;</div>
         <q-btn
@@ -115,7 +115,7 @@ import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import KlabTreeContainer from 'components/KlabTreeContainer.vue';
+import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
@@ -130,7 +130,7 @@ export default {
         resetInitialPos: false,
         boundingElement: undefined,
       },
-      selectedTab: 'klab-tree-container',
+      selectedTab: 'klab-tree-pane',
     };
   },
   computed: {
@@ -191,7 +191,7 @@ export default {
     Draggable,
   },
   components: {
-    KlabTreeContainer,
+    KlabTreePane,
     KlabLogPane,
     KlabSpinner,
     KlabSearch,
