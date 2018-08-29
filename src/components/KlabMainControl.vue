@@ -82,9 +82,9 @@
         id="context-control"
         :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
       >
-        <q-tabs class="no-padding no-margin" inverted v-model="selectedTab" position="bottom" no-pane-border>
-          <q-tab slot="title" :label="$t('label.logTab')" name="klab-log-pane" icon="ion-md-paper" :color="controlColor.name" />
-          <q-tab slot="title" :label="$t('label.treeTab')" name="klab-tree-pane" icon="ion-ios-list" :color="controlColor.name" />
+        <q-tabs inverted dense v-model="selectedTab" position="bottom" no-pane-border>
+          <q-tab class="q-pa-sm q-ma-xs" slot="title" name="klab-log-pane" icon="ion-md-paper" :color="controlColor.name" />
+          <q-tab class="q-pa-sm q-ma-xs" slot="title" name="klab-tree-pane" icon="ion-ios-list" :color="controlColor.name" />
         </q-tabs>
         <div class="q-ma-xs">&nbsp;</div>
         <q-btn
