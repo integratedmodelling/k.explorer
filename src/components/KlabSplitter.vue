@@ -170,7 +170,7 @@ export default {
       height: inherit;
       overflow: hidden;
       white-space: nowrap;
-      padding: 10px 0;
+      padding: 5px 0;
     }
   }
   .splitter-actions {

@@ -1,64 +1,54 @@
 <template>
-  <div id="klab-tree-simplebar">
-    <div id="klab-tree-container">
-      <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
-        <q-tree
-          ref="klabTree"
-          :nodes="tree"
-          node-key="id"
-          :ticked.sync="ticked"
-          :selected.sync="selected"
-          tick-strategy="strict"
-          text-color="white"
-          control-color="white"
-          color="white"
-          :dark="true"
-        >
-          <div slot="header-default" slot-scope="prop">
-            <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-            <q-chip class="node-chip transparent" small dense text-color="grey-9">
-              {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
-            </q-chip>
-          </div>
-          <div slot="header-folder" slot-scope="prop">
-            <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-            <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
-          </div>
-        </q-tree>
-      </div>
-      <div class="q-ma-md text-center text-white" v-else>
-        {{ $t('label.noObservation') }}
-      </div>
-      <!--
-      Actions JSON:
-      {
-        "actionLabel": null,
-        "actionId": null,
-        "enabled": true,
-        "separator": true,
-        "submenu": []
-      },
-      -->
-      <q-context-menu v-show="enableContextMenu" ref="observations-context">
-        <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
-          <template v-for="(action, index) in itemActions">
-            <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
-            <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-              <q-item-main :label="action.actionLabel"></q-item-main>
-            </q-item>
-            <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-              <q-item-main :label="action.actionLabel"></q-item-main>
-            </q-item>
-          </template>
-        </q-list>
-      </q-context-menu>
+  <div id="klab-tree-div">
+    <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
+      <q-tree
+        ref="klabTree"
+        :nodes="tree"
+        node-key="id"
+        :ticked.sync="ticked"
+        :selected.sync="selected"
+        tick-strategy="strict"
+        text-color="white"
+        control-color="white"
+        color="white"
+        :dark="true"
+      >
+        <div slot="header-default" slot-scope="prop">
+          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-chip class="node-chip transparent" small dense text-color="grey-9">
+            {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
+          </q-chip>
+        </div>
+        <div slot="header-folder" slot-scope="prop">
+          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
+        </div>
+      </q-tree>
     </div>
+    <div class="q-ma-md text-center text-white" v-else>
+      {{ $t('label.noObservation') }}
+    </div>
+    <q-context-menu v-show="enableContextMenu" ref="observations-context">
+      <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
+        <template v-for="(action, index) in itemActions">
+          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
+          <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
+            <q-item-main :label="action.actionLabel"></q-item-main>
+          </q-item>
+          <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
+            <q-item-main :label="action.actionLabel"></q-item-main>
+          </q-item>
+        </template>
+      </q-list>
+    </q-context-menu>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
+import SimpleBar from 'simplebar';
+import 'simplebar/dist/simplebar.css';
 
 export default {
   name: 'klabTree',
@@ -69,8 +59,8 @@ export default {
       enableContextMenu: false,
       itemActions: [],
       itemObservationId: null,
-      scrollElement: null,
       askingForSiblings: false,
+      scrollElement: null,
     };
   },
   computed: {
@@ -190,6 +180,35 @@ export default {
     },
   },
   mounted() {
+    this.scrollElement = (new SimpleBar(document.getElementById('klab-tree-div'))).getScrollElement();
+    this.scrollElement.addEventListener('scroll', (event) => {
+      if (this.askingForSiblings || this.lasts.length === 0) {
+        event.preventDefault();
+        return;
+      }
+      const { bottom } = this.scrollElement.getBoundingClientRect(); // - this.scrollElement.getBoundingClientRect().top;
+      this.lasts.forEach((last) => {
+        const ltc = document.getElementById(`node-${last.observationId}`);
+        if (ltc !== null) {
+          const ltcBoundingClinetRect = ltc.getBoundingClientRect();
+          if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
+            console.log('Ask for more siblings');
+            this.askingForSiblings = true;
+            const folder = Helpers.findNodeById(this.tree, last.folderId);
+            this.askForSiblings({
+              nodeId: last.observationId,
+              folderId: last.folderId,
+              offset: last.offset,
+              count: Constants.SIBLINGS_TO_ASK_FOR,
+              visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
+            }).then(() => {
+              this.askingForSiblings = false;
+              this.$eventBus.$emit('updateFolder', { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
+            });
+          }
+        }
+      });
+    });
     this.$eventBus.$on('updateFolder', (event) => {
       if (event && event.folderId) {
         const folder = Helpers.findNodeById(this.tree, event.folderId);
@@ -206,11 +225,15 @@ export default {
 };
 </script>
 <style lang="stylus">
+  .q-tree
   .q-tree > .q-tree-node-child > .q-tree-node-header {
-    padding-left: 24px;
+    /* padding-left: 24px; */
   }
   .q-chip.node-chip {
     position:absolute;
     right: 10px;
+  }
+  #klab-tree-div {
+    max-height: 70vh;
   }
 </style>
