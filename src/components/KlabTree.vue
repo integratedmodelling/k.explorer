@@ -1,63 +1,64 @@
 <template>
-  <main>
-    <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
-      <q-tree
-        ref="klabTree"
-        :nodes="tree"
-        node-key="id"
-        :ticked.sync="ticked"
-        :selected.sync="selected"
-        tick-strategy="strict"
-        text-color="white"
-        control-color="white"
-        color="white"
-        :dark="true"
-      >
-        <div slot="header-default" slot-scope="prop">
-          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-chip transparent" small dense text-color="grey-9">
-            {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
-          </q-chip>
-        </div>
-        <div slot="header-folder" slot-scope="prop">
-          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
-        </div>
-      </q-tree>
+  <div id="klab-tree-simplebar">
+    <div id="klab-tree-container">
+      <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
+        <q-tree
+          ref="klabTree"
+          :nodes="tree"
+          node-key="id"
+          :ticked.sync="ticked"
+          :selected.sync="selected"
+          tick-strategy="strict"
+          text-color="white"
+          control-color="white"
+          color="white"
+          :dark="true"
+        >
+          <div slot="header-default" slot-scope="prop">
+            <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+            <q-chip class="node-chip transparent" small dense text-color="grey-9">
+              {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
+            </q-chip>
+          </div>
+          <div slot="header-folder" slot-scope="prop">
+            <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+            <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
+          </div>
+        </q-tree>
+      </div>
+      <div class="q-ma-md text-center text-white" v-else>
+        {{ $t('label.noObservation') }}
+      </div>
+      <!--
+      Actions JSON:
+      {
+        "actionLabel": null,
+        "actionId": null,
+        "enabled": true,
+        "separator": true,
+        "submenu": []
+      },
+      -->
+      <q-context-menu v-show="enableContextMenu" ref="observations-context">
+        <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
+          <template v-for="(action, index) in itemActions">
+            <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
+            <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
+              <q-item-main :label="action.actionLabel"></q-item-main>
+            </q-item>
+            <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
+              <q-item-main :label="action.actionLabel"></q-item-main>
+            </q-item>
+          </template>
+        </q-list>
+      </q-context-menu>
     </div>
-    <div class="q-ma-md text-center text-white" v-else>
-      {{ $t('label.noObservation') }}
-    </div>
-    <!--
-    Actions JSON:
-    {
-      "actionLabel": null,
-      "actionId": null,
-      "enabled": true,
-      "separator": true,
-      "submenu": []
-    },
-    -->
-    <q-context-menu v-show="enableContextMenu" ref="observations-context">
-      <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
-        <template v-for="(action, index) in itemActions">
-          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
-          <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-          <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-        </template>
-      </q-list>
-    </q-context-menu>
-  </main>
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
-// import Constants from 'shared/Constants';
 
 export default {
   name: 'klabTree',
@@ -68,6 +69,8 @@ export default {
       enableContextMenu: false,
       itemActions: [],
       itemObservationId: null,
+      scrollElement: null,
+      askingForSiblings: false,
     };
   },
   computed: {
@@ -135,7 +138,7 @@ export default {
       this.selected = null;
     },
     ticked(newValues, oldValues) {
-      if (oldValues === newValues) { // nothing change
+      if (oldValues.length === newValues.length) { // nothing change
         return;
       }
       if (oldValues.length > newValues.length) {
@@ -146,24 +149,6 @@ export default {
           if (unselectedNode.type === Constants.GEOMTYP_FOLDER) {
             this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
             this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
-            /*
-            const unselectedIds = [];
-            const unselectChildren = (children) => {
-              children.forEach((n) => {
-                if (n.tickable) {
-                  unselectedIds.push(n.id);
-                  this.hideNode(n.id);
-                }
-                if (n.children && n.children.length > 0) {
-                  unselectChildren(n.children);
-                }
-              });
-            };
-            unselectChildren(unselectedNode.children);
-            if (unselectedIds.length > 0) {
-              this.ticked = this.ticked.filter(n => unselectedIds.indexOf(n) === -1);
-            }
-            */
           } else {
             if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
               // we unselect the folder
@@ -181,7 +166,8 @@ export default {
             this.setFolderVisibility({ folderId: selectedNode.id, visible: true });
             this.ticked.push(...(selectedNode.children.map(child => child.id)));
           };
-          if (selectedNode.siblingsLoaded < selectedNode.siblingCount) {
+          if (selectedNode.siblingsLoaded < selectedNode.siblingCount && !this.askingForSiblings) {
+            this.askingForSiblings = true;
             const node = this.lasts.find(l => l.folderId === selectedNode.id);
             this.askForSiblings({
               nodeId: node.observationId,
@@ -191,6 +177,7 @@ export default {
               addToTree: false,
               visible: true,
             }).then(() => {
+              this.askingForSiblings = false;
               tickAll();
             });
           } else {

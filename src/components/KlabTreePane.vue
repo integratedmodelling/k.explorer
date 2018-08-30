@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import KlabTree from 'components/KlabTree.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
@@ -36,6 +36,12 @@ export default {
       scrollElement: null,
       askingForSiblings: false,
     };
+  },
+  computed: {
+    ...mapGetters('data', [
+      'tree',
+      'lasts',
+    ]),
   },
   methods: {
     ...mapActions('data', [

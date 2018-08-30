@@ -9,7 +9,7 @@
       class="no-padding no-margin"
     >
       <q-item
-        v-for="log in klabLog"
+        v-for="log in klabLogReversedAndFiltered()"
         :key="log.id"
         class="log-item q-pa-xs"
       >
@@ -46,8 +46,7 @@ export default {
   },
   computed: {
     ...mapGetters('view', [
-      'klabLog',
-      'lastKlabLog',
+      'klabLogReversedAndFiltered',
     ]),
   },
   methods: {
