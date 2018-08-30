@@ -1,16 +1,18 @@
 <template>
-  <div id="simplebar-log-div">
+  <div id="klab-log-pane">
     <q-list
-      v-for="log in klabLog"
-      :key="log.id"
       striped
       dense
       separator
       dark
       id="log-container"
-      class="no-padding no-margins"
+      class="no-padding no-margin"
+    >
+      <q-item
+        v-for="log in klabLog"
+        :key="log.id"
+        class="log-item q-pa-xs"
       >
-      <q-item class="log-item">
         <q-item-side>
           <q-item-tile :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
         </q-item-side>
@@ -23,7 +25,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapGetters } from 'vuex';
 import { IN } from '../shared/MessagesConstants';
 import SimpleBar from 'simplebar';
 import 'simplebar/dist/simplebar.css';
@@ -38,16 +40,14 @@ export default {
   name: 'KLabLogPane',
   data() {
     return {
-      scrollElement: null,
+      scrollBar: null,
       log: null,
     };
   },
   computed: {
-    ...mapState('stomp', [
-      'connectionState',
-    ]),
     ...mapGetters('view', [
       'klabLog',
+      'lastKlabLog',
     ]),
   },
   methods: {
@@ -62,13 +62,16 @@ export default {
     },
   },
   watch: {
-    klablog(newValue, oldValue) {
-      console.log(`Soy klabLog: he cambiado -> ${JSON.stringify(newValue)} / ${JSON.stringify(oldValue)}`);
+    klabLog() {
+    //  this.$nextTick(() => {
+      this.scrollBar.recalculate();
+    //  });
     },
   },
   mounted() {
-    this.scrollElement = (new SimpleBar(document.getElementById('simplebar-log-div'))).getScrollElement();
+    this.scrollBar = new SimpleBar(document.getElementById('klab-log-pane'));
   },
+
 };
 </script>
 
@@ -76,6 +79,8 @@ export default {
   @import '~variables'
   .q-item.log-item {
     font-size: 10px;
-    overflow-x: hidden;
+  }
+  .log-item .q-item-side {
+    min-width auto;
   }
 </style>

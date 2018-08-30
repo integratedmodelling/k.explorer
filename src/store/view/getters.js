@@ -11,6 +11,7 @@ export default {
   lastKexplorerLog: state => type => Helpers.lastFilteredLogElement(state.kexplorerLog, type),
   // reverseLogActions: state => state.kexplorerLog.slice().reverse(),
   klabLog: state => state.klabLog,
+  lastKlabLog: state => type => Helpers.lastFilteredLogElement(state.klabLog, type),
   klabLogReversedAndFiltered: state => (type) => {
     if (state.klabLog.length === 0) {
       return state.klabLog;
