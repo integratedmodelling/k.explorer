@@ -82,18 +82,25 @@
         id="context-control"
         :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
       >
-        <q-tabs inverted dense v-model="selectedTab" position="bottom" no-pane-border>
-          <q-tab class="q-pa-sm q-ma-xs" slot="title" name="klab-log-pane" icon="ion-md-paper" :color="controlColor.name" />
-          <q-tab class="q-pa-sm q-ma-xs" slot="title" name="klab-tree-pane" icon="ion-ios-list" :color="controlColor.name" />
+        <q-tabs
+          id="klab-tabs"
+          dense
+          v-model="selectedTab"
+          position="bottom"
+          no-pane-border
+          :color="controlColor.name"
+          text-color="white"
+        >
+          <q-tab class="q-pa-xs q-ma-xs" slot="title" name="klab-log-pane" icon="ion-md-paper" />
+          <q-tab class="q-pa-xs q-ma-xs" slot="title" name="klab-tree-pane" icon="ion-ios-list" />
         </q-tabs>
         <div class="q-ma-xs">&nbsp;</div>
         <q-btn
-          flat
           round
           size="md"
           class="no-padding"
           id="btn-reset-context"
-          icon="ion-close-circle-outline"
+          icon="ion-close-circle"
           :color="controlColor.name"
           @click="resetContext"
           v-if="!hasTasks"
@@ -239,6 +246,8 @@ export default {
   .q-card.with-context {
     left: .5em;
     top: 1.5em;
+    // border: 1px solid #fff;
+    border-radius: 5px;
   }
   #q-card-title {
     background-color: alpha($indigo-5, 50%);
@@ -247,6 +256,8 @@ export default {
     width: 100%;
   }
   #q-card-title.no-b-radius {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
@@ -266,19 +277,29 @@ export default {
     text-align: center;
   }
   #context-control {
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     padding: 0
+    margin: 0
   }
   #btn-reset-context {
-    margin: 5px 15px 5px 0;
-    width: 2em;
-    height 2em;
+    margin: 18px 15px 5px 0;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    right: 0;
   }
   .component-fade-enter-active, .component-fade-leave-active {
     transition: opacity .3s ease;
   }
   .component-fade-enter, .component-fade-leave-to {
     opacity: 0;
+  }
+  /* TABS */
+  #klab-tabs .q-tabs-head{
+    border-bottom-left-radius: 5px;
+  }
+  #klab-tabs .q-tab-icon {
+    font-size: 20px;
   }
 </style>
