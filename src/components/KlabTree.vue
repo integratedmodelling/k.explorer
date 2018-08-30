@@ -183,31 +183,6 @@ export default {
           } else {
             tickAll();
           }
-
-          // is a folder
-          /*
-          let selectedIds = [];
-          const selectChildren = (children) => {
-            let selectMainViewer = true;
-            children.forEach((n) => {
-              if (n.tickable) {
-                selectedIds.push(n.id);
-                this.showNode({ nodeId: n.id, selectMainViewer });
-                if (selectMainViewer) {
-                  selectMainViewer = false;
-                }
-              }
-              if (n.children && n.children.length > 0) {
-                selectChildren(n.children);
-              }
-            });
-            if (selectedIds.length > 0) {
-              selectedIds = selectedIds.filter(n => this.ticked.indexOf(n) === -1);
-              this.ticked.push(...selectedIds);
-            }
-
-          }
-          */
         } else {
           this.showNode({ nodeId: selectedId, selectMainViewer: true });
         }
