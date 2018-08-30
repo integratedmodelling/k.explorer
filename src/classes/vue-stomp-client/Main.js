@@ -6,15 +6,26 @@ import Emitter from './Emitter';
 
 export default {
 
-  install(Vue, connection, opts = {}) {
+  /**
+   * Plugin to use stomp client
+   * @param Vue Vue object to use
+   * @param connection url for connections
+   * @param connectionHeaders headers for connections
+   * @param opts options:
+   * @property connectManually permit connect client when needed. Default behaviour is automatic connection
+   * @property defaultMessageDestination default destination for send messages
+   * @property defaultSubscribeDestination default subscribe destination
+   * @property more options, @see Observer.js
+   * @returns {*}
+   */
+  install(Vue, connection, connectionHeaders = {}, opts = {}) {
     if (!connection) { throw new Error('[vue-stomp-client] cannot locate connection'); }
 
     let observer = null;
 
     if (opts.connectManually) {
       Vue.prototype.$connect = () => {
-        observer = new Observer(connection, opts);
-
+        observer = new Observer(connection, connectionHeaders, opts);
         Vue.prototype.$stompClient = observer.StompClient;
       };
 
@@ -26,15 +37,26 @@ export default {
         }
       };
     } else {
-      observer = new Observer(connection, opts);
+      observer = new Observer(connection, connectionHeaders, opts);
       Vue.prototype.$stompClient = observer.StompClient;
     }
 
     Vue.mixin({
       methods: {
-        sendStompMessage(message, headers = {}, destination = '/klab/message') {
-          observer.send(destination, headers, message);
+        // send a stomp message
+        sendStompMessage(message, headers, destination = opts.defaultMessageDestination) {
+          observer.send(destination, message, headers);
         },
+
+        // In this app, the subscribe destination need an id
+        subscribe(idToSubscribe, headers, callback, destination = opts.defaultSubscribeDestination) {
+          return observer.subscribe(`${destination}/${idToSubscribe}`, headers, callback);
+        },
+
+        unsubscribe(id) {
+          observer.unsubscribe(id);
+        },
+
         reconnect() {
           if (observer.StompClient && !observer.StompClient.connected) {
             observer.reconnect();

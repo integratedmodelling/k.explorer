@@ -8,13 +8,21 @@
 // This is for IE11 Promise polyfill
 // import 'es6-promise/auto';
 import { mapGetters, mapActions } from 'vuex';
-// import Vue from 'vue';
 import defaultTestTree from 'shared/test_tree';
 import { Helpers, Constants } from 'shared/Helpers';
+import { IN } from 'shared/MessagesConstants';
 
 export default {
   name: 'App',
+  data() {
+    return {
+      subscriptions: [],
+    };
+  },
   computed: {
+    ...mapGetters('data', [
+      'session',
+    ]),
     ...mapGetters('stomp', [
       'queuedMessage',
     ]),
@@ -25,8 +33,35 @@ export default {
   },
   sockets: {
     onconnect(frame) {
-      console.log(`On connect app: ${JSON.stringify(frame, null, 4)}`);
+      console.log(`Connect to websocket: ${JSON.stringify(frame, null, 4)}`);
+      const sessionSubscriptionObject = this.subscriptions.find(ts => ts.id === this.session);
+      if (typeof sessionSubscriptionObject !== 'undefined') {
+        console.warn(`Invalidate session ${this.session} this.session`); // very strange behaviour
+        sessionSubscriptionObject.subscription.unsubscribe();
+      }
+      const subscription = this.subscribe(this.session);
+      this.subscriptions.push({ id: this.session, subscription });
+      console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
       this.sendQueue();
+    },
+    onsubscribe(subscription) {
+      // const subscriptionObject = this.subscriptions.find(s => s.subscription.id === subscription.id);
+      // if (typeof subscriptionObject !== 'undefined') {
+      console.log(`Someone subscribe with id: ${subscription.id}`);
+      // }
+    },
+    onmessage({ body }) {
+      const { type, payload } = JSON.parse(body);
+      if (type === IN.TYPE_TASKSTARTED) {
+        const subscription = this.subscribe(payload.id);
+        this.subscriptions.push({ id: payload.id, subscription });
+        console.log(`Task ${payload.id} subscribed with subscriptionid ${subscription.id}`);
+      } else if (type === IN.TYPE_TASKABORTED || type === IN.TYPE_TASKFINISHED) {
+        const subscriptionObject = this.subscriptions.find(ts => ts.id === payload.id);
+        if (typeof subscriptionObject !== 'undefined') {
+          subscriptionObject.subscription.unsubscribe();
+        }
+      }
     },
     /*
     onerror: (error) => {
@@ -45,9 +80,6 @@ export default {
       console.log(`Received frame:\n${JSON.stringify(frame, null, 4)}`);
       //  ${body !== '' ? `\nBody:\n${JSON.stringify(body, null, 4)}` : ''}`); // (`On message: ${JSON.stringify(frame, null, 4)}`);
     },
-    onsubscribe(message) {
-      console.log(`Subscribe with subscribe id: ${JSON.stringify(message, null, 4)}`);
-    },
     onclose: () => {
       console.log('Disconnected');
     },
@@ -56,7 +88,7 @@ export default {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
       }
-      console.log(`Send a message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
+      console.log(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
     },
   },
   methods: {
@@ -93,6 +125,12 @@ export default {
         observation: Helpers.OBSERVATION_DEFAULT,
         main: true,
       }, { root: true });
+    }
+  },
+  beforeDestroy() {
+    const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
+    if (typeof sessionSubscription !== 'undefined') {
+      sessionSubscription.unsubscribe();
     }
   },
 };

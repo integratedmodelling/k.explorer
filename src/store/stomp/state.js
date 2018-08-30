@@ -6,6 +6,7 @@ import Constants from 'shared/Constants';
  */
 export default {
 
+  stompClient: null,
   /**
    * Connection state
    */

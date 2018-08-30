@@ -1,6 +1,5 @@
 import Constants from 'shared/Constants';
 import { parseAndExecute } from 'shared/MessagesParser';
-
 /**
  * Names of actions are linked to Stomp client event name
  */
@@ -24,8 +23,8 @@ export default {
     parseAndExecute(message, dispatch);
     // processing
   },
-  stomp_onsubscribe: ({ commit }, subscriber) => {
-    commit('STOMP_SUBSCRIBED', subscriber);
+  stomp_onsubscribe: ({ commit }, subscription) => {
+    commit('STOMP_SUBSCRIBED', subscription);
   },
   // mutations for reconnect methods
   stomp_reconnect: ({ commit }, count) => {

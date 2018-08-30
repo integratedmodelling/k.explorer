@@ -1,9 +1,19 @@
 /* eslint-disable no-unused-expressions */
+/**
+ * Class for stomp listener.
+ * Is possible to register a listener using socket option on vue pages
+ */
 class Emitter {
   constructor() {
     this.listeners = new Map();
   }
 
+  /**
+   * Register a listener for a Stomp event (@see Observer for event list)
+   * @param label the name of listener
+   * @param callback callback to use
+   * @param vm javascript context
+   */
   addListener(label, callback, vm) {
     if (typeof callback === 'function') {
       this.listeners.has(label) || this.listeners.set(label, []);
@@ -13,6 +23,12 @@ class Emitter {
     return false;
   }
 
+  /**
+   * Remove listener
+   * @param label the name of listener
+   * @param callback callback to use
+   * @param vm javascript context
+   */
   removeListener(label, callback, vm) {
     const listeners = this.listeners.get(label);
     let index;
@@ -34,6 +50,11 @@ class Emitter {
     return false;
   }
 
+  /**
+   * Call all listener with this label
+   * @param label label
+   * @param args optional arguments
+   */
   emit(label, ...args) {
     const listeners = this.listeners.get(label);
 

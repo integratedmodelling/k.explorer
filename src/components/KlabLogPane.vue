@@ -1,7 +1,7 @@
 <template>
   <div id="simplebar-log-div">
     <q-list
-      v-for="log in klabLogReversedAndFiltered()"
+      v-for="log in klabLog"
       :key="log.id"
       striped
       dense
@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       scrollElement: null,
+      log: null,
     };
   },
   computed: {
@@ -46,7 +47,7 @@ export default {
       'connectionState',
     ]),
     ...mapGetters('view', [
-      'klabLogReversedAndFiltered',
+      'klabLog',
     ]),
   },
   methods: {
@@ -58,6 +59,11 @@ export default {
     },
     logColorAndIcon(log) {
       return LOG_ICON_COLORS[log.type];
+    },
+  },
+  watch: {
+    klablog(newValue, oldValue) {
+      console.log(`Soy klabLog: he cambiado -> ${JSON.stringify(newValue)} / ${JSON.stringify(oldValue)}`);
     },
   },
   mounted() {

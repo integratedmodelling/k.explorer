@@ -7,38 +7,49 @@ import webstomp from 'webstomp-client';
  */
 export default class {
   /**
-   * Constructor
-   * @param connectionUrl The url of Stomp/SockJS websocket
-   * @param opts
-   * Stomp client
-   * @property headers: headers
-   * @property protocols: default to ['v10.stomp', 'v11.stomp', 'v12.stomp']
-   * @property binary: default to false. See binary section
-   * @property heartbeat: default to {incoming: 10000, outgoing: 10000}.
-   *    You can provide false to cut it  (recommended when the server is a
-   *    SockJS server) or a definition object.
-   * @property debug: default to true. Will log frame using console.log
-   * Others
-   * @property reconnection: true \ false - False if not indicated
-   * @property reconnectionAttempts default Infinity (valid if reconnection === true)
-   * @property reconnectionDelay default 1000ms
+   * Create a new Observer object
+   * @param connectionUrl url of Stomp service
+   * @param connHeaders headers. Default is empty headers object
+   * @param options options
+   * @property
+   * stompOptions: {
+   *   binary?: boolean (false);
+   *   heartbeat?: Heartbeat | boolean ({outgoing: 10000, incoming: 10000});
+   *   debug?: boolean (true);
+   *   protocols?: string[]
+   *   protocol: protocols dosn't work if used over sockJS, need to add in bad way @see line 92
+   * },
+   * sockJSOptions: { @link(https://github.com/sockjs/sockjs-client#sockjs-client-api)
+   *   server: string
+   *   transports: string or string[]
+   *   sessionId: Number or function
+   * }
+   * store: if setted, everything is sended to store mutation or action,
+   * storeNS: if setted, indicate the Namespace of store to use for mutations or actions
+   * reconnection: indicate if automatic reconnection is needed
+   * reconnectionAttempts: how many reconnection attempts. Default is Infinity
+   * reconnectionDelay: reconnection delay. Default is 2000ms
+   * debug: debug of observer (not for stomp client)
    */
-  constructor(connectionUrl, options = {}) {
+  constructor(connectionUrl, connectionHeaders = {}, options = {}) {
     if (!connectionUrl) {
       throw new Error('Connection url is needed');
     }
     this.connectionUrl = connectionUrl;
+    this.connectionHeaders = connectionHeaders;
 
-    // using the JStenoun way for opts
+    // using the JSteunou way for opts
     const {
-      stompOptions,
+      stompOptions = {
+        debug: false,
+      },
+      sockJSOptions = {},
       reconnection = false,
       reconnectionAttempts = Infinity,
       reconnectionDelay = 2000,
-      debug = true,
-      store,
+      debug = false,
+      store = null,
       storeNS = '',
-      defaultMessageDestination,
     } = options;
 
     this.reconnection = reconnection;
@@ -51,69 +62,57 @@ export default class {
     this.reconnectTimeoutId = -1;
     this.reconnectionCount = 0;
 
-    this.subscribeId = null;
-
-    this.defaultMessageDestination = defaultMessageDestination;
-
-    if (store) {
+    if (typeof store !== 'undefined' && store !== null) {
       this.store = store;
       this.storeNS = storeNS;
     }
 
     this.stompOptions = stompOptions;
+    this.sockJSOptions = sockJSOptions;
 
-    // Is a default behaviour because the opt to connect manually is controlled in Main.js
-    this.connect(connectionUrl, stompOptions);
+    this.connect();
   }
 
+  /**
+   * If debug is on, console.debug
+   * @param args
+   */
   debug(...args) {
     if (this.hasDebug) console.debug(...args);
   }
 
   /**
-   * Connect
-   * @param connectionUrl
-   * @param opts
-   * @returns {*}
+   * Connect using constructor parameters
    */
-  connect(connectionUrl, stompOptions = {}) {
+  connect() {
     // Create object and connect must be atomic (don't know why, is a webstomp-client "problem"
     // https://github.com/JSteunou/webstomp-client/issues/6
-    const { headers = {}, subscribeUrl /* , sockJSOptions = {} */ } = stompOptions;
 
-    const sockJs = SockJS(connectionUrl); // , sockJSOptions);
-    sockJs.protocol = stompOptions.protocol || '';
-    this.StompClient = webstomp.over(sockJs, stompOptions);
+    const sockJs = SockJS(this.connectionUrl, this.sockJSOptions);
+    sockJs.protocol = this.stompOptions.protocol || '';
+    this.StompClient = webstomp.over(sockJs, this.stompOptions);
     this.StompClient.connect(
-      headers,
+      this.connectionHeaders,
       (frame) => {
         this.doOnEvent('onconnect', frame);
-        // const cl = this;
-        this.subscribe(subscribeUrl);
       },
       error => setTimeout(() => {
         this.doOnEvent('onerror', error);
       }, 1000),
     );
-
-    return this.StompClient;
   }
 
-  subscribe(subscribeUrl) {
-    if (subscribeUrl) {
-      this.subscribeId = this.StompClient.subscribe(subscribeUrl, (message) => {
-        this.doOnEvent('onmessage', message);
-      });
-      if (this.subscribeId) {
-        this.doOnEvent('onsubscribe', this.subscribeId);
-      }
-    }
-  }
-
+  /**
+   * return if connected
+   * @returns {*|boolean}
+   */
   isConnected() {
     return this.StompClient && this.StompClient.connected;
   }
 
+  /**
+   * Reconnect if needed
+   */
   reconnect() {
     if (this.reconnectionCount <= this.reconnectionAttempts) {
       this.reconnectionCount += 1;
@@ -126,15 +125,47 @@ export default class {
           this.passToStore('stomp_reconnect', this.reconnectionCount);
         }
         */
-        this.connect(this.connectionUrl, this.stompOptions);
+        this.connect();
       }, this.reconnectionDelay);
     } else if (this.store) {
       this.passToStore('stomp_onerror', 'Reconnection error');
-      // this.doOnEvent('onerror', new Error('Reconnection error'));
     }
   }
 
-  send(destination = this.defaultMessageDestination, headers = this.headers, message) {
+  /**
+   * Subscribe to something
+   * @param headers
+   * @param callback
+   * @returns {*}
+   */
+  subscribe(subscribeUrl, headers = {}, callback = (message) => { this.doOnEvent('onmessage', message); }) {
+    if (subscribeUrl) {
+      const subscription = this.StompClient.subscribe(subscribeUrl, callback, headers);
+      if (subscription) {
+        this.doOnEvent('onsubscribe', subscription);
+        return subscription;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Unsuscribe. It will be do using subscription object
+   * @param id
+   * @param headers
+   */
+  unsubscribe(id, headers) {
+    this.StompClient.unsubscribe(id, headers);
+  }
+
+  /**
+   * Send a STOMP message
+   * @param destination
+   * @param headers
+   * @param message
+   * @returns {boolean}
+   */
+  send(destination, message, headers = {}) {
     if (this.isConnected()) {
       this.StompClient.send(destination, JSON.stringify(message), headers);
       this.doOnEvent('onsend', {
@@ -150,6 +181,11 @@ export default class {
     return false;
   }
 
+  /**
+   * Manage the things to do on event: Emit to listener and if setted, send to store action
+   * @param eventType
+   * @param payload
+   */
   doOnEvent(eventType, payload) {
     if (!Emitter.emit(eventType, payload)) {
       this.debug(`No listener for ${eventType}`);
@@ -168,6 +204,11 @@ export default class {
     }
   }
 
+  /**
+   * Pass control to store
+   * @param eventName
+   * @param event
+   */
   passToStore(eventName, event) {
     if (!eventName.startsWith('stomp_')) { return; }
 
@@ -189,6 +230,9 @@ export default class {
     this.store[method](target, msg);
   }
 
+  /**
+   * Close connections
+   */
   close() {
     if (this.StompClient) {
       this.StompClient.disconnect();

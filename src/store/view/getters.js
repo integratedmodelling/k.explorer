@@ -22,6 +22,7 @@ export default {
     return reversed.find(log => log.type === type);
   },
 
+
   /**
    * Context layer
    */

@@ -6,6 +6,7 @@ export default {
   },
 
   ADD_TO_KLAB_LOG: (state, log) => {
+    console.log(`Add to klab log: ${JSON.stringify(log, null, 4)}`);
     Helpers.pushElementInFixedQueue(state.klabLog, log);
   },
 
