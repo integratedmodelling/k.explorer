@@ -72,4 +72,8 @@ export default {
    * a char that will be lost
    */
   searchLostChar: '',
+  /**
+   * Previous searches are stored here
+   */
+  searchHistory: [],
 };

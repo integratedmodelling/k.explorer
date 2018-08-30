@@ -121,6 +121,7 @@ export default {
       'setSpinner',
       'searchFocus',
       'resetSearchLostChar',
+      'storePreviousSearch',
     ]),
     onTokenFocus(token, event) {
       token.selected = event.type === 'focus';
@@ -311,6 +312,7 @@ export default {
         this.searchRequestId = 0;
         this.doneFunc = null;
         this.result = null;
+        this.storePreviousSearch(this.acceptedTokens);
         this.acceptedTokens = [];
         this.actualSearchString = ''; // actualToken is changed using watcher
         this.scrolled = 0;

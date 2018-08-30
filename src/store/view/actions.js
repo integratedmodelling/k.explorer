@@ -170,5 +170,9 @@ export default {
   resetSearchLostChar: ({ commit }) => {
     commit('RESET_SEARCH_LOST_CHAR');
   },
+
+  storePreviousSearch: ({ commit }, searchArray) => {
+    commit('STORE_SEARCH', searchArray);
+  },
 };
 

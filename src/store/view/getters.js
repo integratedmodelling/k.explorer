@@ -63,5 +63,5 @@ export default {
   searchIsActive: state => state.searchActive,
   searchIsFocused: state => state.searchFocus,
   searchLostChar: state => state.searchLostChar,
-
+  searchHistory: state => state.searchHistory,
 };

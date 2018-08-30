@@ -4,7 +4,7 @@ export default ({ Vue, store }) => {
   // Starting VueStompClient connecting to WS_URL
   Vue.use(VueStompClient, process.env.WS_BASE_URL + process.env.WS_URL, {}, {
     stompOptions: {
-      debug: true,
+      debug: false,
       reconnection: true,
       protocol: 'v12.stomp',
     },

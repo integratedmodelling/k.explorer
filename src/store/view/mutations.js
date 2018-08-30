@@ -101,5 +101,9 @@ export default {
     state.searchFocus = false;
     state.searchLostChar = '';
   },
+
+  STORE_SEARCH: (state, searchArray) => {
+    state.searchHistory.push(...searchArray);
+  },
 };
 
