@@ -103,7 +103,7 @@ export const MESSAGES_BUILDERS = {
   OBSERVATION_REQUEST: ({
     urn,
     contextId,
-    searchContextId,
+    searchContextId = null,
     session,
   }) => buildMessage(
     OUT.CLASS_OBSERVATIONLIFECYCLE,
@@ -112,7 +112,7 @@ export const MESSAGES_BUILDERS = {
     {
       urn,
       ...(contextId !== null && { contextId }),
-      searchContextId,
+      ...(searchContextId !== null && { searchContextId }),
     },
     session,
   ),

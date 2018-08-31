@@ -103,7 +103,7 @@ export default {
   },
 
   STORE_SEARCH: (state, searchArray) => {
-    state.searchHistory.push(...searchArray);
+    state.searchHistory.push(searchArray);
   },
 };
 

@@ -85,9 +85,9 @@ export default {
       searchInput: null,
       autocompleteEl: null,
       scrolled: 0,
-      acceptedTokensCounter: 0,
       suggestionShowed: false,
       searchTimeout: null,
+      searchHistoryIndex: -1,
     };
   },
   computed: {
@@ -99,6 +99,7 @@ export default {
       'spinner',
       'searchIsFocused',
       'searchLostChar',
+      'searchHistory',
     ]),
     controlColor() {
       return {
@@ -189,14 +190,10 @@ export default {
     onKeyPressedOnSearchInput(event) {
       this.noSearch = false;
       switch (event.keyCode) {
-        case 13: // ENTER
-          if (!this.suggestionShowed) {
-            this.searchInKLab(event);
-          }
-          break;
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) {
             this.acceptedTokens.pop();
+            this.searchHistoryIndex = -1;
             event.preventDefault();
           } else if (this.actualSearchString !== '') {
             event.preventDefault();
@@ -207,17 +204,22 @@ export default {
         case 9: // TAB force to select with TAB
           if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
             this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
+            this.searchHistoryIndex = -1;
           }
           event.preventDefault();
           break;
-        case 37: // left arrow
-          if (!this.suggestionShowed && this.searchInput.$refs.input.selectionStart === 0) {
-            const token = this.acceptedTokens[this.acceptedTokens.length - 1];
-            Vue.nextTick(() => {
-              this.$refs[`token-${token.index}`][0].focus();
-            });
-            event.preventDefault();
+        case 13: // ENTER
+          if (!this.suggestionShowed) {
+            this.searchInKLab(event);
           }
+          break;
+        case 27: // ESCAPE
+          if (this.suggestionShowed) {
+            this.autocompleteEl.hide();
+          } else {
+            this.searchEnd(true);
+          }
+          event.preventDefault();
           break;
         case 32: // SPACE BAR is not allowed in search
           event.preventDefault();
@@ -227,11 +229,32 @@ export default {
             timeout: 1500,
           });
           break;
+        case 37: // left arrow
+          if (!this.suggestionShowed && this.searchInput.$refs.input.selectionStart === 0
+          && this.acceptedTokens.length > 0) {
+            const token = this.acceptedTokens[this.acceptedTokens.length - 1];
+            Vue.nextTick(() => {
+              this.$refs[`token-${token.index}`][0].focus();
+            });
+            event.preventDefault();
+          }
+          break;
+        case 38: // Arrow up
+          if (!this.suggestionShowed) {
+            this.searchHistoryEvent(1, event);
+          }
+          break;
+        case 40: // Arrow down
+          if (!this.suggestionShowed) {
+            this.searchHistoryEvent(-1, event);
+          }
+          break;
         default:
           if (event.keyCode !== 39 && (event.keyCode < 65 || event.keyCode > 90)) {
             event.preventDefault(); // only letters are permitted
           } else {
             event.preventDefault();
+            this.searchHistoryIndex = -1;
             this.actualSearchString += event.key;
             // this.searchInput.$refs.input.style.color = 'black';
             // this.actualToken = this.actualSearchString; todo change
@@ -291,7 +314,7 @@ export default {
         this.sendStompMessage(MESSAGES_BUILDERS.OBSERVATION_REQUEST({
           urn,
           contextId: this.contextId,
-          searchContextId: this.searchContextId,
+          searchContextId: null, // this.searchContextId, -> we don't want delete it for search history
           session: this.$store.state.data.session,
         }).body);
         this.$q.notify({
@@ -306,17 +329,23 @@ export default {
       this.searchEnd();
     },
     // search reset
-    searchEnd() {
+    searchEnd(forced = false) {
       if (!this.suggestionShowed) {
+        if (!forced && this.acceptedTokens.length > 0) {
+          this.storePreviousSearch({
+            acceptedTokens: this.acceptedTokens.slice(0),
+            searchContextId: this.searchContextId,
+            searchRequestId: this.searchRequestId,
+          });
+        }
         this.searchContextId = null;
         this.searchRequestId = 0;
         this.doneFunc = null;
         this.result = null;
-        this.storePreviousSearch(this.acceptedTokens);
         this.acceptedTokens = [];
+        this.searchHistoryIndex = -1;
         this.actualSearchString = ''; // actualToken is changed using watcher
         this.scrolled = 0;
-        this.acceptedTokensCounter = 0;
         this.noSearch = false;
         this.searchStop();
       }
@@ -325,6 +354,21 @@ export default {
     resetSearchInput() {
       this.actualToken = this.actualSearchString;
       this.inputSearchColor = 'black';
+    },
+    searchHistoryEvent(index, event = null) {
+      if (this.actualToken === '' && this.searchHistory.length > 0
+        && (this.acceptedTokens.length === 0 || this.searchHistoryIndex >= 0)
+        && this.searchHistory.length > 0 && (index > 0 || this.searchHistoryIndex > 0)
+        && this.searchHistoryIndex + index < this.searchHistory.length) {
+        this.searchHistoryIndex += index;
+        const previousSearch = this.searchHistory[this.searchHistoryIndex];
+        this.acceptedTokens = previousSearch.acceptedTokens.slice(0);
+        this.searchContextId = previousSearch.searchContextId;
+        this.searchRequestId = previousSearch.searchRequestId;
+        if (event !== null) {
+          event.preventDefault();
+        }
+      }
     },
   },
   watch: {
@@ -399,7 +443,7 @@ export default {
           leftColor: desc.color,
           rgb: desc.rgb,
           id: match.id,
-          index: this.acceptedTokensCounter += 1,
+          index: this.acceptedTokens.length + 1,
           selected: false,
           // stamp: `${index + 1}/${totMatches}`, TODO is useless?
         });
@@ -442,7 +486,13 @@ export default {
     // if a char was pressed without search input focus, is possible that it will be not write, so we do it
     searchLostChar(newValue) {
       if (newValue !== null) { // && this.actualToken === '') {
-        this.actualSearchString += newValue;
+        if (newValue === 'ArrowUp') {
+          this.searchHistoryEvent(1);
+        } else if (newValue === 'ArrowDown') {
+          this.searchHistoryEvent(-1);
+        } else {
+          this.actualSearchString += newValue;
+        }
         this.resetSearchLostChar();
       }
     },
@@ -451,7 +501,15 @@ export default {
     this.searchDiv = this.$refs['mc-search-div'];
     this.searchInput = this.$refs['mc-search-input'];
     this.autocompleteEl = this.$refs['mc-autocomplete'];
-    this.actualSearchString = (this.searchLostChar === null) ? '' : this.searchLostChar;
+    if (this.searchLostChar !== null) {
+      if (this.searchLostChar === 'ArrowUp') {
+        this.searchHistoryEvent(1);
+      } else {
+        this.actualSearchString = this.searchLostChar;
+      }
+    } else {
+      this.actualSearchString = '';
+    }
     this.inputSearchColor = 'black';
     // this.actualToken = this.actualSearchString; TODO Change
     // Only in dev: stop the annoying warning of letter

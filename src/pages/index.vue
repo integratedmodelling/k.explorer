@@ -103,20 +103,18 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (event.keyCode >= 65 && event.keyCode <= 90) {
+      if (event.keyCode === 27 && this.searchIsActive) {
+        this.searchStop();
+        event.preventDefault();
+        return;
+      }
+      if (event.keyCode === 38 || event.keyCode === 40 || (event.keyCode >= 65 && event.keyCode <= 90)) {
         if (!this.searchIsActive) {
           this.searchStart(event.key);
           event.preventDefault();
-        } else {
-          if (event.keyCode === 27) {
-            this.searchStop();
-            event.preventDefault();
-            return;
-          }
-          if (!this.searchIsFocused) {
-            this.searchFocus({ char: event.key, focused: true });
-            event.preventDefault();
-          }
+        } else if (!this.searchIsFocused) {
+          this.searchFocus({ char: event.key, focused: true });
+          event.preventDefault();
         }
       }
     });
