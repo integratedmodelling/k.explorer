@@ -87,8 +87,8 @@ export default {
     onsend({ headers, message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
+        console.log(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
       }
-      console.log(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
     },
   },
   methods: {
