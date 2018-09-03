@@ -26,10 +26,10 @@ export default {
   /**
    * Messages types
    */
-  TYPE_DEBUG: 'LOG',
-  TYPE_WARNING: 'WARNING',
-  TYPE_ERROR: 'ERROR',
-  TYPE_INFO: 'INFO',
+  TYPE_DEBUG: 'debug',
+  TYPE_WARNING: 'warning',
+  TYPE_ERROR: 'error',
+  TYPE_INFO: 'info',
 
   TYPE_MESSAGE: 'MSG',
   TYPE_ALL: 'ALL',

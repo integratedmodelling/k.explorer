@@ -27,9 +27,13 @@ module.exports = function (ctx) {
         ...(ctx.dev)
           ? { // so on dev we'll have
             WS_BASE_URL: JSON.stringify('http://localhost:8283'),
+            STOMP_CLIENT_DEBUG: true,
+            DEBUG_LEVEL_APP: 'debug',
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
+            STOMP_CLIENT_DEBUG: false,
+            DEBUG_LEVEL_APP: 'info',
           },
         WSERVICE_URL: JSON.stringify('/modeler'),
         WS_URL: JSON.stringify('/modeler/message'),
