@@ -85,9 +85,9 @@ const Helpers = {
   },
 
   /**
-   * Search the parent with the key
-   * @param tree the tree where to look for parent
-   * @param key the parent key
+   * Search a node using a property
+   * @param tree the tree where to look for node
+   * @param key the node key value
    */
   findNodeById(tree, key = null) {
     if (tree && key !== null) {
@@ -111,6 +111,27 @@ const Helpers = {
     }
     return null;
   },
+
+  /**
+   * Return a node object from an observation
+   * @param observation
+   */
+  getNodeFromObservation: observation => ({
+    node: {
+      id: observation.id,
+      label: observation.literalValue || observation.label,
+      type: observation.shapeType,
+      viewerIdx: observation.viewerIdx,
+      children: [],
+      tickable: observation.viewerIdx !== null && !observation.empty,
+      disabled: observation.empty,
+      actions: observation.actions,
+      header: 'default',
+      folderId: observation.folderId,
+      main: observation.main,
+    },
+    parentId: observation.folderId === null ? observation.parentId : observation.folderId,
+  }),
 
   /**
    * If we need a new projection, a call to epsg.io is maded to retrieve

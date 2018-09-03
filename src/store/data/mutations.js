@@ -57,8 +57,75 @@ export default {
           siblingCount: parent.siblingCount,
         });
       } else {
+        console.warn(`Orphan founded with id ${node.id}`);
         state.orphans.push(node);
       }
+    }
+  },
+
+  RECALCULATE_TREE: (state, taskId) => {
+    const filtered = state.observations.filter(observation => observation.taskId === taskId);
+    if (filtered.length === 0) {
+      console.log('No recalculation needed, no observation for this task');
+      return;
+    }
+    if (filtered.length === 1) {
+      console.log('No recalculation needed, only one observation');
+      return;
+    }
+    const idsToDelete = []; // only ids
+    const mains = []; // main observations
+    let main = null; // main observation
+    const children = []; // no main, children of main observation
+    filtered.forEach((observation, index) => {
+      if (observation.main) {
+        if (index === filtered.length - 1) {
+          main = observation;
+        } else {
+          mains.push(observation);
+        }
+      } else {
+        children.push(observation);
+      }
+      idsToDelete.push(observation.id);
+    });
+    if (main === null) {
+      console.warn('No main observation found');
+      return;
+    }
+    // find index of first filtered occurence
+    const firstOccurence = filtered[0];
+    let folder = null;
+    let insertionIndex = -1;
+    if (firstOccurence.parentId === state.context.id) {
+      folder = state.tree;
+      insertionIndex = state.tree.findIndex(c => c.id === firstOccurence.id);
+    } else {
+      const parentFolder = Helpers.findNodeById(state.tree, firstOccurence.folderId || firstOccurence.parentId);
+      if (parentFolder === null) {
+        throw new Error(`Element is not first level but cannot find parent: folderId: ${firstOccurence.folderId}, parentId: ${firstOccurence.parentId}`);
+      }
+      folder = parentFolder.children;
+      insertionIndex = folder.findIndex(c => c.id === firstOccurence.id);
+    }
+    if (children.length > 0) {
+      children.forEach((child) => {
+        child.folderId = main.id;
+      });
+      main.children.push(...children);
+    } else {
+      console.log('No children found');
+    }
+    if (folder !== null && insertionIndex !== -1) {
+      // remove all elements from tree
+      let i = folder.length;
+      // eslint-disable-next-line no-plusplus
+      while (i--) {
+        if (idsToDelete.includes(folder[i].id)) {
+          folder.splice(i, 1);
+        }
+      }
+      folder.splice(insertionIndex, 0, main);
     }
   },
 

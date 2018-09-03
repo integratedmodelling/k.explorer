@@ -38,31 +38,27 @@ export default {
    * If there are childrens, ask for them and repeat operation
    * @param observation observation to add
    * @param folderId if null and has siblings, we must ask for them, else parentId is folderId
-   * @param fake if set to true, observation is fake, used when start without context
-   * and the default center point is used in map
+   * @param main indicate if is main viewer
+   * @param toTree indicate if observation will be added to tree
+   * @param visible visibility
    * @main if true, indicate that this observation set his viewer as main
    */
   addObservation: ({ commit, state, dispatch }, {
     observation,
     folderId = null,
     main = false,
-    addToTree = true,
+    toTree = true,
     visible = false,
   }) => new Promise((resolve) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
+      existingObservation.main = observation.main;
       const self = Helpers.findNodeById(state.tree, observation.id);
       if (self !== null) {
-        dispatch('view/addToKexplorerLog', {
-          type: Constants.TYPE_WARNING,
-          payload: {
-            message: `Observation with id ${observation.id} exists in actual context`,
-          },
-        }, { root: true });
-        return resolve();
+        self.main = observation.main;
+      } else {
+        commit('ADD_NODE', Helpers.getNodeFromObservation(observation));
       }
-      // not exists in tree, so only add to tree
-      dispatch('addToTree', existingObservation);
       return resolve();
     }
 
@@ -99,7 +95,7 @@ export default {
       // ask for children
       if (observation.children.length > 0) {
         observation.children.forEach((child) => {
-          dispatch('addObservation', { observation: child, addToTree });
+          dispatch('addObservation', { observation: child, toTree });
         });
       }
       // ask for siblings
@@ -111,29 +107,25 @@ export default {
           count: Constants.SIBLINGS_TO_ASK_FOR,
         });
       }
-      if (addToTree) {
-        dispatch('addToTree', observation);
+      if (toTree) {
+        commit('ADD_NODE', Helpers.getNodeFromObservation(observation));
       }
       return resolve();
     });
     return null;
   }),
 
-  addToTree: ({ commit }, observation) => {
-    commit('ADD_NODE', {
-      node: {
-        id: observation.id,
-        label: observation.literalValue || observation.label,
-        type: observation.shapeType,
-        viewerIdx: observation.viewerIdx,
-        children: [],
-        tickable: observation.viewerIdx !== null && !observation.empty,
-        disabled: observation.empty,
-        actions: observation.actions,
-        header: 'default',
-        folderId: observation.folderId,
-      },
-      parentId: observation.folderId === null ? observation.parentId : observation.folderId,
+  /**
+   * When a task finish, we need to check the internal hierarchy of observations
+   * @param taskId task to check
+   */
+  recalculateTree: ({ commit }, taskId) => {
+    if (typeof taskId === 'undefined' || taskId === null) {
+      throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
+    }
+    return new Promise((resolve) => {
+      commit('RECALCULATE_TREE', taskId);
+      resolve();
     });
   },
 
@@ -142,7 +134,7 @@ export default {
     folderId,
     offset = 0,
     count = Constants.SIBLINGS_TO_ASK_FOR,
-    addToTree = true,
+    toTree = true,
     visible = false,
   }) => new Promise((resolve) => {
     console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
@@ -156,34 +148,39 @@ export default {
       .then(({ data }) => {
         if (data && data.siblingCount > 1 && data.siblings) {
           dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: nodeId }, { root: true }).then(() => {
-            data.siblings.forEach((sibling, index, array) => {
-              dispatch('addObservation', {
-                observation: sibling,
-                folderId,
-                addToTree,
-                visible,
-              }).then(() => {
-                if (index === array.length - 1) {
-                  // last element
-                  if (addToTree) {
-                    commit('ADD_LAST', {
-                      folderId,
-                      observationId: sibling.id,
-                      offsetToAdd: data.siblings.length,
-                      total: data.siblingCount,
-                    });
+            if (data.siblings && data.siblings.length > 0) {
+              data.siblings.forEach((sibling, index, array) => {
+                dispatch('addObservation', {
+                  observation: sibling,
+                  folderId,
+                  toTree,
+                  visible,
+                }).then(() => {
+                  if (index === array.length - 1) {
+                    // last element
+                    if (toTree) {
+                      commit('ADD_LAST', {
+                        folderId,
+                        observationId: sibling.id,
+                        offsetToAdd: data.siblings.length,
+                        total: data.siblingCount,
+                      });
+                    }
+                    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: nodeId }, { root: true });
+                    resolve();
                   }
-                  dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: nodeId }, { root: true });
-                  resolve();
-                }
+                });
               });
-            });
-            const folder = Helpers.findNodeById(state.tree, folderId);
-            if (folder !== null) {
-              folder.siblingsLoaded += data.siblings.length;
-              if (addToTree) {
-                folder.siblingsVisibleInTree += data.siblings.length;
+              const folder = Helpers.findNodeById(state.tree, folderId);
+              if (folder !== null) {
+                folder.siblingsLoaded += data.siblings.length;
+                if (toTree) {
+                  folder.siblingsVisibleInTree += data.siblings.length;
+                }
               }
+              dispatch('data/recalculateTree', data.siblings[0].taskId, { root: true }).then(() => {
+                dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: data.siblings[0].taskId }, { root: true });
+              });
             }
           });
         }
@@ -238,10 +235,6 @@ export default {
 
   storeSearchResult({ commit }, results) {
     commit('STORE_RAW_SEARCH_RESULT', results);
-  },
-
-  deleteSearchResult({ commit }, { contextId, requestId }) {
-    commit('DELETE_SEARCH_RESULT', { contextId, requestId });
   },
 
 };

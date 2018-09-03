@@ -10,7 +10,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import defaultTestTree from 'shared/test_tree';
 import { Helpers, Constants } from 'shared/Helpers';
-import { IN } from 'shared/MessagesConstants';
+import { MESSAGES_BUILDERS, IN } from 'shared/MessagesConstants';
 
 export default {
   name: 'App',
@@ -132,6 +132,7 @@ export default {
     if (typeof sessionSubscription !== 'undefined') {
       sessionSubscription.unsubscribe();
     }
+    this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
   },
 };
 

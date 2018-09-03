@@ -14,13 +14,13 @@
         :dark="true"
       >
         <div slot="header-default" slot-scope="prop">
-          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
           <q-chip class="node-chip transparent" small dense text-color="grey-9">
             {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
           </q-chip>
         </div>
         <div slot="header-folder" slot-scope="prop">
-          <span class="node-element" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
         </div>
       </q-tree>
@@ -164,7 +164,7 @@ export default {
               folderId: node.folderId,
               offset: selectedNode.siblingsLoaded - 1,
               count: -1,
-              addToTree: false,
+              toTree: false,
               visible: true,
             }).then(() => {
               this.askingForSiblings = false;
@@ -232,6 +232,24 @@ export default {
   .q-chip.node-chip {
     position:absolute;
     right: 10px;
+  }
+    /*
+  .node-emphasized::after {
+    font-family: Ionicons;
+    content: " \f4b3";
+  }
+  */
+  .node-emphasized {
+    color: #fff;
+    font-weight 700;
+    animation: flash linear 2s;
+  }
+  @keyframes flash {
+    0% { opacity: 1; }
+    25% { opacity: .5; }
+    50% { opacity: 1; }
+    75% { opacity: .5; }
+    100% { opacity: 1; }
   }
   #klab-tree-div {
     max-height: 70vh;
