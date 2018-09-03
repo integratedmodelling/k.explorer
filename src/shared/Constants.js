@@ -156,7 +156,7 @@ export default {
       label: 'Process',
       symbol: 'P',
       color: 'sem-process',
-      rgb: 'rgb(0, 204, 0)',
+      rgb: 'rgb(204, 0, 0)',
     },
     ROLE: {
       label: 'Role',
