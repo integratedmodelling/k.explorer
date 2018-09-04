@@ -52,18 +52,21 @@ export default {
   }) => new Promise((resolve) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
-      existingObservation.main = observation.main;
+      existingObservation.main = observation.main; // is possible that main was changed to true
       if (existingObservation.main && existingObservation.folderId !== null && existingObservation.folderId.indexOf('ff_') === 0) {
-        // transmit main to folder
+        // is a main observations in a fake folder, so if main is true we need to translate value to folder
         const folder = Helpers.findNodeById(state.tree, existingObservation.folderId);
         folder.main = true;
         existingObservation.main = false;
       }
+      // check if observation is in tree or is a lazy tree node
       const self = Helpers.findNodeById(state.tree, observation.id);
       if (self !== null) {
+        // if is in tree, I update main attribute
         self.main = existingObservation.main;
       } else {
-        commit('ADD_NODE', Helpers.getNodeFromObservation(observation));
+        // create a new node using existingObservation (observation gain a lot of attribute in her first time)
+        commit('ADD_NODE', Helpers.getNodeFromObservation(existingObservation));
       }
       return resolve();
     }
