@@ -10,7 +10,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import defaultTestTree from 'shared/test_tree';
 import { Helpers, Constants } from 'shared/Helpers';
-import { MESSAGES_BUILDERS, IN } from 'shared/MessagesConstants';
+import { IN } from 'shared/MessagesConstants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 export default {
   name: 'App',
