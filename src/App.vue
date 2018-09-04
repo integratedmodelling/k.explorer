@@ -8,7 +8,6 @@
 // This is for IE11 Promise polyfill
 // import 'es6-promise/auto';
 import { mapGetters, mapActions } from 'vuex';
-import defaultTestTree from 'shared/test_tree';
 import { Helpers, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
@@ -117,16 +116,10 @@ export default {
     },
   },
   beforeMount() {
-    // TODO only for test proposal
-    const testTree = this.$urlParams.get('test_tree') || false;
-    if (testTree) {
-      this.loadTree(defaultTestTree);
-    } else {
-      this.$store.dispatch('data/addObservation', {
-        observation: Helpers.OBSERVATION_DEFAULT,
-        main: true,
-      }, { root: true });
-    }
+    this.$store.dispatch('data/addObservation', {
+      observation: Helpers.OBSERVATION_DEFAULT,
+      main: true,
+    }, { root: true });
   },
   beforeDestroy() {
     const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
