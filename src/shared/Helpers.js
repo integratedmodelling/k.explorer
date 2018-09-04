@@ -293,7 +293,8 @@ const Helpers = {
       observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_LINES;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
       const text = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_TEXT.clone();
-      const image = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_SVG_ICON({ fill: '#eee', stroke: '#333', strokeWidth: '4' }).clone();
+      // TODO check this # = %23 to do something a little better
+      const image = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_SVG_ICON({ fill: '%23eee', stroke: '%23333', strokeWidth: '4' }).clone();
 
       text.setText(observation.label);
       layerStyle = new Style({
