@@ -42,6 +42,12 @@ export default {
   observations: [],
 
   /**
+   * Redundant array to find observation by task id. tasks.[taskId] = [observations]
+   * IMPORTANT: observations are stored as references, so if something change, everything change!
+   */
+  tasks: [],
+
+  /**
    * The session id given from url and used everywhere
    */
   session: null,

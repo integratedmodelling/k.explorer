@@ -21,7 +21,11 @@
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount }}</q-chip>
+          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
+        </div>
+        <div slot="header-main" slot-scope="prop">
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
         </div>
       </q-tree>
     </div>
@@ -140,10 +144,13 @@ export default {
             this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
             this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
           } else {
+            /* TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If
+                    we need to check this, is expensive (need to find node to check if is a fake or real folder
             if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
               // we unselect the folder
               this.ticked.splice(this.ticked.indexOf(unselectedNode.folderId), 1);
             }
+            */
             this.hideNode(unselectedId);
           }
         }

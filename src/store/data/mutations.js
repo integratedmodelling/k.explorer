@@ -27,9 +27,11 @@ export default {
   },
 
   ADD_OBSERVATION: (state, observation) => {
-    // console.log(`Added observation:\n${JSON.stringify(observation, null, 2)}`);
-    console.log(`Added observation: ${observation.label}`);
     state.observations.push(observation);
+    console.log(`Added observation: ${observation.label}`);
+    if (state.tasks[observation.taskId]) {
+      state.tasks[observation.taskId].push(observation);
+    }
   },
 
   /**
@@ -63,8 +65,19 @@ export default {
     }
   },
 
+
+  ADD_TASKID: (state, taskId) => {
+    if (typeof state.tasks[taskId] === 'undefined') {
+      state.tasks[taskId] = [];
+    }
+  },
+
   RECALCULATE_TREE: (state, taskId) => {
-    const filtered = state.observations.filter(observation => observation.taskId === taskId);
+    const filtered = state.tasks[taskId]; // state.observations.filter(observation => observation.taskId === taskId);
+    if (typeof filtered === 'undefined') {
+      console.warn(`No observations for taskId ${taskId}`);
+      return;
+    }
     if (filtered.length === 0) {
       console.log('No recalculation needed, no observation for this task');
       return;
@@ -80,12 +93,12 @@ export default {
     filtered.forEach((observation, index) => {
       if (observation.main) {
         if (index === filtered.length - 1) {
-          main = observation;
+          main = Helpers.getNodeFromObservation(observation).node;
         } else {
-          mains.push(observation);
+          mains.push(Helpers.getNodeFromObservation(observation).node);
         }
       } else {
-        children.push(observation);
+        children.push(Helpers.getNodeFromObservation(observation).node);
       }
       idsToDelete.push(observation.id);
     });
@@ -93,6 +106,7 @@ export default {
       console.warn('No main observation found');
       return;
     }
+    main.header = 'folder';
     // find index of first filtered occurence
     const firstOccurence = filtered[0];
     let folder = null;
@@ -109,8 +123,10 @@ export default {
       insertionIndex = folder.findIndex(c => c.id === firstOccurence.id);
     }
     if (children.length > 0) {
-      children.forEach((child) => {
+      children.forEach((child, idx) => {
         child.folderId = main.id;
+        child.idx = idx;
+        child.siblingCount = children.length;
       });
       main.children.push(...children);
     } else {
@@ -126,6 +142,9 @@ export default {
         }
       }
       folder.splice(insertionIndex, 0, main);
+      if (mains.length > 0) {
+        folder.splice(insertionIndex + 1, 0, ...mains);
+      }
     }
   },
 

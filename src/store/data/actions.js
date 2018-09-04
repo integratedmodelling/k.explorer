@@ -53,9 +53,15 @@ export default {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
       existingObservation.main = observation.main;
+      if (existingObservation.main && existingObservation.folderId !== null && existingObservation.folderId.indexOf('ff_') === 0) {
+        // transmit main to folder
+        const folder = Helpers.findNodeById(state.tree, existingObservation.folderId);
+        folder.main = true;
+        existingObservation.main = false;
+      }
       const self = Helpers.findNodeById(state.tree, observation.id);
       if (self !== null) {
-        self.main = observation.main;
+        self.main = existingObservation.main;
       } else {
         commit('ADD_NODE', Helpers.getNodeFromObservation(observation));
       }
@@ -75,7 +81,7 @@ export default {
       let needSiblings = false;
       if (observation.siblingCount > 1 && folderId === null) {
         // if has siblings, create folder and ask for them
-        folderId = `f${Math.floor(Date.now() / 1000)}`; // TODO better name
+        folderId = `ff_${Math.floor(Date.now() / 1000)}`; // TODO better name
         commit('ADD_NODE', {
           node: {
             id: folderId,
@@ -86,6 +92,7 @@ export default {
             siblingsLoaded: 1,
             siblingsVisibleInTree: 1,
             children: [],
+            main: observation.main,
           },
           parentId: observation.parentId,
         });
@@ -178,9 +185,11 @@ export default {
                   folder.siblingsVisibleInTree += data.siblings.length;
                 }
               }
+              /* TODO ask to Ferdinando: task id for REST?
               dispatch('data/recalculateTree', data.siblings[0].taskId, { root: true }).then(() => {
                 dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: data.siblings[0].taskId }, { root: true });
               });
+              */
             }
           });
         }
