@@ -7,13 +7,11 @@ export default {
    * Set context object
    * As only a context can be active in a moment,
    * first store existing context and then reset everything
-   * TODO: check if everything is good
    * @param context the new context
    */
   SET_CONTEXT: (state, context) => {
     if (state.context !== null) {
       // save context id in vuex store to future use
-      // TODO use the local storage?
       state.history.push({
         time: moment(),
         contextId: state.context.id,
@@ -22,7 +20,9 @@ export default {
     }
     state.context = context;
     state.tree = [];
+    state.lasts = [];
     state.observations = [];
+    state.tasks = [];
     state.nodeSelected = null;
   },
 
