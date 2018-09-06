@@ -4,21 +4,7 @@ import moment from 'moment';
 export default {
 
   STOMP_CONNECTION_STATE(state, connectionState) {
-    /* TODO: is needed this check?
-    if (connectionState !== Constants.CONNECTION_UP &&
-      connectionState !== Constants.CONNECTION_DOWN &&
-      connectionState !== Constants.CONNECTION_WORKING &&
-      connectionState !== Constants.CONNECTION_ERROR
-      connectionState !== Constants.CONNECTION_UNKNOWN) {
-      throw new Error(`Connection value is incorrect: ${connectionState}`);
-    }
-    */
-    // console.log(`Change connection state from ${state.connectionState} to ${connectionState}`);
-    // try {
     state.connectionState = connectionState;
-    // } catch (e) {
-    //   console.log(`Error change connection: ${JSON.stringify(e)}`);
-    // }
   },
 
   STOMP_ERROR(state, error) {

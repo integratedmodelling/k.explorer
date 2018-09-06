@@ -31,11 +31,7 @@ export default {
     commit('STOMP_RECONNECTIONS_ATTEMPT', count);
     commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_WORKING);
   },
-  /* TODO CHECK IF NEED
-  SOCKET_RECONNECT_ERROR(state) {
-    state.reconnectError = true;
-  },
-  */
+
   stomp_onsend: ({ commit }, { message }) => {
     commit('STOMP_SEND_MESSAGE', message);
   },

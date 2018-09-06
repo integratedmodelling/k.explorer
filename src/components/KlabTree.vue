@@ -144,8 +144,7 @@ export default {
             this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
             this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
           } else {
-            /* TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If
-                    we need to check this, is expensive (need to find node to check if is a fake or real folder
+            /* TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If we need to check this, is expensive (need to find node to check if is a fake or real folder
             if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
               // we unselect the folder
               this.ticked.splice(this.ticked.indexOf(unselectedNode.folderId), 1);
