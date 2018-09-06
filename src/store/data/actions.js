@@ -93,7 +93,6 @@ export default {
             header: 'folder',
             siblingCount: observation.siblingCount,
             siblingsLoaded: 1,
-            siblingsVisibleInTree: 1,
             children: [],
             main: observation.main,
           },
@@ -184,9 +183,6 @@ export default {
               const folder = Helpers.findNodeById(state.tree, folderId);
               if (folder !== null) {
                 folder.siblingsLoaded += data.siblings.length;
-                if (toTree) {
-                  folder.siblingsVisibleInTree += data.siblings.length;
-                }
               }
               /* TODO ask to Ferdinando: task id for REST?
               dispatch('data/recalculateTree', data.siblings[0].taskId, { root: true }).then(() => {
