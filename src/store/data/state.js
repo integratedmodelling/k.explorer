@@ -7,20 +7,20 @@ export default {
    * Tree of observation
    * Store subdomain of observation and some visual attribute:
    * NODE:
-   * id: observation id
-   * label: the label to show in tree
-   * type: one of Constants TREE_XXX
-   * viewerIdx: index of viewer,
-   * header: one of the possible tree node type of slot header: default / folder / main,
-   * tickable: true is tickable
-   * disabled: true is disable,
-   * actions: actions to show on right click,
-   * folderId: if has a folder, the id of it,
-   * main: is a main observation (need for style)
-   * children: array of children. Empty on node add
-   * siblingCount: siblings count in tree, need for show X of Y (is Y var)
-   * siblingsLoaded: siblings loaded at this moment
-   * idx: index of sibling to show X of Y (is X var)
+   * @property id: observation id
+   * @property label: the label to show in tree
+   * @property type: one of Constants TREE_XXX
+   * @property viewerIdx: index of viewer,
+   * @property header: one of the possible tree node type of slot header: default / folder / main,
+   * @property tickable: true is tickable
+   * @property disabled: true is disable,
+   * @property actions: actions to show on right click,
+   * @property folderId: if has a folder, the id of it,
+   * @property main: is a main observation (need for style)
+   * @property children: array of children. Empty on node add
+   * @property siblingCount: siblings count in tree, need for show X of Y (is Y var)
+   * @property siblingsLoaded: siblings loaded at this moment
+   * @property idx: index of sibling to show X of Y (is X var)
    */
   tree: [],
 
