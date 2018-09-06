@@ -11,12 +11,6 @@ export default {
   lasts: state => state.lasts,
 
   /**
-   * The actual checked leaf in tree
-   * TODO: change to implement checkbox
-   */
-  selectedId: state => state.selectedId,
-
-  /**
    * Return observations of a viewer
    * If viewer not exists, return empty array
    */
