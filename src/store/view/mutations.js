@@ -9,11 +9,11 @@ export default {
     Helpers.pushElementInFixedQueue(state.klabLog, log);
   },
 
-  SET_CONTEXT_LAYER: (state, contextLayer) => {
+  SET_CONTEXT_LAYER: (state, contextGeometry) => {
     // when a new context exists, we must reset everything
     state.viewers.splice(0, state.viewers.length);
     state.lastViewerId = 0;
-    state.contextLayer = contextLayer;
+    state.contextGeometry = contextGeometry;
   },
 
   /**

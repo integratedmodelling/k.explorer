@@ -11,13 +11,13 @@
 
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { DEFAULT_OPTIONS, MAP_CONSTANTS } from 'shared/MapConstants';
+import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
 import { Cookies } from 'quasar';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import Group from 'ol/layer/Group';
 import Collection from 'ol/Collection';
+import Group from 'ol/layer/Group';
 import { transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
@@ -39,6 +39,7 @@ export default {
       view: null,
       layers: new Collection(),
       zIndexCounter: 0,
+      baseLayers: null,
       // contextViewport: Constants.PARAM_VIEWPORT_SIZE,
     };
   },
@@ -51,7 +52,7 @@ export default {
       'session',
     ]),
     ...mapGetters('view', [
-      'contextLayer',
+      'contextGeometry',
     ]),
   },
   methods: {
@@ -127,30 +128,27 @@ export default {
       }
     },
 
-    drawContextLayer(newContextLayer, oldContextLayer = null) {
-      if (oldContextLayer !== null) {
+    drawContext(newContext, oldContext = null) {
+      if (oldContext !== null) {
         // if context is changed, everything disappear
         this.layers.clear();
+        this.baseLayers.removeMask();
       }
-      if (this.contextLayer === null) {
+      if (this.contextGeometry === null) {
+        console.log('No context, send region of interest');
         this.sendRegionOfInterest();
         return;
       }
-      const polygon = this.contextLayer.getSource().getFeatures()[0].getGeometry();
-      // this.map.addLayer(this.contextLayer);
-      this.layers.push(this.contextLayer);
-      this.view.fit(polygon, { padding: [30, 30, 30, 30], constrainResolution: false });
-      // calculate viewport
-      /*
-      const contextExtent = this.contextLayer.getSource().getExtent();
-      const topLeft = this.map.getPixelFromCoordinate(extent.getTopLeft(contextExtent));
-      const bottomLeft = this.map.getPixelFromCoordinate(extent.getBottomLeft(contextExtent));
-      const topRight = this.map.getPixelFromCoordinate(extent.getTopRight(contextExtent));
+      if (newContext === null) { // first time
+        console.log('First time context is setted or reset');
+      } else {
+        console.log('Context is change? New / Old');
+        console.dir(newContext);
+        console.dir(oldContext);
+      }
 
-      const width = topRight[0] - topLeft[0];
-      const height = bottomLeft[1] - topLeft[1];
-      this.contextViewport = Math.round(Math.max(width, height)) * Constants.PARAM_VIEWPORT_MULTIPLIER;
-      */
+      this.baseLayers.setMask(this.contextGeometry);
+      this.view.fit(this.contextGeometry, { padding: [30, 30, 30, 30], constrainResolution: false });
     },
 
     drawObservations() {
@@ -168,26 +166,11 @@ export default {
           });
         });
       }
-      // this.centerLayers();
     },
-    /*
-    centerLayers() {
-      let totalExtent = null;
-      this.layers.forEach((layer) => {
-        if (layer.getVisible()) {
-          const layerExtent = layer.getSource().getExtent();
-          totalExtent = totalExtent !== null ? extent.extend(totalExtent, layerExtent) : layerExtent;
-        }
-      });
-      if (totalExtent !== null) {
-        this.view.fit(totalExtent);
-      }
-    },
-    */
   },
   watch: {
-    contextLayer(newContextLayer, oldContextLayer) {
-      this.drawContextLayer(newContextLayer, oldContextLayer);
+    contextGeometry(newContextGeometry, oldContextGeometry) {
+      this.drawContext(newContextGeometry, oldContextGeometry);
     },
     observations: {
       handler() {
@@ -201,7 +184,8 @@ export default {
     },
   },
   mounted() {
-    DEFAULT_OPTIONS.layers.forEach((l) => {
+    this.baseLayers = BASE_LAYERS;
+    this.baseLayers.layers.forEach((l) => {
       if (l.get('name') === this.$baseLayer) {
         l.setVisible(true);
       }
@@ -220,7 +204,7 @@ export default {
         center: this.center,
         zoom: this.zoom,
       }),
-      layers: DEFAULT_OPTIONS.layers,
+      layers: this.baseLayers.layers,
       target: `map${this.idx}`,
       loadTilesWhileAnimating: true,
       loadTilesWhileInteracting: true,
@@ -228,12 +212,10 @@ export default {
     this.map.on('moveend', this.onMoveEnd);
     this.view = this.map.getView();
     this.proj = this.view.getProjection();
-    this.map.addLayer(new Group({
-      layers: this.layers,
-    }));
+    this.map.addLayer(new Group({ layers: this.layers }));
     const layerSwitcher = new LayerSwitcher();
     this.map.addControl(layerSwitcher);
-    this.drawContextLayer();
+    this.drawContext();
     this.drawObservations();
   },
 };

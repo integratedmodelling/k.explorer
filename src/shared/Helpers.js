@@ -1,13 +1,13 @@
 /* eslint-disable object-curly-newline,prefer-destructuring */
 import SourceVector from 'ol/source/Vector';
-import LayerVector from 'ol/layer/Vector';
+import VectorLayer from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
 import Feature from 'ol/Feature';
 import ImageLayer from 'ol/layer/Image';
 import Static from 'ol/source/ImageStatic';
-import { applyTransform } from 'ol/extent.js';
-import { get as getProjection, getTransform } from 'ol/proj.js';
-import { register } from 'ol/proj/proj4.js';
+import { applyTransform } from 'ol/extent';
+import { get as getProjection, getTransform } from 'ol/proj';
+import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
@@ -179,13 +179,43 @@ const Helpers = {
   },
 
   /**
+   * Return the geometry of context.
+   * Now getLayerObject only work with observation
+   * @param contextObservation
+   * @returns {Promise.<module:ol/geom/Geometry>}
+   */
+  async getContextGeometry(contextObservation) {
+    let dataProjection;
+    const { spatialProjection } = contextObservation;
+    if (spatialProjection !== null) {
+      dataProjection = getProjection(spatialProjection);
+      if (dataProjection === null) { // unknows projection, need ask for it
+        dataProjection = await this.registerProjection(spatialProjection);
+      }
+    } else {
+      dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
+    }
+    let { encodedShape } = contextObservation;
+    // normalize encodedShape
+    if (encodedShape.indexOf('LINEARRING') === 0) {
+      encodedShape = encodedShape.replace('LINEARRING', 'LINESTRING');
+    }
+    const geometry = new WKT().readGeometry(encodedShape, {
+      dataProjection,
+      featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
+    });
+    contextObservation.zIndexOffset = 0; // is context, remaind it
+    return geometry;
+  },
+
+  /**
    * Build a layer object. If needed ask for projection (reason for async function)
    * @param observation the observations: needed for projection ad type of representation
    * @param isContext if is context, a lot of thing are not needed
    * @param viewport not used for now. If not setted, for now is the double of height/width of browser
-   * @returns {Promise.<void>}
+   * @return layer
    */
-  async getLayerObject(observation, { isContext = false, viewport = null /* , projection = null */ }) {
+  async getLayerObject(observation, { viewport = null /* , projection = null */ }) {
     const { geometryTypes } = observation;
     const isRaster = geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
     let spatialProjection;
@@ -222,6 +252,7 @@ const Helpers = {
       dataProjection,
       featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
     });
+
     // check if the layer is a raster
     if (isRaster) {
       // z-index offset = 0, raster is down
@@ -236,7 +267,8 @@ const Helpers = {
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
       const source = new Static({
-        projection: getProjection(MAP_CONSTANTS.PROJ_EPSG_3857),
+        projection: MAP_CONSTANTS.PROJ_EPSG_3857,
+        // projection: dataProjection,
         imageExtent: layerExtent,
         // imageSize: [800, 800], // extent.getSize(layerExtent),
         url,
@@ -285,10 +317,8 @@ const Helpers = {
     }
 
     let layerStyle;
-    if (isContext) {
-      layerStyle = MAP_STYLES.POLYGON_CONTEXT_STYLE;
-      observation.zIndexOffset = 0;
-    } else if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
+
+    if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
       layerStyle = MAP_STYLES.LNE_OBSERVATION_STYLE;
       observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_LINES;
     } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
@@ -313,13 +343,15 @@ const Helpers = {
       id: observation.id,
     });
 
-    return new LayerVector({
+    const vectorLayer = new VectorLayer({
       id: observation.id,
       source: new SourceVector({
         features: [feature],
       }),
       style: layerStyle,
     });
+
+    return vectorLayer;
   },
 
   * reverseKeys(arr) {

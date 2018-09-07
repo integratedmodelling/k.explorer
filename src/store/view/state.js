@@ -47,7 +47,7 @@ export default {
   /**
    * Layer with the context shape shared between viewers
    */
-  contextLayer: null,
+  contextGeometry: null,
 
   /**
    * State of elephant

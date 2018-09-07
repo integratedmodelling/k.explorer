@@ -23,7 +23,7 @@ export default {
 
   setContextLayer: ({ commit, dispatch }, contextData) => {
     // If context layer change, mutation reset everything
-    Helpers.getLayerObject(contextData, { isContext: true }).then((layer) => {
+    Helpers.getContextGeometry(contextData).then((layer) => {
       commit('SET_CONTEXT_LAYER', layer);
       commit('RESET_SEARCH'); // stop any search, if new context, previous search has no sense
       // context need a viewer (if no observation, I need to see the context)

@@ -8,16 +8,18 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
 import Icon from 'ol/style/Icon';
+import Feature from 'ol/Feature';
+import Mask from 'ol-ext/filter/Mask';
 import * as control from 'ol/control';
-import { transform } from 'ol/proj';
+import { transform, get as getProjection } from 'ol/proj';
 
 
 export const MAP_CONSTANTS = {
   BING_KEY: '', // TODO we need it?
   COORD_BC3: [-2.968226, 43.332125],
 
-  PROJ_EPSG_4326: 'EPSG:4326',
-  PROJ_EPSG_3857: 'EPSG:3857',
+  PROJ_EPSG_4326: getProjection('EPSG:4326'),
+  PROJ_EPSG_3857: getProjection('EPSG:3857'),
 
   ZINDEX_OFFSET: 10000,
   ZINDEX_MULTIPLIER_RASTER: 0,
@@ -230,6 +232,13 @@ export const Layers = {
 
 export const DEFAULT_OPTIONS = {
   controls: control.defaults({ attribution: false }).extend([]),
+  target: 'map',
+  projection: MAP_CONSTANTS.PROJ_EPSG_4326,
+  center: transform(MAP_CONSTANTS.COORD_BC3, MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  zoom: 13,
+};
+
+export const BASE_LAYERS = {
   layers: [
     Layers.EMPTY_LAYER,
     Layers.STAMEN_WATER_COLOR_LAYER,
@@ -241,18 +250,34 @@ export const DEFAULT_OPTIONS = {
     Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_CALI_TERRAIN,
   ],
-  target: 'map',
-  projection: MAP_CONSTANTS.PROJ_EPSG_4326,
-  center: transform(MAP_CONSTANTS.COORD_BC3, MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
-  zoom: 13,
-  /*
-  tools: {
-    mousePosition: true,
-    scaleLine: true,
-    overview: true,
-    fullScreen: true,
-    zoomslider: false,
-    layerSwitcher: true
+  mask: null,
+  hasMask() {
+    return this.mask !== null;
   },
-  */
+  getBaseLayer() {
+    return this.layers.find(layer => layer.get('type') === 'base' && layer.getVisible());
+  },
+  setMask(geometry, color = [38, 38, 38, 0.4]) {
+    if (this.mask !== null) {
+      this.removeMask();
+    }
+    this.mask = new Mask({
+      feature: new Feature({ geometry, name: 'Context' }),
+      inner: false,
+      active: true,
+      fill: new Fill({ color }),
+    });
+    this.layers.forEach((layer) => {
+      layer.addFilter(this.mask);
+    });
+  },
+  removeMask() {
+    if (this.mask !== null) {
+      this.layers.forEach((layer) => {
+        layer.removeFilter(this.mask);
+      });
+    }
+    this.mask = null;
+  },
 };
+

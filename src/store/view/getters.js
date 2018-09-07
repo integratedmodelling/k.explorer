@@ -27,7 +27,8 @@ export default {
   /**
    * Context layer
    */
-  contextLayer: state => state.contextLayer,
+  contextGeometry: state => state.contextGeometry,
+
   /**
    * Created viewers
    */
