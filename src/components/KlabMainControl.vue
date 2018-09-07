@@ -27,17 +27,18 @@
       enter-active-class="animated fadeInLeft"
       leave-active-class="animated fadeOutLeft"
     >
+    <!-- :style="{background: hasContext ? `linear-gradient(to right, rgba(${hexToRgb(controlColor.value)},.3) 0%, rgba(${hexToRgb(controlColor.value)},.1) 50%, rgba(${hexToRgb(controlColor.value)},.3) 100%)` : 'transparent'}" -->
     <q-card
-      :class="['no-box','shadow','bg-transparent',hasContext ? 'with-context' : 'without-context', 'absolute-position']"
+      :class="['no-box','shadow',hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context', 'absolute-position']"
       :flat="true"
       v-show="!isHidden"
       v-draggable="draggableConfMain"
     >
       <q-card-title
         id="q-card-title"
-        :class="[ hasContext ? 'no-b-radius': '', 'q-pa-xs', 'no-margin']"
+        class="q-pa-xs"
         ref="dr-handler"
-        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
+        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},${hasContext ? '.8' : '.3'})` }"
       >
         <div
           id="spinner-main"
@@ -246,14 +247,16 @@ export default {
   .q-card.with-context {
     left: .5em;
     top: 1.5em;
-    // border: 1px solid #fff;
+    background-color rgba(35, 35, 35 ,.8)
     border-radius: 5px;
+    // mix-blend-mode: luminosity;
   }
   #q-card-title {
     background-color: alpha($indigo-5, 50%);
     border-radius: 30px;
+    margin: 5px;
     cursor: move;
-    width: 100%;
+    width: $main-control-width - 15;
   }
   #q-card-title.no-b-radius {
     border-top-left-radius: 5px;
