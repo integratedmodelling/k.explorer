@@ -9,9 +9,12 @@ export default {
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */
-  setContext: ({ commit, dispatch }, context) => {
+  setContext: ({ commit, state, dispatch }, context) => {
     // If set context, everything is resetted
     // set new context
+    if (state.context !== null && state.context.id === context.id) {
+      return;
+    }
     commit('SET_CONTEXT', context);
     dispatch('view/setContextLayer', context, { root: true });
   },

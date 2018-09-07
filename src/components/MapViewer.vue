@@ -139,14 +139,6 @@ export default {
         this.sendRegionOfInterest();
         return;
       }
-      if (newContext === null) { // first time
-        console.log('First time context is setted or reset');
-      } else {
-        console.log('Context is change? New / Old');
-        console.dir(newContext);
-        console.dir(oldContext);
-      }
-
       this.baseLayers.setMask(this.contextGeometry);
       this.view.fit(this.contextGeometry, { padding: [30, 30, 30, 30], constrainResolution: false });
     },
