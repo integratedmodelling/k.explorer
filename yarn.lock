@@ -968,6 +968,12 @@ acorn@^5.0.0, acorn@^5.3.0, acorn@^5.5.0, acorn@^5.6.2:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.1.tgz#f095829297706a7c9776958c0afc8930a9b9d9d8"
 
+ajax@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ajax/-/ajax-0.0.4.tgz#b6f4ce8bd590f5f4ba2dcfde11de789f209f2423"
+  dependencies:
+    underscore ""
+
 ajv-keywords@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-2.1.1.tgz#617997fc5f60576894c435f940d819e135b80762"
@@ -3710,6 +3716,10 @@ joi@^11.1.1:
     isemail "3.x.x"
     topo "2.x.x"
 
+jquery@^3.2.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+
 js-levenshtein@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/js-levenshtein/-/js-levenshtein-1.1.3.tgz#3ef627df48ec8cf24bacf05c0f184ff30ef413c5"
@@ -4504,6 +4514,14 @@ obuf@^1.0.0, obuf@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
 
+ol-ext@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.0.1.tgz#7b0c010809a1a916d4711612b7376764522e2442"
+  dependencies:
+    ajax "0.0.4"
+    jquery "^3.2.1"
+    ol "^5.0.3"
+
 ol-layerswitcher@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-3.0.0.tgz#8ddcb8626af26d0c3177eca0a0e039e1e52a416b"
@@ -4511,6 +4529,14 @@ ol-layerswitcher@^3.0.0:
 ol@^5.0.0:
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/ol/-/ol-5.1.3.tgz#43f8fd796914c0436852cbc2087223943c0d9c7b"
+  dependencies:
+    pbf "3.1.0"
+    pixelworks "1.1.0"
+    rbush "2.0.2"
+
+ol@^5.0.3:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/ol/-/ol-5.2.0.tgz#5659ba9762def144deb8dcba97357aa5f8cc8a05"
   dependencies:
     pbf "3.1.0"
     pixelworks "1.1.0"
@@ -6372,6 +6398,10 @@ uglifyjs-webpack-plugin@1.2.7, uglifyjs-webpack-plugin@^1.2.4:
     uglify-es "^3.3.4"
     webpack-sources "^1.1.0"
     worker-farm "^1.5.2"
+
+underscore@:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
