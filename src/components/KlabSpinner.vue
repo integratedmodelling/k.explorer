@@ -10,7 +10,7 @@
       cx="0"
       cy="-90"
       :r="ball"
-      :style="{fill: realColor}"
+      :style="{fill: ballColor}"
       :class="{moving}"
     ></circle>
   </svg>
@@ -33,6 +33,10 @@ export default {
     color: {
       type: String,
       default: colors.getBrand('primary'),
+    },
+    ballColor: {
+      type: String,
+      default: 'primary',
     },
     stroke: {
       type: String,
