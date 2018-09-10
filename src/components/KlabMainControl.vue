@@ -62,7 +62,7 @@
         <q-btn
           :color="controlColor.name"
           round
-          size="lg"
+          size="sm"
           @click="hide"
           icon="mdi-chevron-left"
           id="hide-btn"
