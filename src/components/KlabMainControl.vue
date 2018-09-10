@@ -248,14 +248,17 @@ export default {
   .q-card.with-context
     left: .5em;
     top: 1.5em;
-    background-color rgba(35, 35, 35 ,.5);
+    background-color rgba(35, 35, 35 ,.3);
     border-radius: 5px;
     #q-card-title
-      margin 5px;
-      width: $main-control-width - 15;
-    #mc-text-div, #mc-search-div
+      margin 5px 10px;
+      width: $main-control-width - 20;
+    #mc-text-div
       padding-left 5px
       float: left
+      margin-top 12px
+    #mc-search-div
+      padding-left 10px
       margin-top 11px
   #q-card-title {
     border-radius: 30px;
@@ -264,6 +267,7 @@ export default {
   }
   .q-card-title {
     line-height: inherit;
+    mix-blend-mode exclusion;
   }
   .q-card-main {
     overflow: auto;

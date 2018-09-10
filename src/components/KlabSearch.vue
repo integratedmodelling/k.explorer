@@ -251,7 +251,7 @@ export default {
           break;
         default:
           if (event.keyCode < 65 || event.keyCode > 90) {
-            if (event.keyCode !== 39) {
+            if (event.keyCode !== 39) { // right arrow
               event.preventDefault();
             } // only letters are permitted
           } else {
