@@ -235,6 +235,13 @@ export default {
   .q-tree > .q-tree-node-child > .q-tree-node-header {
     /* padding-left: 24px; */
   }
+  .q-tree-node {
+    padding: 0 0 3px 15px;
+  }
+  .q-tree-node-header:before {
+    width: 25px;
+    left: -29px;
+  }
   .q-chip.node-chip {
     position:absolute;
     right: 10px;

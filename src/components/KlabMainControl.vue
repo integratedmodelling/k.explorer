@@ -8,15 +8,15 @@
       <div
         id="spinner-lonely-div"
         class="spinner-div"
-        :style="{ border: '2px solid '+controlColor.value }"
+        :style="{ 'border-color': controlColor.value }"
         v-show="isHidden"
       >
       <klab-spinner
         id="spinner-lonely"
         :store-controlled="true"
         :color="controlColor.value"
-        :size="40"
-        :ball="25"
+        :size="35"
+        :ball="22"
         wrapperId="spinner-lonely-div"
         @dblclick.native="show"
       ></klab-spinner>
@@ -47,8 +47,8 @@
           <klab-spinner
             :store-controlled="true"
             :color="controlColor.value"
-            :size="40"
-            :ball="25"
+            :size="35"
+            :ball="22"
             wrapperId="spinner-main"
             @dblclick.native="hide"
           ></klab-spinner>
@@ -219,19 +219,22 @@ export default {
     -webkit-border-radius: 40px;
     -moz-border-radius: 40px;
     border-radius: 40px;
-    padding:3px;
-    width: 45px;
-    height: 45px;
-    margin: 2px;
+    padding: 3px;
+    margin: 0;
   }
   #spinner-main {
     float: left;
     border: none;
+    width: 40px;
+    height: 40px;
   }
   #spinner-lonely-div {
     position:absolute;
-    left:.5em;
-    top:1.5em;
+    left: .8em;
+    top: 1.5em;
+    border: 2px solid;
+    width: 44px;
+    height: 44px;
   }
   #hide-btn {
     position: absolute;
@@ -249,21 +252,6 @@ export default {
     top: 1.5em;
     margin-left: -($main-control-width / 2);
   }
-  .q-card.with-context
-    left: .5em;
-    top: 1.5em;
-    background-color rgba(35, 35, 35 ,.3);
-    border-radius: 5px;
-    #q-card-title
-      margin 5px 10px;
-      width: $main-control-width - 20;
-    #mc-text-div
-      padding-left 5px
-      float: left
-      margin-top 12px
-    #mc-search-div
-      padding-left 10px
-      margin-top 11px
   #q-card-title {
     border-radius: 30px;
     cursor: move;
@@ -272,6 +260,32 @@ export default {
   .q-card-title {
     line-height: inherit;
   }
+  #mc-search-div {
+    width: 85%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    white-space: nowrap;
+    position: absolute;
+    left: 50px;
+    margin-top: 6px;
+  }
+  #mc-text-div {
+    text-shadow: 0 0 1px #555;
+  }
+  .q-card.with-context
+    left: .5em;
+    top: 1.5em;
+    background-color rgba(35, 35, 35 ,.3);
+    border-radius: 5px;
+    #q-card-title
+      margin 5px;
+      width: $main-control-width - 10;
+    #mc-text-div
+      padding-left 5px
+      float: left
+      margin-top 10px
+    #mc-search-div
+      left 55px
   .q-card-main {
     overflow: auto;
     line-height: inherit;
@@ -279,9 +293,7 @@ export default {
     background-color: alpha($faded, 85%);
     padding: 0; /* 0 0 10px 0;*/
   }
-  #mc-text-div {
-    text-shadow: 0 0 1px #555;
-  }
+
   #context-control {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;

@@ -532,7 +532,7 @@ export default {
     padding: 0 3px;
   }
   .tokens-accepted {
-    mix-blend-mode: exclusion;
+    mix-blend-mode: difference;
     font-weight: 600;
   }
   .tokens.selected {
@@ -543,26 +543,6 @@ export default {
      border-radius: 10px;
      border-style: solid;
      border-width: 2px;
-  }
-  #mc-search-div {
-    width: 85%;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    white-space: nowrap;
-    position: absolute;
-    left: 55px;
-    margin-top: 12px;
-  }
-  #left-shadow {
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&1+0,0+100 */
-    background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to right, rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    width: 5px;
-    height: 20px;
-    margin: -3px 0;
-    padding: 0;
-    display: none;
   }
   .q-tooltip {
     /* background-color: rgba(155, 155, 155, 0.5); */
