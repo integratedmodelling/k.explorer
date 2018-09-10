@@ -29,7 +29,7 @@
     </div>
 
     <div class="q-ma-md">
-      <q-icon size="30px" name="mdi-chevron-up"></q-icon>
+      <q-icon size="30px" name="mdi-chevron-left"></q-icon>
       <span class="q-ml-md">mdi-chevron-up</span>
     </div>
     <div class="q-ma-md">

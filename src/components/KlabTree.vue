@@ -240,7 +240,7 @@ export default {
   }
   .q-tree-node-header:before {
     width: 25px;
-    left: -29px;
+    left: -28px;
   }
   .q-chip.node-chip {
     position:absolute;

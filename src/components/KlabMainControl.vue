@@ -62,9 +62,9 @@
         <q-btn
           :color="controlColor.name"
           round
-          size="sm"
+          size="lg"
           @click="hide"
-          icon="ion-ios-arrow-back"
+          icon="mdi-chevron-left"
           id="hide-btn"
         ></q-btn>
       </q-card-title>
