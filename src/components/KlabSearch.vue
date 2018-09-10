@@ -171,10 +171,10 @@ export default {
               }
             } else {
               const el = isInput ? nextFocusEl.$el : nextFocusEl;
-              const rigthElementPosition = (isInput ? el.offsetLeft : nextFocusEl.offsetLeft) + cssLeft + el.offsetWidth;
+              const rightElementPosition = (isInput ? el.offsetLeft : nextFocusEl.offsetLeft) + cssLeft + el.offsetWidth;
               const parentSize = this.searchDiv.offsetWidth + this.searchDiv.scrollLeft;
-              if (parentSize <= rigthElementPosition) {
-                scrollOffset = (this.searchDiv.scrollLeft + (rigthElementPosition - parentSize)) - cssLeft;
+              if (parentSize <= rightElementPosition) {
+                scrollOffset = (this.searchDiv.scrollLeft + (rightElementPosition - parentSize)) - cssLeft;
               }
             }
             if (scrollOffset !== null) {

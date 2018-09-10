@@ -53,10 +53,12 @@
             @dblclick.native="hide"
           ></klab-spinner>
         </div>
+
         <klab-search v-if="searchIsActive"></klab-search>
         <div id="mc-text-div" class="text-white" v-else>
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
+
         <q-btn
           :color="controlColor.name"
           round
@@ -251,7 +253,10 @@ export default {
     #q-card-title
       margin 5px;
       width: $main-control-width - 15;
-
+    #mc-text-div, #mc-search-div
+      padding-left 5px
+      float: left
+      margin-top 11px
   #q-card-title {
     border-radius: 30px;
     cursor: move;
@@ -269,8 +274,6 @@ export default {
   }
   #mc-text-div {
     text-shadow: 0 0 1px #555;
-    padding: 14px 5px;
-    float: left;
   }
   #context-control {
     border-bottom-left-radius: 5px;
