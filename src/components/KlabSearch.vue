@@ -530,7 +530,7 @@ export default {
     padding: 0 3px;
   }
   .tokens-accepted {
-    text-shadow: 0px 0 1px #fff;
+    mix-blend-mode: exclusion;
     font-weight: 600;
   }
   .tokens.selected {
@@ -548,9 +548,8 @@ export default {
     overflow-y: hidden;
     white-space: nowrap;
     position: absolute;
-    left: 60px;
-    /* line-height: 30px; */
-    margin-top: 13px;
+    left: 55px;
+    margin-top: 12px;
   }
   #left-shadow {
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,ffffff+100&1+0,0+100 */

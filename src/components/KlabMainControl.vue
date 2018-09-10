@@ -38,7 +38,7 @@
         id="q-card-title"
         class="q-pa-xs"
         ref="dr-handler"
-        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},${hasContext ? '.8' : '.3'})` }"
+        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},${hasContext ? '.5' : '.3'})` }"
       >
         <div
           id="spinner-main"
@@ -54,7 +54,7 @@
           ></klab-spinner>
         </div>
         <klab-search v-if="searchIsActive"></klab-search>
-        <div id="mc-text-div" class="q-pa-md text-white" v-else>
+        <div id="mc-text-div" class="text-white" v-else>
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
         <q-btn
@@ -81,7 +81,6 @@
         v-show="hasContext && !isHidden"
         class="no-margin"
         id="context-control"
-        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},.3)` }"
       >
         <q-tabs
           id="klab-tabs"
@@ -244,25 +243,19 @@ export default {
     top: 1.5em;
     margin-left: -($main-control-width / 2);
   }
-  .q-card.with-context {
+  .q-card.with-context
     left: .5em;
     top: 1.5em;
-    background-color rgba(35, 35, 35 ,.8)
+    background-color rgba(35, 35, 35 ,.5);
     border-radius: 5px;
-    // mix-blend-mode: luminosity;
-  }
+    #q-card-title
+      margin 5px;
+      width: $main-control-width - 15;
+
   #q-card-title {
-    background-color: alpha($indigo-5, 50%);
     border-radius: 30px;
-    margin: 5px;
     cursor: move;
-    width: $main-control-width - 15;
-  }
-  #q-card-title.no-b-radius {
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    width: $main-control-width;
   }
   .q-card-title {
     line-height: inherit;
@@ -275,9 +268,9 @@ export default {
     padding: 0; /* 0 0 10px 0;*/
   }
   #mc-text-div {
-    max-height: 50px;
-    text-shadow: 1px 0 0 #aaa;
-    text-align: center;
+    text-shadow: 0 0 1px #555;
+    padding: 14px 5px;
+    float: left;
   }
   #context-control {
     border-bottom-left-radius: 5px;
