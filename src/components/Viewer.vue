@@ -19,7 +19,7 @@
             color="red-6"
             size="xs"
             @click="setMainViewer(viewer.idx)"
-            icon="ion-ios-arrow-up"
+            icon="mdi-chevron-up"
           ></q-btn>
         </div>
         </div>

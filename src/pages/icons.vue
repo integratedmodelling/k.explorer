@@ -7,6 +7,31 @@
     <input type="number" v-model="size" name="size"/><br/>
     <klab-spinner :animated="animated" :color="color" :size="size" class="q-ma-md full-width"/>
     -->
+
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-console"></q-icon>
+      <span class="q-ml-md">mdi-chevron-up</span>
+    </div>
+
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-information-outline"></q-icon>
+      <span class="q-ml-md">mdi-chevron-up</span>
+    </div>
+
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-alert-outline"></q-icon>
+      <span class="q-ml-md">mdi-chevron-up</span>
+    </div>
+
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close-circle"></q-icon>
+      <span class="q-ml-md">mdi-chevron-up</span>
+    </div>
+
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-up"></q-icon>
+      <span class="q-ml-md">mdi-chevron-up</span>
+    </div>
     <div class="q-ma-md">
       <q-icon size="30px" name="ion-ios-add"></q-icon>
       <span class="q-ml-md">ion-ios-add</span>

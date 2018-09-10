@@ -18,7 +18,7 @@ module.exports = function (ctx) {
       ctx.theme.mat ? 'roboto-font' : null,
       'material-icons',
       'ionicons',
-      // 'mdi',
+      'mdi',
       // 'fontawesome',
     ],
     supportIE: true,

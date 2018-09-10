@@ -13,7 +13,7 @@
         class="log-item q-pa-xs"
       >
         <q-item-side>
-          <q-item-tile :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
+          <q-item-tile style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
         </q-item-side>
         <q-item-main>
           <q-item-tile>{{ logText(log) }}</q-item-tile>
@@ -30,10 +30,10 @@ import SimpleBar from 'simplebar';
 import 'simplebar/dist/simplebar.css';
 
 const LOG_ICON_COLORS = {
-  [IN.TYPE_DEBUG]: { icon: 'ion-ios-bug', color: 'black' },
-  [IN.TYPE_INFO]: { icon: 'ion-md-information-circle', color: 'info' },
-  [IN.TYPE_WARNING]: { icon: 'ion-ios-warning', color: 'warning' },
-  [IN.TYPE_ERROR]: { icon: 'ion-ios-close-circle', color: 'negative' },
+  [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'black' },
+  [IN.TYPE_INFO]: { icon: 'mdi-information', color: 'info' },
+  [IN.TYPE_WARNING]: { icon: 'mdi-alert', color: 'warning' },
+  [IN.TYPE_ERROR]: { icon: 'mdi-close-circle', color: 'negative' },
 };
 export default {
   name: 'KLabLogPane',
@@ -75,10 +75,13 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .q-item.log-item {
+  #klab-log-pane .q-item.log-item {
     font-size: 10px;
   }
-  .log-item .q-item-side {
+  #klab-log-pane .log-item .q-item-side {
     min-width auto;
+  }
+  #klab-log-pane .q-list-dense > .q-item {
+    padding-left: 10px;
   }
 </style>

@@ -88,7 +88,7 @@
           <div class="mc-tab-button"
             :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
             @click="selectedTab = 'klab-log-pane'"
-          ><q-icon name="ion-md-paper">
+          ><q-icon name="mdi-console">
             <q-tooltip
               :offset="[0, 5]"
               self="top middle"
@@ -98,7 +98,7 @@
           <div class="mc-tab-button"
             :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
             @click="selectedTab = 'klab-tree-pane'"
-          ><q-icon name="ion-ios-list">
+          ><q-icon name="mdi-file-tree">
             <q-tooltip
               :offset="[0, 5]"
               self="top middle"
@@ -109,7 +109,7 @@
         <div class="mc-tab-button fixed-bottom-right"
              @click="resetContext"
              v-if="!hasTasks"
-        ><q-icon name="ion-close-circle">
+        ><q-icon name="mdi-close-circle">
           <q-tooltip
             :offset="[0, 5]"
             self="top middle"
@@ -304,13 +304,15 @@ export default {
     padding: 6px 10px;
     cursor: pointer;
     display: inline-block;
-    font-size: 16px;
+    font-size: 18px;
   }
   .mc-tab-button:hover {
     background: #e0e0e0;
   }
   .mc-tab-button.active {
     background-color: alpha($faded, 85%);
+    color: white;
+    cursor: auto;
   }
   #btn-reset-context {
     width: 15px;
@@ -321,12 +323,5 @@ export default {
   }
   .component-fade-enter, .component-fade-leave-to {
     opacity: 0;
-  }
-  /* TABS */
-  #klab-tabs .q-tabs-head{
-    border-bottom-left-radius: 5px;
-  }
-  #klab-tabs .q-tab-icon {
-    font-size: 20px;
   }
 </style>
