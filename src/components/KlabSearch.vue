@@ -250,8 +250,10 @@ export default {
           }
           break;
         default:
-          if (event.keyCode !== 39 && (event.keyCode < 65 || event.keyCode > 90)) {
-            event.preventDefault(); // only letters are permitted
+          if (event.keyCode < 65 || event.keyCode > 90) {
+            if (event.keyCode !== 39) {
+              event.preventDefault();
+            } // only letters are permitted
           } else {
             event.preventDefault();
             this.searchHistoryIndex = -1;
