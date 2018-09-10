@@ -30,6 +30,11 @@ export default {
     noActionForObservation: 'Nessuna azione disponibile',
     noTime: 'senza informazione di ora',
   },
+  tooltips: {
+    treePane: 'Albero',
+    logPane: 'Log',
+    resetContext: 'Reset context',
+  },
   errors: {
     connectionError: 'Errore di connessione',
   },

@@ -3,10 +3,9 @@
     <q-list
       striped
       dense
-      separator
       dark
       id="log-container"
-      class="no-padding no-margin"
+      class="no-padding no-margin no-border"
     >
       <q-item
         v-for="log in klabLogReversedAndFiltered()"

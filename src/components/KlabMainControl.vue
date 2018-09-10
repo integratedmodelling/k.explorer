@@ -84,34 +84,38 @@
         class="no-margin"
         id="context-control"
       >
-        <q-tabs
-          id="klab-tabs"
-          dense
-          v-model="selectedTab"
-          position="bottom"
-          no-pane-border
-          :color="controlColor.name"
-          text-color="white"
-        >
-          <q-tab class="q-pa-xs q-ma-xs" slot="title" name="klab-log-pane" icon="ion-md-paper" />
-          <q-tab class="q-pa-xs q-ma-xs" slot="title" name="klab-tree-pane" icon="ion-ios-list" />
-        </q-tabs>
-        <div class="q-ma-xs">&nbsp;</div>
-        <q-btn
-          round
-          size="md"
-          class="no-padding"
-          id="btn-reset-context"
-          icon="ion-close-circle"
-          :color="controlColor.name"
-          @click="resetContext"
-          v-if="!hasTasks"
-        ><q-tooltip
-          :offset="[0, 5]"
-          self="top middle"
-          anchor="bottom middle"
-        >{{ $t('label.btnContextReset') }}</q-tooltip>
-        </q-btn>
+        <div id="mc-tabs">
+          <div class="mc-tab-button"
+            :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
+            @click="selectedTab = 'klab-log-pane'"
+          ><q-icon name="ion-md-paper">
+            <q-tooltip
+              :offset="[0, 5]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.logPane') }}</q-tooltip>
+          </q-icon></div>
+          <div class="mc-tab-button"
+            :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
+            @click="selectedTab = 'klab-tree-pane'"
+          ><q-icon name="ion-ios-list">
+            <q-tooltip
+              :offset="[0, 5]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.treePane') }}</q-tooltip>
+          </q-icon></div>
+        </div>
+        <div class="mc-tab-button fixed-bottom-right"
+             @click="resetContext"
+             v-if="!hasTasks"
+        ><q-icon name="ion-close-circle">
+          <q-tooltip
+            :offset="[0, 5]"
+            self="top middle"
+            anchor="bottom middle"
+          >{{ $t('tooltips.resetContext') }}</q-tooltip>
+        </q-icon></div>
       </q-card-actions
         >
     </q-card>
@@ -267,13 +271,12 @@ export default {
   }
   .q-card-title {
     line-height: inherit;
-    mix-blend-mode exclusion;
   }
   .q-card-main {
     overflow: auto;
     line-height: inherit;
     max-height: 70vh;
-    background-color: alpha($faded, 75%);
+    background-color: alpha($faded, 85%);
     padding: 0; /* 0 0 10px 0;*/
   }
   #mc-text-div {
@@ -285,12 +288,21 @@ export default {
     padding: 0
     margin: 0
   }
+  .mc-tab-button {
+    padding: 6px 10px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 16px;
+  }
+  .mc-tab-button:hover {
+    background: #e0e0e0;
+  }
+  .mc-tab-button.active {
+    background-color: alpha($faded, 85%);
+  }
   #btn-reset-context {
-    margin: 18px 15px 5px 0;
     width: 15px;
     height: 15px;
-    position: absolute;
-    right: 0;
   }
   .component-fade-enter-active, .component-fade-leave-active {
     transition: opacity .3s ease;
