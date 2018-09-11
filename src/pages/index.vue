@@ -103,6 +103,9 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
+      if (this.modalVisible) {
+        return;
+      }
       if (event.keyCode === 27 && this.searchIsActive) {
         this.searchStop();
         event.preventDefault();
