@@ -54,15 +54,15 @@ export default {
     ]),
 
     hasError() {
-      return this.lastReceivedMessage &&
-        this.lastReceivedMessage.type === this.$constants.TYPE_ERROR;
+      return this.lastReceivedMessage
+        && this.lastReceivedMessage.type === this.$constants.TYPE_ERROR;
     },
     receivedMessage() {
       if (this.lastReceivedMessage) {
         if (this.lastReceivedMessage.type === this.$constants.TYPE_ERROR) {
           // eslint-disable-next-line no-nested-ternary
-          return this.lastReceivedMessage.message.reason === '' ?
-            this.$t('label.klabUnknownError') : this.lastReceivedMessage.message.reason;
+          return this.lastReceivedMessage.message.reason === ''
+            ? this.$t('label.klabUnknownError') : this.lastReceivedMessage.message.reason;
         }
         if (this.lastReceivedMessage.message.body !== '') {
           const body = JSON.parse(this.lastReceivedMessage.message.body);
@@ -70,8 +70,8 @@ export default {
           if (typeof body.payload === 'string') {
             toString = body.payload;
           } else {
-            toString = body.type ||
-              this.lastReceivedMessage.message.body.command;
+            toString = body.type
+              || this.lastReceivedMessage.message.body.command;
           }
           return `${toString} - ${this.lastReceivedMessage.date}`;
         }
@@ -83,8 +83,8 @@ export default {
       if (this.queuedMessage) {
         return this.$t('label.klabMessagesToSend');
       }
-      return this.lastSendedMessage ?
-        `${this.lastSendedMessage.date}` // [${Helpers.formatExtent(this.lastSendedMessage.payload)}]`
+      return this.lastSendedMessage
+        ? `${this.lastSendedMessage.date}` // [${Helpers.formatExtent(this.lastSendedMessage.payload)}]`
         // JSON.stringify(this.lastSendedMessage)
         || this.$t('label.klabNoDate')
         : this.$t('label.klabNoMessage');
@@ -96,8 +96,8 @@ export default {
           text: kexplorerLog.payload.message || kexplorerLog.payload,
           time: kexplorerLog.time ? kexplorerLog.time.format('HH:mm:ss') : 'no time',
           // eslint-disable-next-line no-nested-ternary
-          color: kexplorerLog.type === this.$constants.TYPE_ERROR ?
-            'negative' : kexplorerLog.type === this.$constants.TYPE_WARNING ? 'warning' : 'positive',
+          color: kexplorerLog.type === this.$constants.TYPE_ERROR
+            ? 'negative' : kexplorerLog.type === this.$constants.TYPE_WARNING ? 'warning' : 'positive',
         };
       }
       return this.$t('label.klabNoMessage');

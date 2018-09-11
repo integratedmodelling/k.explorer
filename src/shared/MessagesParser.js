@@ -78,7 +78,7 @@ export const parseAndExecute = ({ body }, dispatch = null) => {
   return PARSERS[parsedBody.type](parsedBody.payload, dispatch);
 };
 
-  /*
+/*
   ({
   [IN.TYPE_TASKSTARTED]: PARSERS.taskStarted,
   [IN.TYPE_TASKABORTED]: PARSERS.taskAborted,

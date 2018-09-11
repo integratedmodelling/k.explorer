@@ -50,76 +50,75 @@ export default {
     getters,
     dispatch,
     rootGetters,
-  }, { observation, main = false }) =>
-    new Promise((resolve, reject) => {
-      // check what we need to do with observation based on his type
-      let viewerType = null;
-      // set the viewer type.
-      // TODO now using observation type, better way will be need
-      if (observation.observationType) {
-        switch (observation.observationType) {
-          case Constants.OBSTYP_STATE:
-            if (observation.valueCount === 1) {
-              // if valueCount === 1, is added to tree but is not something to view in viewer
-              viewerType = null;
+  }, { observation, main = false }) => new Promise((resolve, reject) => {
+    // check what we need to do with observation based on his type
+    let viewerType = null;
+    // set the viewer type.
+    // TODO now using observation type, better way will be need
+    if (observation.observationType) {
+      switch (observation.observationType) {
+        case Constants.OBSTYP_STATE:
+          if (observation.valueCount === 1) {
+            // if valueCount === 1, is added to tree but is not something to view in viewer
+            viewerType = null;
+          } else {
+            // is a map but...
+            viewerType = Constants.VIEW_MAP;
+            // i need WKT from parent
+            if (observation.parentId === rootGetters['data/contextId']) {
+              // parent is context
+              observation.encodedShape = rootGetters['data/fullContext'].encodedShape;
             } else {
-              // is a map but...
-              viewerType = Constants.VIEW_MAP;
-              // i need WKT from parent
-              if (observation.parentId === rootGetters['data/contextId']) {
-                // parent is context
-                observation.encodedShape = rootGetters['data/fullContext'].encodedShape;
+              // search for parent in tree
+              const parent = Helpers.findNodeById(rootGetters['data/tree'], observation.parentId);
+              if (parent !== null) {
+                observation.encodedShape = parent.encodedShape;
               } else {
-                // search for parent in tree
-                const parent = Helpers.findNodeById(rootGetters['data/tree'], observation.parentId);
-                if (parent !== null) {
-                  observation.encodedShape = parent.encodedShape;
-                } else {
-                  console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
-                }
+                console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
               }
             }
-            break;
-          case Constants.OBSTYP_INITIAL:
-          case Constants.OBSTYP_SUBJECT:
-            viewerType = Constants.VIEW_MAP;
-            break;
-          case Constants.OBSTYP_CONFIGURATION:
-            viewerType = Constants.VIEW_GRAPH;
-            break;
-          case Constants.OBSTYP_EVENT:
-          case Constants.OBSTYP_PROCESS:
-          case Constants.OBSTYP_RELATIONSHIP:
-            viewerType = Constants.VIEW_UNKNOWN;
-            break;
-          default:
-            reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
-            break;
-        }
-      }
-      if (viewerType !== null) {
-        console.log(`Need a viewer of type ${viewerType}`);
-        const viewer = getters.viewers.find(v => v.type === viewerType);
-        // if no viewer, create it
-        if (typeof viewer === 'undefined') {
-          console.log(`Create new viewer of type ${viewerType}`);
-          commit('ADD_VIEWER_ELEMENT', {
-            main,
-            type: viewerType,
-            callback: (idx) => {
-              resolve(idx);
-            },
-          });
-        } else {
-          if (main) {
-            dispatch('setMainViewer', viewer.idx);
           }
-          resolve(viewer.idx);
-        }
-      } else {
-        resolve(null);
+          break;
+        case Constants.OBSTYP_INITIAL:
+        case Constants.OBSTYP_SUBJECT:
+          viewerType = Constants.VIEW_MAP;
+          break;
+        case Constants.OBSTYP_CONFIGURATION:
+          viewerType = Constants.VIEW_GRAPH;
+          break;
+        case Constants.OBSTYP_EVENT:
+        case Constants.OBSTYP_PROCESS:
+        case Constants.OBSTYP_RELATIONSHIP:
+          viewerType = Constants.VIEW_UNKNOWN;
+          break;
+        default:
+          reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
+          break;
       }
-    }),
+    }
+    if (viewerType !== null) {
+      console.log(`Need a viewer of type ${viewerType}`);
+      const viewer = getters.viewers.find(v => v.type === viewerType);
+      // if no viewer, create it
+      if (typeof viewer === 'undefined') {
+        console.log(`Create new viewer of type ${viewerType}`);
+        commit('ADD_VIEWER_ELEMENT', {
+          main,
+          type: viewerType,
+          callback: (idx) => {
+            resolve(idx);
+          },
+        });
+      } else {
+        if (main) {
+          dispatch('setMainViewer', viewer.idx);
+        }
+        resolve(viewer.idx);
+      }
+    } else {
+      resolve(null);
+    }
+  }),
 
   setSpinner: ({ commit, getters, dispatch }, {
     animated,
@@ -175,4 +174,3 @@ export default {
     commit('STORE_SEARCH', searchArray);
   },
 };
-

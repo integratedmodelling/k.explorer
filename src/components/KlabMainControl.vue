@@ -29,7 +29,8 @@
     >
     <!-- :style="{background: hasContext ? `linear-gradient(to right, rgba(${hexToRgb(controlColor.value)},.3) 0%, rgba(${hexToRgb(controlColor.value)},.1) 50%, rgba(${hexToRgb(controlColor.value)},.3) 100%)` : 'transparent'}" -->
     <q-card
-      :class="['no-box','shadow',hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context', 'absolute-position']"
+      class="no-box-shadow absolute"
+      :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
       :flat="true"
       v-show="!isHidden"
       v-draggable="draggableConfMain"
@@ -124,7 +125,7 @@
 </template>
 
 <script>
-import Vue from 'vue';
+// import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import KlabSpinner from 'components/KlabSpinner.vue';
@@ -187,17 +188,19 @@ export default {
   },
   watch: {
     hasContext() { // TODO really???
+      /*
       this.draggableConfMain.resetInitialPos = true;
       Vue.nextTick(() => {
         this.draggableConfMain.resetInitialPos = false;
       });
+      */
     },
   },
   mounted() {
     this.draggableConfMain.handle = this.$refs['dr-handler'];
-    this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+    this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     this.$eventBus.$on('map-size-changed', () => {
-      this.draggableConfMain.boundingRect = document.getElementById('viewer-container').getBoundingClientRect();
+      this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     });
   },
   directives: {
@@ -246,11 +249,12 @@ export default {
     width: $main-control-width;
     overflow: auto;
     top:1.5em;
+    left: .8em;
   }
   .q-card.without-context {
-    left: 50%;
-    top: 1.5em;
-    margin-left: -($main-control-width / 2);
+    /* bring your own prefixes */
+    // left: 50%;
+    // transform: translateX(-50%);
   }
   #q-card-title {
     border-radius: 30px;

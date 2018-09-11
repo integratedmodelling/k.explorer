@@ -40,4 +40,3 @@ export default {
    */
   searchResult: state => state.searchResult,
 };
-

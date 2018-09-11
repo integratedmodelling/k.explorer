@@ -71,4 +71,3 @@ export default {
     state.tasks = [];
   },
 };
-

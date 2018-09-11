@@ -1,6 +1,6 @@
-import Emitter from './Emitter';
 import SockJS from 'sockjs-client';
 import webstomp from 'webstomp-client';
+import Emitter from './Emitter';
 
 /**
  * Create and observe a Stomp over SockJS connection

@@ -82,4 +82,3 @@ export default ({ Vue, store }) => {
   // store.state.data.viewersLayout = Helpers.VIEWER_DEFAULT;
   // console.log(`Init viewersLayout ${Helpers.VIEWER_DEFAULT}`);
 };
-

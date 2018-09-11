@@ -105,8 +105,8 @@ export default {
   watch: {
     kexplorerLog() {
       const lastKexplorerLog = this.lastKexplorerLog();
-      if (lastKexplorerLog !== null && (lastKexplorerLog.type === Constants.TYPE_ERROR ||
-          lastKexplorerLog.type === Constants.TYPE_WARNING)) {
+      if (lastKexplorerLog !== null && (lastKexplorerLog.type === Constants.TYPE_ERROR
+          || lastKexplorerLog.type === Constants.TYPE_WARNING)) {
         this.$q.notify({
           message: lastKexplorerLog.payload.message,
           type: lastKexplorerLog.type === Constants.TYPE_ERROR ? 'negative' : 'warning',

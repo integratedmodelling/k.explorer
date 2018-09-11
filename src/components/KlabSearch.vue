@@ -402,8 +402,8 @@ export default {
       // is the same request
       if (this.searchRequestId === requestId) {
         // there is a result and the new result has same id: is a increment of previous
-        if (this.result !== null &&
-          this.result.requestId === requestId) {
+        if (this.result !== null
+          && this.result.requestId === requestId) {
           // add old results to new results to maintain new attribute values (like end)
           newResult.matches.push(...this.result.matches);
         }

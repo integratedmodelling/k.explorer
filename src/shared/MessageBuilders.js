@@ -1,6 +1,6 @@
-import { OUT } from './MessagesConstants';
 import { djvValidator } from 'plugins/djv';
 import moment from 'moment';
+import { OUT } from './MessagesConstants';
 
 /**
  * Fuction to create message to Engine with default values

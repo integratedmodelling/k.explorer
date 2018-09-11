@@ -89,8 +89,8 @@ export default {
       return this.horizontal ? 'column' : 'row';
     },
     splitterStyle() {
-      return this.horizontal ? { height: `${this.splitterSize}px`, cursor: 'ns-resize', 'background-color': this.splitterColor } :
-        { width: `${this.splitterSize}px`, cursor: 'ew-resize', 'background-color': this.splitterColor };
+      return this.horizontal ? { height: `${this.splitterSize}px`, cursor: 'ns-resize', 'background-color': this.splitterColor }
+        : { width: `${this.splitterSize}px`, cursor: 'ew-resize', 'background-color': this.splitterColor };
     },
     leftPaneStyle() {
       return this.horizontal ? { height: `${this.percent}%` } : { width: `${this.percent}%` };

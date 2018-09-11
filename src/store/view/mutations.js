@@ -106,4 +106,3 @@ export default {
     state.searchHistory.push(searchArray);
   },
 };
-

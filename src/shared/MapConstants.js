@@ -280,4 +280,3 @@ export const BASE_LAYERS = {
     this.mask = null;
   },
 };
-

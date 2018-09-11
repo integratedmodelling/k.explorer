@@ -35,4 +35,3 @@ export default {
   hasTasks: state => state.tasks.length !== 0,
 
 };
-

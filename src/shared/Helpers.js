@@ -152,8 +152,8 @@ const Helpers = {
               const result = results[i];
               if (result) {
                 const { code, proj4: proj4def, bbox } = result;
-                if (code && code.length > 0 && proj4def && proj4def.length > 0 &&
-                  bbox && bbox.length === 4) {
+                if (code && code.length > 0 && proj4def && proj4def.length > 0
+                  && bbox && bbox.length === 4) {
                   const newProjCode = `EPSG:${code}`;
                   proj4.defs(newProjCode, proj4def);
                   register(proj4);
