@@ -8,13 +8,13 @@
       <div
         id="spinner-lonely-div"
         class="spinner-div"
-        :style="{ 'border-color': controlColor.value }"
+        :style="{ 'border-color': spinnerColor.hex }"
         v-show="isHidden"
       >
       <klab-spinner
         id="spinner-lonely"
         :store-controlled="true"
-        :color="controlColor.value"
+        :color="spinnerColor.hex"
         :size="35"
         :ball="22"
         wrapperId="spinner-lonely-div"
@@ -27,7 +27,6 @@
       enter-active-class="animated fadeInLeft"
       leave-active-class="animated fadeOutLeft"
     >
-    <!-- :style="{background: hasContext ? `linear-gradient(to right, rgba(${hexToRgb(controlColor.value)},.3) 0%, rgba(${hexToRgb(controlColor.value)},.1) 50%, rgba(${hexToRgb(controlColor.value)},.3) 100%)` : 'transparent'}" -->
     <q-card
       class="no-box-shadow absolute"
       :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
@@ -39,7 +38,7 @@
         id="q-card-title"
         class="q-pa-xs"
         ref="dr-handler"
-        :style="{ 'background-color': `rgba(${hexToRgb(controlColor.value)},${hasContext ? '.5' : '.3'})` }"
+        :style="{ 'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})` }"
       >
         <div
           id="spinner-main"
@@ -47,7 +46,7 @@
         >
           <klab-spinner
             :store-controlled="true"
-            :color="controlColor.value"
+            :color="spinnerColor.hex"
             :size="35"
             :ball="22"
             wrapperId="spinner-main"
@@ -59,15 +58,6 @@
         <div id="mc-text-div" class="text-white" v-else>
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
-
-        <q-btn
-          :color="controlColor.name"
-          round
-          size="sm"
-          @click="hide"
-          icon="mdi-chevron-left"
-          id="hide-btn"
-        ></q-btn>
       </q-card-title>
 
       <q-card-main
@@ -91,7 +81,7 @@
             @click="selectedTab = 'klab-log-pane'"
           ><q-icon name="mdi-console">
             <q-tooltip
-              :offset="[0, 5]"
+              :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
             >{{ $t('tooltips.logPane') }}</q-tooltip>
@@ -101,18 +91,18 @@
             @click="selectedTab = 'klab-tree-pane'"
           ><q-icon name="mdi-file-tree">
             <q-tooltip
-              :offset="[0, 5]"
+              :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
             >{{ $t('tooltips.treePane') }}</q-tooltip>
           </q-icon></div>
         </div>
-        <div class="mc-tab-button fixed-bottom-right"
+        <div class="mc-tab-button absolute-bottom-right"
              @click="resetContext"
              v-if="!hasTasks"
         ><q-icon name="mdi-close-circle">
           <q-tooltip
-            :offset="[0, 5]"
+            :offset="[0, 8]"
             self="top middle"
             anchor="bottom middle"
           >{{ $t('tooltips.resetContext') }}</q-tooltip>
@@ -128,6 +118,7 @@
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
+import { Helpers } from 'shared/Helpers';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -157,15 +148,13 @@ export default {
     ...mapGetters('view', [
       'spinner',
       'searchIsActive',
+      'searchIsFocused',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
     ]),
-    controlColor() {
-      return {
-        value: this.spinner.colorValue,
-        name: this.spinner.color,
-      };
+    spinnerColor() {
+      return Helpers.getColorObject(this.spinner.color);
     },
   },
   methods: {
@@ -202,6 +191,7 @@ export default {
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     });
+    console.dir(this.spinnerColor);
   },
   directives: {
     Draggable,
@@ -271,7 +261,7 @@ export default {
     white-space: nowrap;
     position: absolute;
     left: 50px;
-    margin-top: 6px;
+    margin-top: 8px;
   }
   #mc-text-div {
     text-shadow: 0 0 1px #555;
@@ -279,11 +269,11 @@ export default {
   .q-card.with-context
     left: .5em;
     top: 1.5em;
-    background-color rgba(35, 35, 35 ,.3);
+    background-color rgba(35, 35, 35 ,.8);
     border-radius: 5px;
     #q-card-title
-      margin 5px;
-      width: $main-control-width - 10;
+      margin 15px;
+      width: $main-control-width - 30;
     #mc-text-div
       padding-left 5px
       float: left
@@ -308,10 +298,12 @@ export default {
     padding: 6px 10px;
     cursor: pointer;
     display: inline-block;
-    font-size: 18px;
+    font-size: 22px;
+    color: #111;
+    text-shadow: 0 1px 0 #555;
   }
   .mc-tab-button:hover {
-    background: #e0e0e0;
+    color: white; /* background: #e0e0e0; */
   }
   .mc-tab-button.active {
     background-color: alpha($faded, 85%);

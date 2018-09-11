@@ -257,6 +257,9 @@ export default {
     font-weight 700;
     animation: flash linear 2s;
   }
+  .node-element {
+    text-shadow: none;
+  }
   @keyframes flash {
     0% { opacity: 1; }
     25% { opacity: .5; }

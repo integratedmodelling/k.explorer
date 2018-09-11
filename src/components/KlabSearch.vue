@@ -101,12 +101,6 @@ export default {
       'searchLostChar',
       'searchHistory',
     ]),
-    controlColor() {
-      return {
-        value: this.spinner.colorValue,
-        name: this.spinner.color,
-      };
-    },
     inputSearchColor: {
       get() {
         return this.searchInput ? this.searchInput.$refs.input.style.color : 'black';
@@ -532,7 +526,7 @@ export default {
     padding: 0 3px;
   }
   .tokens-accepted {
-    mix-blend-mode: difference;
+    /* mix-blend-mode: difference; */
     font-weight: 600;
   }
   .tokens.selected {

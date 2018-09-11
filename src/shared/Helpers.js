@@ -13,8 +13,11 @@ import { axiosInstance } from 'plugins/axios';
 import Constants from 'shared/Constants';
 import store from 'store/index';
 import Style from 'ol/style/Style';
+import { colors } from 'quasar';
 import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from './MapConstants';
 
+const reRGBA = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
+const { hexToRgb, getBrand, rgbToHex } = colors;
 
 /**
  * Helpers functions shared between components.
@@ -361,6 +364,52 @@ const Helpers = {
       yield key;
       key -= 1;
     }
+  },
+
+  textToRgb: (color) => {
+    if (typeof color !== 'string') {
+      throw new TypeError('Expected a string');
+    }
+
+    const m = reRGBA.exec(color);
+    if (m) {
+      const rgb = {
+        r: parseInt(m[1], 10),
+        g: parseInt(m[2], 10),
+        b: parseInt(m[3], 10),
+      };
+      if (m[4]) {
+        rgb.a = parseFloat(m[4]);
+      }
+      return rgb;
+    }
+    return hexToRgb(color);
+  },
+
+  /**
+   * Receive an hex value (#), rgb (rgb()) or brand ('primary')
+   * Return the correspondent rgb and hex value
+   * @param color an hex value (#), rgb (rgb()) or brand ('primary')
+   * @returns {{rgb: *, hex: *, color: *}}
+   */
+  getColorObject(color) {
+    let rgb;
+    let hex;
+    if (color.indexOf('#') === 0) {
+      hex = color;
+      rgb = hexToRgb(color);
+    } else if (color.indexOf(',') !== -1) {
+      rgb = this.textToRgb(color);
+      hex = rgbToHex(color);
+    } else {
+      hex = getBrand(color);
+      rgb = hexToRgb(hex);
+    }
+    return {
+      rgb,
+      hex,
+      color,
+    };
   },
 
   /**

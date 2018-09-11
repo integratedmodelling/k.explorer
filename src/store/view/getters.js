@@ -1,5 +1,4 @@
 import { Helpers } from 'shared/Helpers';
-import { colors } from 'quasar';
 
 export default {
   hasPalette: state => state.mainWin.paletteVisible,
@@ -53,12 +52,8 @@ export default {
     return null;
   },
 
-  spinnerColor: state => state.spinner.color,
   spinnerIsAnimated: state => state.spinner.animated,
-  spinner: state => ({
-    ...state.spinner,
-    colorValue: colors.getBrand(state.spinner.color),
-  }),
+  spinner: state => state.spinner,
   spinnerOwners: state => state.spinnerOwners,
 
   searchIsActive: state => state.searchActive,

@@ -1,7 +1,11 @@
 /**
  * Useful constants in app
  */
-
+export const COLORS = {
+  SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)',
+  SPINNER_LOADING_COLOR: 'positive',
+  SPINNER_ERROR_COLOR: 'negative',
+};
 
 export default {
   /**
@@ -108,7 +112,7 @@ export default {
       label: 'Quality',
       symbol: 'Q',
       color: 'sem-quality',
-      rgb: 'rgb(0, 204, 0)',
+      rgb: 'rgb(0, 153, 0)',
     },
     SUBJECT: {
       label: 'Subject',
@@ -228,14 +232,22 @@ export default {
   COLOR_DARK: 'dark',
   COLOR_FADED: 'faded',
 
-  SPINNER_LOADING: { color: 'positive', animated: true },
-  SPINNER_STOPPED: { color: 'info', animated: false },
+  SPINNER_LOADING: {
+    color: COLORS.SPINNER_LOADING_COLOR,
+    animated: true,
+  },
+
+  SPINNER_STOPPED: {
+    color: COLORS.SPINNER_STOPPED_COLOR,
+    animated: false,
+  },
+
   SPINNER_ERROR: {
-    color: 'negative',
+    color: COLORS.SPINNER_ERROR_COLOR,
     animated: false,
     time: 2,
     then: {
-      color: 'info',
+      color: COLORS.SPINNER_STOPPED_COLOR,
       animated: false,
     },
   },

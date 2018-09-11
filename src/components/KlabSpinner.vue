@@ -66,7 +66,7 @@ export default {
       return this.storeControlled ? this.spinner.animated : this.animated;
     },
     realColor() {
-      return this.storeControlled ? this.spinner.colorValue : this.color;
+      return this.storeControlled ? this.spinner.color : this.color;
     },
     errorMessage() {
       return this.spinner.errorMessage;
