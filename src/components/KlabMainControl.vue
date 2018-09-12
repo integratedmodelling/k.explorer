@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container" @search-on="searchActivated">
+  <div ref="main-control-container">
     <transition
       appear
       enter-active-class="animated fadeInLeft"
@@ -8,13 +8,12 @@
       <div
         id="spinner-lonely-div"
         class="spinner-div"
-        :style="{ 'border-color': spinnerColor.hex }"
+        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, border: `2px solid ${hasTasks ? spinnerColor.hex : 'white'}` }"
         v-show="isHidden"
       >
       <klab-spinner
         id="spinner-lonely"
         :store-controlled="true"
-        :color="spinnerColor.hex"
         :size="35"
         :ball="22"
         wrapperId="spinner-lonely-div"
@@ -30,6 +29,7 @@
     <q-card
       class="no-box-shadow absolute"
       :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
+      :style="{ top: `${defaultTop}px`, left: `${draggableCentered}px` }"
       :flat="true"
       v-show="!isHidden"
       v-draggable="draggableConfMain"
@@ -37,8 +37,12 @@
       <q-card-title
         id="q-card-title"
         class="q-pa-xs"
-        ref="dr-handler"
-        :style="{ 'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})` }"
+        ref="mc-draggable"
+        :style="{
+          'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})`,
+          left: `${draggableCentered}px`,
+          top: `${defaultTop}px`,
+        }"
       >
         <div
           id="spinner-main"
@@ -124,6 +128,9 @@ import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { dom } from 'quasar';
+
+const { width } = dom;
 
 export default {
   name: 'klabMainControl',
@@ -156,6 +163,15 @@ export default {
     spinnerColor() {
       return Helpers.getColorObject(this.spinner.color);
     },
+    draggableCentered() {
+      if (typeof this.draggableConfMain.handle !== 'undefined' && !this.hasContext) {
+        const el = this.draggableConfMain.handle.$el;
+        const elWidth = width(el);
+        const contWidth = width(this.draggableConfMain.boundingElement);
+        return (contWidth - elWidth) / 2;
+      }
+      return '15';
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -169,27 +185,21 @@ export default {
       this.isHidden = true;
     },
     show() {
-      this.draggableConfMain.resetInitialPos = true;
+      this.draggableConfMain.resetInitialPos = false;
       this.isHidden = false;
     },
-    searchActivated() {
-    },
   },
-  watch: {
-    hasContext() { // TODO really???
-      /*
-      this.draggableConfMain.resetInitialPos = true;
-      Vue.nextTick(() => {
-        this.draggableConfMain.resetInitialPos = false;
-      });
-      */
-    },
+  created() {
+    this.defaultTop = 25;
+    this.defaultLeft = 15;
   },
   mounted() {
-    this.draggableConfMain.handle = this.$refs['dr-handler'];
+    this.draggableConfMain.handle = this.$refs['mc-draggable'];
     this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
+    this.draggableConfMain.initialPosition = { left: this.draggableCentered, top: this.defaultTop };
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
+      this.draggableConfMain.initialPosition = { left: this.draggableCentered, top: this.defaultTop };
     });
   },
   directives: {
@@ -222,33 +232,25 @@ export default {
   }
   #spinner-lonely-div {
     position:absolute;
-    left: .8em;
-    top: 1.5em;
-    border: 2px solid;
     width: 44px;
     height: 44px;
-  }
-  #hide-btn {
-    position: absolute;
-    top:30px;
-    right:18px;
-    display:none;
   }
   .q-card {
     width: $main-control-width;
     overflow: auto;
-    top:1.5em;
-    left: .8em;
   }
   .q-card.without-context {
-    /* bring your own prefixes */
-    // left: 50%;
-    // transform: translateX(-50%);
+    /*
+    left: 50%;
+    margin-left: -($main-control-width / 2);
+    // transform: translateX(-50%); */
+
   }
   #q-card-title {
     border-radius: 30px;
     cursor: move;
     width: $main-control-width;
+    transition: background-color 1s;
   }
   .q-card-title {
     line-height: inherit;
@@ -266,8 +268,6 @@ export default {
     text-shadow: 0 0 1px #555;
   }
   .q-card.with-context
-    left: .5em;
-    top: 1.5em;
     background-color rgba(35, 35, 35 ,.8);
     border-radius: 5px;
     #q-card-title
@@ -276,9 +276,10 @@ export default {
     #mc-text-div
       padding-left 5px
       float: left
-      margin-top 10px
+      margin-top 8px
     #mc-search-div
-      left 55px
+      left 62px
+      top 18px
   .q-card-main {
     overflow: auto;
     line-height: inherit;

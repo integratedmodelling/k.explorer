@@ -3,7 +3,7 @@
  */
 export const COLORS = {
   SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)',
-  SPINNER_LOADING_COLOR: 'positive',
+  SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)',
   SPINNER_ERROR_COLOR: 'negative',
 };
 

@@ -101,7 +101,7 @@ export default {
         console.error(errorMessage);
         this.$q.notify({
           message: errorMessage,
-          type: 'error',
+          type: 'negative',
           timeout: 1000,
         });
       }
