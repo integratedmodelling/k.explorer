@@ -188,8 +188,14 @@ export default {
   mounted() {
     this.scrollElement = (new SimpleBar(document.getElementById('klab-tree-div'))).getScrollElement();
     this.scrollElement.addEventListener('scroll', (event) => {
-      if (this.askingForSiblings || this.lasts.length === 0) {
+      if (this.askingForSiblings) {
         event.preventDefault();
+        console.debug('KlabTree -> We are asking for tree now, this call is not need so exit');
+        return;
+      }
+      if (this.lasts.length === 0) {
+        event.preventDefault();
+        console.debug('KlabTree -> There aren\'t incompleted folders, exit');
         return;
       }
       const { bottom } = this.scrollElement.getBoundingClientRect(); // - this.scrollElement.getBoundingClientRect().top;
@@ -197,8 +203,9 @@ export default {
         const ltc = document.getElementById(`node-${last.observationId}`);
         if (ltc !== null) {
           const ltcBoundingClinetRect = ltc.getBoundingClientRect();
+          console.debug(`KlabTree -> Last element is over bottom? Element bottom: ${ltcBoundingClinetRect.bottom} / Scroll container bottom: ${bottom}`);
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
-            console.log('Ask for more siblings');
+            console.log('KlabTree -> Ask for more siblings');
             this.askingForSiblings = true;
             const folder = Helpers.findNodeById(this.tree, last.folderId);
             this.askForSiblings({
@@ -209,6 +216,7 @@ export default {
               visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
             }).then(() => {
               this.askingForSiblings = false;
+              console.debug('KlabTree -> Asked for them');
               this.$eventBus.$emit('updateFolder', { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
             });
           }

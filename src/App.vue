@@ -44,12 +44,12 @@ export default {
       console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
       this.sendQueue();
     },
-    onsubscribe(subscription) {
-      // const subscriptionObject = this.subscriptions.find(s => s.subscription.id === subscription.id);
-      // if (typeof subscriptionObject !== 'undefined') {
-      console.log(`Someone subscribe with id: ${subscription.id}`);
-      // }
-    },
+    // onsubscribe(subscription) {
+    // const subscriptionObject = this.subscriptions.find(s => s.subscription.id === subscription.id);
+    // if (typeof subscriptionObject !== 'undefined') {
+    // console.log(`Someone subscribe with id: ${subscription.id}`);
+    // }
+    // },
     onmessage({ body }) {
       const { type, payload } = JSON.parse(body);
       if (type === IN.TYPE_TASKSTARTED) {

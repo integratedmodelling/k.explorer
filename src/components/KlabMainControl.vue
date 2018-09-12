@@ -191,7 +191,6 @@ export default {
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     });
-    console.dir(this.spinnerColor);
   },
   directives: {
     Draggable,
