@@ -38,6 +38,7 @@ module.exports = function (ctx) {
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
         REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
+        REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
       },
       // distDir: 'dist/ui',
       distDir: '../klab/klab.engine/src/main/resources/static/ui',

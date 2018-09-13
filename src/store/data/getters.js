@@ -19,6 +19,8 @@ export default {
     return obs;
   },
 
+  hasObservations: state => state.observations.length !== 0,
+
   /**
    * If no context, return null
    */

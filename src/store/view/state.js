@@ -35,9 +35,9 @@ export default {
   klabLog: [],
 
   /**
-   * Active viewers
+   * Active dataViewers
    */
-  viewers: [],
+  dataViewers: [],
 
   /**
    * Every viewer has an autonumeric id
@@ -45,7 +45,12 @@ export default {
   lastViewerId: 0,
 
   /**
-   * Layer with the context shape shared between viewers
+   * In index, the main viewer can be a DataViewer, ReportViewer, DataflowViewer or ProvenanceViewer
+   */
+  mainViewer: undefined,
+
+  /**
+   * Layer with the context shape shared between dataViewers
    */
   contextGeometry: null,
 
@@ -76,4 +81,9 @@ export default {
    * Previous searches are stored here
    */
   searchHistory: [],
+
+  /**
+   * If true, when report button is clicked, we ask for report
+   */
+  reloadReport: false,
 };

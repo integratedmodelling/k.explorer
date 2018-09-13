@@ -1,6 +1,6 @@
 <template>
   <div class="no-padding relative-position full-width">
-    <div v-for="(viewer) in viewers"
+    <div v-for="(viewer) in dataViewers"
        :class="['no-padding',
            viewer.main ? 'absolute-top full-height full-width' : 'absolute thumb-view']"
        :key="viewer.idx"
@@ -18,7 +18,7 @@
             round
             color="red-6"
             size="xs"
-            @click="setMainViewer(viewer.idx)"
+            @click="setMainDataViewer(viewer.idx)"
             icon="mdi-chevron-up"
           ></q-btn>
         </div>
@@ -38,13 +38,13 @@ let thumbnails = [];
 export default {
   computed: {
     ...mapGetters('view', [
-      'viewers',
-      'mainViewer',
+      'dataViewers',
+      'mainDataViewer',
     ]),
   },
   methods: {
     ...mapActions('view', [
-      'setMainViewer',
+      'setMainDataViewer',
     ]),
     viewerStyle(viewer) {
       if (viewer.main) {
@@ -58,7 +58,7 @@ export default {
     },
   },
   watch: {
-    mainViewer() {
+    mainDataViewer() {
       thumbnails = [];
     },
   },

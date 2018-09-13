@@ -22,6 +22,11 @@ export default {
     return reversed.find(log => log.type === type);
   },
 
+  /**
+   * Return the main viewer
+   * @param state
+   */
+  mainViewer: state => state.mainViewer,
 
   /**
    * Context layer
@@ -29,15 +34,15 @@ export default {
   contextGeometry: state => state.contextGeometry,
 
   /**
-   * Created viewers
+   * Created dataViewers
    */
-  viewers: state => state.viewers,
+  dataViewers: state => state.dataViewers,
 
   /**
    * The unique viewer with main: true
    */
-  mainViewer: state => state.viewers
-    .find(viewer => viewer.main),
+  mainDataViewer: state => state.dataViewers
+    .find(dv => dv.main),
 
 
   lastViewerId: state => state.lastViewerId,
@@ -46,8 +51,8 @@ export default {
    * Return a viewer identify by idx.
    */
   viewer: state => (idx) => {
-    if (state.viewers.length > 0) {
-      return state.viewers.find(v => v.idx === idx);
+    if (state.dataViewers.length > 0) {
+      return state.dataViewers.find(v => v.idx === idx);
     }
     return null;
   },
@@ -60,4 +65,6 @@ export default {
   searchIsFocused: state => state.searchFocus,
   searchLostChar: state => state.searchLostChar,
   searchHistory: state => state.searchHistory,
+
+  reloadReport: state => state.reloadReport,
 };

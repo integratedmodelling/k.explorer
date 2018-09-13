@@ -76,10 +76,11 @@
       <q-card-actions
         v-show="hasContext && !isHidden"
         class="no-margin"
-        id="context-control"
+        id="context-actions"
       >
+        <!-- TABS -->
         <div id="mc-tabs">
-          <div class="mc-tab-button"
+          <div class="mc-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
             @click="selectedTab = 'klab-log-pane'"
           ><q-icon name="mdi-console">
@@ -89,7 +90,7 @@
               anchor="bottom middle"
             >{{ $t('tooltips.logPane') }}</q-tooltip>
           </q-icon></div>
-          <div class="mc-tab-button"
+          <div class="mc-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
             @click="selectedTab = 'klab-tree-pane'"
           ><q-icon name="mdi-file-tree">
@@ -100,7 +101,31 @@
             >{{ $t('tooltips.treePane') }}</q-tooltip>
           </q-icon></div>
         </div>
-        <div class="mc-tab-button absolute-bottom-right"
+        <!-- BUTTONS -->
+        <div id="mc-actions">
+          <div class="mc-button mc-action"
+               @click="mainViewer === VIEWERS.DATA_VIEWER ? false : setMainViewer(VIEWERS.DATA_VIEWER)"
+               :class="[{ active: mainViewer === VIEWERS.DATA_VIEWER }]"
+          ><q-icon name="mdi-eye">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.dataViewer') }}</q-tooltip>
+          </q-icon></div>
+          <div class="mc-button mc-action"
+               @click="viewReportAction"
+               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: !hasObservations }]"
+          ><q-icon name="mdi-file-chart">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.reportViewer') }}</q-tooltip>
+          </q-icon></div>
+        </div>
+        <!-- RESET CONTEXT -->
+        <div class="mc-button absolute-bottom-right"
              @click="resetContext"
              v-if="!hasTasks"
         ><q-icon name="mdi-close-circle">
@@ -122,6 +147,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import { Helpers } from 'shared/Helpers';
+import { VIEWERS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -149,6 +175,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'hasContext',
+      'hasObservations',
       'contextLabel',
       'lasts',
       'tree',
@@ -157,6 +184,7 @@ export default {
       'spinner',
       'searchIsActive',
       'searchIsFocused',
+      'mainViewer',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -168,6 +196,7 @@ export default {
   methods: {
     ...mapActions('view', [
       'searchStop',
+      'setMainViewer',
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
@@ -200,6 +229,11 @@ export default {
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
     },
+    viewReportAction() {
+      if (!this.hasTasks && this.hasObservations && this.mainViewer !== VIEWERS.REPORT_VIEWER) {
+        this.setMainViewer(VIEWERS.REPORT_VIEWER);
+      }
+    },
   },
   watch: {
     hasContext() {
@@ -213,6 +247,7 @@ export default {
   created() {
     this.defaultTop = 25;
     this.defaultLeft = 15;
+    this.VIEWERS = VIEWERS;
   },
   mounted() {
     this.draggableElement = document.getElementById('mc-q-card');
@@ -316,13 +351,16 @@ export default {
     padding: 0; /* 0 0 10px 0;*/
   }
 
-  #context-control {
+  #context-actions {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     padding: 0
     margin: 0
   }
-  .mc-tab-button {
+  #mc-actions {
+    margin-left: 20px;
+  }
+  .mc-button {
     padding: 6px 10px;
     cursor: pointer;
     display: inline-block;
@@ -330,13 +368,24 @@ export default {
     color: #111;
     text-shadow: 0 1px 0 #555;
   }
-  .mc-tab-button:hover {
+  .mc-button:hover {
     color: white; /* background: #e0e0e0; */
   }
-  .mc-tab-button.active {
-    background-color: alpha($faded, 85%);
+  .mc-button.active {
     color: white;
     cursor: auto;
+  }
+  .mc-action {
+    padding: 6px;
+  }
+  .mc-tab.active {
+    background-color: alpha($faded, 85%);
+  }
+  .mc-action:hover {
+    color: $blue-3;
+  }
+  .mc-action.active {
+    color: $blue-4;
   }
   #btn-reset-context {
     width: 15px;

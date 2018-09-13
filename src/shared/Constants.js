@@ -7,6 +7,13 @@ export const COLORS = {
   SPINNER_ERROR_COLOR: 'negative',
 };
 
+export const VIEWERS = {
+  DATA_VIEWER: 'DataViewer',
+  REPORT_VIEWER: 'ReportViewer',
+  DATAFLOW_VIEWER: 'DataflowViewer',
+  PROVENANCE_VIEWER: 'ProvenanceViewer',
+};
+
 export default {
   /**
    * Max length of an array contains history (f.e. log)

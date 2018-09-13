@@ -22,7 +22,7 @@ export default {
   resetContext: ({ commit, dispatch, state }) => {
     if (state.context !== null) {
       commit('SET_CONTEXT', null);
-      dispatch('view/resetContextLayer', null, { root: true });
+      dispatch('view/resetContext', null, { root: true });
       dispatch('data/addObservation', {
         observation: Helpers.OBSERVATION_DEFAULT,
         main: true,
@@ -73,7 +73,6 @@ export default {
       }
       return resolve();
     }
-
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = visible;
@@ -123,6 +122,7 @@ export default {
       if (toTree) {
         commit('ADD_NODE', Helpers.getNodeFromObservation(observation));
       }
+      dispatch('view/setReloadReport', true, { root: true });
       return resolve();
     });
     return null;
@@ -218,7 +218,7 @@ export default {
       id: nodeId,
       visible: true,
       callback: selectMainViewer ? (observation) => {
-        dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
+        dispatch('view/setMainDataViewer', observation.viewerIdx, { root: true });
       } : null,
     });
   },
@@ -233,7 +233,7 @@ export default {
       folderId,
       visible,
       callback: visible && selectMainViewer ? (observation) => {
-        dispatch('view/setMainViewer', observation.viewerIdx, { root: true });
+        dispatch('view/setMainDataViewer', observation.viewerIdx, { root: true });
       } : null,
     });
   },

@@ -11,17 +11,24 @@ export default {
 
   SET_CONTEXT_LAYER: (state, contextGeometry) => {
     // when a new context exists, we must reset everything
-    state.viewers.splice(0, state.viewers.length);
+    state.dataViewers.splice(0, state.dataViewers.length);
     state.lastViewerId = 0;
     state.contextGeometry = contextGeometry;
   },
 
   /**
-   * Set the main viewer by viewer index
+   * Set the main viewer in index page
+   * @param viewer the viewer component name
+   */
+  SET_MAIN_VIEWER: (state, viewer) => {
+    state.mainViewer = viewer;
+  },
+  /**
+   * Set the main data viewer by viewer index
    * @param idx the viewer idx
    */
-  SET_MAIN_VIEWER: (state, idx) => {
-    state.viewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
+  SET_MAIN_DATA_VIEWER: (state, idx) => {
+    state.dataViewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
   },
 
   /**
@@ -37,11 +44,11 @@ export default {
       main = true;
       // if new main, every before is false
     } else if (main === true) {
-      state.viewers.forEach((viewer) => { viewer.main = false; });
+      state.dataViewers.forEach((viewer) => { viewer.main = false; });
     } // TODO do something if is false and all are false
     // first viewer has index = 1
     state.lastViewerId += 1;
-    state.viewers.push({
+    state.dataViewers.push({
       idx: state.lastViewerId,
       main,
       type,
@@ -104,5 +111,9 @@ export default {
 
   STORE_SEARCH: (state, searchArray) => {
     state.searchHistory.push(searchArray);
+  },
+
+  SET_RELOAD_REPORT: (state, reload) => {
+    state.reloadReport = reload;
   },
 };

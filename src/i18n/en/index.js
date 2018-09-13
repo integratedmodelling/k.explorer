@@ -34,6 +34,10 @@ export default {
     treePane: 'View tree',
     logPane: 'View log',
     resetContext: 'Reset context',
+    dataViewer: 'View data',
+    reportViewer: 'View report',
+    dataflowViewer: 'View data flow (will be...)',
+    provenanceViewer: 'View provenance (will be...)',
   },
   errors: {
     connectionError: 'Connection error',

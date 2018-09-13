@@ -1,7 +1,11 @@
 <template>
   <q-page class="column bg-red-1">
     <div class="col row full-height bg-red-1" id="viewer-container">
-      <viewer></viewer>
+      <keep-alive>
+        <!-- <transition name="component-fade" mode="out-in"> -->
+        <component :is="mainViewer"></component>
+        <!-- </transition> -->
+      </keep-alive>
     </div>
     <div class="col-1 row bg-red-1">
       <klab-log v-if="logVisible"></klab-log>
@@ -38,10 +42,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { VIEWERS } from 'shared/Constants';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
 import KlabLog from 'components/KlabLog.vue';
-import Viewer from 'components/Viewer.vue';
+import DataViewer from 'components/DataViewer.vue';
+import ReportViewer from 'components/ReportViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 
 import { colors } from 'quasar';
@@ -56,6 +62,7 @@ export default {
     ...mapGetters('view', [
       'searchIsActive',
       'searchIsFocused',
+      'mainViewer',
     ]),
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
@@ -90,15 +97,22 @@ export default {
       'searchStart',
       'searchStop',
       'searchFocus',
+      'setMainViewer',
     ]),
   },
   components: {
     KlabMainControl,
     KlabLog,
-    Viewer,
+    DataViewer,
+    ReportViewer,
     KlabSpinner,
   },
   watch: {
+  },
+  created() {
+    if (typeof this.mainViewer === 'undefined') {
+      this.setMainViewer(VIEWERS.DATA_VIEWER);
+    }
   },
   mounted() {
     // const self = this;

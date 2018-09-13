@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Helpers, Constants } from 'shared/Helpers';
+import { VIEWERS } from 'shared/Constants';
 
 export default {
   addToKexplorerLog: ({ commit }, { type, payload }) => {
@@ -31,8 +32,9 @@ export default {
     });
   },
 
-  resetContextLayer: ({ commit }) => {
+  resetContext: ({ commit }) => {
     commit('SET_CONTEXT_LAYER', null);
+    commit('SET_MAIN_VIEWER', VIEWERS.DATA_VIEWER);
     commit('RESET_SEARCH');
   },
   /*
@@ -41,8 +43,12 @@ export default {
   }),
   */
 
-  setMainViewer: ({ commit }, idx) => {
-    commit('SET_MAIN_VIEWER', idx);
+  setMainViewer: ({ commit }, viewer) => {
+    commit('SET_MAIN_VIEWER', viewer);
+  },
+
+  setMainDataViewer: ({ commit }, idx) => {
+    commit('SET_MAIN_DATA_VIEWER', idx);
   },
 
   assignViewer: ({
@@ -98,7 +104,7 @@ export default {
     }
     if (viewerType !== null) {
       console.log(`Need a viewer of type ${viewerType}`);
-      const viewer = getters.viewers.find(v => v.type === viewerType);
+      const viewer = getters.dataViewers.find(v => v.type === viewerType);
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
         console.log(`Create new viewer of type ${viewerType}`);
@@ -111,7 +117,7 @@ export default {
         });
       } else {
         if (main) {
-          dispatch('setMainViewer', viewer.idx);
+          dispatch('setMainDataViewer', viewer.idx);
         }
         resolve(viewer.idx);
       }
@@ -172,5 +178,9 @@ export default {
 
   storePreviousSearch: ({ commit }, searchArray) => {
     commit('STORE_SEARCH', searchArray);
+  },
+
+  setReloadReport: ({ commit }, reload) => {
+    commit('SET_RELOAD_REPORT', reload);
   },
 };
