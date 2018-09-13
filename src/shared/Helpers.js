@@ -400,7 +400,7 @@ const Helpers = {
       rgb = hexToRgb(color);
     } else if (color.indexOf(',') !== -1) {
       rgb = this.textToRgb(color);
-      hex = rgbToHex(color);
+      hex = rgbToHex(rgb);
     } else {
       hex = getBrand(color);
       rgb = hexToRgb(hex);

@@ -8,7 +8,7 @@
       <div
         id="spinner-lonely-div"
         class="spinner-div"
-        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, border: `2px solid ${hasTasks ? spinnerColor.hex : 'white'}` }"
+        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, border: `2px solid ${hasTasks ? spinnerColor.color : 'white'}` }"
         v-show="isHidden"
       >
       <klab-spinner
@@ -27,21 +27,20 @@
       leave-active-class="animated fadeOutLeft"
     >
     <q-card
+      id="mc-q-card"
       class="no-box-shadow absolute"
       :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
-      :style="{ top: `${defaultTop}px`, left: `${draggableCentered}px` }"
+      :style="{ top: `${defaultTop}px`, left: `${centeredLeft}px` }"
       :flat="true"
       v-show="!isHidden"
       v-draggable="draggableConfMain"
     >
       <q-card-title
-        id="q-card-title"
+        id="mc-q-card-title"
         class="q-pa-xs"
         ref="mc-draggable"
         :style="{
           'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})`,
-          left: `${draggableCentered}px`,
-          top: `${defaultTop}px`,
         }"
       >
         <div
@@ -130,7 +129,7 @@ import KlabSearch from 'components/KlabSearch.vue';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 
-const { width } = dom;
+const { width, height } = dom;
 
 export default {
   name: 'klabMainControl',
@@ -143,6 +142,8 @@ export default {
         boundingElement: undefined,
       },
       selectedTab: 'klab-tree-pane',
+      draggableElement: undefined,
+      centeredLeft: this.defaultLeft,
     };
   },
   computed: {
@@ -163,15 +164,6 @@ export default {
     spinnerColor() {
       return Helpers.getColorObject(this.spinner.color);
     },
-    draggableCentered() {
-      if (typeof this.draggableConfMain.handle !== 'undefined' && !this.hasContext) {
-        const el = this.draggableConfMain.handle.$el;
-        const elWidth = width(el);
-        const contWidth = width(this.draggableConfMain.boundingElement);
-        return (contWidth - elWidth) / 2;
-      }
-      return '15';
-    },
   },
   methods: {
     ...mapActions('view', [
@@ -188,18 +180,55 @@ export default {
       this.draggableConfMain.resetInitialPos = false;
       this.isHidden = false;
     },
+    getCenteredLeft() {
+      if (typeof this.draggableElement !== 'undefined' && !this.hasContext) {
+        const elWidth = width(this.draggableElement);
+        const contWidth = width(this.draggableConfMain.boundingElement);
+        return (contWidth - elWidth) / 2;
+      }
+      return this.defaultLeft;
+    },
+    /**
+     * Change draggable position
+     * @param position top, left object
+     */
+    changeDraggablePosition(position) {
+      this.draggableElement.style.left = `${position.left}px`;
+      this.draggableElement.style.top = `${position.top}px`;
+      const draggableState = JSON.parse(this.draggableConfMain.handle.getAttribute('draggable-state'));
+      draggableState.startDragPosition = position;
+      draggableState.currentDragPosition = position;
+      document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
+    },
+  },
+  watch: {
+    hasContext() {
+      this.changeDraggablePosition({
+        top: this.defaultTop,
+        left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
+      });
+      // this.draggableElement.classList.remove('vuela');
+    },
   },
   created() {
     this.defaultTop = 25;
     this.defaultLeft = 15;
   },
   mounted() {
-    this.draggableConfMain.handle = this.$refs['mc-draggable'];
+    this.draggableElement = document.getElementById('mc-q-card');
+    this.draggableConfMain.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
     this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
-    this.draggableConfMain.initialPosition = { left: this.draggableCentered, top: this.defaultTop };
+    this.centeredLeft = this.getCenteredLeft();
+    this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
-      this.draggableConfMain.initialPosition = { left: this.draggableCentered, top: this.defaultTop };
+      this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+      console.dir(this.draggableConfMain);
+      if (this.draggableElement.offsetLeft >= width(this.draggableConfMain.boundingElement)
+          || this.draggableElement.offsetTop >= height(this.draggableConfMain.boundingElement)) {
+        const left = this.getCenteredLeft();
+        this.changeDraggablePosition({ top: this.defaultTop, left });
+      }
     });
   },
   directives: {
@@ -246,11 +275,11 @@ export default {
     // transform: translateX(-50%); */
 
   }
-  #q-card-title {
+  #mc-q-card-title {
     border-radius: 30px;
     cursor: move;
     width: $main-control-width;
-    transition: background-color 1s;
+    transition: background-color 0.8s;
   }
   .q-card-title {
     line-height: inherit;
@@ -270,7 +299,7 @@ export default {
   .q-card.with-context
     background-color rgba(35, 35, 35 ,.8);
     border-radius: 5px;
-    #q-card-title
+    #mc-q-card-title
       margin 15px;
       width: $main-control-width - 30;
     #mc-text-div
@@ -320,4 +349,9 @@ export default {
   .component-fade-enter, .component-fade-leave-to {
     opacity: 0;
   }
+    /*
+  .vuela {
+    transition: top 0.05s ease 0s, left 0.05s ease 0s;
+  }
+  */
 </style>
