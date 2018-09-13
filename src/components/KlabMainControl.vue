@@ -221,9 +221,8 @@ export default {
     this.centeredLeft = this.getCenteredLeft();
     this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
     this.$eventBus.$on('map-size-changed', () => {
-      this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
       this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
-      console.dir(this.draggableConfMain);
+      // check if main control windows is gone out of screen
       if (this.draggableElement.offsetLeft >= width(this.draggableConfMain.boundingElement)
           || this.draggableElement.offsetTop >= height(this.draggableConfMain.boundingElement)) {
         const left = this.getCenteredLeft();
