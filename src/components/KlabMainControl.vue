@@ -116,15 +116,15 @@
           </q-icon></div>
           <!-- REPORT BUTTON -->
           <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.REPORT_VIEWER && canReport ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !canReport }]"
+               @click="mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip === null ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
+               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip !== null }]"
           ><q-icon name="mdi-file-document-box">
             <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ canReport ? $t('tooltips.reportViewer') : $t('tooltips.noReportViewer') }}</q-tooltip>
+            >{{ reportTooltip !== null ? reportTooltip : $t('tooltips.reportViewer') }}</q-tooltip>
           </q-icon></div>
           <!-- DATAFLOW (disabled) -->
           <div class="mc-button mc-action disabled"
@@ -214,8 +214,14 @@ export default {
     spinnerColor() {
       return Helpers.getColorObject(this.spinner.color);
     },
-    canReport() {
-      return (!this.hasTasks && this.hasObservations);
+    reportTooltip() {
+      if (this.hasTasks) {
+        return this.$t('tooltips.noReportTask');
+      }
+      if (!this.hasObservations) {
+        return this.$t('tooltips.noReportNoObservation');
+      }
+      return null;
     },
   },
   methods: {
