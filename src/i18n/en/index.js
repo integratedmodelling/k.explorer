@@ -29,6 +29,8 @@ export default {
     noSearchResults: 'No search results',
     noActionForObservation: 'No actions available',
     noTime: 'no time',
+    emptyReport: '<div id="mc-empty-report">Empty report</div>',
+    noLoadedReport: 'No report loaded',
   },
   tooltips: {
     treePane: 'View tree',
@@ -36,6 +38,7 @@ export default {
     resetContext: 'Reset context',
     dataViewer: 'View data',
     reportViewer: 'View report',
+    noReportViewer: 'Cannot view report, wait',
     dataflowViewer: 'View data flow (will be...)',
     provenanceViewer: 'View provenance (will be...)',
   },

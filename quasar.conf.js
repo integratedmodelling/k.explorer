@@ -13,6 +13,7 @@ module.exports = function (ctx) {
     ],
     css: [
       'app.styl',
+      'report.styl',
     ],
     extras: [
       ctx.theme.mat ? 'roboto-font' : null,

@@ -101,10 +101,11 @@
             >{{ $t('tooltips.treePane') }}</q-tooltip>
           </q-icon></div>
         </div>
-        <!-- BUTTONS -->
+
         <div id="mc-actions">
+          <!-- MAP BUTTON -->
           <div class="mc-button mc-action"
-               @click="mainViewer === VIEWERS.DATA_VIEWER ? false : setMainViewer(VIEWERS.DATA_VIEWER)"
+               @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
                :class="[{ active: mainViewer === VIEWERS.DATA_VIEWER }]"
           ><q-icon name="mdi-eye">
             <q-tooltip
@@ -113,15 +114,17 @@
               anchor="bottom middle"
             >{{ $t('tooltips.dataViewer') }}</q-tooltip>
           </q-icon></div>
+          <!-- REPORT BUTTON -->
           <div class="mc-button mc-action"
-               @click="viewReportAction"
-               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: !hasObservations }]"
+               @click="mainViewer !== VIEWERS.REPORT_VIEWER && canReport ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
+               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !canReport }]"
           ><q-icon name="mdi-file-chart">
+            <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ $t('tooltips.reportViewer') }}</q-tooltip>
+            >{{ canReport ? $t('tooltips.reportViewer') : $t('tooltips.noReportViewer') }}</q-tooltip>
           </q-icon></div>
         </div>
         <!-- RESET CONTEXT -->
@@ -185,12 +188,16 @@ export default {
       'searchIsActive',
       'searchIsFocused',
       'mainViewer',
+      'reloadReport',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
     ]),
     spinnerColor() {
       return Helpers.getColorObject(this.spinner.color);
+    },
+    canReport() {
+      return (!this.hasTasks && this.hasObservations);
     },
   },
   methods: {
@@ -228,11 +235,6 @@ export default {
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
-    },
-    viewReportAction() {
-      if (!this.hasTasks && this.hasObservations && this.mainViewer !== VIEWERS.REPORT_VIEWER) {
-        this.setMainViewer(VIEWERS.REPORT_VIEWER);
-      }
     },
   },
   watch: {
@@ -377,15 +379,26 @@ export default {
   }
   .mc-action {
     padding: 6px;
+    position: relative;
   }
   .mc-tab.active {
     background-color: alpha($faded, 85%);
   }
-  .mc-action:hover {
-    color: $blue-3;
+  .mc-action:not(.disabled):hover {
+    color: $main-control-main-color;
   }
   .mc-action.active {
-    color: $blue-4;
+    color: $main-control-main-color;
+  }
+  .mc-button-notification {
+    display: block;
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: $main-control-main-color;
   }
   #btn-reset-context {
     width: 15px;

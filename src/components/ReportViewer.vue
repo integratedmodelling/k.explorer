@@ -1,8 +1,12 @@
 <template>
-  <div id="report-container" v-html="report"></div>
+  <div id="mc-report-wrapper" class="full-width">
+    <div id="mc-report-container" v-html="report"></div>
+  </div>
 </template>
 
 <script>
+/* eslint-disable no-underscore-dangle */
+
 import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
 
@@ -10,8 +14,7 @@ export default {
   name: 'ReportViewer',
   data() {
     return {
-      needContent: true,
-      report: 'No content',
+      report: this.$t('messages.noLoadedReport'),
     };
   },
   computed: {
@@ -33,7 +36,8 @@ export default {
         axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}report/${this.contextId}`, {})
           .then(({ data }) => {
             if (data === '') {
-              data = 'Nothing to say';
+              console.warn('Empty report');
+              data = this.$t('messages.emptyReport');
             }
             this.report = data;
             this.setReloadReport(false);
@@ -43,14 +47,16 @@ export default {
   },
   watch: {
     reloadReport() {
-      this.loadReport();
+      if (!this._inactive) {
+        this.loadReport();
+      }
     },
   },
-  mounted() {
+  activated() {
     this.loadReport();
   },
 };
 </script>
 
-<style>
+<style lang="stylus">
 </style>

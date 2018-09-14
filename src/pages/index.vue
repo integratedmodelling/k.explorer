@@ -1,13 +1,13 @@
 <template>
-  <q-page class="column bg-red-1">
-    <div class="col row full-height bg-red-1" id="viewer-container">
+  <q-page class="column">
+    <div class="col row full-height" id="viewer-container">
       <keep-alive>
         <!-- <transition name="component-fade" mode="out-in"> -->
         <component :is="mainViewer"></component>
         <!-- </transition> -->
       </keep-alive>
     </div>
-    <div class="col-1 row bg-red-1">
+    <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
     </div>
     <klab-main-control></klab-main-control>
@@ -140,9 +140,11 @@ export default {
 </script>
 <style scoped>
   .row > div {
+    /*
     padding: 10px 15px;
     background: rgba(86, 61, 124, .15);
     border: 1px solid rgba(86, 61, 124, .2);
+    */
   }
   .bg-opaque-white {
     background: rgba(255, 255, 255, 0.3)

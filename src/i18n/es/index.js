@@ -29,6 +29,8 @@ export default {
     noSearchResults: 'No hay resultados',
     noActionForObservation: 'No hay acciones disponibles',
     noTime: 'sin información',
+    emptyReport: 'Report vacío',
+    noLoadedReport: 'No se ha cargado ningun report',
   },
   tooltips: {
     treePane: 'Ver árbol',
@@ -36,6 +38,7 @@ export default {
     resetContext: 'Reset context',
     dataViewer: 'Ver datos',
     reportViewer: 'Ver report',
+    noReportViewer: 'Report no disponible, esperar',
     dataflowViewer: 'Ver data flow (will be...)',
     provenanceViewer: 'Ver provenance (will be...)',
   },
