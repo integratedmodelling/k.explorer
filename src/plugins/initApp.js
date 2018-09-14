@@ -14,7 +14,7 @@ export default ({ Vue, store }) => {
   const session = urlParams.get(Constants.PARAMS_SESSION)
     || Cookies.get(Constants.COOKIE_SESSION);
   const mode = urlParams.get(Constants.PARAMS_MODE)
-    || Cookies.get(Constants.COOKIE_MODE);
+    || Cookies.get(Constants.COOKIE_MODE) || Constants.PARAMS_MODE_IDE;
   const log = urlParams.get(Constants.PARAMS_LOG)
     || Cookies.get(Constants.COOKIE_LOG) || Constants.PARAMS_LOG_HIDDEN;
   const baseLayer = Cookies.get(Constants.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;

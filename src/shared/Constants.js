@@ -193,6 +193,7 @@ export default {
    */
   PARAMS_MODE: 'mode',
   PARAMS_MODE_IDE: 'ide',
+  PARAMS_MODE_STANDALONE: 'standalone',
   PARAMS_SESSION: 'session',
   PARAMS_LOG: 'log',
   PARAMS_LOG_HIDDEN: 'hidden',
