@@ -118,13 +118,31 @@
           <div class="mc-button mc-action"
                @click="mainViewer !== VIEWERS.REPORT_VIEWER && canReport ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
                :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !canReport }]"
-          ><q-icon name="mdi-file-chart">
+          ><q-icon name="mdi-file-document-box">
             <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
             >{{ canReport ? $t('tooltips.reportViewer') : $t('tooltips.noReportViewer') }}</q-tooltip>
+          </q-icon></div>
+          <!-- DATAFLOW (disabled) -->
+          <div class="mc-button mc-action disabled"
+          ><q-icon name="mdi-sitemap">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
+          </q-icon></div>
+          <!-- PROVENANCE (disabled) -->
+          <div class="mc-button mc-action disabled"
+          ><q-icon name="mdi-brain">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
           </q-icon></div>
         </div>
         <!-- RESET CONTEXT -->
