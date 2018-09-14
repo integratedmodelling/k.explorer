@@ -1,6 +1,8 @@
 <template>
   <div id="mc-report-wrapper" class="full-width">
-    <div id="mc-report-container" v-html="report"></div>
+    <!-- <div id="mc-report-container"> -->
+      <div id="mc-report-content" v-html="report"></div>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -9,12 +11,15 @@
 
 import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
+// import SimpleBar from 'simplebar';
+// import 'simplebar/dist/simplebar.css';
 
 export default {
   name: 'ReportViewer',
   data() {
     return {
       report: this.$t('messages.noLoadedReport'),
+      scrollElement: undefined,
     };
   },
   computed: {
@@ -54,6 +59,9 @@ export default {
   },
   activated() {
     this.loadReport();
+  },
+  mounted() {
+    // this.scrollElement = (new SimpleBar(document.getElementById('mc-report-container'))).getScrollElement();
   },
 };
 </script>

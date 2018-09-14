@@ -28,17 +28,19 @@
     >
     <q-card
       id="mc-q-card"
-      class="no-box-shadow absolute"
+      class="no-box-shadow absolute lot-of-flow"
       :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
       :style="{ top: `${defaultTop}px`, left: `${centeredLeft}px` }"
       :flat="true"
-      v-show="!isHidden"
       v-draggable="draggableConfMain"
+      v-show="!isHidden"
+      @mousedown.native="preventDrag"
     >
       <q-card-title
         id="mc-q-card-title"
         class="q-pa-xs"
         ref="mc-draggable"
+
         :style="{
           'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})`,
         }"
@@ -215,9 +217,11 @@ export default {
       return Helpers.getColorObject(this.spinner.color);
     },
     reportTooltip() {
+      /*
       if (this.hasTasks) {
         return this.$t('tooltips.noReportTask');
       }
+      */
       if (!this.hasObservations) {
         return this.$t('tooltips.noReportNoObservation');
       }
@@ -259,6 +263,13 @@ export default {
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
+    },
+    /**
+     * prevent native drag in chrome
+     * @param event
+     */
+    preventDrag(event) {
+      event.preventDefault();
     },
   },
   watch: {
@@ -434,9 +445,7 @@ export default {
   .component-fade-enter, .component-fade-leave-to {
     opacity: 0;
   }
-    /*
-  .vuela {
+  .lot-of-flow {
     transition: top 0.05s ease 0s, left 0.05s ease 0s;
   }
-  */
 </style>
