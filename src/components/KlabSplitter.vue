@@ -1,46 +1,58 @@
 <template>
-  <div :style="{ cursor, userSelect, flexDirection, controllerStyle }" class="vue-splitter" @mouseup.prevent="onUp" @mousemove.prevent="onMouseMove" @touchmove.prevent="onMove" @touchend.prevent="onUp">
-    <div :style="leftPaneStyle" class="left-pane splitter-pane">
-      <slot name="left-pane"></slot>
+  <div id="splitter-container">
+    <div class="splitter-controllers" v-if="!hidden && controllers">
+      <q-btn
+        flat
+        round
+        size="sm"
+        class="no-padding splitter-actions"
+        id="splitter-to-left"
+        icon="mdi-arrow-left"
+        :style="{ color: controlsColor}"
+        @click.native="percent = 0"
+      ></q-btn>
+      <q-btn
+        flat
+        round
+        size="sm"
+        class="no-padding splitter-actions rotate-90"
+        id="splitter-to-middle"
+        icon="mdi-format-align-middle"
+        :style="{ color: controlsColor}"
+        @click.native="percent = 50"
+      ></q-btn>
+      <q-btn
+        flat
+        round
+        size="sm"
+        class="no-padding splitter-actions"
+        id="splitter-to-right"
+        icon="mdi-arrow-right"
+        :style="{ color: controlsColor}"
+        @click.native="percent = 100"
+      ></q-btn>
+      <q-btn
+        flat
+        round
+        size="sm"
+        class="no-padding splitter-actions"
+        id="splitter-close"
+        icon="mdi-close"
+        :style="{ color: controlsColor}"
+        @click.native="$emit('close-metadata')"
+      ></q-btn>
     </div>
-    <template v-if="!hidden">
-      <div class="splitter-controllers" v-if="controllers">
-        <q-btn
-          flat
-          round
-          size="md"
-          class="no-padding splitter-actions"
-          id="splitter-to-right"
-          icon="ion-arrow-dropright-circle"
-          :style="{ color: controlsColor}"
-          @click.native="percent = 100"
-        ></q-btn>
-        <q-btn
-          flat
-          round
-          size="md"
-          class="no-padding splitter-actions"
-          id="splitter-to-left"
-          icon="ion-arrow-dropleft-circle"
-          :style="{ color: controlsColor}"
-          @click.native="percent = 0"
-        ></q-btn>
-        <q-btn
-          flat
-          round
-          size="md"
-          class="no-padding splitter-actions"
-          id="splitter-close"
-          icon="ion-close-circle"
-          :style="{ color: controlsColor}"
-          @click.native="$emit('close-metadata')"
-        ></q-btn>
+    <div :style="{ cursor, userSelect, flexDirection }" class="vue-splitter" @mouseup.prevent="onUp" @mousemove.prevent="onMouseMove" @touchmove.prevent="onMove" @touchend.prevent="onUp">
+      <div :style="leftPaneStyle" class="left-pane splitter-pane">
+        <slot name="left-pane"></slot>
       </div>
-      <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown.prevent="onDown" @touchstart.prevent="onDown"></div>
-      <div :style="rightPaneStyle" class="right-pane splitter-pane">
-        <slot name="right-pane"></slot>
-      </div>
-    </template>
+      <template >
+        <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown.prevent="onDown" @touchstart.prevent="onDown"></div>
+        <div :style="rightPaneStyle" class="right-pane splitter-pane">
+          <slot name="right-pane"></slot>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 <script>
@@ -103,9 +115,6 @@ export default {
     },
     cursor() {
       return this.active ? (this.horizontal ? 'ns-resize' : 'ew-resize') : '';
-    },
-    controllerStyle() {
-      return !{ 'margin-top': '1.3em' };
     },
   },
   methods: {
@@ -174,18 +183,15 @@ export default {
     }
   }
   .splitter-actions {
-    position: absolute;
-    height: 1.2em;
-    width: 1.2em;
-    right: 10px;
-  }
-  #splitter-to-right {
-    top: 3.1em;
-  }
-  #splitter-to-left {
-    top: 1.8em;
+    width: 2em;
+    height: 2em;
   }
   #splitter-close {
-    top: 0.5em;
+    position: absolute;
+    right: 0;
+  }
+  .splitter-controllers {
+    background-color: #000;
+    text-align: center;
   }
 </style>
