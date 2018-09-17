@@ -12,6 +12,8 @@
     <link rel="icon" type="image/png" sizes="32x32" href="statics/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="statics/icons/favicon-16x16.png">
 
+    <link rel="stylesheet" type="text/css" href="<%= process.env.WS_BASE_URL + process.env.ENGINE_SHARED + 'report.css' %>">
+
   </head>
   <body>
     <% if (!htmlWebpackPlugin.options.ctx.mode.electron) { %>

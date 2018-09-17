@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container">
+  <div ref="main-control-container" class="print-hide">
     <transition
       appear
       enter-active-class="animated fadeInLeft"

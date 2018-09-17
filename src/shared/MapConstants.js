@@ -13,6 +13,8 @@ import Mask from 'ol-ext/filter/Mask';
 import * as control from 'ol/control';
 import { transform, get as getProjection } from 'ol/proj';
 
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoiay1sYWIiLCJhIjoiY2prd2d2dWNxMHlvcDNxcDVsY3FncDBydiJ9.zMQE3gu-0qPpkLapVfVhnA';
+const MAPBOX_ATTRIBUTIONS = '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>';
 
 export const MAP_CONSTANTS = {
   BING_KEY: '', // TODO we need it?
@@ -178,8 +180,20 @@ export const Layers = {
     type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
-      url: 'https://api.mapbox.com/styles/v1/k-lab/cjkwh1z9z06ok2rrn9unfpn2n/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoiay1sYWIiLCJhIjoiY2prd2d2dWNxMHlvcDNxcDVsY3FncDBydiJ9.zMQE3gu-0qPpkLapVfVhnA',
-      attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+      url: `https://api.mapbox.com/styles/v1/k-lab/cjkwh1z9z06ok2rrn9unfpn2n/tiles/256/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`,
+      attribution: MAPBOX_ATTRIBUTIONS,
+    }),
+    visible: false,
+  }),
+
+  MAPBOX_MINIMO: new Tile({
+    name: 'mapbox_minimo',
+    title: 'k.LAB Mapbox Minimo',
+    type: 'base',
+    source: new XYZ({
+      crossOrigin: 'anonymous',
+      url: `https://api.mapbox.com/styles/v1/k-lab/cjm0l6i4g7ffj2sqk7xy5dv1m/tiles/256/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`,
+      attribution: MAPBOX_ATTRIBUTIONS,
     }),
     visible: false,
   }),
@@ -248,6 +262,7 @@ export const BASE_LAYERS = {
     Layers.GOOGLE_STREET,
     Layers.GOOGLE_HYBRID,
     Layers.GOOGLE_TERRAIN,
+    Layers.MAPBOX_MINIMO,
     Layers.MAPBOX_CALI_TERRAIN,
   ],
   mask: null,

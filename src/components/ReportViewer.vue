@@ -66,6 +66,5 @@ export default {
 };
 </script>
 
-<style lang="stylus">
-@import '../css/report.styl'
+<style>
 </style>
