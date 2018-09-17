@@ -45,7 +45,7 @@ export default class {
     if (this.djvEnv.resolve(schema)) {
       const valError = this.djvEnv.validate(schema, json);
       if (typeof valError === 'undefined') {
-        console.debug('Validation ok');
+        console.debug(`Validation of schema ${schema} ok`);
         return true;
       }
       throw Error(valError);
