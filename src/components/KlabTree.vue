@@ -1,6 +1,6 @@
 <template>
   <div id="klab-tree-div">
-    <div @contextmenu="rightClickHandler($event)" v-if="tree.length > 0">
+    <div id="kt-container" v-if="tree.length > 0">
       <q-tree
         ref="klabTree"
         :nodes="tree"
@@ -45,9 +45,11 @@
         </div>
       </q-tree>
     </div>
-    <div class="q-ma-md text-center text-white" v-else>
+    <div id="kt-no-tree" class="q-ma-md text-center text-white" v-else>
       {{ $t('label.noObservation') }}
     </div>
+    <!-- TODO rightClickHandler
+    REMEMBER: add @contextmenu to div#kt-container
     <q-context-menu v-show="enableContextMenu" ref="observations-context">
       <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
         <template v-for="(action, index) in itemActions">
@@ -61,6 +63,7 @@
         </template>
       </q-list>
     </q-context-menu>
+    -->
   </div>
 </template>
 
@@ -104,6 +107,7 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
+    /* TODO context menu better implementation
     rightClickHandler(e) {
       e.preventDefault();
       let spanNode = null;
@@ -144,6 +148,7 @@ export default {
       console.log(`Will ask for ${actionId} of observation ${observationId}`);
       this.enableContextMenu = false;
     },
+    */
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
         return text.substring(1, text.length - 1);
@@ -307,6 +312,7 @@ export default {
   }
   #klab-tree-div {
     max-height: 70vh;
+    padding-bottom: 10px;
   }
   .tree-q-tooltip {
     background-color #333
