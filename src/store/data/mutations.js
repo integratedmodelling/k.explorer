@@ -29,6 +29,7 @@ export default {
   ADD_OBSERVATION: (state, observation) => {
     state.observations.push(observation);
     console.log(`Added observation: ${observation.label}`);
+    console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
     if (state.tasks[observation.taskId]) {
       state.tasks[observation.taskId].push(observation);
     }
@@ -106,7 +107,7 @@ export default {
       console.warn('No main observation found');
       return;
     }
-    main.header = 'folder';
+    main.header = 'main';
     // find index of first filtered occurence
     const firstOccurence = filtered[0];
     let folder = null;

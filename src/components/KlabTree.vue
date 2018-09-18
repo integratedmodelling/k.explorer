@@ -14,7 +14,15 @@
         :dark="true"
       >
         <div slot="header-default" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+            <q-tooltip
+              :delay="300"
+              :offset="[0, 5]"
+              self="top left"
+              anchor="bottom right"
+              class="tree-q-tooltip"
+            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+          </span>
           <q-chip class="node-chip transparent" small dense text-color="grey-9">
             {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
           </q-chip>
@@ -24,7 +32,15 @@
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
         </div>
         <div slot="header-main" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+            <q-tooltip
+              :delay="300"
+              :offset="[0, 5]"
+              self="top left"
+              anchor="bottom right"
+              class="tree-q-tooltip"
+            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+          </span>
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
         </div>
       </q-tree>
@@ -124,6 +140,12 @@ export default {
     askForAction(observationId, actionId) {
       console.log(`Will ask for ${actionId} of observation ${observationId}`);
       this.enableContextMenu = false;
+    },
+    clearObservable(text) {
+      if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
+        return text.substring(1, text.length - 1);
+      }
+      return text;
     },
   },
   watch: {
@@ -277,5 +299,8 @@ export default {
   }
   #klab-tree-div {
     max-height: 70vh;
+  }
+  .tree-q-tooltip {
+    background-color #333
   }
 </style>

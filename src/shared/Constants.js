@@ -2,8 +2,8 @@
  * Useful constants in app
  */
 export const COLORS = {
-  SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)',
-  SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)',
+  SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)', // $main-control-main-color
+  SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)', // $main-control-yellow
   SPINNER_ERROR_COLOR: 'negative',
 };
 

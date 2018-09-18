@@ -123,6 +123,7 @@ const Helpers = {
     node: {
       id: observation.id,
       label: observation.literalValue || observation.label,
+      observable: observation.observable,
       type: observation.shapeType,
       viewerIdx: observation.viewerIdx,
       children: [],
