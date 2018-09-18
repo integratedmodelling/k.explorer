@@ -508,12 +508,6 @@ export default {
     }
     this.inputSearchColor = 'black';
     // this.actualToken = this.actualSearchString; TODO Change
-    // Only in dev: stop the annoying warning of letter
-    Vue.config.warnHandler = (msg, vm, trace) => {
-      if (msg.indexOf('"letter"') === -1) {
-        console.warn('Vue warn:', msg, vm, trace);
-      }
-    };
   },
 };
 </script>

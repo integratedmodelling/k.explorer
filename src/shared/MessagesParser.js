@@ -28,7 +28,6 @@ const PARSERS = {
       `New observation received with id ${observation.id}`,
       JSON.stringify(observation, null, 4),
     );
-    console.log(`Observation:\n${JSON.stringify(observation, null, 4)}`);
     // TODO check the definitive condition
     if (observation.parentId === null || observation.parentId === observation.id) {
       // new context

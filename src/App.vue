@@ -11,6 +11,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import Vue from 'vue';
 
 export default {
   name: 'App',
@@ -120,6 +121,14 @@ export default {
       observation: Helpers.OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
+  },
+  mounted() {
+    // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
+    Vue.config.warnHandler = (msg, vm, trace) => {
+      if (msg.indexOf('"letter"') === -1) {
+        console.warn(`[Vue warn]: ${msg}${trace}`);
+      }
+    };
   },
   beforeDestroy() {
     const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
