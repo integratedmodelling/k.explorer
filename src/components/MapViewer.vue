@@ -149,6 +149,7 @@ export default {
           this.findLayerById(observation).then((layer) => {
             if (layer !== null) {
               layer.setVisible(observation.visible);
+              layer.setOpacity(observation.layerOpacity);
               if (observation.top) {
                 layer.setZIndex(observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1));
               } else {

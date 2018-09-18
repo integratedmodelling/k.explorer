@@ -126,6 +126,7 @@ module.exports = function (ctx) {
         'QChip',
         'QTabs',
         'QTab',
+        'QSlider',
       ],
       directives: [
         'Ripple',

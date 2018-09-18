@@ -383,7 +383,7 @@ export default {
   .q-card-main {
     overflow: auto;
     line-height: inherit;
-    max-height: 70vh;
+    max-height: 75vh;
     background-color: alpha($faded, 85%);
     padding: 0; /* 0 0 10px 0;*/
   }

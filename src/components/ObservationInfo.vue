@@ -1,6 +1,18 @@
 <template>
   <div id="oi-container">
     <div id="oi-label">{{ observationInfo.label }}</div>
+    <q-slider
+      :disabled="!observationInfo.visible"
+      :readonly="!observationInfo.visible"
+      v-model="observationInfo.layerOpacity"
+      :min="0"
+      :max="1"
+      :step="0.1"
+      :decimals="1"
+      color="mc-yellow"
+      label
+      :label-value="`${observationInfo.layerOpacity*100}%`"
+    />
     <div id="oi-scroll-container">
       <div id="oi-scroll-data-container">
         <div id="oi-metadata" v-for="(value, name) in observationInfo.metadata" :key="name">
@@ -44,7 +56,7 @@ export default {
     text-shadow 0 0 1px #666
   }
   #oi-scroll-container {
-    max-height 65vh
+    max-height 60vh
   }
   .oi-metadata-name {
     color $main-control-yellow
@@ -56,5 +68,8 @@ export default {
     margin 0 5px 10px 5px
     border 1px solid #999
     padding 2px 0 2px 5px
+  }
+  .q-slider {
+    padding 0 10px 0 5px
   }
 </style>
