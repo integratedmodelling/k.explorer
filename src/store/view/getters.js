@@ -67,4 +67,9 @@ export default {
   searchHistory: state => state.searchHistory,
 
   reloadReport: state => state.reloadReport,
+
+  observationInfo: state => state.observationInfo,
+  hasObservationInfo: state => state.observationInfo !== null,
+
+  exploreMapMode: state => state.exploreMapMode,
 };

@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'Map Info',
+  name: 'MapInfo',
   data() {
     return {};
   },

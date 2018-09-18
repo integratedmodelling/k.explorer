@@ -39,15 +39,15 @@
         id="splitter-close"
         icon="mdi-close"
         :style="{ color: controlsColor}"
-        @click.native="$emit('close-metadata')"
+        @click.native="$emit('close-info')"
       ></q-btn>
     </div>
-    <div :style="{ cursor, userSelect, flexDirection }" class="vue-splitter" @mouseup.prevent="onUp" @mousemove.prevent="onMouseMove" @touchmove.prevent="onMove" @touchend.prevent="onUp">
+    <div :style="{ cursor, flexDirection }" class="vue-splitter" @mouseup="onUp" @mousemove="onMouseMove" @touchmove="onMove" @touchend="onUp">
       <div :style="leftPaneStyle" class="left-pane splitter-pane">
         <slot name="left-pane"></slot>
       </div>
-      <template >
-        <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown.prevent="onDown" @touchstart.prevent="onDown"></div>
+      <template v-if="!hidden">
+        <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown="onDown" @touchstart="onDown"></div>
         <div :style="rightPaneStyle" class="right-pane splitter-pane">
           <slot name="right-pane"></slot>
         </div>
@@ -110,9 +110,6 @@ export default {
     rightPaneStyle() {
       return this.horizontal ? { height: `${100 - this.percent}%` } : { width: `${100 - this.percent}%` };
     },
-    userSelect() {
-      return this.active ? 'none' : '';
-    },
     cursor() {
       return this.active ? (this.horizontal ? 'ns-resize' : 'ew-resize') : '';
     },
@@ -121,7 +118,7 @@ export default {
     onClick() {
       if (!this.hasMoved) {
         this.percent = 50;
-        this.$emit('resize');
+        this.$emit('splitterresize');
       }
     },
     onDown() {
@@ -152,7 +149,7 @@ export default {
         if (percent > this.margin && percent < 100 - this.margin) {
           this.percent = percent;
         }
-        this.$emit('resize');
+        this.$emit('splitterresize');
         this.hasMoved = true;
       }
     },
@@ -178,8 +175,13 @@ export default {
     .splitter-pane {
       height: inherit;
       overflow: hidden;
-      white-space: nowrap;
       padding: 5px 0;
+    }
+    .left-pane {
+      white-space: nowrap;
+    }
+    .right-pane {
+      word-wrap: break-word;
     }
   }
   .splitter-actions {

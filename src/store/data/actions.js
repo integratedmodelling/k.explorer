@@ -240,8 +240,11 @@ export default {
 
   selectNode: ({ dispatch, state }, selectedId) => {
     const selectedObservation = state.observations.find(observation => observation.id === selectedId);
-    if (selectedObservation && selectedObservation.visible && !selectedObservation.top) {
-      dispatch('showNode', { nodeId: selectedId });
+    if (selectedObservation) {
+      if (selectedObservation.visible && !selectedObservation.top) {
+        dispatch('showNode', { nodeId: selectedId });
+      }
+      dispatch('view/setObservationInfo', selectedObservation, { root: true });
     }
   },
 

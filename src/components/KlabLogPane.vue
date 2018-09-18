@@ -25,9 +25,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import SimpleBar from 'simplebar';
-import { IN } from '../shared/MessagesConstants';
-import 'simplebar/dist/simplebar.css';
+import { IN } from 'shared/MessagesConstants';
 
 const LOG_ICON_COLORS = {
   [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'black' },
@@ -35,6 +33,7 @@ const LOG_ICON_COLORS = {
   [IN.TYPE_WARNING]: { icon: 'mdi-alert', color: 'warning' },
   [IN.TYPE_ERROR]: { icon: 'mdi-close-circle', color: 'negative' },
 };
+
 export default {
   name: 'KLabLogPane',
   data() {
@@ -61,13 +60,13 @@ export default {
   },
   watch: {
     klabLog() {
-    //  this.$nextTick(() => {
-      this.scrollBar.recalculate();
+    //  this.$nextTick(() =>
+    //  this.scrollBar.recalculate();
     //  });
     },
   },
   mounted() {
-    this.scrollBar = new SimpleBar(document.getElementById('klab-log-pane'));
+    // this.scrollBar = new SimpleBar(document.getElementById('klab-log-pane'));
   },
 
 };

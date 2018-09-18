@@ -36,6 +36,7 @@ export default {
     commit('SET_CONTEXT_LAYER', null);
     commit('SET_MAIN_VIEWER', VIEWERS.DATA_VIEWER);
     commit('RESET_SEARCH');
+    commit('SET_OBSERVATION_INFO', null);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
@@ -182,5 +183,19 @@ export default {
 
   setReloadReport: ({ commit }, reload) => {
     commit('SET_RELOAD_REPORT', reload);
+  },
+
+  setObservationInfo: ({ commit }, observation) => {
+    if (typeof observation !== 'undefined' && observation !== null) {
+      const { id, metadata, semantics } = observation;
+      let metadataInfo = {};
+      if (Object.keys(metadata).length) {
+        metadataInfo = Object.entries(metadata).map(([key, value]) => ({ key, value }));
+      }
+      commit('SET_OBSERVATION_INFO', { id, metadataInfo, semantics });
+    }
+  },
+  resetObservationInfo: ({ commit }) => {
+    commit('SET_OBSERVATION_INFO', null);
   },
 };

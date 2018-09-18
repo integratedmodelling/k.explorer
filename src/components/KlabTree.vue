@@ -14,7 +14,7 @@
         :dark="true"
       >
         <div slot="header-default" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
             <q-tooltip
               :delay="300"
               :offset="[0, 5]"
@@ -32,7 +32,7 @@
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
         </div>
         <div slot="header-main" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
             <q-tooltip
               :delay="300"
               :offset="[0, 5]"
@@ -88,6 +88,9 @@ export default {
       'tree',
       'treeNode',
       'lasts',
+    ]),
+    ...mapGetters('view', [
+      'observationInfo',
     ]),
   },
   methods: {
@@ -261,6 +264,7 @@ export default {
 };
 </script>
 <style lang="stylus">
+  @import '~variables'
   .q-tree
   .q-tree > .q-tree-node-child > .q-tree-node-header {
     /* padding-left: 24px; */
@@ -289,6 +293,10 @@ export default {
   }
   .node-element {
     text-shadow: none;
+  }
+  .node-selected {
+    text-decoration: underline $main-control-yellow dotted
+    color $main-control-yellow
   }
   @keyframes flash {
     0% { opacity: 1; }

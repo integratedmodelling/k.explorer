@@ -116,4 +116,12 @@ export default {
   SET_RELOAD_REPORT: (state, reload) => {
     state.reloadReport = reload;
   },
+
+  SET_OBSERVATION_INFO: (state, observation) => {
+    state.observationInfo = observation;
+  },
+
+  SET_EXPLORE_MAP_MODE: (state, isActive) => {
+    state.exploreMapMode = isActive;
+  },
 };

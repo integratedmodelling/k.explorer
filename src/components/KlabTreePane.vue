@@ -1,6 +1,6 @@
 <template>
   <div id="klab-tree-pane">
-    <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-metadata="additionalContentType = ''">
+    <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-info="onCloseInfo">
       <div slot="left-pane">
         <klab-tree></klab-tree>
       </div>
@@ -10,7 +10,7 @@
           enter-active-class="animated fadeIn"
           leave-active-class="animated fadeOut"
         >
-          <component :is="additionalContentType" id="mc-additional-content">{{ additionalContent }}</component>
+          <component :is="additionalContentType"></component>
         </transition>
       </div>
     </klab-splitter>
@@ -20,34 +20,64 @@
 <script>
 import KlabTree from 'components/KlabTree.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
-import Metadata from 'components/additional/Metadata.vue';
+import ObservationInfo from 'components/ObservationInfo.vue';
+import MapInfo from 'components/MapInfo.vue';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'klabTreeContainer',
   data() {
     return {
-      content: 'KlabTree',
-      additionalContentType: 'Metadata',
-      additionalContent: 'Test de additionalContent',
+      additionalContentType: '', // 'ObservationInfo' | 'MapInfo'
     };
   },
+  computed: {
+    ...mapGetters('view', [
+      'hasObservationInfo',
+      'exploreMapMode',
+    ]),
+  },
   methods: {
+    ...mapActions('view', [
+      'resetObservationInfo',
+    ]),
+    onCloseInfo() {
+      this.additionalContentType = '';
+      this.resetObservationInfo();
+    },
   },
   mounted() {
+  },
+  watch: {
+    exploreMapMode() {
+      if (this.exploreMapMode) {
+        this.additionalContentType = 'MapInfo';
+      } else {
+        this.additionalContentType = '';
+      }
+    },
+    hasObservationInfo() {
+      if (!this.hasObservationInfo) {
+        this.additionalContentType = '';
+        return;
+      }
+      // if exploreMap mode is active, nothing to do
+      if (this.exploreMapMode) {
+        return;
+      }
+      this.additionalContentType = 'ObservationInfo';
+    },
   },
   components: {
     KlabTree,
     KlabSplitter,
-    Metadata,
+    ObservationInfo,
+    MapInfo,
   },
 };
 </script>
 <style lang="stylus">
   .q-tree .text-white {
     text-shadow: 1px 0 0 #aaa;
-  }
-  #mc-additional-content {
-    color:white;
-    padding: 2px 5px;
   }
 </style>

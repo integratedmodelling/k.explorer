@@ -86,4 +86,15 @@ export default {
    * If true, when report button is clicked, we ask for report
    */
   reloadReport: false,
+
+  /**
+   * More info content
+   */
+  observationInfo: null,
+  mapInfo: null,
+
+  /**
+   * Indicate if explore map mode is active
+   */
+  exploreMapMode: false,
 };
