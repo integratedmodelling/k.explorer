@@ -1,69 +1,71 @@
 <template>
-  <div id="klab-tree-div">
-    <div id="kt-container" v-if="tree.length > 0">
-      <q-tree
-        ref="klabTree"
-        :nodes="tree"
-        node-key="id"
-        :ticked.sync="ticked"
-        :selected.sync="selected"
-        tick-strategy="strict"
-        text-color="white"
-        control-color="white"
-        color="white"
-        :dark="true"
-      >
-        <div slot="header-default" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
-            <q-tooltip
-              :delay="300"
-              :offset="[0, 5]"
-              self="top left"
-              anchor="bottom right"
-              class="tree-q-tooltip"
-            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
-          </span>
-          <q-chip class="node-chip transparent" small dense text-color="grey-9">
-            {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
-          </q-chip>
-        </div>
-        <div slot="header-folder" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
-          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
-        </div>
-        <div slot="header-main" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
-            <q-tooltip
-              :delay="300"
-              :offset="[0, 5]"
-              self="top left"
-              anchor="bottom right"
-              class="tree-q-tooltip"
-            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
-          </span>
-          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
-        </div>
-      </q-tree>
+  <div id="kt-container">
+    <div id="kt-tree-div" v-if="tree.length > 0">
+      <div id="kt-tree-container">
+        <q-tree
+          ref="klabTree"
+          :nodes="tree"
+          node-key="id"
+          :ticked.sync="ticked"
+          :selected.sync="selected"
+          tick-strategy="strict"
+          text-color="white"
+          control-color="white"
+          color="white"
+          :dark="true"
+        >
+          <div slot="header-default" slot-scope="prop">
+            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+              <q-tooltip
+                :delay="300"
+                :offset="[0, 5]"
+                self="top left"
+                anchor="bottom right"
+                class="tree-q-tooltip"
+              >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+            </span>
+            <q-chip class="node-chip transparent" small dense text-color="grey-9">
+              {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
+            </q-chip>
+          </div>
+          <div slot="header-folder" slot-scope="prop">
+            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+            <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
+          </div>
+          <div slot="header-main" slot-scope="prop">
+            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+              <q-tooltip
+                :delay="300"
+                :offset="[0, 5]"
+                self="top left"
+                anchor="bottom right"
+                class="tree-q-tooltip"
+              >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+            </span>
+            <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
+          </div>
+        </q-tree>
+      </div>
+      <!-- TODO rightClickHandler
+      REMEMBER: add @contextmenu to div#kt-tree-container
+      <q-context-menu v-show="enableContextMenu" ref="observations-context">
+        <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
+          <template v-for="(action, index) in itemActions">
+            <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
+            <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
+              <q-item-main :label="action.actionLabel"></q-item-main>
+            </q-item>
+            <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
+              <q-item-main :label="action.actionLabel"></q-item-main>
+            </q-item>
+          </template>
+        </q-list>
+      </q-context-menu>
+      -->
     </div>
     <div id="kt-no-tree" class="q-ma-md text-center text-white" v-else>
       {{ $t('label.noObservation') }}
     </div>
-    <!-- TODO rightClickHandler
-    REMEMBER: add @contextmenu to div#kt-container
-    <q-context-menu v-show="enableContextMenu" ref="observations-context">
-      <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
-        <template v-for="(action, index) in itemActions">
-          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
-          <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-          <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-        </template>
-      </q-list>
-    </q-context-menu>
-    -->
   </div>
 </template>
 
@@ -216,7 +218,7 @@ export default {
     },
   },
   mounted() {
-    this.scrollElement = (new SimpleBar(document.getElementById('klab-tree-div'))).getScrollElement();
+    this.scrollElement = (new SimpleBar(document.getElementById('kt-tree-div'))).getScrollElement();
     this.scrollElement.addEventListener('scroll', (event) => {
       if (this.askingForSiblings) {
         event.preventDefault();
@@ -310,7 +312,7 @@ export default {
     75% { opacity: .5; }
     100% { opacity: 1; }
   }
-  #klab-tree-div {
+  #kt-tree-div {
     max-height: 70vh;
     padding-bottom: 10px;
   }
