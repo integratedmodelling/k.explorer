@@ -100,7 +100,57 @@
             >{{ $t('tooltips.treePane') }}</q-tooltip>
           </q-icon></div>
         </div>
-        <div class="mc-tab-button absolute-bottom-right"
+
+        <div id="mc-actions">
+          <div class="separator" style="left: -5px"></div>
+          <!-- MAP BUTTON -->
+          <div class="mc-button mc-action"
+               @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
+               :class="[{ active: mainViewer === VIEWERS.DATA_VIEWER }]"
+          ><q-icon name="mdi-eye">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.dataViewer') }}</q-tooltip>
+          </q-icon></div>
+          <!-- REPORT BUTTON -->
+          <div class="mc-button mc-action"
+               @click="mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip === null ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
+               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip !== null }]"
+          ><q-icon name="mdi-file-document-box">
+            <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ reportTooltip !== null ? reportTooltip : $t('tooltips.reportViewer') }}</q-tooltip>
+          </q-icon></div>
+          <!-- DATAFLOW (disabled) -->
+          <div class="mc-button mc-action disabled"
+          ><q-icon name="mdi-sitemap">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
+          </q-icon></div>
+          <!-- PROVENANCE (disabled) -->
+          <!-- in the future
+          <div class="mc-button mc-action disabled"
+          ><q-icon name="mdi-brain">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
+          </q-icon></div>
+          -->
+          <div class="separator" style="right: -10px"></div>
+        </div>
+        <!-- RESET CONTEXT -->
+        <div class="mc-button"
+             id="mc-reset-context"
              @click="resetContext"
              v-if="!hasTasks"
         ><q-icon name="mdi-close-circle">
@@ -322,7 +372,24 @@ export default {
     padding: 0
     margin: 0
   }
-  .mc-tab-button {
+  #mc-actions {
+    position absolute
+    right 55px
+  }
+  #mc-actions .separator {
+    width 2px
+    height 60%
+    background-color #fff
+    position absolute
+    top 20%
+    border-left 1px solid #333
+    border-right 1px solid #666
+  }
+  #mc-reset-context {
+    position absolute
+    right 2px
+  }
+  .mc-button {
     padding: 6px 10px;
     cursor: pointer;
     display: inline-block;
