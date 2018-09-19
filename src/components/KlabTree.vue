@@ -63,7 +63,7 @@
       </q-context-menu>
       -->
     </div>
-    <div id="kt-no-tree" class="q-ma-md text-center text-white" v-show="tree.length === 0">>
+    <div id="kt-no-tree" class="q-ma-md text-center text-white" v-show="tree.length === 0">
       {{ $t('label.noObservation') }}
     </div>
   </div>
