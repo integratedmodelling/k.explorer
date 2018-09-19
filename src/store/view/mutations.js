@@ -118,7 +118,11 @@ export default {
   },
 
   SET_OBSERVATION_INFO: (state, observation) => {
-    state.observationInfo = observation;
+    if (state.observationInfo === null || state.observationInfo.id !== observation.id) {
+      state.observationInfo = observation;
+    } else {
+      state.observationInfo = null;
+    }
   },
 
   SET_EXPLORE_MAP_MODE: (state, isActive) => {
