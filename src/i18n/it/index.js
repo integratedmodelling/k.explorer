@@ -20,6 +20,7 @@ export default {
     itemCounter: '{loaded} di {total}',
     logTab: 'Log',
     treeTab: 'Albero',
+    noHistogramValueSelected: 'Selezionare rango',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
@@ -36,7 +37,7 @@ export default {
     treePane: 'Albero',
     logPane: 'Log',
     resetContext: 'Reset context',
-    interruptTask: 'Stop',
+    interruptTask: 'Interrompere processo {taskDescription}',
     dataViewer: 'Vedere dati',
     reportViewer: 'Vedere report',
     noReportTask: 'Cannot view report,\nwait for task end',

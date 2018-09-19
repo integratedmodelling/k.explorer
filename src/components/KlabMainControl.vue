@@ -443,8 +443,8 @@ export default {
     cursor: pointer;
     display: inline-block;
     font-size: 22px;
-    color: #111;
-    text-shadow: 0 1px 0 #555;
+    color: rgb(119,119,119);
+    text-shadow: 0 1px 0 #333;
   }
   .mc-button:hover {
     color: white; /* background: #e0e0e0; */
