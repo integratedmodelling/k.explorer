@@ -118,7 +118,7 @@ export default {
   },
 
   SET_OBSERVATION_INFO: (state, observation) => {
-    if (state.observationInfo === null || state.observationInfo.id !== observation.id) {
+    if (observation !== null && (state.observationInfo === null || state.observationInfo.id !== observation.id)) {
       state.observationInfo = observation;
     } else {
       state.observationInfo = null;
