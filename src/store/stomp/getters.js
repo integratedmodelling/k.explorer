@@ -34,4 +34,6 @@ export default {
 
   hasTasks: state => state.tasks.length !== 0,
 
+  lastActiveTask: state => (state.tasks.length > 0 ? state.tasks.slice(-1)[0] : null),
+
 };

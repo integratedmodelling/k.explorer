@@ -110,7 +110,7 @@
           <div class="mc-button mc-action"
                @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
                :class="[{ active: mainViewer === VIEWERS.DATA_VIEWER }]"
-          ><q-icon name="mdi-eye">
+          ><q-icon name="mdi-eye-outline">
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
@@ -121,7 +121,7 @@
           <div class="mc-button mc-action"
                @click="mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip === null ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
                :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip !== null }]"
-          ><q-icon name="mdi-file-document-box">
+          ><q-icon name="mdi-file-document-box-outline">
             <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
             <q-tooltip
               :offset="[0, 8]"
@@ -151,17 +151,28 @@
           -->
           <div class="separator" style="right: -10px"></div>
         </div>
-        <!-- RESET CONTEXT -->
+        <!-- RESET CONTEXT or INTERRUPT TASK-->
         <div class="mc-button"
              id="mc-reset-context"
              @click="resetContext"
              v-if="!hasTasks"
-        ><q-icon name="mdi-close-circle">
+        ><q-icon name="mdi-close-circle-outline">
           <q-tooltip
             :offset="[0, 8]"
             self="top middle"
             anchor="bottom middle"
           >{{ $t('tooltips.resetContext') }}</q-tooltip>
+        </q-icon></div>
+        <div class="mc-button"
+             id="mc-interrupt-task"
+             @click="interruptTask"
+             v-if="hasTasks"
+        ><q-icon name="mdi-stop-circle-outline">
+          <q-tooltip
+            :offset="[0, 8]"
+            self="top middle"
+            anchor="bottom middle"
+          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTask === null ? '' : lastActiveTask.task.description }) }}</q-tooltip>
         </q-icon></div>
       </q-card-actions
         >
@@ -217,6 +228,7 @@ export default {
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
+      'lastActiveTask',
     ]),
     spinnerColor() {
       return Helpers.getColorObject(this.spinner.color);
@@ -240,6 +252,15 @@ export default {
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+    },
+    interruptTask() {
+      const task = this.lastActiveTask;
+      if (task !== null) {
+        this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
+          session: this.$store.state.data.session,
+          taskId: task.id,
+        }).body);
+      }
     },
     hide() {
       this.draggableConfMain.resetInitialPos = false;
@@ -412,9 +433,10 @@ export default {
     border-left 1px solid #333
     border-right 1px solid #666
   }
-  #mc-reset-context {
+  #mc-reset-context, #mc-interrupt-task {
     position absolute
     right 2px
+    color $main-control-red
   }
   .mc-button {
     padding: 6px 10px;

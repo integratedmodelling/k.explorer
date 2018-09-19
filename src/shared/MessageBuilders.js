@@ -44,7 +44,7 @@ export const PAYLOAD_BUILDERS = {
     north,
     east,
   }),
-
+  /*
   SEARCH_REQUEST: ({
     queryString,
     requestId,
@@ -56,6 +56,7 @@ export const PAYLOAD_BUILDERS = {
     queryString,
     requestId,
   }),
+  */
 };
 
 /**
@@ -122,6 +123,17 @@ export const MESSAGES_BUILDERS = {
     OUT.TYPE_RESETCONTEXT,
     OUT.PAYLOAD_CLASS_EMPTY,
     '',
+    session,
+  ),
+
+  TASK_INTERRUPTED: ({ session, taskId, forceInterruption = true }) => buildMessage(
+    OUT.CLASS_TASKLIFECYCLE,
+    OUT.TYPE_TASKINTERRUPTED,
+    OUT.PAYLOAD_CLASS_INTERRUPTTASK,
+    {
+      taskId,
+      forceInterruption,
+    },
     session,
   ),
 };

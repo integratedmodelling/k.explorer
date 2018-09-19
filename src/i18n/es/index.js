@@ -36,6 +36,7 @@ export default {
     treePane: 'Ver árbol',
     logPane: 'Ver log',
     resetContext: 'Reset context',
+    interruptTask: 'Parar proceso',
     dataViewer: 'Ver datos',
     reportViewer: 'Ver report',
     noReportTask: 'Cannot view report,\nwait for task end',

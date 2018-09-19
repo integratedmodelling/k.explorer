@@ -36,6 +36,7 @@ export default {
     treePane: 'Albero',
     logPane: 'Log',
     resetContext: 'Reset context',
+    interruptTask: 'Stop',
     dataViewer: 'Vedere dati',
     reportViewer: 'Vedere report',
     noReportTask: 'Cannot view report,\nwait for task end',

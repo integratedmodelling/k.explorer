@@ -20,12 +20,14 @@ export const OUT = Object.freeze({
   CLASS_USERCONTEXTCHANGE: 'UserContextChange',
   CLASS_SEARCH: 'Search',
   CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
+  CLASS_TASKLIFECYCLE: 'TaskLifecycle',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
   PAYLOAD_CLASS_SEARCHREQUEST: 'SearchRequest',
   PAYLOAD_CLASS_SEARCHMATCHACTION: 'SearchMatchAction',
   PAYLOAD_CLASS_OBSERVATIONREQUEST: 'ObservationRequest',
+  PAYLOAD_CLASS_INTERRUPTTASK: 'InterruptTask',
   PAYLOAD_CLASS_EMPTY: 'String',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
@@ -34,6 +36,7 @@ export const OUT = Object.freeze({
   TYPE_MATCHACTION: 'MatchAction',
   TYPE_REQUESTOBSERVATION: 'RequestObservation',
   TYPE_RESETCONTEXT: 'ResetContext',
+  TYPE_TASKINTERRUPTED: 'TaskInterrupted',
 });
 
 /**

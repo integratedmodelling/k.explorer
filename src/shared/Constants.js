@@ -4,6 +4,7 @@
 export const COLORS = {
   SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)', // $main-control-main-color
   SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)', // $main-control-yellow
+  SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
   SPINNER_ERROR_COLOR: 'negative',
 };
 
