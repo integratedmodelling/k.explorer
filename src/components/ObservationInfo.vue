@@ -20,13 +20,13 @@
       </div>
     </div>
     <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }">
-      <div id="oi-histogram" @mouseout="histogramCategory = null">
+      <div id="oi-histogram" @mouseout="histogramIndex = -1">
         <div
           class="oi-histogram-col"
           v-for="(data, index) in observationInfo.dataSummary.histogram"
           :key="index"
           :style="{ width:`${histogramWidth}%`, left: `${histogramWidth * index}%` }"
-          @mouseover="histogramCategory = observationInfo.dataSummary.categories[index]"
+          @mouseover="histogramIndex = index"
         >
           <div class="oi-histogram-val" :style="{ height: `${getHeight(data)}%` }">
           </div>
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       scrollBar: undefined,
-      histogramCategory: null,
+      histogramIndex: -1,
     };
   },
   computed: {
@@ -59,14 +59,14 @@ export default {
       return Math.max.apply(null, this.observationInfo.dataSummary.histogram);
     },
     histogramWidth() {
-      return Math.floor(100 / this.observationInfo.dataSummary.histogram.length);
+      return 100 / this.observationInfo.dataSummary.histogram.length;
     },
     histogramCategoryLabel: {
       set(value) {
-        this.histogramCategory = value;
+        this.histogramIndex = value;
       },
       get() {
-        return this.histogramCategory === null ? this.$t('label.noHistogramValueSelected') : this.histogramCategory;
+        return this.histogramIndex === -1 ? this.$t('label.noHistogramValueSelected') : `${this.observationInfo.dataSummary.categories[this.histogramIndex]}: ${this.observationInfo.dataSummary.histogram[this.histogramIndex]}`;
       },
     },
     metadataClass() {
@@ -84,7 +84,7 @@ export default {
   },
   methods: {
     getHeight(value) {
-      return Math.floor(value * 100 / this.maxHistogramValue);
+      return value * 100 / this.maxHistogramValue;
     },
   },
   watch: {
