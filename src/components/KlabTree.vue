@@ -1,6 +1,6 @@
 <template>
   <div id="kt-container">
-    <div id="kt-tree-div" v-if="tree.length > 0">
+    <div id="kt-tree-div" v-show="tree.length > 0">
       <div id="kt-tree-container">
         <q-tree
           ref="klabTree"
@@ -63,7 +63,7 @@
       </q-context-menu>
       -->
     </div>
-    <div id="kt-no-tree" class="q-ma-md text-center text-white" v-else>
+    <div id="kt-no-tree" class="q-ma-md text-center text-white" v-show="tree.length === 0">>
       {{ $t('label.noObservation') }}
     </div>
   </div>
