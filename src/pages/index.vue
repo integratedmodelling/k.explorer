@@ -26,7 +26,7 @@
               :size="40"
               :ball="18"
               wrapperId="modal-connection-status"
-            />
+            ></klab-spinner>
             <span>{{ modalText  }}</span>
           </div>
           <q-btn
