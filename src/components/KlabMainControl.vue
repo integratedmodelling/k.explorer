@@ -204,6 +204,7 @@ export default {
       draggableConfMain: {
         handle: undefined,
         resetInitialPos: false,
+        onDragEnd: this.checkWhereWasDragged,
       },
       boundingElement: undefined,
       selectedTab: 'klab-tree-pane',
@@ -297,6 +298,20 @@ export default {
     preventDrag(event) {
       event.preventDefault();
     },
+    checkWhereWasDragged() {
+      if (this.draggableElement.offsetTop < 0) { // upper than window
+        this.changeDraggablePosition({ top: 0, left: Math.max(this.draggableElement.offsetLeft, 0) });
+      }
+      if (this.draggableElement.offsetLeft + this.draggableElement.offsetWidth <= 0) { // left out of window
+        this.changeDraggablePosition({ top: Math.max(this.draggableElement.offsetTop, 0), left: 0 });
+      }
+      if (this.draggableElement.offsetLeft >= width(this.boundingElement)) {
+        this.changeDraggablePosition({ top: Math.max(this.draggableElement.offsetTop, 0), left: Math.max(width(this.boundingElement) - this.draggableElement.offsetWidth, 0) });
+      }
+      if (this.draggableElement.offsetTop >= height(this.boundingElement)) {
+        this.changeDraggablePosition({ top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0), left: Math.max(this.draggableElement.offsetLeft, 0) });
+      }
+    },
   },
   watch: {
     hasContext() {
@@ -319,14 +334,11 @@ export default {
     this.boundingElement = document.getElementById('viewer-container');
     this.centeredLeft = this.getCenteredLeft();
     this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
-      if (this.draggableElement.offsetLeft >= width(this.boundingElement)
-          || this.draggableElement.offsetTop >= height(this.boundingElement)) {
-        const left = this.getCenteredLeft();
-        this.changeDraggablePosition({ top: this.defaultTop, left });
-      }
+      this.checkWhereWasDragged();
     });
   },
   directives: {
@@ -410,7 +422,6 @@ export default {
   .q-card-main {
     overflow: auto;
     line-height: inherit;
-    max-height: $main-control-max-height;
     background-color: alpha($faded, 85%);
     padding: 0; /* 0 0 10px 0;*/
   }
