@@ -97,4 +97,11 @@ export default {
    * Indicate if explore map mode is active
    */
   exploreMapMode: false,
+
+  /**
+   * Tree infos
+   */
+  treeSelected: null,
+  treeTicked: [],
+  treeExpanded: [],
 };

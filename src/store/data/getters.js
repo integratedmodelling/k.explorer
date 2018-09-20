@@ -10,6 +10,8 @@ export default {
 
   lasts: state => state.lasts,
 
+  hasTree: state => state.tree.length > 0,
+
   /**
    * Return observations of a viewer
    * If viewer not exists, return empty array

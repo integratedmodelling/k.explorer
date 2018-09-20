@@ -1,6 +1,5 @@
 <template>
-  <div id="kt-container">
-    <div id="kt-tree-div" v-show="tree.length > 0">
+    <div id="kt-container" class="relative-position"  :class="[ hasObservationInfo ? 'with-splitter' : '' ]">
       <div id="kt-tree-container">
         <q-tree
           ref="klabTree"
@@ -8,6 +7,7 @@
           node-key="id"
           :ticked.sync="ticked"
           :selected.sync="selected"
+          :expanded.sync="expanded"
           tick-strategy="strict"
           text-color="white"
           control-color="white"
@@ -15,7 +15,7 @@
           :dark="true"
         >
           <div slot="header-default" slot-scope="prop">
-            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
               <q-tooltip
                 :delay="300"
                 :offset="[0, 5]"
@@ -33,7 +33,7 @@
             <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
           </div>
           <div slot="header-main" slot-scope="prop">
-            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', observationInfo !== null && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
               <q-tooltip
                 :delay="300"
                 :offset="[0, 5]"
@@ -63,14 +63,10 @@
       </q-context-menu>
       -->
     </div>
-    <div id="kt-no-tree" class="q-ma-md text-center text-white" v-show="tree.length === 0">
-      {{ $t('label.noObservation') }}
-    </div>
-  </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import SimpleBar from 'simplebar';
 import 'simplebar/dist/simplebar.css';
@@ -81,6 +77,7 @@ export default {
     return {
       ticked: [],
       selected: null,
+      expanded: [],
       enableContextMenu: false,
       itemActions: [],
       itemObservationId: null,
@@ -96,6 +93,12 @@ export default {
     ]),
     ...mapGetters('view', [
       'observationInfo',
+      'hasObservationInfo',
+    ]),
+    ...mapState('view', [
+      'treeSelected',
+      'treeTicked',
+      'treeExpanded',
     ]),
   },
   methods: {
@@ -159,11 +162,24 @@ export default {
     },
   },
   watch: {
+    treeSelected(value) {
+      if (value !== this.selected) {
+        this.selected = value;
+      }
+    },
+    expanded(expanded) {
+      this.$store.state.view.treeExpanded = expanded;
+    },
     selected(selectedId) {
-      this.selectNode(selectedId);
-      this.selected = null;
+      if (selectedId.indexOf('ff_') === 0) {
+        this.selected = null;
+      } else {
+        this.selectNode(selectedId);
+      }
+      // this.selected = null;
     },
     ticked(newValues, oldValues) {
+      this.$store.state.view.treeTicked = newValues;
       if (oldValues.length === newValues.length) { // nothing change
         return;
       }
@@ -218,7 +234,7 @@ export default {
     },
   },
   mounted() {
-    this.scrollElement = (new SimpleBar(document.getElementById('kt-tree-div'))).getScrollElement();
+    this.scrollElement = (new SimpleBar(document.getElementById('kt-tree-container'))).getScrollElement();
     this.scrollElement.addEventListener('scroll', (event) => {
       if (this.askingForSiblings) {
         event.preventDefault();
@@ -267,6 +283,9 @@ export default {
         }
       }
     });
+    this.selected = this.treeSelected;
+    this.ticked = this.treeTicked;
+    this.expanded = this.treeExpanded;
   },
 };
 </script>
@@ -278,6 +297,12 @@ export default {
   }
   .q-tree-node {
     padding: 0 0 3px 15px;
+  }
+  .q-tree-node-header {
+    margin-top: 0;
+  }
+  #kt-tree-container .q-tree-node-selected {
+    background-color rgba(0, 0, 0, 0.15)
   }
   .q-tree-node-header:before {
     width: 25px;
@@ -305,18 +330,21 @@ export default {
     text-decoration: underline $main-control-yellow dotted
     color $main-control-yellow
   }
+  #kt-container {
+    max-height: $main-control-max-height;
+    padding: 10px 0
+  }
+  #kt-container.with-splitter {
+    max-height: $main-control-max-height - $main-control-spc-height;
+  }
+  .tree-q-tooltip {
+    background-color #333
+  }
   @keyframes flash {
     0% { opacity: 1; }
     25% { opacity: .5; }
     50% { opacity: 1; }
     75% { opacity: .5; }
     100% { opacity: 1; }
-  }
-  #kt-tree-div {
-    max-height: 70vh;
-    padding-bottom: 10px;
-  }
-  .tree-q-tooltip {
-    background-color #333
   }
 </style>

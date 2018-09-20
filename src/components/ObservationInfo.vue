@@ -97,61 +97,64 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  $max-height = 68vh
-  $slider-height = 30px
-  $histogram-height = 20vh
-  $histogram-data-height = 20px
+  $oi-max-height = 100%
+  $oi-slider-height = 30px
+  $oi-histogram-height = 20%
+  $oi-histogram-data-height = 20px
+  #oi-container {
+    height $main-control-max-height - $main-control-spc-height - $main-control-scrollbar
+    padding 10px 0;
+  }
   #oi-scroll-container {
-    height $max-height
+    height $oi-max-height
   }
   #oi-scroll-container.with-slider {
-    height "calc(%s - 30px)" % $max-height
+    height "calc(%s - 30px)" % $oi-max-height
   }
   #oi-scroll-container.with-histogram {
-    height $max-height - $histogram-height
+    height $oi-max-height - $oi-histogram-height
   }
   #oi-scroll-container.with-slider-histogram {
-    height "calc(%s - 30px)" % ($max-height - $histogram-height)
+    height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height)
   }
   #oi-histogram-container {
     width 100%
-    height $histogram-height
+    height $oi-histogram-height
   }
   #oi-histogram {
-    height: "calc(100% - %s)" % $histogram-data-height;
+    height: "calc(100% - %s)" % $oi-histogram-data-height;
     position: relative;
   }
   .oi-histogram {
-    position: absolute;
-    background: #fff;
-    bottom: 0;
+    position absolute
+    bottom 0
+    border-bottom 1px solid #777
   }
   .oi-histogram-col {
     position absolute
     height 100%
-    background #777
   }
   .oi-histogram-col:hover {
-    background #7c7c7c
+    background rgba(119,119,119,.65);
   }
   .oi-histogram-val {
     background #666
     width 100%
     position absolute
     bottom 0
-    box-shadow inset 0px 0px 0px 1px #777
+    box-shadow inset 0px 0px 0px 1px rgba(119,119,119,0.5)
   }
   .oi-histogram-val:hover {
     background #6c6c6c
   }
   #oi-histogram-data {
-    height $histogram-data-height
+    height $oi-histogram-data-height
     padding 5px
     color #fff
     font-size smaller
   }
   #oi-slider {
-    height $slider-height
+    height $oi-slider-height
   }
   .oi-metadata-name {
     color $main-control-yellow

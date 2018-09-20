@@ -1,10 +1,14 @@
 <template>
   <div id="klab-tree-pane">
-    <klab-splitter :margin="0" :hidden="additionalContentType === '' ? 'right' : ''" @close-info="onCloseInfo">
+    <klab-splitter :margin="0" :hidden="hasObservationInfo ? '' : 'right'" @close-info="onCloseInfo">
       <div slot="left-pane">
-        <klab-tree></klab-tree>
+        <klab-tree v-if="hasTree"></klab-tree>
+        <div class="q-ma-md text-center text-white" v-else>
+          {{ $t('label.noObservation') }}
+        </div>
       </div>
       <div slot="right-pane">
+        <!--
         <transition
           appear
           enter-active-class="animated fadeIn"
@@ -12,6 +16,8 @@
         >
           <component :is="additionalContentType"></component>
         </transition>
+         -->
+        <observation-info v-if="hasObservationInfo"></observation-info>
       </div>
     </klab-splitter>
   </div>
@@ -21,20 +27,23 @@
 import KlabTree from 'components/KlabTree.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
 import ObservationInfo from 'components/ObservationInfo.vue';
-import MapInfo from 'components/MapInfo.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'klabTreeContainer',
+  /*
   data() {
     return {
       additionalContentType: '', // 'ObservationInfo' | 'MapInfo'
     };
   },
+  */
   computed: {
+    ...mapGetters('data', [
+      'hasTree',
+    ]),
     ...mapGetters('view', [
       'hasObservationInfo',
-      'exploreMapMode',
     ]),
   },
   methods: {
@@ -42,37 +51,17 @@ export default {
       'resetObservationInfo',
     ]),
     onCloseInfo() {
-      this.additionalContentType = '';
       this.resetObservationInfo();
     },
   },
   mounted() {
   },
   watch: {
-    exploreMapMode() {
-      if (this.exploreMapMode) {
-        this.additionalContentType = 'MapInfo';
-      } else {
-        this.additionalContentType = '';
-      }
-    },
-    hasObservationInfo() {
-      if (!this.hasObservationInfo) {
-        this.additionalContentType = '';
-        return;
-      }
-      // if exploreMap mode is active, nothing to do
-      if (this.exploreMapMode) {
-        return;
-      }
-      this.additionalContentType = 'ObservationInfo';
-    },
   },
   components: {
     KlabTree,
     KlabSplitter,
     ObservationInfo,
-    MapInfo,
   },
 };
 </script>

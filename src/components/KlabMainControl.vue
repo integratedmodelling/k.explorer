@@ -204,8 +204,8 @@ export default {
       draggableConfMain: {
         handle: undefined,
         resetInitialPos: false,
-        boundingElement: undefined,
       },
+      boundingElement: undefined,
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       centeredLeft: this.defaultLeft,
@@ -273,7 +273,7 @@ export default {
     getCenteredLeft() {
       if (typeof this.draggableElement !== 'undefined' && !this.hasContext) {
         const elWidth = width(this.draggableElement);
-        const contWidth = width(this.draggableConfMain.boundingElement);
+        const contWidth = width(this.boundingElement);
         return (contWidth - elWidth) / 2;
       }
       return this.defaultLeft;
@@ -315,14 +315,15 @@ export default {
   mounted() {
     this.draggableElement = document.getElementById('mc-q-card');
     this.draggableConfMain.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
-    this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
+    // this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
+    this.boundingElement = document.getElementById('viewer-container');
     this.centeredLeft = this.getCenteredLeft();
     this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
     this.$eventBus.$on('map-size-changed', () => {
       this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
-      if (this.draggableElement.offsetLeft >= width(this.draggableConfMain.boundingElement)
-          || this.draggableElement.offsetTop >= height(this.draggableConfMain.boundingElement)) {
+      if (this.draggableElement.offsetLeft >= width(this.boundingElement)
+          || this.draggableElement.offsetTop >= height(this.boundingElement)) {
         const left = this.getCenteredLeft();
         this.changeDraggablePosition({ top: this.defaultTop, left });
       }
@@ -409,7 +410,7 @@ export default {
   .q-card-main {
     overflow: auto;
     line-height: inherit;
-    max-height: 75vh;
+    max-height: $main-control-max-height;
     background-color: alpha($faded, 85%);
     padding: 0; /* 0 0 10px 0;*/
   }

@@ -168,6 +168,7 @@ export default {
 };
 </script>
 <style lang="stylus">
+  @import '~variables'
   .vue-splitter {
     height: inherit;
     display: flex;
@@ -175,7 +176,7 @@ export default {
     .splitter-pane {
       height: inherit;
       overflow: hidden;
-      padding: 5px 0;
+      padding: 0;
     }
     .left-pane {
       white-space: nowrap;
@@ -195,5 +196,6 @@ export default {
   .splitter-controllers {
     background-color: #000;
     text-align: center;
+    height $main-control-spc-height;
   }
 </style>

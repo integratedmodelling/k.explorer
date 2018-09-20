@@ -14,6 +14,9 @@ export default {
     state.dataViewers.splice(0, state.dataViewers.length);
     state.lastViewerId = 0;
     state.contextGeometry = contextGeometry;
+    state.treeExpanded = [];
+    state.treeTicked = [];
+    state.treeSelected = null;
   },
 
   /**
@@ -118,10 +121,11 @@ export default {
   },
 
   SET_OBSERVATION_INFO: (state, observation) => {
-    if (observation !== null && (state.observationInfo === null || state.observationInfo.id !== observation.id)) {
-      state.observationInfo = observation;
+    state.observationInfo = observation;
+    if (observation !== null) {
+      state.treeSelected = observation.id;
     } else {
-      state.observationInfo = null;
+      state.treeSelected = null;
     }
   },
 

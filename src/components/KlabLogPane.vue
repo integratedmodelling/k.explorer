@@ -26,6 +26,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
+import SimpleBar from 'simplebar';
+import 'simplebar/dist/simplebar.css';
 
 const LOG_ICON_COLORS = {
   [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'black' },
@@ -66,7 +68,7 @@ export default {
     },
   },
   mounted() {
-    // this.scrollBar = new SimpleBar(document.getElementById('klab-log-pane'));
+    this.scrollBar = new SimpleBar(document.getElementById('klab-log-pane'));
   },
 
 };
@@ -74,13 +76,12 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  #klab-log-pane .q-item.log-item {
-    font-size: 10px;
-  }
-  #klab-log-pane .log-item .q-item-side {
-    min-width auto;
-  }
-  #klab-log-pane .q-list-dense > .q-item {
-    padding-left: 10px;
-  }
+  #klab-log-pane
+    max-height: $main-control-max-height;
+    .q-item.log-item
+      font-size 10px
+    .log-item .q-item-side
+      min-width auto
+    .q-list-dense > .q-item
+      padding-left 10px
 </style>

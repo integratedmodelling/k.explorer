@@ -45,7 +45,6 @@ import { mapGetters, mapActions } from 'vuex';
 import { VIEWERS } from 'shared/Constants';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
-import KlabLog from 'components/KlabLog.vue';
 import DataViewer from 'components/DataViewer.vue';
 import ReportViewer from 'components/ReportViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
@@ -102,7 +101,6 @@ export default {
   },
   components: {
     KlabMainControl,
-    KlabLog,
     DataViewer,
     ReportViewer,
     KlabSpinner,
