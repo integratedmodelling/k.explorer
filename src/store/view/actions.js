@@ -187,12 +187,6 @@ export default {
 
   setObservationInfo: ({ commit }, observation) => {
     if (typeof observation !== 'undefined' && observation !== null) {
-      /*
-      let metadataInfo = {};
-      if (Object.keys(metadata).length) {
-        metadataInfo = Object.entries(metadata).map(([key, value]) => ({ key, value }));
-      }
-      */
       commit('SET_OBSERVATION_INFO', observation);
     }
   },

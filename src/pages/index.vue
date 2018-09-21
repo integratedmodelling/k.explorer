@@ -16,7 +16,7 @@
         v-model="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        :content-css="{'background-color': `rgba(${hexToRgb(modalColor)}, 0.3)`}"
+        :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.3)`}"
         :content-classes="['text-center','modal-borders', 'no-padding', 'no-margin']"
     >
       <div class="bg-opaque-white modal-borders no-padding no-margin">

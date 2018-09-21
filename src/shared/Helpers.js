@@ -1,4 +1,4 @@
-/* eslint-disable object-curly-newline,prefer-destructuring */
+/* eslint-disable object-curly-newline,prefer-destructuring,no-multi-spaces */
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
@@ -411,6 +411,30 @@ const Helpers = {
       hex,
       color,
     };
+  },
+
+  /**
+   * Copy text to clipboard
+   * Code from Angelos Chalaris @see https://hackernoon.com/@chalarangelo
+   * @param str string to copy
+   */
+  copyToClipboard: (str) => {
+    const el = document.createElement('textarea');
+    el.value = str;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    const selected = document.getSelection().rangeCount > 0
+      ? document.getSelection().getRangeAt(0)
+      : false;
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    if (selected) {
+      document.getSelection().removeAllRanges();
+      document.getSelection().addRange(selected);
+    }
   },
 
   /**

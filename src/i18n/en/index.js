@@ -32,6 +32,7 @@ export default {
     noTime: 'no time',
     emptyReport: '<div id="mc-empty-report">Empty report</div>',
     noLoadedReport: 'No report loaded',
+    copiedToClipboard: 'Copied to clipboard',
   },
   tooltips: {
     treePane: 'View tree',

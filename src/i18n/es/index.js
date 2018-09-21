@@ -32,6 +32,7 @@ export default {
     noTime: 'sin información',
     emptyReport: 'Report vacío',
     noLoadedReport: 'No se ha cargado ningun report',
+    copiedToClipboard: 'Copiado',
   },
   tooltips: {
     treePane: 'Ver árbol',

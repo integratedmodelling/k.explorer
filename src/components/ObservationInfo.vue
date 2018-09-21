@@ -15,7 +15,8 @@
     <div id="oi-scroll-container" :class="metadataClass">
       <div id="oi-scroll-metadata-container">
         <div id="oi-metadata" v-for="(value, name) in observationInfo.metadata" :key="name">
-          <div class="oi-metadata-name">{{ name }}</div><div class="oi-metadata-value">{{ value }}</div>
+          <div class="oi-metadata-name">{{ name }}</div>
+          <div class="oi-metadata-value" @dblclick="copyToClipboard(value)">{{ value }}</div>
         </div>
       </div>
     </div>
@@ -40,6 +41,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
+import { Helpers } from 'shared/Helpers';
 
 import 'simplebar/dist/simplebar.css';
 
@@ -66,7 +68,9 @@ export default {
         this.histogramIndex = value;
       },
       get() {
-        return this.histogramIndex === -1 ? this.$t('label.noHistogramValueSelected') : `${this.observationInfo.dataSummary.categories[this.histogramIndex]}: ${this.observationInfo.dataSummary.histogram[this.histogramIndex]}`;
+        return this.histogramIndex === -1
+          ? this.$t('label.noHistogramValueSelected')
+          : `${this.observationInfo.dataSummary.categories[this.histogramIndex]}: ${this.observationInfo.dataSummary.histogram[this.histogramIndex]}`;
       },
     },
     metadataClass() {
@@ -85,6 +89,14 @@ export default {
   methods: {
     getHeight(value) {
       return value * 100 / this.maxHistogramValue;
+    },
+    copyToClipboard(value) {
+      Helpers.copyToClipboard(value);
+      this.$q.notify({
+        message: this.$t('messages.copiedToClipboard'),
+        type: 'info',
+        timeout: 500,
+      });
     },
   },
   watch: {
