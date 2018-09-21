@@ -21,7 +21,7 @@
       </div>
     </div>
     <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }">
-      <div id="oi-histogram" @mouseout="histogramIndex = -1">
+      <div id="oi-histogram" v-if="observationInfo.dataSummary.histogram.length > 0" @mouseout="histogramIndex = -1">
         <div
           class="oi-histogram-col"
           v-for="(data, index) in observationInfo.dataSummary.histogram"
@@ -33,7 +33,12 @@
           </div>
         </div>
       </div>
-      <div id="oi-histogram-data">{{ histogramCategoryLabel }}</div>
+      <div id="oi-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
+      <div id="oi-histogram-info">
+        <div id="oi-histogram-min" class="oi-histogram-info">{{ histogramMin }}</div>
+        <div id="oi-histogram-data" class="oi-histogram-info" v-html="histogramCategoryContent"></div>
+        <div id="oi-histogram-max" class="oi-histogram-info">{{ histogramMax }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -63,16 +68,33 @@ export default {
     histogramWidth() {
       return 100 / this.observationInfo.dataSummary.histogram.length;
     },
-    histogramCategoryLabel: {
+    histogramCategoryContent: {
       set(value) {
         this.histogramIndex = value;
       },
       get() {
-        return this.histogramIndex === -1
-          ? this.$t('label.noHistogramValueSelected')
-          : `${this.observationInfo.dataSummary.categories[this.histogramIndex]}: ${this.observationInfo.dataSummary.histogram[this.histogramIndex]}`;
+        if (this.observationInfo.dataSummary.histogram.length === 0) {
+          return this.$t('label.noHistogramValues');
+        }
+        if (this.histogramIndex === -1) {
+          return this.$t('label.noHistogramValueSelected');
+        }
+        return `${this.observationInfo.dataSummary.categories[this.histogramIndex]}: <span>${this.observationInfo.dataSummary.histogram[this.histogramIndex]}</span>`;
       },
     },
+    histogramMin() {
+      if (this.observationInfo.dataSummary.minValue === 'NaN') {
+        return '';
+      }
+      return Math.round(this.observationInfo.dataSummary.minValue * 100) / 100;
+    },
+    histogramMax() {
+      if (this.observationInfo.dataSummary.maxValue === 'NaN') {
+        return '';
+      }
+      return Math.round(this.observationInfo.dataSummary.maxValue * 100) / 100;
+    },
+
     metadataClass() {
       if (!this.observationInfo.visible) {
         if (this.observationInfo.dataSummary === null) {
@@ -112,7 +134,8 @@ export default {
   $oi-max-height = 100%
   $oi-slider-height = 30px
   $oi-histogram-height = 20%
-  $oi-histogram-data-height = 20px
+  $oi-histogram-info-height = 10px
+  $oi-histogram-minmax-width = 45px
   #oi-container {
     height $main-control-max-height - $main-control-spc-height - $main-control-scrollbar
     padding 10px 0;
@@ -129,13 +152,37 @@ export default {
   #oi-scroll-container.with-slider-histogram {
     height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height)
   }
+  #oi-slider {
+    height $oi-slider-height
+  }
+  .oi-metadata-name {
+    color $main-control-yellow
+    text-shadow 0 0 1px #666
+    padding 0 0 2px 5px
+  }
+  .oi-metadata-value {
+    color white
+    margin 0 5px 5px 5px
+    background-color #666
+    box-shadow inset 0px 0px 0px 1px #666
+    padding 2px 0 2px 5px
+  }
+  #oi-slider .q-slider {
+    padding 0 10px 0 5px
+  }
   #oi-histogram-container {
     width 100%
     height $oi-histogram-height
   }
-  #oi-histogram {
-    height: "calc(100% - %s)" % $oi-histogram-data-height;
-    position: relative;
+  #oi-histogram, #oi-histogram-nodata {
+    height "calc(100% - %s)" % $oi-histogram-info-height
+    position relative;
+  }
+  #oi-histogram-nodata {
+    color #fff
+    text-align center
+    background-color rgba(119,119,119,.65)
+    padding-top 20%
   }
   .oi-histogram {
     position absolute
@@ -159,28 +206,28 @@ export default {
   .oi-histogram-val:hover {
     background #6c6c6c
   }
-  #oi-histogram-data {
-    height $oi-histogram-data-height
-    padding 5px
+  #oi-histogram-info {
+    position: relative
+  }
+  .oi-histogram-info {
+    height $oi-histogram-info-height
     color #fff
-    font-size smaller
+    text-align center
+    font-size xx-small
+    display inline-block
+    white-space nowrap
+    overflow hidden
+    padding 2px
   }
-  #oi-slider {
-    height $oi-slider-height
+  #oi-histogram-min, #oi-histogram-max {
+    width $oi-histogram-minmax-width
   }
-  .oi-metadata-name {
+  #oi-histogram-data {
+    width "calc(100% - %s)" % ($oi-histogram-minmax-width * 2)
+    border-left 1px solid #7A7A7A
+    border-right 1px solid #7A7A7A
+  }
+  #oi-histogram-data span {
     color $main-control-yellow
-    text-shadow 0 0 1px #666
-    padding 0 0 2px 5px
-  }
-  .oi-metadata-value {
-    color white
-    margin 0 5px 5px 5px
-    background-color #666
-    box-shadow inset 0px 0px 0px 1px #666
-    padding 2px 0 2px 5px
-  }
-  .q-slider {
-    padding 0 10px 0 5px
   }
 </style>

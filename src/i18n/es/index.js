@@ -21,6 +21,8 @@ export default {
     logTab: 'Log',
     treeTab: 'Árbol',
     noHistogramValueSelected: 'Seleccionar rango',
+    noHistogramData: '',
+    noHistogramValues: 'No data',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',

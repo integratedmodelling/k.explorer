@@ -33,6 +33,8 @@ export default {
     emptyReport: 'Report vuoto',
     noLoadedReport: 'Non si è caricato nessun report',
     copiedToClipboard: 'Copiato',
+    noHistogramData: '',
+    noHistogramValues: 'No data',
   },
   tooltips: {
     treePane: 'Albero',
