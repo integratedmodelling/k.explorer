@@ -1,7 +1,8 @@
 <template>
-    <div id="kt-container" class="relative-position"  :class="[ hasObservationInfo ? 'with-splitter' : '' ]">
-      <div id="kt-tree-container">
+    <div id="kt-container" class="relative-position" :class="[ hasObservationInfo ? 'with-splitter' : '' ]">
+      <div id="kt-tree-container" class="simplebar-vertical-only">
         <q-tree
+          id="kt-tree"
           ref="klabTree"
           :nodes="tree"
           node-key="id"
@@ -18,11 +19,11 @@
             <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
               <q-tooltip
                 :delay="300"
-                :offset="[0, 5]"
+                :offset="[0, 8]"
                 self="top left"
-                anchor="bottom right"
+                anchor="bottom middle"
                 class="tree-q-tooltip"
-              >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+              >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
             </span>
             <q-chip class="node-chip transparent" small dense text-color="grey-9">
               {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
@@ -38,9 +39,9 @@
                 :delay="300"
                 :offset="[0, 5]"
                 self="top left"
-                anchor="bottom right"
+                anchor="bottom middle"
                 class="tree-q-tooltip"
-              >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+              >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
             </span>
             <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
           </div>
@@ -171,7 +172,7 @@ export default {
       this.$store.state.view.treeExpanded = expanded;
     },
     selected(selectedId) {
-      if (selectedId.indexOf('ff_') === 0) {
+      if (selectedId !== null && selectedId.indexOf('ff_') === 0) {
         this.selected = null;
       } else {
         this.selectNode(selectedId);
@@ -331,11 +332,13 @@ export default {
     color $main-control-yellow
   }
   #kt-container {
-    max-height: $main-control-max-height;
+    /* removed 30px of padding and scrollbar padding-bottom */
+    max-height: "calc(%s - 30px)" % $main-control-max-height;
     padding: 10px 0
   }
   #kt-container.with-splitter {
-    max-height: $main-control-max-height - $main-control-spc-height;
+    /* removed 30px of padding and scrollbar padding-bottom */
+    max-height: "calc(%s - 30px)" % ($main-control-max-height - $main-control-spc-height);
   }
   .tree-q-tooltip {
     background-color #333
@@ -346,5 +349,14 @@ export default {
     50% { opacity: 1; }
     75% { opacity: .5; }
     100% { opacity: 1; }
+  }
+  [data-simplebar] {
+    padding-bottom: 10px;
+  }
+  #kt-container .q-tree-node-collapsible {
+    overflow-x: hidden;
+  }
+  #kt-container .q-tree-children {
+    margin-bottom: 4px;
   }
 </style>

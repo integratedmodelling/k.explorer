@@ -18,7 +18,11 @@
   <body>
     <% if (!htmlWebpackPlugin.options.ctx.mode.electron) { %>
       <noscript>
-        This is your fallback content in case JavaScript fails to load.
+        <style>
+          [data-simplebar] {
+            overflow: auto;
+          }
+        </style>
       </noscript>
     <% } %>
 

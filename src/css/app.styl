@@ -97,4 +97,21 @@ body .ol-zoom
 
 .bg-mc-red
   background $main-control-red
-
+/* Permit use only vertical scrollbar */
+.simplebar-vertical-only
+  .simplebar-track.horizontal
+    display: none !important;
+  .simplebar-scroll-content
+    padding-bottom: 0 !important;
+    overflow-x: hidden
+  .simplebar-content
+    margin-bottom: 0 !important;
+/* Permit use only horizontal scrollbar */
+.simplebar-horizontal-only
+  .simplebar-track.vertical
+    display: none !important;
+  .simplebar-scroll-content
+    padding-right: 0 !important;
+    overflow-y: hidden
+  .simplebar-content
+    margin-right: 0 !important;
