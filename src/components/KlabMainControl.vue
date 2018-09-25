@@ -439,7 +439,6 @@ export default {
   #mc-actions .separator {
     width 2px
     height 60%
-    background-color #fff
     position absolute
     top 20%
     border-left 1px solid #333

@@ -20,8 +20,8 @@
         </div>
       </div>
     </div>
-    <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }">
-      <div id="oi-histogram" v-if="observationInfo.dataSummary.histogram.length > 0" @mouseout="histogramIndex = -1">
+    <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }"  @mouseleave="histogramIndex = -1">
+      <div id="oi-histogram" v-if="observationInfo.dataSummary.histogram.length > 0">
         <div
           class="oi-histogram-col"
           v-for="(data, index) in observationInfo.dataSummary.histogram"
@@ -35,9 +35,16 @@
       </div>
       <div id="oi-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
       <div id="oi-histogram-info">
-        <div id="oi-histogram-min" class="oi-histogram-info">{{ histogramMin }}</div>
-        <div id="oi-histogram-data" class="oi-histogram-info" v-html="histogramCategoryContent"></div>
-        <div id="oi-histogram-max" class="oi-histogram-info">{{ histogramMax }}</div>
+        <div id="oi-histogram-min" class="oi-histogram-info" @mouseover="tooltipIt($event, 'q-hmin')">{{ histogramMin }}<q-tooltip v-show="ellipsed.includes('q-hmin')" class="oi-tooltip">{{ histogramMin }}</q-tooltip></div>
+        <template v-if="!hasHistogram"><div class="oi-histogram-data oi-histogram-info">{{ $t('label.noHistogramValues') }}</div></template>
+        <template v-else-if="histogramIndex === -1"><div class="oi-histogram-data oi-histogram-info">{{ $t('label.noHistogramValueSelected') }}</div></template>
+        <template v-else>
+          <div id="oi-histogram-data" class="oi-histogram-info oi-histogram-data" @mouseover="tooltipIt($event, 'q-hdata')">
+            {{ histogramDesc.category }}: <em>{{ histogramDesc.value }}</em>
+            <q-tooltip class="oi-tooltip" v-show="ellipsed.includes('q-hdata')">{{ histogramDesc.category }}: <em>{{ histogramDesc.value }}</em></q-tooltip>
+          </div>
+        </template>
+        <div id="oi-histogram-max" class="oi-histogram-info" @mouseover="tooltipIt($event, 'q-hmax')">{{ histogramMax }}<q-tooltip v-show="ellipsed.includes('q-hmax')" class="oi-tooltip">{{ histogramMax }}</q-tooltip></div>
       </div>
     </div>
   </div>
@@ -56,31 +63,21 @@ export default {
     return {
       scrollBar: undefined,
       histogramIndex: -1,
+      ellipsed: [],
     };
   },
   computed: {
     ...mapGetters('view', [
       'observationInfo',
     ]),
+    hasHistogram() {
+      return this.observationInfo.dataSummary.histogram.length !== 0;
+    },
     maxHistogramValue() {
       return Math.max.apply(null, this.observationInfo.dataSummary.histogram);
     },
     histogramWidth() {
       return 100 / this.observationInfo.dataSummary.histogram.length;
-    },
-    histogramCategoryContent: {
-      set(value) {
-        this.histogramIndex = value;
-      },
-      get() {
-        if (this.observationInfo.dataSummary.histogram.length === 0) {
-          return this.$t('label.noHistogramValues');
-        }
-        if (this.histogramIndex === -1) {
-          return this.$t('label.noHistogramValueSelected');
-        }
-        return `${this.observationInfo.dataSummary.categories[this.histogramIndex]}: <span>${this.observationInfo.dataSummary.histogram[this.histogramIndex]}</span>`;
-      },
     },
     histogramMin() {
       if (this.observationInfo.dataSummary.minValue === 'NaN') {
@@ -94,7 +91,12 @@ export default {
       }
       return Math.round(this.observationInfo.dataSummary.maxValue * 100) / 100;
     },
-
+    histogramDesc() {
+      return {
+        category: this.observationInfo.dataSummary.categories[this.histogramIndex],
+        value: this.observationInfo.dataSummary.histogram[this.histogramIndex],
+      };
+    },
     metadataClass() {
       if (!this.observationInfo.visible) {
         if (this.observationInfo.dataSummary === null) {
@@ -120,6 +122,13 @@ export default {
         timeout: 500,
       });
     },
+    tooltipIt(event, ref) {
+      if (event.target.offsetWidth < event.target.scrollWidth) {
+        this.ellipsed.push(ref);
+      } else {
+        this.ellipsed.splice(this.ellipsed.indexOf(ref), 1);
+      }
+    },
   },
   watch: {
   },
@@ -134,11 +143,11 @@ export default {
   $oi-max-height = 100%
   $oi-slider-height = 30px
   $oi-histogram-height = 20%
-  $oi-histogram-info-height = 10px
-  $oi-histogram-minmax-width = 45px
+  $oi-histogram-info-height = 30px
+  $oi-histogram-minmax-width = 50px
   #oi-container {
     height $main-control-max-height - $main-control-spc-height - $main-control-scrollbar
-    padding 10px 0;
+    padding 10px 0 0 0;
   }
   #oi-scroll-container {
     height $oi-max-height
@@ -197,7 +206,7 @@ export default {
     background rgba(119,119,119,.65);
   }
   .oi-histogram-val {
-    background #666
+    background #000
     width 100%
     position absolute
     bottom 0
@@ -207,27 +216,43 @@ export default {
     background #6c6c6c
   }
   #oi-histogram-info {
-    position: relative
+
   }
   .oi-histogram-info {
-    height $oi-histogram-info-height
     color #fff
     text-align center
-    font-size xx-small
+    font-size small
+    padding 2px 0
     display inline-block
-    white-space nowrap
     overflow hidden
-    padding 2px
+    white-space nowrap
+    vertical-align: middle;
+    height: $oi-histogram-info-height
+    line-height: $oi-histogram-info-height
+    text-overflow: ellipsis;
   }
   #oi-histogram-min, #oi-histogram-max {
     width $oi-histogram-minmax-width
   }
-  #oi-histogram-data {
-    width "calc(100% - %s)" % ($oi-histogram-minmax-width * 2)
-    border-left 1px solid #7A7A7A
-    border-right 1px solid #7A7A7A
+    /*
+  #oi-histogram-min {
+    border-right 1px solid #696969
   }
-  #oi-histogram-data span {
+  #oi-histogram-max {
+    border-left 1px solid #7e7e7e
+  }
+  */
+  .oi-histogram-data {
+    width "calc(100% - %s)" % ($oi-histogram-minmax-width * 2)
+    border-left 1px solid #696969
+    border-right 1px solid #696969
+  }
+  #oi-histogram-data em, .oi-tooltip em {
     color $main-control-yellow
+    transition none
+    font-style normal
+  }
+  .oi-tooltip {
+    background-color #444
   }
 </style>

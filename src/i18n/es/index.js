@@ -20,9 +20,9 @@ export default {
     itemCounter: '{loaded} de {total}',
     logTab: 'Log',
     treeTab: 'Árbol',
-    noHistogramValueSelected: 'Seleccionar rango',
+    noHistogramValueSelected: '',
     noHistogramData: '',
-    noHistogramValues: 'No data',
+    noHistogramValues: 'No hay datos',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',
