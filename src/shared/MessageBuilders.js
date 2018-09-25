@@ -84,6 +84,7 @@ export const MESSAGES_BUILDERS = {
     contextId = null,
     matchTypes = null,
     cancelSearch = false,
+    defaultResults = false,
     maxResults,
     session,
   }) => buildMessage(
@@ -96,6 +97,7 @@ export const MESSAGES_BUILDERS = {
       queryString,
       requestId,
       cancelSearch,
+      defaultResults,
       maxResults,
     },
     session,
