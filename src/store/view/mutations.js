@@ -129,6 +129,7 @@ export default {
     state.mapSelection = {
       pixelSelected: null,
       layerSelected: null,
+      value: null,
     };
     state.observationInfo = observation;
   },
@@ -142,18 +143,19 @@ export default {
    * @property layerSelected
    * @constructor
    */
-  SET_MAP_SELECTION: (state, { pixelSelected, layerSelected }) => {
+  SET_MAP_SELECTION: (state, { pixelSelected, layerSelected, value = null }) => {
     if (pixelSelected === null || layerSelected === null) {
       state.mapSelection = {
         pixelSelected: null,
         layerSelected: null,
+        value: null,
       };
     } else if (state.observationInfo === null) {
       console.warn('Try to set pixel and layer without observationInfo, will be skipped');
     } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {
       console.warn('Try to set pixel and layer with different observationInfo id, will be skipped');
     } else {
-      state.mapSelection = { pixelSelected, layerSelected };
+      state.mapSelection = { pixelSelected, layerSelected, value };
     }
   },
 };

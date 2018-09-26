@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { Helpers, Constants } from 'shared/Helpers';
 import { VIEWERS } from 'shared/Constants';
+import { transform } from 'ol/proj';
 
 export default {
   addToKexplorerLog: ({ commit }, { type, payload }) => {
@@ -191,8 +192,22 @@ export default {
     }
   },
 
-  setMapSelection: ({ commit }, { pixelSelected, layerSelected }) => {
-    commit('SET_MAP_SELECTION', { pixelSelected, layerSelected });
+  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected }) => {
+    if (pixelSelected !== null) {
+      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${state.observationInfo.id}`;
+      const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
+      Helpers.getAxiosContent(`pv_${state.observationInfo.id}`, url, {
+        format: 'SCALAR',
+        locator: `S0(1){latlon=[${coordinates[0]},${coordinates[1]}]}`,
+      }, (response, callback) => {
+        let value = 'No value';
+        if (response && response.data) {
+          value = response.data;
+        }
+        commit('SET_MAP_SELECTION', { pixelSelected, layerSelected, value });
+        callback();
+      });
+    }
   },
 
   resetObservationInfo: ({ commit }) => {

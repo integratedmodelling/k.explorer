@@ -24,6 +24,7 @@
       <div id="oi-pixelinfo-map"></div>
       <div id="oi-pixel-h" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
       <div id="oi-pixel-v" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
+      <div id="oi-pixelinfo-value" v-show="isShowMapInfo()">{{ mapSelection.value }}</div>
     </div>
     <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }"  @mouseleave="histogramIndex = -1">
       <div id="oi-histogram" v-if="observationInfo.dataSummary.histogram.length > 0">
@@ -39,6 +40,16 @@
         </div>
       </div>
       <div id="oi-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
+      <div id="oi-colormap" v-show="observationInfo.colormap !== null">
+        <div
+          class="oi-colormap-col"
+          v-for="(data, index) in observationInfo.colormap.colors"
+          :key="index"
+          :style="{ width:`${ colormapWidth }%`, left: `${colormapWidth * index}%`, 'background-color': data  }"
+          @mouseover="colormapIndex = index"
+        ><q-tooltip>{{ observationInfo.colormap.labels[index] }}</q-tooltip>
+        </div>
+      </div>
       <div id="oi-histogram-info">
         <div id="oi-histogram-min" class="oi-histogram-info" @mouseover="tooltipIt($event, 'q-hmin')">{{ histogramMin }}<q-tooltip v-show="ellipsed.includes('q-hmin')" class="oi-tooltip">{{ histogramMin }}</q-tooltip></div>
         <template v-if="!hasHistogram"><div class="oi-histogram-data oi-histogram-info">{{ $t('label.noHistogramValues') }}</div></template>
@@ -107,6 +118,9 @@ export default {
         value: this.observationInfo.dataSummary.histogram[this.histogramIndex],
       };
     },
+    colormapWidth() {
+      return 100 / this.observationInfo.colormap.colors.length;
+    },
   },
   methods: {
     isShowMapInfo() {
@@ -142,6 +156,9 @@ export default {
       }
       if (this.exploreMode) {
         finalClasses.push('with-pixelinfo');
+      }
+      if (this.observationInfo.colormap !== null) {
+        finalClasses.push('with-colormap');
       }
       return finalClasses;
     },
@@ -186,9 +203,11 @@ export default {
   $oi-max-height = 100%
   $oi-slider-height = 30px
   $oi-pixelinfo-height = 20%
+  $oi-pixelvalue-height = 20px
   $oi-histogram-height = 20%
   $oi-histogram-info-height = 30px
   $oi-histogram-minmax-width = 50px
+  $oi-colormap-height = 30px
   #oi-container {
     height $main-control-max-height - $main-control-spc-height - $main-control-scrollbar
     padding 10px 0 0 0;
@@ -208,8 +227,20 @@ export default {
   #oi-scroll-container.with-slider.with-pixelinfo {
     height "calc(%s - 30px)" % ($oi-max-height - $oi-pixelinfo-height)
   }
+  #oi-scroll-container.with-slider.with-colormap {
+    height "calc(%s - 60px)" % ($oi-max-height)
+  }
+  #oi-scroll-container.with-slider.with-pixelinfo.with-colormap {
+    height "calc(%s - 60px)" % ($oi-max-height - $oi-pixelinfo-height)
+  }
   #oi-scroll-container.with-slider.with-histogram.with-pixelinfo {
     height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height - $oi-pixelinfo-height)
+  }
+  #oi-scroll-container.with-slider.with-histogram.with-colormap {
+    height "calc(%s - 60px)" % ($oi-max-height - $oi-histogram-height)
+  }
+  #oi-scroll-container.with-slider.with-histogram.with-pixelinfo.with-colormap {
+    height "calc(%s - 60px)" % ($oi-max-height - $oi-histogram-height - $oi-pixelinfo-height )
   }
   #oi-slider {
     height $oi-slider-height
@@ -262,6 +293,16 @@ export default {
     height 3px
     width calc(100% - 10px)
   }
+  #oi-pixelinfo-value {
+    position absolute
+    bottom 5px
+    height $oi-pixelvalue-height
+    line-height $oi-pixelvalue-height
+    padding 0 5px;
+    width calc(100% - 10px)
+    color white
+    background-color rgba(0, 0, 0, 0.8)
+  }
   #oi-histogram-container {
     width 100%
     height $oi-histogram-height
@@ -298,8 +339,15 @@ export default {
   .oi-histogram-val:hover {
     background rgba(0, 0, 0, 0.7)
   }
-  #oi-histogram-info {
-
+  #oi-colormap {
+    height $oi-colormap-height
+    position: relative
+  }
+  .oi-colormap-col {
+    position absolute
+    height 100%
+    background-color #fff
+    box-shadow inset 0px 0px 0px 1px rgba(119,119,119,0.5)
   }
   .oi-histogram-info {
     color #fff
@@ -317,14 +365,6 @@ export default {
   #oi-histogram-min, #oi-histogram-max {
     width $oi-histogram-minmax-width
   }
-    /*
-  #oi-histogram-min {
-    border-right 1px solid #696969
-  }
-  #oi-histogram-max {
-    border-left 1px solid #7e7e7e
-  }
-  */
   .oi-histogram-data {
     width "calc(100% - %s)" % ($oi-histogram-minmax-width * 2)
     border-left 1px solid #696969

@@ -220,6 +220,28 @@ const Helpers = {
     return geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   },
 
+  getAxiosContent(uid, url, params, callback) {
+    store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: uid }, { root: true });
+    axiosInstance.get(url, {
+      params,
+    })
+      .then((response) => {
+        if (response) {
+          callback(response, () => {
+            store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: uid }, { root: true });
+          });
+        }
+      })
+      .catch((error) => {
+        store.dispatch('view/setSpinner', {
+          ...Constants.SPINNER_ERROR,
+          owner: uid,
+          errorMessage: error,
+        }, { root: true });
+        throw error;
+      });
+  },
+
   /**
    * Build a layer object. If needed ask for projection (reason for async function)
    * @param observation the observations: needed for projection ad type of representation
@@ -302,7 +324,13 @@ const Helpers = {
                   const image = imageWrapper.getImage();
                   image.src = reader.result;
                   store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: src }, { root: true });
-                  // console.log(reader.result);
+                  // load colormap if necesary
+                  Helpers.getAxiosContent(`cm_${observation.id}`, url, { format: 'COLORMAP' }, (colormapResponse, colormapCallback) => {
+                    if (colormapResponse && colormapResponse.data) {
+                      observation.colormap = colormapResponse.data;
+                    }
+                    colormapCallback();
+                  });
                 };
                 reader.onerror = (error) => {
                   store.dispatch('view/setSpinner', {

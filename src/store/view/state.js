@@ -94,6 +94,7 @@ export default {
   mapSelection: {
     pixelSelected: null,
     layerSelected: null,
+    value: null,
   },
 
   /**

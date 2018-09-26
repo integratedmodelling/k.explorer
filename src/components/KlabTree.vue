@@ -178,7 +178,7 @@ export default {
         } else {
           this.selectNode(selectedId);
         }
-      } else if (unselectedId !== null && unselectedId === this.observationInfo.id) {
+      } else if (this.observationInfo !== null && unselectedId !== null && unselectedId === this.observationInfo.id) {
         // if we has select the actual observationInfo and it state is selected, we don't want to unselect it
         this.selectNode(unselectedId);
         this.selected = unselectedId;

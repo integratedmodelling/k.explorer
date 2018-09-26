@@ -79,6 +79,7 @@ export default {
       observation.top = false;
       observation.zIndex = 0;
       observation.layerOpacity = 1;
+      observation.colormap = null;
       // add observation
       commit('ADD_OBSERVATION', observation);
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
