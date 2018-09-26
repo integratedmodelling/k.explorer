@@ -1,8 +1,6 @@
 <template>
   <div id="mc-report-wrapper" class="full-width">
-    <!-- <div id="mc-report-container"> -->
-      <div id="mc-report-content" v-html="report"></div>
-    <!-- </div> -->
+    <div id="mc-report-content" v-html="report"></div>
   </div>
 </template>
 
@@ -19,7 +17,7 @@ export default {
   data() {
     return {
       report: this.$t('messages.noLoadedReport'),
-      scrollElement: undefined,
+      scrollBar: undefined,
     };
   },
   computed: {
@@ -55,16 +53,23 @@ export default {
       if (!this._inactive) {
         this.loadReport();
       }
+      // this.scrollBar.recalculate();
     },
   },
   activated() {
     this.loadReport();
   },
   mounted() {
-    // this.scrollElement = (new SimpleBar(document.getElementById('mc-report-container'))).getScrollElement();
+    // this.scrollBar = new SimpleBar(document.getElementById('mc-report-content'));
   },
 };
 </script>
 
-<style>
+<style lang="stylus">
+#mc-report-wrapper {
+
+}
+#mc-report-content {
+  overflow auto
+}
 </style>
