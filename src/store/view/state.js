@@ -91,7 +91,10 @@ export default {
    * More info content
    */
   observationInfo: null,
-  mapInfo: null,
+  mapSelection: {
+    pixelSelected: null,
+    layerSelected: null,
+  },
 
   /**
    * Indicate if explore map mode is active

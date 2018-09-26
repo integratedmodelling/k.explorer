@@ -50,6 +50,8 @@ import ReportViewer from 'components/ReportViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 
 import { colors } from 'quasar';
+import 'ol/ol.css';
+import 'simplebar/dist/simplebar.css';
 
 export default {
   /* eslint-disable object-shorthand */

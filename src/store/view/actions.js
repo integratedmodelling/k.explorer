@@ -190,6 +190,11 @@ export default {
       commit('SET_OBSERVATION_INFO', observation);
     }
   },
+
+  setMapSelection: ({ commit }, { pixelSelected, layerSelected }) => {
+    commit('SET_MAP_SELECTION', { pixelSelected, layerSelected });
+  },
+
   resetObservationInfo: ({ commit }) => {
     commit('SET_OBSERVATION_INFO', null);
   },

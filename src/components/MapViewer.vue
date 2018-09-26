@@ -7,7 +7,7 @@
 
 
 <script>
-/* eslint-disable object-shorthand */
+/* eslint-disable object-shorthand,space-before-function-paren,no-unused-vars */
 
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
@@ -18,10 +18,10 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
-import { transformExtent } from 'ol/proj';
+import ImageLayer from 'ol/layer/Image';
+import { transformExtent, transform } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
-import 'ol/ol.css';
 
 export default {
   name: 'MapViewer',
@@ -53,12 +53,15 @@ export default {
     ]),
     ...mapGetters('view', [
       'contextGeometry',
+      'observationInfo',
+      'exploreMode',
     ]),
   },
   methods: {
     ...mapActions('view', [
       'addToKexplorerLog',
       'setSpinner',
+      'setMapSelection',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -100,13 +103,18 @@ export default {
       }
     },
 
-    async findLayerById(observation) {
+    findExistingLayerById(observation) {
       if (this.layers && this.layers !== null) {
         const layerArray = this.layers.getArray();
-        const found = layerArray.find(layer => layer.get('id') === observation.id);
-        if (typeof found !== 'undefined') {
-          return found;
-        }
+        return layerArray.find(layer => layer.get('id') === observation.id);
+      }
+      return null;
+    },
+
+    async findLayerById(observation) {
+      const found = this.findExistingLayerById(observation);
+      if (typeof found !== 'undefined' && found !== null) {
+        return found;
       }
       // need to create new layer
       try {
@@ -203,6 +211,39 @@ export default {
       loadTilesWhileInteracting: true,
     });
     this.map.on('moveend', this.onMoveEnd);
+    this.map.on('pointermove', (event) => {
+      if (this.exploreMode && !event.dragging) {
+        this.map.getTargetElement().style.cursor = 'pointer';
+      } else {
+        this.map.getTargetElement().style.cursor = '';
+      }
+    });
+    this.map.on('click', (event) => {
+      if (this.exploreMode) {
+      // this.map.forEachFeatureAtPixel(event.pixel, (features, layer) => {
+      //   console.dir(layer);
+      // });
+        const layerSelected = this.findExistingLayerById(this.observationInfo);
+        /*
+        Helpers.getLayerObject(this.observationInfo).then((layer) => {
+          this.setMapSelection({
+            pixelSelected: event.coordinate,
+            // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
+            layerSelected: layer,
+          });
+        });
+        */
+        const clonedLayer = new ImageLayer({
+          id: `cl_${this.observationInfo.id}`,
+          source: layerSelected.getSource(),
+        });
+        this.setMapSelection({
+          pixelSelected: event.coordinate,
+          // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
+          layerSelected: clonedLayer,
+        });
+      }
+    });
     this.view = this.map.getView();
     this.proj = this.view.getProjection();
     this.map.addLayer(new Group({ layers: this.layers }));

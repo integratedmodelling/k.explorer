@@ -10,7 +10,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
 // import SimpleBar from 'simplebar';
-// import 'simplebar/dist/simplebar.css';
 
 export default {
   name: 'ReportViewer',

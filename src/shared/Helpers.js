@@ -212,6 +212,14 @@ const Helpers = {
     return geometry;
   },
 
+  isRaster(observation = null) {
+    if (observation === null) {
+      return false;
+    }
+    const { geometryTypes } = observation;
+    return geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
+  },
+
   /**
    * Build a layer object. If needed ask for projection (reason for async function)
    * @param observation the observations: needed for projection ad type of representation
@@ -220,8 +228,8 @@ const Helpers = {
    * @return layer
    */
   async getLayerObject(observation, { viewport = null /* , projection = null */ }) {
-    const { geometryTypes } = observation;
-    const isRaster = geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
+    // const { geometryTypes } = observation;
+    const isRaster = this.isRaster(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
     let spatialProjection;
     if (isRaster) {
       if (observation.parentId === store.state.data.context.id) {
@@ -311,6 +319,7 @@ const Helpers = {
                 owner: src,
                 errorMessage: error,
               }, { root: true });
+              throw error;
             });
         },
       });
@@ -436,6 +445,8 @@ const Helpers = {
       document.getSelection().addRange(selected);
     }
   },
+
+  uniqueArray: array => array.filter((elem, pos, arr) => arr.indexOf(elem) === pos),
 
   /**
    * DEFAULT Viewer on start

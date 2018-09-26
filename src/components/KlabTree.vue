@@ -70,7 +70,6 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import SimpleBar from 'simplebar';
-import 'simplebar/dist/simplebar.css';
 
 export default {
   name: 'klabTree',
@@ -171,13 +170,21 @@ export default {
     expanded(expanded) {
       this.$store.state.view.treeExpanded = expanded;
     },
-    selected(selectedId) {
-      if (selectedId !== null && selectedId.indexOf('ff_') === 0) {
-        this.selected = null;
+    selected(selectedId, unselectedId) {
+      if (selectedId !== null) {
+        // check if is a folder
+        if (selectedId.indexOf('ff_') === 0) {
+          this.selected = null;
+        } else {
+          this.selectNode(selectedId);
+        }
+      } else if (unselectedId !== null && unselectedId === this.observationInfo.id) {
+        // if we has select the actual observationInfo and it state is selected, we don't want to unselect it
+        this.selectNode(unselectedId);
+        this.selected = unselectedId;
       } else {
-        this.selectNode(selectedId);
+        this.selectNode(null);
       }
-      // this.selected = null;
     },
     ticked(newValues, oldValues) {
       this.$store.state.view.treeTicked = newValues;

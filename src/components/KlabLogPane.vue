@@ -27,7 +27,6 @@
 import { mapGetters } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import SimpleBar from 'simplebar';
-import 'simplebar/dist/simplebar.css';
 
 const LOG_ICON_COLORS = {
   [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'black' },

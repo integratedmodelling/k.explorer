@@ -69,7 +69,19 @@ export default {
   reloadReport: state => state.reloadReport,
 
   observationInfo: state => state.observationInfo,
-  hasObservationInfo: state => state.observationInfo !== null,
+  mapSelection: state => state.mapSelection,
 
-  exploreMapMode: state => state.exploreMapMode,
+  hasObservationInfo: state => state.observationInfo !== null,
+  hasMapSelection: state => state.mapSelection.pixelSelected !== null,
+
+  exploreMode: (state) => {
+    if (state.observationInfo !== null
+      && Helpers.isRaster(state.observationInfo)
+      && state.observationInfo.visible
+      && state.observationInfo.top) {
+      return true;
+    }
+    return false;
+  },
+
 };

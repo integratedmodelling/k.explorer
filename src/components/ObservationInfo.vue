@@ -12,13 +12,18 @@
         :label-value="`${observationInfo.layerOpacity*100}%`"
       ></q-slider>
     </div>
-    <div id="oi-scroll-container" :class="metadataClass">
+    <div id="oi-scroll-container" :class="getContainerClasses()">
       <div id="oi-scroll-metadata-container">
         <div id="oi-metadata" v-for="(value, name) in observationInfo.metadata" :key="name">
           <div class="oi-metadata-name">{{ name }}</div>
           <div class="oi-metadata-value" @dblclick="copyToClipboard(value)">{{ value }}</div>
         </div>
       </div>
+    </div>
+    <div id="oi-pixelinfo-container" v-show="exploreMode">
+      <div id="oi-pixelinfo-map"></div>
+      <div id="oi-pixel-h" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
+      <div id="oi-pixel-v" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
     </div>
     <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }"  @mouseleave="histogramIndex = -1">
       <div id="oi-histogram" v-if="observationInfo.dataSummary.histogram.length > 0">
@@ -54,8 +59,10 @@
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
 import { Helpers } from 'shared/Helpers';
-
-import 'simplebar/dist/simplebar.css';
+import Map from 'ol/Map';
+import View from 'ol/View';
+import { Layers } from 'shared/MapConstants';
+// import Group from 'ol/layer/Group';
 
 export default {
   name: 'ObservationInfo',
@@ -64,11 +71,14 @@ export default {
       scrollBar: undefined,
       histogramIndex: -1,
       ellipsed: [],
+      infoMap: null,
     };
   },
   computed: {
     ...mapGetters('view', [
       'observationInfo',
+      'mapSelection',
+      'exploreMode',
     ]),
     hasHistogram() {
       return this.observationInfo.dataSummary.histogram.length !== 0;
@@ -97,20 +107,13 @@ export default {
         value: this.observationInfo.dataSummary.histogram[this.histogramIndex],
       };
     },
-    metadataClass() {
-      if (!this.observationInfo.visible) {
-        if (this.observationInfo.dataSummary === null) {
-          return '';
-        }
-        return 'with-histogram';
-      }
-      if (this.observationInfo.dataSummary === null) {
-        return 'with-slider';
-      }
-      return 'with-slider-histogram';
-    },
   },
   methods: {
+    isShowMapInfo() {
+      return this.exploreMode
+        && this.mapSelection.layerSelected !== null
+        && `cl_${this.observationInfo.id}` === this.mapSelection.layerSelected.get('id');
+    },
     getHeight(value) {
       return value * 100 / this.maxHistogramValue;
     },
@@ -129,11 +132,51 @@ export default {
         this.ellipsed.splice(this.ellipsed.indexOf(ref), 1);
       }
     },
+    getContainerClasses() {
+      const finalClasses = [];
+      if (this.observationInfo.visible) {
+        finalClasses.push('with-slider');
+      }
+      if (this.observationInfo.dataSummary) {
+        finalClasses.push('with-histogram');
+      }
+      if (this.exploreMode) {
+        finalClasses.push('with-pixelinfo');
+      }
+      return finalClasses;
+    },
   },
   watch: {
+    mapSelection() {
+      const layers = this.infoMap.getLayers().getArray();
+      if (this.mapSelection.pixelSelected !== null) {
+        if (layers.length > 1) {
+          this.infoMap.removeLayer(layers[1]);
+        }
+        this.infoMap.addLayer(this.mapSelection.layerSelected);
+
+        this.infoMap.getView().setCenter(this.mapSelection.pixelSelected);
+        this.infoMap.getView().setZoom(14);
+        this.$nextTick(() => {
+          this.infoMap.updateSize();
+        });
+      } else if (layers.length > 1) {
+        this.infoMap.removeLayer(layers[1]);
+      }
+    },
   },
   mounted() {
     this.scrollBar = new SimpleBar(document.getElementById('oi-scroll-container'));
+    this.infoMap = new Map({
+      view: new View({
+        center: [0, 0],
+        zoom: 12,
+      }),
+      target: 'oi-pixelinfo-map',
+      layers: [Layers.EMPTY_LAYER],
+      controls: [],
+      interactions: [],
+    });
   },
 };
 </script>
@@ -142,6 +185,7 @@ export default {
   @import '~variables'
   $oi-max-height = 100%
   $oi-slider-height = 30px
+  $oi-pixelinfo-height = 20%
   $oi-histogram-height = 20%
   $oi-histogram-info-height = 30px
   $oi-histogram-minmax-width = 50px
@@ -158,8 +202,14 @@ export default {
   #oi-scroll-container.with-histogram {
     height $oi-max-height - $oi-histogram-height
   }
-  #oi-scroll-container.with-slider-histogram {
+  #oi-scroll-container.with-slider.with-histogram {
     height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height)
+  }
+  #oi-scroll-container.with-slider.with-pixelinfo {
+    height "calc(%s - 30px)" % ($oi-max-height - $oi-pixelinfo-height)
+  }
+  #oi-scroll-container.with-slider.with-histogram.with-pixelinfo {
+    height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height - $oi-pixelinfo-height)
   }
   #oi-slider {
     height $oi-slider-height
@@ -178,6 +228,39 @@ export default {
   }
   #oi-slider .q-slider {
     padding 0 10px 0 5px
+  }
+  #oi-pixelinfo-container {
+    height $oi-pixelinfo-height
+    width 100%
+    padding 5px
+    position relative
+    /*
+    line-height 100%
+    color white
+    vertical-align middle
+    */
+  }
+  #oi-pixelinfo-map {
+    height 100%
+    width 100%
+    border 1px solid #7a7a7a
+  }
+  .oi-pixel-indicator {
+    position absolute
+    background-color $main-control-red
+    mix-blend-mode difference
+  }
+  #oi-pixel-h {
+    left calc(50% - 1px)
+    top 5px
+    height calc(100% - 10px)
+    width 3px
+  }
+  #oi-pixel-v {
+    top calc(50% - 1px)
+    left 5px
+    height 3px
+    width calc(100% - 10px)
   }
   #oi-histogram-container {
     width 100%
@@ -213,7 +296,7 @@ export default {
     box-shadow inset 0px 0px 0px 1px rgba(119,119,119,0.5)
   }
   .oi-histogram-val:hover {
-    background #6c6c6c
+    background rgba(0, 0, 0, 0.7)
   }
   #oi-histogram-info {
 

@@ -121,15 +121,39 @@ export default {
   },
 
   SET_OBSERVATION_INFO: (state, observation) => {
-    state.observationInfo = observation;
     if (observation !== null) {
       state.treeSelected = observation.id;
     } else {
       state.treeSelected = null;
     }
+    state.mapSelection = {
+      pixelSelected: null,
+      layerSelected: null,
+    };
+    state.observationInfo = observation;
   },
 
-  SET_EXPLORE_MAP_MODE: (state, isActive) => {
-    state.exploreMapMode = isActive;
+  /**
+   * map selection exists only if there is an observation info
+   * Used to watch only this
+   * @param state
+   * @param mapSelection
+   * @property pixelSelected
+   * @property layerSelected
+   * @constructor
+   */
+  SET_MAP_SELECTION: (state, { pixelSelected, layerSelected }) => {
+    if (pixelSelected === null || layerSelected === null) {
+      state.mapSelection = {
+        pixelSelected: null,
+        layerSelected: null,
+      };
+    } else if (state.observationInfo === null) {
+      console.warn('Try to set pixel and layer without observationInfo, will be skipped');
+    } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {
+      console.warn('Try to set pixel and layer with different observationInfo id, will be skipped');
+    } else {
+      state.mapSelection = { pixelSelected, layerSelected };
+    }
   },
 };
