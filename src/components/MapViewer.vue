@@ -148,7 +148,7 @@ export default {
         return;
       }
       this.baseLayers.setMask(this.contextGeometry);
-      this.view.fit(this.contextGeometry, { padding: [30, 30, 30, 30], constrainResolution: false });
+      this.view.fit(this.contextGeometry, { padding: [10, 10, 10, 10], constrainResolution: false });
     },
 
     drawObservations() {
@@ -212,14 +212,14 @@ export default {
     });
     this.map.on('moveend', this.onMoveEnd);
     this.map.on('pointermove', (event) => {
-      if (this.exploreMode && !event.dragging) {
+      if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         this.map.getTargetElement().style.cursor = 'pointer';
       } else {
         this.map.getTargetElement().style.cursor = '';
       }
     });
     this.map.on('click', (event) => {
-      if (this.exploreMode) {
+      if (this.exploreMode && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
       // this.map.forEachFeatureAtPixel(event.pixel, (features, layer) => {
       //   console.dir(layer);
       // });

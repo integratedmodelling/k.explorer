@@ -77,6 +77,7 @@ export default {
   exploreMode: (state) => {
     if (state.observationInfo !== null
       && Helpers.isRaster(state.observationInfo)
+      && state.observationInfo.dataSummary.histogram.length > 0
       && state.observationInfo.visible
       && state.observationInfo.top) {
       return true;
