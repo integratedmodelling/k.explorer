@@ -125,6 +125,7 @@ export default {
     if (observation === null) {
       state.treeSelected = null;
       state.mapSelection = EMPTY_MAP_SELECTION;
+      state.observationInfo = null;
     } else if (state.observationInfo === null || (observation.id !== state.observationInfo.id)) {
       // new observation selected
       state.observationInfo = observation;

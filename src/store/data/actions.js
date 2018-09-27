@@ -243,13 +243,14 @@ export default {
   selectNode: ({ dispatch, state }, selectedId) => {
     if (selectedId === null) {
       dispatch('view/setObservationInfo', null, { root: true });
-    }
-    const selectedObservation = state.observations.find(observation => observation.id === selectedId);
-    if (selectedObservation) {
-      if (selectedObservation.visible && !selectedObservation.top) {
-        dispatch('showNode', { nodeId: selectedId });
+    } else {
+      const selectedObservation = state.observations.find(observation => observation.id === selectedId);
+      if (selectedObservation) {
+        if (selectedObservation.visible && !selectedObservation.top) {
+          dispatch('showNode', { nodeId: selectedId });
+        }
+        dispatch('view/setObservationInfo', selectedObservation, { root: true });
       }
-      dispatch('view/setObservationInfo', selectedObservation, { root: true });
     }
   },
 

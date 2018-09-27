@@ -20,7 +20,6 @@ export default {
     itemCounter: '{loaded} of {total}',
     logTab: 'Log',
     treeTab: 'Tree',
-    noHistogramValueSelected: '',
     noHistogramData: '',
     noHistogramValues: 'No data',
   },

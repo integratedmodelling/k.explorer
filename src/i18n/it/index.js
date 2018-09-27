@@ -20,9 +20,8 @@ export default {
     itemCounter: '{loaded} di {total}',
     logTab: 'Log',
     treeTab: 'Albero',
-    noHistogramValueSelected: '',
     noHistogramData: '',
-    noHistogramValues: 'Non ci sono dati',
+    noInfoValues: 'Non ci sono dati',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
@@ -35,8 +34,6 @@ export default {
     emptyReport: 'Report vuoto',
     noLoadedReport: 'Non si è caricato nessun report',
     copiedToClipboard: 'Copiato',
-    noHistogramData: '',
-    noHistogramValues: 'No data',
   },
   tooltips: {
     treePane: 'Albero',
