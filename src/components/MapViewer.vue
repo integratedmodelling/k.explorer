@@ -213,7 +213,7 @@ export default {
     this.map.on('moveend', this.onMoveEnd);
     this.map.on('pointermove', (event) => {
       if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-        this.map.getTargetElement().style.cursor = 'pointer';
+        this.map.getTargetElement().style.cursor = 'crosshair';
       } else {
         this.map.getTargetElement().style.cursor = '';
       }
