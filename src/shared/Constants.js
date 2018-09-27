@@ -15,7 +15,18 @@ export const VIEWERS = {
   PROVENANCE_VIEWER: 'ProvenanceViewer',
 };
 
+/**
+ * Used to centralize the default empty map selection
+ * @type {{pixelSelected: null, layerSelected: null, value: null}}
+ */
+export const EMPTY_MAP_SELECTION = {
+  pixelSelected: null,
+  layerSelected: null,
+  value: null,
+};
+
 export default {
+  EMPTY_MAP_SELECTION,
   /**
    * Max length of an array contains history (f.e. log)
    */

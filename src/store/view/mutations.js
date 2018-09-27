@@ -1,4 +1,5 @@
 import { Helpers } from 'shared/Helpers';
+import { EMPTY_MAP_SELECTION } from 'shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
@@ -121,35 +122,31 @@ export default {
   },
 
   SET_OBSERVATION_INFO: (state, observation) => {
-    if (observation !== null) {
-      state.treeSelected = observation.id;
-    } else {
+    if (observation === null) {
       state.treeSelected = null;
+      state.mapSelection = EMPTY_MAP_SELECTION;
+    } else if (observation.id !== state.observationInfo.id) {
+      // new observation selected
+      state.observationInfo = observation;
+      // we need to reset mapSelection...
+      state.mapSelection = EMPTY_MAP_SELECTION;
+      // and select it on tree
+      state.treeSelected = observation.id;
     }
-    state.mapSelection = {
-      pixelSelected: null,
-      layerSelected: null,
-      value: null,
-    };
-    state.observationInfo = observation;
   },
 
   /**
    * map selection exists only if there is an observation info
    * Used to watch only this
-   * @param state
    * @param mapSelection
    * @property pixelSelected
    * @property layerSelected
    * @constructor
    */
-  SET_MAP_SELECTION: (state, { pixelSelected, layerSelected, value = null }) => {
-    if (pixelSelected === null || layerSelected === null) {
-      state.mapSelection = {
-        pixelSelected: null,
-        layerSelected: null,
-        value: null,
-      };
+  SET_MAP_SELECTION: (state, mapSelection) => {
+    const { pixelSelected, layerSelected, value = null } = mapSelection;
+    if (mapSelection === null || pixelSelected === null || layerSelected === null) { // map selection reset or strange values
+      state.mapSelection = EMPTY_MAP_SELECTION;
     } else if (state.observationInfo === null) {
       console.warn('Try to set pixel and layer without observationInfo, will be skipped');
     } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {

@@ -220,7 +220,15 @@ const Helpers = {
     return geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   },
 
-  getAxiosContent(uid, url, params, callback) {
+  /**
+   * Useful to call a REST action
+   * @param uid used for spinner
+   * @param url url of REST action
+   * @param params params for REST action
+   * @param callback callback to call if 200 (expect to receive two params: response and callback to stop spinner)
+   * @param errorCallback callback to call if error
+   */
+  getAxiosContent(uid, url, params, callback, errorCallback = null) {
     store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: uid }, { root: true });
     axiosInstance.get(url, {
       params,
@@ -238,7 +246,11 @@ const Helpers = {
           owner: uid,
           errorMessage: error,
         }, { root: true });
-        throw error;
+        if (errorCallback !== null) {
+          errorCallback(error);
+        } else {
+          throw error;
+        }
       });
   },
 

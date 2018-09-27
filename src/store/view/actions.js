@@ -187,13 +187,11 @@ export default {
   },
 
   setObservationInfo: ({ commit }, observation) => {
-    if (typeof observation !== 'undefined') {
-      commit('SET_OBSERVATION_INFO', observation);
-    }
+    commit('SET_OBSERVATION_INFO', observation);
   },
 
   setMapSelection: ({ commit, state }, { pixelSelected, layerSelected }) => {
-    if (pixelSelected !== null) {
+    if (pixelSelected !== null && layerSelected !== null) {
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${state.observationInfo.id}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
       Helpers.getAxiosContent(`pv_${state.observationInfo.id}`, url, {
