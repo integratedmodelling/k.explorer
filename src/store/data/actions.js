@@ -242,7 +242,7 @@ export default {
 
   selectNode: ({ dispatch, state }, selectedId) => {
     if (selectedId === null) {
-      dispatch('view/resetObservationInfo', null, { root: true });
+      dispatch('view/setObservationInfo', null, { root: true });
     }
     const selectedObservation = state.observations.find(observation => observation.id === selectedId);
     if (selectedObservation) {

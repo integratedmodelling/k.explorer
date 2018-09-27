@@ -48,10 +48,10 @@ export default {
   },
   methods: {
     ...mapActions('view', [
-      'resetObservationInfo',
+      'setObservationInfo',
     ]),
     onCloseInfo() {
-      this.resetObservationInfo();
+      this.setObservationInfo(null);
     },
   },
   mounted() {

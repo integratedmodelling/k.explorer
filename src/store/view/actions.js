@@ -187,7 +187,7 @@ export default {
   },
 
   setObservationInfo: ({ commit }, observation) => {
-    if (typeof observation !== 'undefined' && observation !== null) {
+    if (typeof observation !== 'undefined') {
       commit('SET_OBSERVATION_INFO', observation);
     }
   },
@@ -208,9 +208,5 @@ export default {
         callback();
       });
     }
-  },
-
-  resetObservationInfo: ({ commit }) => {
-    commit('SET_OBSERVATION_INFO', null);
   },
 };
