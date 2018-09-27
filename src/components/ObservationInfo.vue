@@ -40,7 +40,7 @@
         </div>
       </div>
       <div id="oi-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
-      <div id="oi-colormap" v-show="observationInfo.colormap !== null">
+      <div id="oi-colormap" v-if="observationInfo.colormap !== null">
         <div
           class="oi-colormap-col"
           v-for="(data, index) in observationInfo.colormap.colors"

@@ -170,7 +170,7 @@ export default {
     expanded(expanded) {
       this.$store.state.view.treeExpanded = expanded;
     },
-    selected(selectedId, unselectedId) {
+    selected(selectedId /* , unselectedId */) {
       if (selectedId !== null) {
         // check if is a folder
         if (selectedId.indexOf('ff_') === 0) {
@@ -178,10 +178,10 @@ export default {
         } else {
           this.selectNode(selectedId);
         }
-      } else if (this.observationInfo !== null && unselectedId !== null && unselectedId === this.observationInfo.id) {
+      /* } else if (this.observationInfo !== null && unselectedId !== null && unselectedId === this.observationInfo.id) {
         // if we has select the actual observationInfo and it state is selected, we don't want to unselect it
         this.selectNode(unselectedId);
-        this.selected = unselectedId;
+        this.selected = unselectedId; */
       } else {
         this.selectNode(null);
       }
@@ -212,6 +212,7 @@ export default {
       } else {
         // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
+        this.selectNode(selectedId);
         const selectedNode = Helpers.findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
           const tickAll = () => {
