@@ -198,7 +198,7 @@ export default {
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
       Helpers.getAxiosContent(`pv_${state.observationInfo.id}`, url, {
         format: 'SCALAR',
-        locator: `S0(1){latlon=[${coordinates[0]},${coordinates[1]}]}`,
+        locator: `S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
       }, (response, callback) => {
         let value = 'No value';
         if (response && response.data) {

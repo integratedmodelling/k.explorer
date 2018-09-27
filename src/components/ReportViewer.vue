@@ -64,11 +64,5 @@ export default {
 };
 </script>
 
-<style lang="stylus">
-#mc-report-wrapper {
-
-}
-#mc-report-content {
-  overflow auto
-}
+<style>
 </style>
