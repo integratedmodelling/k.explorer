@@ -24,7 +24,11 @@
         </div>
       </div>
       <!-- info map will be 50% -->
-      <div id="oi-mapinfo-container" v-show="hasMapInfo">
+      <div id="oi-mapinfo-container"
+        v-show="hasMapInfo"
+        @mouseenter="infoShowed = { index: 0, categories: [], values: [mapSelection.value] }"
+        @mouseleave="resetInfoShowed"
+      >
         <div id="oi-mapinfo-map"></div>
         <div id="oi-pixel-h" class="oi-pixel-indicator"></div>
         <div id="oi-pixel-v" class="oi-pixel-indicator"></div>
@@ -53,8 +57,8 @@
           v-for="(data, index) in observationInfo.colormap.colors"
           :key="index"
           :style="{ width:`${ colormapWidth }%`, 'background-color': data  }"
-          @mouseover="colormapIndex = index"
-        ><q-tooltip>{{ observationInfo.colormap.labels[index] }}</q-tooltip>
+          @mouseover="infoShowed = { index, categories: [], values: observationInfo.colormap.labels }"
+        >
         </div>
       </div>
       <!-- info about everything FIXED sixe -->
@@ -167,7 +171,7 @@ export default {
       this.infoShowed = {
         index: -1,
         categories: [],
-        values: null,
+        values: [],
       };
     },
   },
@@ -185,6 +189,11 @@ export default {
         this.$nextTick(() => {
           this.infoMap.updateSize();
         });
+        this.infoShowed = {
+          index: 0,
+          categories: [],
+          values: [this.mapSelection.value],
+        };
       } else if (layers.length > 1) {
         this.infoMap.removeLayer(layers[1]);
       }

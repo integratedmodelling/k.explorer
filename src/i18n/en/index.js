@@ -21,7 +21,7 @@ export default {
     logTab: 'Log',
     treeTab: 'Tree',
     noHistogramData: '',
-    noHistogramValues: 'No data',
+    noHistogramValues: '',
   },
   messages: {
     connectionClosed: 'Connection closed',
