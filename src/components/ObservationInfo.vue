@@ -12,19 +12,21 @@
         :label-value="`${observationInfo.layerOpacity*100}%`"
       ></q-slider>
     </div>
-    <div id="oi-scroll-container" :class="getContainerClasses()">
-      <div id="oi-scroll-metadata-container">
-        <div id="oi-metadata" v-for="(value, name) in observationInfo.metadata" :key="name">
-          <div class="oi-metadata-name">{{ name }}</div>
-          <div class="oi-metadata-value" @dblclick="copyToClipboard(value)">{{ value }}</div>
+    <div id="oi-metadata-map-wrapper">
+      <div id="oi-scroll-container" :class="getContainerClasses()">
+        <div id="oi-scroll-metadata-container">
+          <div id="oi-metadata" v-for="(value, name) in observationInfo.metadata" :key="name">
+            <div class="oi-metadata-name">{{ name }}</div>
+            <div class="oi-metadata-value" @dblclick="copyToClipboard(value)">{{ value }}</div>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="oi-pixelinfo-container" v-show="exploreMode">
-      <div id="oi-pixelinfo-map"></div>
-      <div id="oi-pixel-h" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
-      <div id="oi-pixel-v" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
-      <div id="oi-pixelinfo-value" v-show="isShowMapInfo()">{{ mapSelection.value }}</div>
+      <div id="oi-pixelinfo-container" v-show="exploreMode">
+        <div id="oi-pixelinfo-map"></div>
+        <div id="oi-pixel-h" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
+        <div id="oi-pixel-v" class="oi-pixel-indicator" v-show="isShowMapInfo()"></div>
+        <div id="oi-pixelinfo-value" v-show="isShowMapInfo()">{{ mapSelection.value }}</div>
+      </div>
     </div>
     <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }"  @mouseleave="histogramIndex = -1">
       <div id="oi-histogram" v-if="observationInfo.dataSummary.histogram.length > 0">
@@ -32,7 +34,7 @@
           class="oi-histogram-col"
           v-for="(data, index) in observationInfo.dataSummary.histogram"
           :key="index"
-          :style="{ width:`${histogramWidth}%`, left: `${histogramWidth * index}%` }"
+          :style="{ width:`${histogramWidth}%` }"
           @mouseover="histogramIndex = index"
         >
           <div class="oi-histogram-val" :style="{ height: `${getHeight(data)}%` }">
@@ -45,7 +47,7 @@
           class="oi-colormap-col"
           v-for="(data, index) in observationInfo.colormap.colors"
           :key="index"
-          :style="{ width:`${ colormapWidth }%`, left: `${colormapWidth * index}%`, 'background-color': data  }"
+          :style="{ width:`${ colormapWidth }%`, 'background-color': data  }"
           @mouseover="colormapIndex = index"
         ><q-tooltip>{{ observationInfo.colormap.labels[index] }}</q-tooltip>
         </div>
@@ -200,48 +202,31 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  $oi-max-height = 100%
   $oi-slider-height = 30px
-  $oi-pixelinfo-height = 20%
-  $oi-pixelvalue-height = 20px
-  $oi-histogram-height = 20%
-  $oi-histogram-info-height = 30px
-  $oi-histogram-minmax-width = 50px
-  $oi-colormap-height = 30px
-  #oi-container {
+  $oi-pixelinfo-height = 130px // map with selected point and value
+  $oi-pixelvalue-height = 20px // value of point
+  $oi-histogram-height = 130px // histogram
+  $oi-colormap-height = 30px // colormap
+  $oi-histogram-info-height = 30px // info
+  $oi-histogram-minmax-width = 50px // min and max
+
+  #oi-container
     height $main-control-max-height - $main-control-spc-height - $main-control-scrollbar
-    padding 10px 0 0 0;
-  }
-  #oi-scroll-container {
-    height $oi-max-height
-  }
-  #oi-scroll-container.with-slider {
-    height "calc(%s - 30px)" % $oi-max-height
-  }
-  #oi-scroll-container.with-histogram {
-    height $oi-max-height - $oi-histogram-height
-  }
-  #oi-scroll-container.with-slider.with-histogram {
-    height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height)
-  }
-  #oi-scroll-container.with-slider.with-pixelinfo {
-    height "calc(%s - 30px)" % ($oi-max-height - $oi-pixelinfo-height)
-  }
-  #oi-scroll-container.with-slider.with-colormap {
-    height "calc(%s - 60px)" % ($oi-max-height)
-  }
-  #oi-scroll-container.with-slider.with-pixelinfo.with-colormap {
-    height "calc(%s - 60px)" % ($oi-max-height - $oi-pixelinfo-height)
-  }
-  #oi-scroll-container.with-slider.with-histogram.with-pixelinfo {
-    height "calc(%s - 30px)" % ($oi-max-height - $oi-histogram-height - $oi-pixelinfo-height)
-  }
-  #oi-scroll-container.with-slider.with-histogram.with-colormap {
-    height "calc(%s - 60px)" % ($oi-max-height - $oi-histogram-height)
-  }
-  #oi-scroll-container.with-slider.with-histogram.with-pixelinfo.with-colormap {
-    height "calc(%s - 60px)" % ($oi-max-height - $oi-histogram-height - $oi-pixelinfo-height )
-  }
+    padding 10px 0 0 0
+
+  #oi-scroll-container
+    height 100%
+    &.with-slider
+      height "calc(100% - %s)" % $oi-slider-height
+      &.with-histogram
+        height "calc(100% - %s)" % ($oi-slider-height + $oi-histogram-height)
+        &.with-colormap
+          height "calc(100% - %s)" % ($oi-slider-height + $oi-histogram-height + $oi-colormap-height)
+          &.with-pixelinfo
+            height "calc(100% - %s)" % ($oi-slider-height + $oi-histogram-height + $oi-colormap-height + $oi-pixelinfo-height)
+        &.with-pixelinfo
+          height "calc(100% - %s)" % ($oi-slider-height + $oi-histogram-height + $oi-pixelinfo-height)
+
   #oi-slider {
     height $oi-slider-height
   }
@@ -318,13 +303,15 @@ export default {
     padding-top 20%
   }
   .oi-histogram {
-    position absolute
+    position relative
     bottom 0
     border-bottom 1px solid #777
   }
   .oi-histogram-col {
-    position absolute
+    float left
     height 100%
+    line-height 100%
+    vertical-align bottom
   }
   .oi-histogram-col:hover {
     background rgba(119,119,119,.65);
@@ -332,7 +319,7 @@ export default {
   .oi-histogram-val {
     background #000
     width 100%
-    position absolute
+    float left
     bottom 0
     box-shadow inset 0px 0px 0px 1px rgba(119,119,119,0.5)
   }
@@ -344,10 +331,10 @@ export default {
     position: relative
   }
   .oi-colormap-col {
-    position absolute
+    float left
     height 100%
     background-color #fff
-    box-shadow inset 0px 0px 0px 1px rgba(119,119,119,0.5)
+    min-width 1px
   }
   .oi-histogram-info {
     color #fff
