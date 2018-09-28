@@ -82,7 +82,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
-import { Helpers } from 'shared/Helpers';
+import Utils from 'shared/Utils';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Layers } from 'shared/MapConstants';
@@ -143,7 +143,7 @@ export default {
       return value * 100 / this.maxHistogramValue;
     },
     copyToClipboard(value) {
-      Helpers.copyToClipboard(value);
+      Utils.copyToClipboard(value);
       this.$q.notify({
         message: this.$t('messages.copiedToClipboard'),
         type: 'info',
@@ -278,15 +278,15 @@ export default {
     mix-blend-mode difference
 
   #oi-pixel-h
-    left calc(50% - 1px)
+    left calc(50%)
     top 5px
     height calc(100% - 10px)
-    width 3px
+    width 1px
 
   #oi-pixel-v
-    top calc(50% - 1px)
+    top calc(50%)
     left 5px
-    height 3px
+    height 1px
     width calc(100% - 10px)
 
   #oi-histogram-container
@@ -315,19 +315,19 @@ export default {
     float left
     height 100%
     position relative
-
-  .oi-histogram-col:hover
-    background rgba(119,119,119,.65);
+    &:hover
+      background rgba(119,119,119,.65);
 
   .oi-histogram-val
     background #000
     width 100%
     position: absolute
     bottom 0
-    box-shadow inset 0px 0px 0px 1px rgb(119,119,119)
 
-  .oi-histogram-val:hover
-    background rgba(0, 0, 0, 0.7)
+    border-right 1px solid rgba(119, 119, 119, 0.85)
+    border-left 1px solid rgba(119, 119, 119, 0.85)
+    &:hover
+      background rgba(0, 0, 0, 0.7)
 
   #oi-colormap
     height $oi-colormap-height

@@ -1,7 +1,7 @@
 <template>
   <div class="fit no-padding map-viewer">
     <div :ref="'map'+idx" :id="'map'+idx" class="fit"></div>
-    <q-icon name="mdi-crosshairs-gps" id="map-selection-marker" />
+    <q-icon name="mdi-crosshairs" id="map-selection-marker" />
     <q-resize-observable @resize="handleResize" />
   </div>
 </template>
