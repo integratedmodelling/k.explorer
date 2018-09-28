@@ -20,7 +20,7 @@ export default {
     itemCounter: '{loaded} di {total}',
     logTab: 'Log',
     treeTab: 'Albero',
-    noHistogramData: '',
+    noHistogramData: 'No data',
     noInfoValues: '',
   },
   messages: {

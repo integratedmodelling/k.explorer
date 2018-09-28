@@ -75,6 +75,14 @@ export default {
     };
   },
 
+  /**
+   * Return the gradient in rgb object from first color to last color in steps steps
+   * @param first
+   * @param last
+   * @param steps
+   * @see https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
+   * @returns {Array}
+   */
   getGradient(first, last, steps) {
     if (first === null || last === null || steps < 1) {
       console.warn(`Bad colors: ${first}, ${last}`);

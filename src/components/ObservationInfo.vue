@@ -64,7 +64,7 @@
       <!-- info about everything FIXED sixe -->
       <div id="oi-data-details">
         <div id="oi-histogram-min" class="oi-data-details" @mouseover="tooltipIt($event, 'q-hmin')">{{ histogramMin }}<q-tooltip v-show="ellipsed.includes('q-hmin')" class="oi-tooltip">{{ histogramMin }}</q-tooltip></div>
-        <template v-if="infoShowed.index === -1"><div id="oi-data-nodetail" class="oi-data-details">{{ $t('label.noHistogramValues') }}</div></template>
+        <template v-if="infoShowed.index === -1"><div id="oi-data-nodetail" class="oi-data-details">{{ $t('label.noInfoValues') }}</div></template>
         <template v-else>
           <div id="oi-data-detail" class="oi-data-details" @mouseover="tooltipIt($event, 'q-hdata')">
             {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}: ` : '' }}<em>{{ infoShowed.values[infoShowed.index] }}</em>
