@@ -10,14 +10,12 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
+import Utils from 'shared/Utils';
 import Constants from 'shared/Constants';
 import store from 'store/index';
 import Style from 'ol/style/Style';
-import { colors } from 'quasar';
 import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from './MapConstants';
 
-const reRGBA = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
-const { hexToRgb, getBrand, rgbToHex } = colors;
 
 /**
  * Helpers functions shared between components.
@@ -31,12 +29,6 @@ const { hexToRgb, getBrand, rgbToHex } = colors;
  * }}
  */
 const Helpers = {
-
-  /**
-   * Capitalize first letter of string
-   * @param str the string to capitalize
-   */
-  capitalizeFirstLetter: str => str.charAt(0).toUpperCase() + str.slice(1),
 
   /**
    * Push an element in a queue with a max length (all history queue)
@@ -68,21 +60,6 @@ const Helpers = {
     const last = [...log].reverse().find(logAction => logAction.type === type);
     if (typeof last !== 'undefined') {
       return last;
-    }
-    return null;
-  },
-
-  /**
-   * Utility method to print coordinates with only 2 decimals
-   * TODO: probably not needed
-   * @param extent
-   * @returns {*}
-   */
-  // formatExtent: extent => extent, -> Used in case of test of no validating message
-  formatExtent: (localExtent) => {
-    if (localExtent) {
-      return [localExtent.south.toFixed(2), localExtent.west.toFixed(2),
-        localExtent.north.toFixed(2), localExtent.east.toFixed(2)];
     }
     return null;
   },
@@ -339,7 +316,27 @@ const Helpers = {
                   // load colormap if necesary
                   Helpers.getAxiosContent(`cm_${observation.id}`, url, { format: 'COLORMAP' }, (colormapResponse, colormapCallback) => {
                     if (colormapResponse && colormapResponse.data) {
-                      observation.colormap = colormapResponse.data;
+                      const colormap = colormapResponse.data;
+                      if (colormap.type === 'RAMP' && colormap.colors.length > 1 && colormap.colors.length < 256) {
+                        const cmcol = [];
+                        const cmlab = [];
+                        const cml = colormap.colors.length;
+                        const steps = Math.floor(256 / cml);
+                        const lastSteps = steps + (256 - cml * steps);
+                        for (let i = 0; i < cml - 1; i++) {
+                          const tmpCol = Utils.getGradient(colormap.colors[i], colormap.colors[i + 1], (i === cml - 2) ? lastSteps : steps);
+                          const tmpLab = Utils.interpolateArray([parseFloat(colormap.labels[i]), parseFloat(colormap.labels[i + 1])], (i === cml - 2) ? lastSteps : steps, 4);
+                          cmcol.push(...tmpCol);
+                          cmlab.push(...tmpLab);
+                        }
+                        observation.colormap = {
+                          colors: cmcol,
+                          labels: cmlab,
+                          type: 'MODRAMP',
+                        };
+                      } else {
+                        observation.colormap = colormap;
+                      }
                     }
                     colormapCallback();
                   });
@@ -407,87 +404,6 @@ const Helpers = {
     return vectorLayer;
   },
 
-  * reverseKeys(arr) {
-    let key = arr.length - 1;
-
-    while (key >= 0) {
-      yield key;
-      key -= 1;
-    }
-  },
-
-  textToRgb: (color) => {
-    if (typeof color !== 'string') {
-      throw new TypeError('Expected a string');
-    }
-
-    const m = reRGBA.exec(color);
-    if (m) {
-      const rgb = {
-        r: parseInt(m[1], 10),
-        g: parseInt(m[2], 10),
-        b: parseInt(m[3], 10),
-      };
-      if (m[4]) {
-        rgb.a = parseFloat(m[4]);
-      }
-      return rgb;
-    }
-    return hexToRgb(color);
-  },
-
-  /**
-   * Receive an hex value (#), rgb (rgb()) or brand ('primary')
-   * Return the correspondent rgb and hex value
-   * @param color an hex value (#), rgb (rgb()) or brand ('primary')
-   * @returns {{rgb: *, hex: *, color: *}}
-   */
-  getColorObject(color) {
-    let rgb;
-    let hex;
-    if (color.indexOf('#') === 0) {
-      hex = color;
-      rgb = hexToRgb(color);
-    } else if (color.indexOf(',') !== -1) {
-      rgb = this.textToRgb(color);
-      hex = rgbToHex(rgb);
-    } else {
-      hex = getBrand(color);
-      rgb = hexToRgb(hex);
-    }
-    return {
-      rgb,
-      hex,
-      color,
-    };
-  },
-
-  /**
-   * Copy text to clipboard
-   * Code from Angelos Chalaris @see https://hackernoon.com/@chalarangelo
-   * @param str string to copy
-   */
-  copyToClipboard: (str) => {
-    const el = document.createElement('textarea');
-    el.value = str;
-    el.setAttribute('readonly', '');
-    el.style.position = 'absolute';
-    el.style.left = '-9999px';
-    document.body.appendChild(el);
-    const selected = document.getSelection().rangeCount > 0
-      ? document.getSelection().getRangeAt(0)
-      : false;
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    if (selected) {
-      document.getSelection().removeAllRanges();
-      document.getSelection().addRange(selected);
-    }
-  },
-
-  uniqueArray: array => array.filter((elem, pos, arr) => arr.indexOf(elem) === pos),
-
   /**
    * DEFAULT Viewer on start
    */
@@ -503,4 +419,4 @@ const Helpers = {
   },
 };
 
-export { Constants, Helpers };
+export { Constants, Helpers, Utils };

@@ -185,7 +185,7 @@
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import { Helpers } from 'shared/Helpers';
+import Utils from 'shared/Utils';
 import { VIEWERS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
@@ -232,7 +232,7 @@ export default {
       'lastActiveTask',
     ]),
     spinnerColor() {
-      return Helpers.getColorObject(this.spinner.color);
+      return Utils.getColorObject(this.spinner.color);
     },
     reportTooltip() {
       /*
