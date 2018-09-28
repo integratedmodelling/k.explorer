@@ -1,6 +1,7 @@
 <template>
   <div class="fit no-padding map-viewer">
     <div :ref="'map'+idx" :id="'map'+idx" class="fit"></div>
+    <q-icon name="mdi-crosshairs-gps" id="map-selection-marker" />
     <q-resize-observable @resize="handleResize" />
   </div>
 </template>
@@ -19,6 +20,7 @@ import View from 'ol/View';
 import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
+import Overlay from 'ol/Overlay';
 import { transformExtent, transform } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
@@ -40,6 +42,8 @@ export default {
       layers: new Collection(),
       zIndexCounter: 0,
       baseLayers: null,
+      mapSelectionMarker: undefined,
+
       // contextViewport: Constants.PARAM_VIEWPORT_SIZE,
     };
   },
@@ -55,6 +59,7 @@ export default {
       'contextGeometry',
       'observationInfo',
       'exploreMode',
+      'mapSelection',
     ]),
   },
   methods: {
@@ -183,6 +188,13 @@ export default {
     center() {
       this.view.setCenter(this.center);
     },
+    mapSelection(newValue) {
+      if (typeof newValue !== 'undefined' && newValue !== null && newValue.pixelSelected !== null) {
+        this.mapSelectionMarker.setPosition(newValue.pixelSelected);
+      } else {
+        this.mapSelectionMarker.setPosition(undefined);
+      }
+    },
   },
   mounted() {
     this.baseLayers = BASE_LAYERS;
@@ -220,19 +232,7 @@ export default {
     });
     this.map.on('click', (event) => {
       if (this.exploreMode && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-      // this.map.forEachFeatureAtPixel(event.pixel, (features, layer) => {
-      //   console.dir(layer);
-      // });
         const layerSelected = this.findExistingLayerById(this.observationInfo);
-        /*
-        Helpers.getLayerObject(this.observationInfo).then((layer) => {
-          this.setMapSelection({
-            pixelSelected: event.coordinate,
-            // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
-            layerSelected: layer,
-          });
-        });
-        */
         const clonedLayer = new ImageLayer({
           id: `cl_${this.observationInfo.id}`,
           source: layerSelected.getSource(),
@@ -249,26 +249,34 @@ export default {
     this.map.addLayer(new Group({ layers: this.layers }));
     const layerSwitcher = new LayerSwitcher();
     this.map.addControl(layerSwitcher);
+    this.mapSelectionMarker = new Overlay({
+      element: document.getElementById('map-selection-marker'),
+      positioning: 'center-center',
+    });
+    this.map.addOverlay(this.mapSelectionMarker);
     this.drawContext();
     this.drawObservations();
   },
 };
 </script>
 
-<style>
-  .layer-switcher {
-    top:5em;
-  }
-  .layer-switcher button {
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgo8c3ZnIGlkPSJzdmcyIiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxOS45OTYiIHdpZHRoPSIyMCIgdmVyc2lvbj0iMS4xIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHZpZXdCb3g9IjAgMCAxOS45OTk5OTggMTkuOTk2MDk0Ij4KIDxtZXRhZGF0YSBpZD0ibWV0YWRhdGE3Ij4KICA8cmRmOlJERj4KICAgPGNjOldvcmsgcmRmOmFib3V0PSIiPgogICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CiAgICA8ZGM6dHlwZSByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIi8+CiAgICA8ZGM6dGl0bGUvPgogICA8L2NjOldvcms+CiAgPC9yZGY6UkRGPgogPC9tZXRhZGF0YT4KIDxnIGlkPSJsYXllcjEiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0zNzIuODYgLTQzMy43OSkiPgogIDxnIGlkPSJnNDE0OCIgdHJhbnNmb3JtPSJtYXRyaXgoLjA1MjA3MCAwIDAgLjA1MjA3MCAzNjkuNTMgNDMwLjQ2KSIgZmlsbD0iI2ZmZiI+CiAgIDxwYXRoIGlkPSJwYXRoNDEzOCIgZD0ibTQzNC44IDEzNy42LTE0OS40LTY4LjFjLTE2LjItNy40LTQyLjctNy40LTU4LjkgMGwtMTQ5LjMgNjguMWMtMTcuNiA4LTE3LjYgMjEuMSAwIDI5LjFsMTQ4IDY3LjVjMTYuOSA3LjcgNDQuNyA3LjcgNjEuNiAwbDE0OC02Ny41YzE3LjYtOCAxNy42LTIxLjEgMC0yOS4xem0tMjA5LjYgMjM3LjYtOTkuOC00NS41Yy00LjItMS45LTkuMS0xLjktMTMuMyAwbC0zNC45IDE1LjljLTE3LjYgOC0xNy42IDIxLjEgMCAyOS4xbDE0OCA2Ny41YzE2LjkgNy43IDQ0LjcgNy43IDYxLjYgMGwxNDgtNjcuNWMxNy42LTggMTcuNi0yMS4xIDAtMjkuMWwtMzQuOS0xNS45Yy00LjItMS45LTkuMS0xLjktMTMuMyAwbC05OS44IDQ1LjVjLTE2LjkgNy43LTQ0LjcgNy43LTYxLjYgMHoiLz4KICAgPHBhdGggaWQ9InBhdGg0MTQwIiBkPSJtNDM0LjggMjQxLjYtMzEuNy0xNC40Yy00LjItMS45LTktMS45LTEzLjIgMGwtMTA4IDQ4LjljLTE1LjMgNS4yLTM2LjYgNS4yLTUxLjkgMGwtMTA4LTQ4LjljLTQuMi0xLjktOS0xLjktMTMuMiAwbC0zMS43IDE0LjRjLTE3LjYgOC0xNy42IDIxLjEgMCAyOS4xbDE0OCA2Ny41YzE2LjkgNy43IDQ0LjcgNy43IDYxLjYgMGwxNDgtNjcuNWMxNy43LTggMTcuNy0yMS4xIDAuMS0yOS4xeiIvPgogIDwvZz4KIDwvZz4KPC9zdmc+Cg==');
-  }
+<style lang="stylus">
+  @import '~variables'
 
-  .layer-switcher .panel {
-    padding: 0 1em 0 0;
-    margin: 0;
-    border: 1px solid #999;
-    border-radius: 4px;
-    background-color: rgba(119,119,119,0.5);
-    color: white;
-  }
+  .layer-switcher
+    top 5em
+    button
+      background-image url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgo8c3ZnIGlkPSJzdmcyIiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIxOS45OTYiIHdpZHRoPSIyMCIgdmVyc2lvbj0iMS4xIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHZpZXdCb3g9IjAgMCAxOS45OTk5OTggMTkuOTk2MDk0Ij4KIDxtZXRhZGF0YSBpZD0ibWV0YWRhdGE3Ij4KICA8cmRmOlJERj4KICAgPGNjOldvcmsgcmRmOmFib3V0PSIiPgogICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CiAgICA8ZGM6dHlwZSByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIi8+CiAgICA8ZGM6dGl0bGUvPgogICA8L2NjOldvcms+CiAgPC9yZGY6UkRGPgogPC9tZXRhZGF0YT4KIDxnIGlkPSJsYXllcjEiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0zNzIuODYgLTQzMy43OSkiPgogIDxnIGlkPSJnNDE0OCIgdHJhbnNmb3JtPSJtYXRyaXgoLjA1MjA3MCAwIDAgLjA1MjA3MCAzNjkuNTMgNDMwLjQ2KSIgZmlsbD0iI2ZmZiI+CiAgIDxwYXRoIGlkPSJwYXRoNDEzOCIgZD0ibTQzNC44IDEzNy42LTE0OS40LTY4LjFjLTE2LjItNy40LTQyLjctNy40LTU4LjkgMGwtMTQ5LjMgNjguMWMtMTcuNiA4LTE3LjYgMjEuMSAwIDI5LjFsMTQ4IDY3LjVjMTYuOSA3LjcgNDQuNyA3LjcgNjEuNiAwbDE0OC02Ny41YzE3LjYtOCAxNy42LTIxLjEgMC0yOS4xem0tMjA5LjYgMjM3LjYtOTkuOC00NS41Yy00LjItMS45LTkuMS0xLjktMTMuMyAwbC0zNC45IDE1LjljLTE3LjYgOC0xNy42IDIxLjEgMCAyOS4xbDE0OCA2Ny41YzE2LjkgNy43IDQ0LjcgNy43IDYxLjYgMGwxNDgtNjcuNWMxNy42LTggMTcuNi0yMS4xIDAtMjkuMWwtMzQuOS0xNS45Yy00LjItMS45LTkuMS0xLjktMTMuMyAwbC05OS44IDQ1LjVjLTE2LjkgNy43LTQ0LjcgNy43LTYxLjYgMHoiLz4KICAgPHBhdGggaWQ9InBhdGg0MTQwIiBkPSJtNDM0LjggMjQxLjYtMzEuNy0xNC40Yy00LjItMS45LTktMS45LTEzLjIgMGwtMTA4IDQ4LjljLTE1LjMgNS4yLTM2LjYgNS4yLTUxLjkgMGwtMTA4LTQ4LjljLTQuMi0xLjktOS0xLjktMTMuMiAwbC0zMS43IDE0LjRjLTE3LjYgOC0xNy42IDIxLjEgMCAyOS4xbDE0OCA2Ny41YzE2LjkgNy43IDQ0LjcgNy43IDYxLjYgMGwxNDgtNjcuNWMxNy43LTggMTcuNy0yMS4xIDAuMS0yOS4xeiIvPgogIDwvZz4KIDwvZz4KPC9zdmc+Cg==')
+    .panel
+      padding 0 1em 0 0
+      margin 0
+      border 1px solid #999
+      border-radius 4px
+      background-color rgba(119,119,119,0.5)
+      color white
+  #map-selection-marker
+    font-size 28px
+    color white
+    mix-blend-mode exclusion
+
 </style>

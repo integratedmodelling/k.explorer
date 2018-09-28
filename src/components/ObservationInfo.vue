@@ -239,19 +239,17 @@ export default {
     &.with-histogram
       height "calc(100% - %s)" % $oi-histogram-height
 
-  .oi-metadata-name {
+  .oi-metadata-name
     color $main-control-yellow
     text-shadow 0 0 1px #666
     padding 0 0 2px 5px
-  }
 
-  .oi-metadata-value {
+  .oi-metadata-value
     color white
     margin 0 5px 5px 5px
     background-color #666
     box-shadow inset 0px 0px 0px 1px #666
     padding 2px 0 2px 5px
-  }
 
   #oi-scroll-container
     height 100%
@@ -261,9 +259,8 @@ export default {
   #oi-slider
     height $oi-slider-height
 
-  #oi-slider .q-slider {
+  #oi-slider .q-slider
     padding 0 10px 0 5px
-  }
 
   #oi-mapinfo-container
     height $oi-mapinfo-min-height
@@ -277,7 +274,7 @@ export default {
 
   .oi-pixel-indicator
     position absolute
-    background-color $main-control-red
+    background-color white
     mix-blend-mode difference
 
   #oi-pixel-h
@@ -369,7 +366,7 @@ export default {
     transition none
     font-style normal
 
-  .oi-tooltip {
+  .oi-tooltip
     background-color #444
-  }
+
 </style>
