@@ -50,11 +50,13 @@ export const IN = Object.freeze({
   CLASS_QUERY: 'Query',
   CLASS_USERCONTEXTCHANGE: 'UserContextChange',
   CLASS_NOTIFICATION: 'Notification',
+  CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
 
   PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
   PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
   PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
   PAYLOAD_CLASS_SEARCHRESPONSE: 'SearchResponse',
+  PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
   PAYLOAD_CLASS_EMPTY: 'String',
 
   TYPE_TASKSTARTED: 'TaskStarted',
@@ -70,4 +72,5 @@ export const IN = Object.freeze({
   TYPE_MODIFIEDOBSERVATION: 'ModifiedObservation',
   TYPE_QUERYRESULT: 'QueryResult',
   TYPE_RESETCONTEXT: 'ResetContext',
+  TYPE_SCALEDEFINED: 'ScaleDefined',
 });

@@ -256,4 +256,8 @@ export default {
       state.lasts.splice(idxToRemove, 1);
     }
   },
+
+  SET_SCALE_REFERENCE: (state, scaleReference) => {
+    state.scaleReference = scaleReference;
+  },
 };

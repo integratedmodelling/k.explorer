@@ -44,6 +44,10 @@ const PARSERS = {
     addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received context reset');
     dispatch('data/resetContext', null, { root: true });
   },
+  [IN.TYPE_SCALEDEFINED]: (scaleReference, dispatch) => {
+    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
+    dispatch('data/setScaleReference', scaleReference, { root: true });
+  },
   // k.LAB log messages
   [IN.TYPE_DEBUG]: (message, dispatch) => {
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, message);

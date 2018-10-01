@@ -258,4 +258,8 @@ export default {
     commit('STORE_RAW_SEARCH_RESULT', results);
   },
 
+  setScaleReference({ commit }, scaleReference) {
+    console.debug(`Set scale reference: ${JSON.stringify(scaleReference)}`);
+    commit('SET_SCALE_REFERENCE', scaleReference);
+  },
 };

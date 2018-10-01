@@ -39,6 +39,8 @@ export default {
    */
   session: state => state.session,
 
+  scaleReference: state => state.scaleReference,
+
   /**
    * The search results
    */

@@ -39,6 +39,44 @@ export default {
   context: null,
 
   /**
+   * Contain scale info
+   *"properties" : {
+    "east" : {
+      "type" : "number"
+    },
+    "west" : {
+      "type" : "number"
+    },
+    "north" : {
+      "type" : "number"
+    },
+    "south" : {
+      "type" : "number"
+    },
+    "start" : {
+      "type" : "integer"
+    },
+    "end" : {
+      "type" : "integer"
+    },
+    "step" : {
+      "type" : "integer"
+    },
+    "spaceScale" : {
+      "type" : "integer"
+    },
+    "timeScale" : {
+      "type" : "integer"
+    },
+    "resolution" : {
+      "type" : "number"
+    },
+    "resolutionDescription" : {
+      "type" : "string"
+    }
+   */
+  scaleReference: null,
+  /**
    * Store of all observation data
    * Observation will add a viewerIdx with the id of the assigned viewer
    * OBSERVATION (only remarcables fields):
