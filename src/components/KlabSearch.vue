@@ -58,6 +58,8 @@
 </template>
 
 <script>
+/* eslint-disable no-underscore-dangle */
+
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
@@ -215,13 +217,15 @@ export default {
           }
           event.preventDefault();
           break;
-        case 32: // SPACE BAR is not allowed in search
+        case 32: // SPACE BAR is not allowed in search but if is the first char, we ask for suggestions
           event.preventDefault();
-          this.$q.notify({
-            message: this.$t('messages.noSpaceAllowedInSearch'),
-            type: 'warning',
-            timeout: 1500,
-          });
+          if (!this.askForSuggestion()) {
+            this.$q.notify({
+              message: this.$t('messages.noSpaceAllowedInSearch'),
+              type: 'warning',
+              timeout: 1500,
+            });
+          }
           break;
         case 37: // left arrow
           if (!this.suggestionShowed && this.searchInput.$refs.input.selectionStart === 0
@@ -233,6 +237,7 @@ export default {
             event.preventDefault();
           }
           break;
+        /*
         case 38: // Arrow up
           if (!this.suggestionShowed) {
             this.searchHistoryEvent(1, event);
@@ -243,6 +248,7 @@ export default {
             this.searchHistoryEvent(-1, event);
           }
           break;
+        */
         default:
           if (event.keyCode < 65 || event.keyCode > 90) {
             if (event.keyCode !== 39) { // right arrow
@@ -283,6 +289,7 @@ export default {
         maxResults: this.maxResults,
         session: this.$store.state.data.session,
         cancelSearch: false,
+        defaultResults: terms === '',
         queryString: this.actualSearchString, // terms split space
       }).body);
       this.setSpinner({
@@ -365,6 +372,22 @@ export default {
           event.preventDefault();
         }
       }
+    },
+    askForSuggestion() {
+      if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
+        this.search('', (results) => {
+          const self = this.autocompleteEl;
+          self.__clearSearch()
+          if (Array.isArray(results) && results.length > 0) {
+            self.results = results;
+            self.__showResults();
+            return;
+          }
+          self.hide();
+        });
+        return true;
+      }
+      return false;
     },
   },
   watch: {
@@ -486,6 +509,8 @@ export default {
           this.searchHistoryEvent(1);
         } else if (newValue === 'ArrowDown') {
           this.searchHistoryEvent(-1);
+        } else if (newValue === ' ') {
+          this.askForSuggestion();
         } else {
           this.actualSearchString += newValue;
         }
@@ -500,6 +525,8 @@ export default {
     if (this.searchLostChar !== null) {
       if (this.searchLostChar === 'ArrowUp') {
         this.searchHistoryEvent(1);
+      } else if (this.searchLostChar === ' ') {
+        this.askForSuggestion();
       } else {
         this.actualSearchString = this.searchLostChar;
       }
