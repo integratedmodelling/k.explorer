@@ -59,6 +59,7 @@ export default {
           idx: parent.children.length,
           siblingCount: parent.siblingCount,
         });
+        parent.disabled = false; // if was empty and now has children, it cannot be disabled
       } else {
         console.warn(`Orphan founded with id ${node.id}`);
         state.orphans.push(node);
@@ -130,6 +131,7 @@ export default {
         child.siblingCount = children.length;
       });
       main.children.push(...children);
+      main.disabled = false; // if was empty and now has children, it cannot be disabled
     } else {
       console.log('No children found');
     }

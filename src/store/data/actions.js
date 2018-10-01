@@ -108,6 +108,7 @@ export default {
       observation.folderId = folderId;
       // ask for children
       if (observation.children.length > 0) {
+        observation.disabled = false; // if is empty but has children, cannot be disabled
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child, toTree });
         });
