@@ -259,7 +259,7 @@ export default {
   },
 
   setScaleReference({ commit }, scaleReference) {
-    console.debug(`Set scale reference: ${JSON.stringify(scaleReference)}`);
+    console.debug(`Set scale reference: ${JSON.stringify(scaleReference, null, 2)}`);
     commit('SET_SCALE_REFERENCE', scaleReference);
   },
 };

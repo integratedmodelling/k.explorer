@@ -127,6 +127,7 @@ module.exports = function (ctx) {
         'QTabs',
         'QTab',
         'QSlider',
+        'QPopover',
       ],
       directives: [
         'Ripple',

@@ -22,6 +22,8 @@ export default {
     treeTab: 'Albero',
     noHistogramData: 'No data',
     noInfoValues: '',
+    noScaleReference: '',
+    mcMenuScale: 'Scala attuale:',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

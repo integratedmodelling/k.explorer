@@ -63,6 +63,37 @@
         <div id="mc-text-div" class="text-white" v-else>
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
+        <q-btn
+          id="mc-menubutton"
+          icon="mdi-chevron-right"
+          color="black"
+          size="sm"
+          round
+          flat
+          class="absolute-top-right"
+          v-show="!hasContext && !isHidden && !searchIsActive"
+        >
+          <q-popover
+            v-if="!searchIsActive"
+            anchor="top right"
+            selr="top left"
+          >
+            <q-list dense>
+              <q-list-header style="padding: 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
+              <q-item-separator></q-item-separator>
+              <q-item>
+                <q-item-main>
+                  <scale-reference width="150px" :light="true"></scale-reference>
+                </q-item-main>
+              </q-item>
+              <q-item>
+                <q-item-main>
+                  <scale-reference width="150px" :light="true" scaleType="time"></scale-reference>
+                </q-item-main>
+              </q-item>
+            </q-list>
+          </q-popover>
+        </q-btn>
       </q-card-title>
 
       <q-card-main
@@ -103,9 +134,18 @@
             >{{ $t('tooltips.treePane') }}</q-tooltip>
           </q-icon></div>
         </div>
-
+        <!-- scale -->
+        <!-- SPACE -->
+        <div id="mc-spacereference" class="mc-scalereference">
+          <scale-reference width="110px" scale-type="space"></scale-reference>
+        </div>
+        <!-- TIME -->
+        <div id="mc-timereference" class="mc-scalereference">
+          <div class="mc-separator" style="left: -10px"></div>
+          <scale-reference width="110px" scale-type="time"></scale-reference>
+        </div>
         <div id="mc-actions">
-          <div class="separator" style="left: -5px"></div>
+          <div class="mc-separator" style="left: -5px"></div>
           <!-- MAP BUTTON -->
           <div class="mc-button mc-action"
                @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
@@ -149,7 +189,7 @@
             >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
           </q-icon></div>
           -->
-          <div class="separator" style="right: -10px"></div>
+          <div class="mc-separator" style="right: -10px"></div>
         </div>
         <!-- RESET CONTEXT or INTERRUPT TASK-->
         <div class="mc-button"
@@ -193,6 +233,7 @@ import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
+import ScaleReference from 'components/ScaleReference.vue';
 
 const { width, height } = dom;
 
@@ -345,6 +386,7 @@ export default {
     Draggable,
   },
   components: {
+    ScaleReference,
     KlabTreePane,
     KlabLogPane,
     KlabSpinner,
@@ -436,7 +478,17 @@ export default {
     position absolute
     right 55px
   }
-  #mc-actions .separator {
+  .mc-scalereference {
+    position absolute
+    height 37px
+  }
+  #mc-spacereference {
+    left 100px
+  }
+  #mc-timereference {
+    left 230px
+  }
+  .mc-separator {
     width 2px
     height 60%
     position absolute
@@ -450,7 +502,7 @@ export default {
     color $main-control-red
   }
   .mc-button {
-    padding: 6px 10px;
+    padding: 5px 10px 7px 10px;
     cursor: pointer;
     display: inline-block;
     font-size: 22px;
@@ -465,7 +517,7 @@ export default {
     cursor: auto;
   }
   .mc-action {
-    padding: 6px;
+    padding: 5px 6px 7px 6px;
     position: relative;
   }
   .mc-tab.active {
@@ -500,4 +552,7 @@ export default {
   .lot-of-flow {
     transition: top 0.05s ease 0s, left 0.05s ease 0s;
   }
+  #mc-menubutton
+    top 10px
+    right 10px
 </style>
