@@ -139,13 +139,13 @@
         <div id="mc-spacereference" class="mc-scalereference">
           <scale-reference width="110px" scale-type="space"></scale-reference>
         </div>
+        <div class="mc-separator" style="right: 290px"></div>
         <!-- TIME -->
         <div id="mc-timereference" class="mc-scalereference">
-          <div class="mc-separator" style="left: -10px"></div>
           <scale-reference width="110px" scale-type="time"></scale-reference>
         </div>
+        <div class="mc-separator" style="right: 160px"></div>
         <div id="mc-actions">
-          <div class="mc-separator" style="left: -5px"></div>
           <!-- MAP BUTTON -->
           <div class="mc-button mc-action"
                @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
@@ -189,8 +189,8 @@
             >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
           </q-icon></div>
           -->
-          <div class="mc-separator" style="right: -10px"></div>
         </div>
+        <div class="mc-separator" style="right: 45px"></div>
         <!-- RESET CONTEXT or INTERRUPT TASK-->
         <div class="mc-button"
              id="mc-reset-context"
@@ -471,8 +471,9 @@ export default {
   #context-actions {
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    padding: 0
-    margin: 0
+    padding: 0;
+    margin: 0;
+    position: relative;
   }
   #mc-actions {
     position absolute
@@ -483,17 +484,17 @@ export default {
     height 37px
   }
   #mc-spacereference {
-    left 100px
+    right 305px
   }
   #mc-timereference {
-    left 230px
+    right 175px
   }
   .mc-separator {
     width 2px
     height 60%
     position absolute
     top 20%
-    border-left 1px solid #333
+    border-left 1px solid #444
     border-right 1px solid #666
   }
   #mc-reset-context, #mc-interrupt-task {

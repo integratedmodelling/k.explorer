@@ -35,7 +35,7 @@
       </div>
     </div>
     <!-- histogram and colormap container FIXED WIDTH -->
-    <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${observationInfo.dataSummary.histogram.length * 4}px` }"  @mouseleave="resetInfoShowed()">
+    <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${Math.max(observationInfo.dataSummary.histogram.length * 4, 256)}px` }"  @mouseleave="resetInfoShowed()">
       <!-- histogram  % to fill container -->
       <div id="oi-histogram" v-if="hasHistogram" :class="[this.observationInfo.colormap !== null ? 'with-colormap' : '']">
         <div
