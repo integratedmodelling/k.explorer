@@ -88,6 +88,7 @@ export default {
         message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(this.map.getView()
           .calculateExtent(this.map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
+        console.error(error);
         this.addToKexplorerLog({
           type: this.$constants.TYPE_ERROR,
           payload: {
