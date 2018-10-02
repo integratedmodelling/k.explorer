@@ -355,9 +355,12 @@ export default {
     },
     // helper to reset the input search field (if tomorrow will be more complex)
     resetSearchInput() {
-      this.actualToken = this.actualSearchString;
-      this.inputSearchColor = 'black';
+      this.$nextTick(() => {
+        this.actualToken = this.actualSearchString;
+        this.inputSearchColor = 'black';
+      });
     },
+    /*
     searchHistoryEvent(index, event = null) {
       if (this.actualToken === '' && this.searchHistory.length > 0
         && (this.acceptedTokens.length === 0 || this.searchHistoryIndex >= 0)
@@ -373,17 +376,17 @@ export default {
         }
       }
     },
+    */
     askForSuggestion() {
       if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
         this.search('', (results) => {
-          const self = this.autocompleteEl;
-          self.__clearSearch()
+          this.autocompleteEl.__clearSearch();
           if (Array.isArray(results) && results.length > 0) {
-            self.results = results;
-            self.__showResults();
-            return;
+            this.autocompleteEl.results = results;
+            this.autocompleteEl.__showResults();
+          } else {
+            this.autocompleteEl.hide();
           }
-          self.hide();
         });
         return true;
       }
@@ -505,11 +508,13 @@ export default {
     // if a char was pressed without search input focus, is possible that it will be not write, so we do it
     searchLostChar(newValue) {
       if (newValue !== null) { // && this.actualToken === '') {
+        /*
         if (newValue === 'ArrowUp') {
           this.searchHistoryEvent(1);
         } else if (newValue === 'ArrowDown') {
           this.searchHistoryEvent(-1);
-        } else if (newValue === ' ') {
+        } else */
+        if (newValue === ' ') {
           this.askForSuggestion();
         } else {
           this.actualSearchString += newValue;
@@ -523,9 +528,10 @@ export default {
     this.searchInput = this.$refs['mc-search-input'];
     this.autocompleteEl = this.$refs['mc-autocomplete'];
     if (this.searchLostChar !== null) {
-      if (this.searchLostChar === 'ArrowUp') {
+      /* if (this.searchLostChar === 'ArrowUp') {
         this.searchHistoryEvent(1);
-      } else if (this.searchLostChar === ' ') {
+      } else */
+      if (this.searchLostChar === ' ') {
         this.askForSuggestion();
       } else {
         this.actualSearchString = this.searchLostChar;
