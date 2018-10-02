@@ -99,7 +99,8 @@ export default {
       if (message && message.body) {
         this.sendStompMessage(message.body);
         this.addToKexplorerLog({
-          type: message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARNING,
+          // message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARNING, // TODO need to be warning? I think no
+          type: this.$constants.TYPE_INFO,
           payload: {
             message: `Message ${message.validated ? '' : 'not '} validated`,
             attach: message,
