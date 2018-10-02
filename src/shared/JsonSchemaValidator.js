@@ -75,6 +75,9 @@ export default class {
       })
         .then(({ data }) => {
           if (typeof data === 'object') {
+            if (Object.keys(data).length === 0) {
+              throw Error(`Schema on url ${url} is empty, check it`);
+            }
             // eslint-disable-next-line no-restricted-syntax
             for (const [key, schema] of Object.entries(data)) {
               this.djvEnv.addSchema(key, schema);
@@ -86,13 +89,13 @@ export default class {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.warn(error);
           clearTimeout(this.initTimeout);
-          // try other time in 5 seconds
+          // try other time in one minute
           this.initTimeout = setTimeout(() => {
             this.init();
             console.info('Trying to connect to donwload schema(s)');
-          }, 5000);
+          }, 60000);
           // throw new Error(`Error initializing validator: ${error}`);
         });
     }
