@@ -45,12 +45,13 @@
       <q-autocomplete
         @search="search"
         @selected="selected"
-        @show="suggestionShowed = true"
+        @show="onAutocompleteShow"
         @hide="onAutocompleteHide"
         :debounce="200"
         :min-characters="2"
-        :max-results="15"
+        :max-results="50"
         ref="mc-autocomplete"
+        id="mc-autocomplete"
       ></q-autocomplete>
     </q-input>
     </div>
@@ -64,6 +65,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
 import Vue from 'vue';
+import SimpleBar from 'simplebar';
 
 export default {
   name: 'KlabSearch',
@@ -90,6 +92,7 @@ export default {
       suggestionShowed: false,
       searchTimeout: null,
       searchHistoryIndex: -1,
+      autocompleteSB: null,
     };
   },
   computed: {
@@ -126,6 +129,26 @@ export default {
     onInputFocus(focused) {
       this.searchFocus({ focused });
       this.actualToken = this.actualSearchString;
+    },
+    onAutocompleteShow() {
+      this.suggestionShowed = true;
+      if (this.autocompleteSB === null) {
+        this.$nextTick(() => {
+          const autocomplete = document.getElementById('mc-autocomplete');
+          if (autocomplete !== null) {
+            // eslint-disable-next-line no-new
+            this.autocompleteSB = new SimpleBar(autocomplete.firstChild).getContentElement();
+          }
+        });
+      } else {
+        this.$nextTick(() => {
+          const elements = document.querySelectorAll('#mc-autocomplete .q-item');
+          elements.forEach((el) => {
+            el.remove();
+            this.autocompleteSB.append(el);
+          });
+        });
+      }
     },
     onAutocompleteHide() {
       this.suggestionShowed = false;
@@ -454,21 +477,32 @@ export default {
             desc = mainSemanticType;
           }
         }
-        results.push({
-          value: match.name,
-          label: match.name,
-          labelLines: 1,
-          sublabel: match.description,
-          sublabelLines: 1,
-          letter: desc.symbol,
-          leftInverted: true,
-          leftColor: desc.color,
-          rgb: desc.rgb,
-          id: match.id,
-          index: this.acceptedTokens.length + 1,
-          selected: false,
-          // stamp: `${index + 1}/${totMatches}`, TODO is useless?
-        });
+        if (match.matchType === 'SEPARATOR') {
+          results.push({
+            value: match.name,
+            label: match.name,
+            labelLines: 1,
+            rgb: desc.rgb,
+            selected: false,
+            disable: true,
+          });
+        } else {
+          results.push({
+            value: match.name,
+            label: match.name,
+            labelLines: 1,
+            sublabel: match.description,
+            sublabelLines: 1,
+            letter: desc.symbol,
+            leftInverted: true,
+            leftColor: desc.color,
+            rgb: desc.rgb,
+            id: match.id,
+            index: this.acceptedTokens.length + 1,
+            selected: false,
+            // stamp: `${index + 1}/${totMatches}`, TODO is useless?
+          });
+        }
       });
       if (results.length === 0) {
         this.$q.notify({
@@ -573,4 +607,35 @@ export default {
     max-width: $main-control-width !important;
     border-radius: 10px;
   }
+  #mc-autocomplete .q-item.text-faded.q-select-highlight {
+    background-color: transparent;
+  }
+  #mc-autocomplete .q-item.text-faded {
+    padding: 8px 16px 5px 16px;
+    min-height: 0;
+    font-size: 0.8em;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+  }
+  /*  To hide the scrollbar
+   #mc-autocomplete::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
+   OR
+  #mc-autocomplete {
+    width: 100%;
+    height: 100%
+    overflow: hidden;
+    padding-bottom: 15px;
+  }
+
+  #mc-autocomplete .q-list{
+    width: calc(100% + 14px);
+    height: 100%;
+    overflow-y: scroll;
+    padding-right: 0;
+    box-sizing: content-box;
+  }
+  */
 </style>

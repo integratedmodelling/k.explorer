@@ -125,6 +125,18 @@ export default {
       color: 'sem-types',
       rgb: 'rgb(38, 50, 56)',
     },
+    PRESET_OBSERVABLE: { // subject returned when using default results
+      label: 'Preset observable',
+      symbol: 'Po',
+      color: 'sem-preset-observable',
+      rgb: 'rgb(240, 240, 240)',
+    },
+    SEPARATOR: {
+      label: 'Separator',
+      symbol: 'S',
+      color: 'sem-separator',
+      rgb: 'rgb(10, 10, 10)',
+    },
   },
   SEMANTIC_TYPES: {
     QUALITY: {
