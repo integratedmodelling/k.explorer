@@ -25,6 +25,7 @@
               :color="modalColor"
               :size="40"
               :ball="18"
+              :animated="modalAnimated"
               wrapperId="modal-connection-status"
             ></klab-spinner>
             <span>{{ modalText  }}</span>
@@ -90,6 +91,14 @@ export default {
         [this.$constants.CONNECTION_DOWN]: colors.getBrand('warning'),
         [this.$constants.CONNECTION_WORKING]: colors.getBrand('info'),
         [this.$constants.CONNECTION_ERROR]: colors.getBrand('negative'),
+      }[this.connectionState];
+    },
+    modalAnimated() {
+      return {
+        [this.$constants.CONNECTION_UNKNOWN]: false,
+        [this.$constants.CONNECTION_DOWN]: false,
+        [this.$constants.CONNECTION_WORKING]: true,
+        [this.$constants.CONNECTION_ERROR]: false,
       }[this.connectionState];
     },
   },
