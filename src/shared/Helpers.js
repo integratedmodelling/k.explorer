@@ -106,6 +106,7 @@ const Helpers = {
       children: [],
       tickable: observation.viewerIdx !== null && !observation.empty,
       disabled: observation.empty,
+      empty: observation.empty, // disabled can change
       actions: observation.actions,
       header: 'default',
       folderId: observation.folderId,

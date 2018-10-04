@@ -25,8 +25,18 @@
                 class="tree-q-tooltip"
               >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
             </span>
-            <q-chip class="node-chip transparent" small dense text-color="grey-9">
-              {{ typeof prop.node.idx !== 'undefined' ? $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) : '' }}
+            <q-btn
+              round
+              flat
+              size="sm"
+              icon="mdi-arrow-down"
+              class="kt-download"
+              :style="{ right: typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
+              @click="askDownload(prop.node.id, $event)"
+              v-if="!prop.node.empty"
+            ></q-btn>
+            <q-chip v-show="typeof prop.node.idx !== 'undefined'" class="node-chip transparent" small dense text-color="grey-9">
+              {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) }}
             </q-chip>
           </div>
           <div slot="header-folder" slot-scope="prop">
@@ -43,7 +53,17 @@
                 class="tree-q-tooltip"
               >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
             </span>
-            <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
+            <q-btn
+              round
+              flat
+              size="sm"
+              icon="mdi-arrow-down"
+              class="kt-download"
+              :style="{ right: '50px' }"
+              @click="askDownload(prop.node.id, $event)"
+              v-if="!prop.node.empty"
+            ></q-btn>
+            <q-chip class="node-chip transparent" small dense text-color="grey-9">{{ prop.node.children.length }}</q-chip>
           </div>
         </q-tree>
       </div>
@@ -159,6 +179,25 @@ export default {
         return text.substring(1, text.length - 1);
       }
       return text;
+    },
+    askDownload(id, event) {
+      /*
+      axios.post(`order-results/${id}/export-pdf`, {
+        data: {
+         firstName: 'Fred'
+       }
+        responseType: 'arraybuffer'
+      }).then((response) => {
+        console.log(response)
+
+        let blob = new Blob([response.data], { type: 'application/pdf' } ),
+            url = window.URL.createObjectURL(blob)
+
+        window.open(url); // Mostly the same, I was just experimenting with different approaches, tried link.click, iframe and other solutions
+        })
+       */
+      event.stopPropagation();
+      console.log(`DOWNLOAD ${id}`);
     },
   },
   watch: {
@@ -320,7 +359,27 @@ export default {
   .q-chip.node-chip {
     position:absolute;
     right: 10px;
+    height: 20px;
+    min-width: 20px;
+    top: 4px;
+    text-align: center;
   }
+  .kt-download
+    position absolute
+    top 4px
+    display none
+    z-index 9999
+    color #eee
+    border 2px solid #eee
+    width 20px
+    height 20px
+    padding-left 1px
+  .q-tree-node-header:hover
+    .kt-download
+      display block
+      &:hover
+        background-color #eee
+        color #666
     /*
   .node-emphasized::after {
     font-family: Ionicons;
@@ -367,4 +426,5 @@ export default {
   #kt-container .q-tree-children {
     margin-bottom: 4px;
   }
+
 </style>

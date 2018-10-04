@@ -247,7 +247,6 @@ export default {
    */
   SHAPE_POLYGON: 'POLYGON',
   SHAPE_POINT: 'POINT',
-  SHAPE_EMPTY: 'EMPTY',
 
   PARAM_VIEWPORT_SIZE: 800, // default viewport for image layer
   PARAM_VIEWPORT_MAX_SIZE: 7680, // 8K, possibly highest on August 2018
