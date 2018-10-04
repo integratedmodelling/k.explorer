@@ -31,39 +31,23 @@
               size="sm"
               icon="mdi-arrow-down"
               class="kt-download"
-              :style="{ right: typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
-              @click="askDownload(prop.node.id, $event)"
+              :style="{ right: prop.node.children.length > 0 ? '40px' : typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
               v-if="!prop.node.empty"
-            ></q-btn>
-            <q-chip v-show="typeof prop.node.idx !== 'undefined'" class="node-chip transparent" small dense text-color="grey-9">
-              {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) }}
-            </q-chip>
+              @click.native="askDownload($event, prop.node.id, 'png')"
+            >
+            </q-btn>
+            <template v-if="prop.node.children.length > 0">
+              <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
+            </template>
+            <template else>
+              <q-chip v-show="typeof prop.node.idx !== 'undefined'" class="node-chip transparent" small dense text-color="grey-9">
+                {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) }}
+              </q-chip>
+            </template>
           </div>
           <div slot="header-folder" slot-scope="prop">
             <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
             <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
-          </div>
-          <div slot="header-main" slot-scope="prop">
-            <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
-              <q-tooltip
-                :delay="300"
-                :offset="[0, 5]"
-                self="top left"
-                anchor="bottom middle"
-                class="tree-q-tooltip"
-              >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
-            </span>
-            <q-btn
-              round
-              flat
-              size="sm"
-              icon="mdi-arrow-down"
-              class="kt-download"
-              :style="{ right: '50px' }"
-              @click="askDownload(prop.node.id, $event)"
-              v-if="!prop.node.empty"
-            ></q-btn>
-            <q-chip class="node-chip transparent" small dense text-color="grey-9">{{ prop.node.children.length }}</q-chip>
           </div>
         </q-tree>
       </div>
@@ -103,6 +87,7 @@ export default {
       itemObservationId: null,
       askingForSiblings: false,
       scrollElement: null,
+      showPopover: null,
     };
   },
   computed: {
@@ -174,30 +159,36 @@ export default {
       this.enableContextMenu = false;
     },
     */
+
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
         return text.substring(1, text.length - 1);
       }
       return text;
     },
-    askDownload(id, event) {
-      /*
-      axios.post(`order-results/${id}/export-pdf`, {
-        data: {
-         firstName: 'Fred'
-       }
-        responseType: 'arraybuffer'
-      }).then((response) => {
-        console.log(response)
 
-        let blob = new Blob([response.data], { type: 'application/pdf' } ),
-            url = window.URL.createObjectURL(blob)
-
-        window.open(url); // Mostly the same, I was just experimenting with different approaches, tried link.click, iframe and other solutions
-        })
-       */
+    askDownload(event, observationId, extension, label = observationId) {
       event.stopPropagation();
-      console.log(`DOWNLOAD ${id}`);
+      Helpers.getAxiosContent(
+        `dw_${observationId}`,
+        `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
+        {
+          params: {
+            format: 'RASTER',
+            extension,
+          },
+          responseType: 'blob',
+        },
+        (response, callback) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${label}.${extension}`);
+          document.body.appendChild(link);
+          link.click();
+          callback();
+        },
+      );
     },
   },
   watch: {
@@ -378,7 +369,8 @@ export default {
     .kt-download
       display block
       &:hover
-        background-color #eee
+        background-color #fff
+        border none
         color #666
     /*
   .node-emphasized::after {

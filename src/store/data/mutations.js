@@ -108,7 +108,7 @@ export default {
       console.warn('No main observation found');
       return;
     }
-    main.header = 'main';
+    // main.header = 'main';
     // find index of first filtered occurence
     const firstOccurence = filtered[0];
     let folder = null;

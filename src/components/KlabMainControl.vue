@@ -440,7 +440,7 @@ export default {
     height 40px
 
   #spinner-lonely-div
-    positionabsolute
+    position absolute
     width 44px
     height 44px
 
