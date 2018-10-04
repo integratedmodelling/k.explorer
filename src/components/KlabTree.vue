@@ -341,12 +341,12 @@ export default {
   }
   #kt-container {
     /* removed 30px of padding and scrollbar padding-bottom */
-    max-height: "calc(%s - 30px)" % $main-control-max-height;
+    max-height "calc(90vh - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     padding: 10px 0
   }
   #kt-container.with-splitter {
     /* removed 30px of padding and scrollbar padding-bottom */
-    max-height: "calc(%s - 30px)" % ($main-control-max-height - $main-control-spc-height);
+    max-height "calc(90vh - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
   }
   .tree-q-tooltip {
     background-color #333
