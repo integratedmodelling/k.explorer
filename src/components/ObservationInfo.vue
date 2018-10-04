@@ -82,7 +82,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
-import Utils from 'shared/Utils';
+import Utils from 'shared/Helpers';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Layers } from 'shared/MapConstants';

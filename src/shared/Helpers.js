@@ -206,11 +206,10 @@ const Helpers = {
    * @param callback callback to call if 200 (expect to receive two params: response and callback to stop spinner)
    * @param errorCallback callback to call if error
    */
-  getAxiosContent(uid, url, params, callback, errorCallback = null) {
+  getAxiosContent(uid, url, parameters, callback, errorCallback = null) {
     store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: uid }, { root: true });
-    axiosInstance.get(url, {
-      params,
-    })
+
+    axiosInstance.get(url, parameters)
       .then((response) => {
         if (response) {
           callback(response, () => {
@@ -315,7 +314,7 @@ const Helpers = {
                   image.src = reader.result;
                   store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: src }, { root: true });
                   // load colormap if necesary
-                  Helpers.getAxiosContent(`cm_${observation.id}`, url, { format: 'COLORMAP' }, (colormapResponse, colormapCallback) => {
+                  Helpers.getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
                     if (colormapResponse && colormapResponse.data) {
                       const colormap = colormapResponse.data;
                       if (colormap.type === 'RAMP' && colormap.colors.length > 1 && colormap.colors.length < 256) {
