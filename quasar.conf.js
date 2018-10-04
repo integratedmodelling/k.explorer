@@ -137,6 +137,7 @@ module.exports = function (ctx) {
       plugins: [
         'Notify',
         'Cookies',
+        'Dialog',
       ],
       i18n: 'en-us',
     },

@@ -31,9 +31,11 @@
               size="sm"
               icon="mdi-arrow-down"
               class="kt-download"
-              :style="{ right: prop.node.children.length > 0 ? '40px' : typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
+              :style="{ right: prop.node.children.length > 0 ? '35px' : typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
               v-if="!prop.node.empty"
-              @click.native="askDownload($event, prop.node.id, 'png')"
+              @click.native="askForOutputFormat($event, prop.node.id, [
+                { label: 'PNG format', value: 'png' },
+              ])"
             >
             </q-btn>
             <template v-if="prop.node.children.length > 0">
@@ -166,16 +168,31 @@ export default {
       }
       return text;
     },
-
-    askDownload(event, observationId, extension, label = observationId) {
+    askForOutputFormat(event, observationId, formats) {
       event.stopPropagation();
+      this.$q.dialog({
+        title: this.$t('label.titleOutputFormat'),
+        message: this.$t('label.askForOuputFormat'),
+        options: {
+          type: 'radio',
+          model: formats[0].value,
+          items: formats,
+        },
+        cancel: true,
+        preventClose: false,
+        color: 'info',
+      }).then((data) => {
+        this.askDownload(observationId, data);
+      });
+    },
+    askDownload(observationId, outputFormat, label = observationId) {
       Helpers.getAxiosContent(
         `dw_${observationId}`,
         `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
         {
           params: {
             format: 'RASTER',
-            extension,
+            outputFormat,
           },
           responseType: 'blob',
         },
@@ -183,7 +200,7 @@ export default {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `${label}.${extension}`);
+          link.setAttribute('download', `${label}.${outputFormat}`);
           document.body.appendChild(link);
           link.click();
           callback();

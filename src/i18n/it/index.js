@@ -24,6 +24,8 @@ export default {
     noInfoValues: '',
     noScaleReference: '',
     mcMenuScale: 'Scala attuale:',
+    titleOutputFormat: 'Download osservazione',
+    askForOuputFormat: 'Selezionare un formato',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
