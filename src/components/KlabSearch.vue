@@ -65,7 +65,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
 import Vue from 'vue';
-import SimpleBar from 'simplebar';
+// import SimpleBar from 'simplebar';
 
 export default {
   name: 'KlabSearch',
@@ -132,6 +132,7 @@ export default {
     },
     onAutocompleteShow() {
       this.suggestionShowed = true;
+      /*
       if (this.autocompleteSB === null) {
         this.$nextTick(() => {
           const autocomplete = document.getElementById('mc-autocomplete');
@@ -149,6 +150,7 @@ export default {
           });
         });
       }
+      */
     },
     onAutocompleteHide() {
       this.suggestionShowed = false;
