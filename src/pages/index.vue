@@ -16,8 +16,8 @@
         v-model="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.3)`}"
-        :content-classes="['text-center','modal-borders', 'no-padding', 'no-margin']"
+        :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
+        :content-classes="['modal-borders', 'no-padding', 'no-margin']"
     >
       <div class="bg-opaque-white modal-borders no-padding no-margin">
           <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
@@ -25,6 +25,7 @@
               :color="modalColor"
               :size="40"
               :ball="18"
+              id="modal-spinner"
               :animated="modalAnimated"
               wrapperId="modal-connection-status"
             ></klab-spinner>
@@ -160,20 +161,20 @@ export default {
   }
 </style>
 <style lang="stylus">
-  .modal-borders {
-    border-radius 40px;
-  }
-  .klab-spinner {
-    display: inline;
-    vertical-align: middle
-  }
-  .modal-klab-content {
-    vertical-align: middle;
-  }
-  .modal-klab-content > span {
-    width 150px;
-    display inline-block;
-    text-align left
-    margin-left 15px
-  }
+  .modal-borders
+    border-radius 40px
+  .klab-spinner
+    display inline
+    vertical-align middle
+  #modal-spinner
+    margin-right 10px
+    margin-left 5px
+  .modal-klab-content > span
+    display inline-block
+    line-height 100%
+    vertical-align middle
+
+  #modal-connection-status .modal-content
+    min-width 200px
+
 </style>
