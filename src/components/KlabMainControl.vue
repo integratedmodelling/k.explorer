@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container" class="print-hide">
+  <div ref="main-control-container" id="mc-container" class="print-hide small">
     <transition
       appear
       enter-active-class="animated fadeInLeft"
@@ -397,163 +397,160 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .spinner-div {
-    background-color: white;
-    -webkit-border-radius: 40px;
-    -moz-border-radius: 40px;
-    border-radius: 40px;
-    padding: 3px;
-    margin: 0;
-  }
-  #spinner-main {
-    float: left;
-    border: none;
-    width: 40px;
-    height: 40px;
-  }
-  #spinner-lonely-div {
-    position:absolute;
-    width: 44px;
-    height: 44px;
-  }
-  .q-card {
-    width: $main-control-width;
-    overflow: auto;
-  }
-  .q-card.without-context {
-    /*
-    left: 50%;
-    margin-left: -($main-control-width / 2);
-    // transform: translateX(-50%); */
 
-  }
-  #mc-q-card-title {
-    border-radius: 30px;
-    cursor: move;
-    width: $main-control-width;
-    transition: background-color 0.8s;
-  }
-  .q-card-title {
-    line-height: inherit;
-  }
-  #mc-search-div {
-    width: 85%;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    white-space: nowrap;
-    position: absolute;
-    left: 50px;
-    margin-top: 8px;
-  }
-  #mc-text-div {
-    text-shadow: 0 0 1px #555;
-  }
-  .q-card.with-context
-    background-color rgba(35, 35, 35 ,.8);
-    border-radius: 5px;
+  #mc-container
     #mc-q-card-title
-      margin 15px;
-      width: $main-control-width - 30;
-    #mc-text-div
-      padding-left 5px
-      float: left
-      margin-top 8px
-    #mc-search-div
-      left 62px
-      top 18px
-  .q-card-main {
-    overflow: auto;
-    line-height: inherit;
-    background-color: alpha($faded, 85%);
-    padding: 0; /* 0 0 10px 0;*/
-  }
+    .q-card
+      width $main-control-width
+      &.with-context
+        #mc-q-card-title
+          width $main-control-width - 30px
 
-  #context-actions {
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    padding: 0;
-    margin: 0;
-    position: relative;
-  }
-  #mc-actions {
+    #mc-q-card-title
+      border-radius 30px
+      cursor move
+      transition background-color 0.8s
+    .q-card
+      overflow auto
+      &.with-context
+        background-color rgba(35, 35, 35 ,.8)
+        border-radius 5px
+        #mc-q-card-title
+          margin 15px
+        #mc-text-div
+          padding-left 5px
+          float left
+          margin-top 8px
+        #mc-search-div
+          left 62px
+          top 18px
+
+  .spinner-div
+    background-color white
+    -webkit-border-radius 40px
+    -moz-border-radius 40px
+    border-radius 40px
+    padding 3px
+    margin 0
+
+  #spinner-main
+    float left
+    border none
+    width 40px
+    height 40px
+
+  #spinner-lonely-div
+    positionabsolute
+    width 44px
+    height 44px
+
+  .q-card-title
+    line-height inherit
+
+  #mc-search-div
+    width 85%
+    overflow-x hidden
+    overflow-y hidden
+    white-space nowrap
+    position absolute
+    left 50px
+    margin-top 8px
+
+  #mc-text-div
+    text-shadow 0 0 1px #555
+
+  .q-card-main
+    overflow auto
+    line-height inherit
+    background-color alpha($faded, 85%)
+    padding 0 /* 0 0 10px 0*/
+
+  #context-actions
+    border-bottom-left-radius 5px
+    border-bottom-right-radius 5px
+    padding 0
+    margin 0
+    position relative
+
+  #mc-actions
     position absolute
     right 55px
-  }
-  .mc-scalereference {
+
+  .mc-scalereference
     position absolute
     height 37px
-  }
-  #mc-spacereference {
+
+  #mc-spacereference
     right 305px
-  }
-  #mc-timereference {
+
+  #mc-timereference
     right 175px
-  }
-  .mc-separator {
+
+  .mc-separator
     width 2px
     height 60%
     position absolute
     top 20%
     border-left 1px solid #444
     border-right 1px solid #666
-  }
-  #mc-reset-context, #mc-interrupt-task {
+
+  #mc-reset-context
+  #mc-interrupt-task
     position absolute
     right 2px
     color $main-control-red
-  }
-  .mc-button {
-    padding: 5px 10px 7px 10px;
-    cursor: pointer;
-    display: inline-block;
-    font-size: 22px;
-    color: rgb(119,119,119);
-    text-shadow: 0 1px 0 #333;
-  }
-  .mc-button:hover {
-    color: white; /* background: #e0e0e0; */
-  }
-  .mc-button.active {
-    color: white;
-    cursor: auto;
-  }
-  .mc-action {
-    padding: 5px 6px 7px 6px;
-    position: relative;
-  }
-  .mc-tab.active {
-    background-color: alpha($faded, 85%);
-  }
-  .mc-action:not(.disabled):hover {
-    color: $main-control-main-color;
-  }
-  .mc-action.active {
-    color: $main-control-main-color;
-  }
-  .mc-button-notification {
-    display: block;
-    position: absolute;
-    top: 6px;
-    right: 4px;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background-color: $main-control-main-color;
-  }
-  #btn-reset-context {
-    width: 15px;
-    height: 15px;
-  }
-  .component-fade-enter-active, .component-fade-leave-active {
-    transition: opacity .3s ease;
-  }
-  .component-fade-enter, .component-fade-leave-to {
-    opacity: 0;
-  }
-  .lot-of-flow {
-    transition: top 0.05s ease 0s, left 0.05s ease 0s;
-  }
+
+  .mc-button
+    padding 5px 10px 7px 10px
+    cursor pointer
+    display inline-block
+    font-size 22px
+    color rgb(119,119,119)
+    text-shadow 0 1px 0 #333
+    &:hover
+      color white /* background #e0e0e0 */
+    &.active
+      color white
+      cursor auto
+
+  .mc-action
+    padding 5px 6px 7px 6px
+    position relative
+    &:not(.disabled):hover
+      color $main-control-main-color
+    &.active
+      color $main-control-main-color
+
+  .mc-tab.active
+    background-color alpha($faded, 85%)
+
+  .mc-button-notification
+    display block
+    position absolute
+    top 6px
+    right 4px
+    width 10px
+    height 10px
+    border-radius 5px
+    background-color $main-control-main-color
+
   #mc-menubutton
     top 10px
     right 10px
+
+  #btn-reset-context
+    width 15px
+    height 15px
+
+  .component-fade-enter-active
+  .component-fade-leave-active
+    transition opacity .3s ease
+
+  .component-fade-enter
+  .component-fade-leave-to
+    opacity 0
+
+  .lot-of-flow
+    transition top 0.05s ease 0s, left 0.05s ease 0s
+
 </style>
