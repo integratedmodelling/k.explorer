@@ -23,7 +23,7 @@
     "ol-layerswitcher": "^3.0.0",
     "proj4": "^2.4.4",
     "quasar": "^0.0.18",
-    "simplebar": "^3.0.0-beta.1",
+    "simplebar": "^3.0.0-beta.5",
     "vue-i18n": "^8.1.0",
     "webstomp-client": "^1.2.0",
     "wired-elements": "^0.8.1"
@@ -38,7 +38,7 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-vue": "^4.3.0",
     "quasar-cli": "^0.17.19",
-    "strip-ansi": "=3.0.1"
+    "strip-ansi": "5.0.0"
   },
   "engines": {
     "node": ">= 8.9.0",

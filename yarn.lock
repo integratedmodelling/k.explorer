@@ -1155,6 +1155,11 @@ ansi-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-3.0.0.tgz#ed0317c322064f79466c02966bddb605ab37d998"
   integrity sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=
 
+ansi-regex@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-4.0.0.tgz#70de791edf021404c3fd615aa89118ae0432e5a9"
+  integrity sha512-iB5Dda8t/UqpPI/IjsejXu5jOGDrzn41wJyljwPH65VCIbk6+1BzFIMJGFwTNrYXT1CrD+B4l19U7awiQ8rk7w==
+
 ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
@@ -6804,10 +6809,10 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
-simplebar@^3.0.0-beta.1:
-  version "3.0.0-beta.4"
-  resolved "https://registry.yarnpkg.com/simplebar/-/simplebar-3.0.0-beta.4.tgz#3e4cda0be5fb8141b7556660758ac3a192c3b24e"
-  integrity sha512-Dk2j5YJcyPmr2QGiXcdLQuNupwbdn+p7BryOefI3nHw8NmJZcBVhhvZPauaJwNtbe8t78S2y34DGJLuO5zpY3w==
+simplebar@^3.0.0-beta.5:
+  version "3.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/simplebar/-/simplebar-3.0.0-beta.5.tgz#31cd3344863a88ce2a2371f3c9b7bb7a8ea19b45"
+  integrity sha512-uJjZiSHnQbRRxE+t+UO5NH5Vpynd2yHN//XUkN6LQUPv+tyWwfykMgpd2Zh2nOjxEcmGKumN+aZv/i0NspXQ5Q==
   dependencies:
     can-use-dom "^0.1.0"
     lodash.throttle "^4.1.1"
@@ -7093,6 +7098,13 @@ stringify-object@^3.2.2:
     get-own-enumerable-property-symbols "^2.0.1"
     is-obj "^1.0.1"
     is-regexp "^1.0.0"
+
+strip-ansi@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.0.0.tgz#f78f68b5d0866c20b2c9b8c61b5298508dc8756f"
+  integrity sha512-Uu7gQyZI7J7gn5qLn1Np3G9vcYGTVqB+lFTytnDJv83dd8T22aGH451P3jueT2/QemInJDfxHB5Tde5OzgG1Ow==
+  dependencies:
+    ansi-regex "^4.0.0"
 
 strip-ansi@=3.0.1, strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   version "3.0.1"
