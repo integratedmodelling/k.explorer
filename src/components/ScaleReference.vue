@@ -1,9 +1,15 @@
 <template>
-  <div id="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']">
-    <div id="sr-scalereference" v-if="hasScale">
-      <div class="sr-item" :class="[ scaleType === 'space' ? `mdi ${spaceIconType} sr-icon` : '']" id="sr-scaletype">{{ timeTextType }}</div>
-      <div id="sr-res-description" class="sr-item">{{ description }}</div>
+  <div id="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
+    <div id="sr-scalereference" v-if="hasScale" :style="{ cursor: editable ? 'pointer' : 'default' }">
+      <div class="sr-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']" id="sr-scaletype">{{ scaleType === 'time' ? type : '' }}</div>
+      <div id="sr-description" class="sr-item">{{ description }}</div>
       <div id="sr-spacescale" class="sr-item">{{ scale }}</div>
+      <q-tooltip
+        v-if="editable"
+        anchor="bottom middle"
+        self="top middle"
+        :offset="[0, 5]"
+      >{{ $t('label.clickToEditScale') }}</q-tooltip>
     </div>
     <div id="sr-no-scalereference" v-else>
       <p>{{ $t('label.noScaleReference') }}</p>
@@ -12,7 +18,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+import moment from 'moment';
 
 export default {
   name: 'ScaleReference',
@@ -30,27 +37,41 @@ export default {
       type: Boolean,
       default: false,
     },
+    editable: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapGetters('data', [
       'scaleReference',
       // 'timeReference',
     ]),
-    spaceIconType() {
-      return 'mdi-grid'; // TODO implement different type
-    },
-    timeTextType() {
-      return this.scaleType === 'time' ? 'YEAR' : '';
+    type() {
+      return this.scaleType === 'space' ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      return this.scaleType === 'space' ? this.scaleReference.resolutionDescription : '2018';
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : moment().year();
     },
     scale() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3';
+      return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
     },
     hasScale() {
-      return this.scaleType === 'space' ? this.scaleReference !== null : true;
+      return this.scaleReference !== null;
     },
+    scaleEditing: {
+      get() {
+        return this.$store.getters['view/isScaleEditing'];
+      },
+      set(active) {
+        this.setScaleEditing({ active, type: this.scaleType });
+      },
+    },
+  },
+  methods: {
+    ...mapActions('view', [
+      'setScaleEditing',
+    ]),
   },
 };
 </script>
@@ -91,7 +112,7 @@ export default {
       font-size 12px
       &.sr-icon
         font-size 20px
-    #sr-res-description
+    #sr-description
       font-size 12px
       width "calc(100% - %s - 20px)" % $sr-scaletype-width
     #sr-spacescale
@@ -101,7 +122,8 @@ export default {
       border-radius 10px
       text-align center
       padding 5px 0 0 0
-
+  .modal-scroll
+    overflow hidden
   /*
   &:hover
     background-color #fff

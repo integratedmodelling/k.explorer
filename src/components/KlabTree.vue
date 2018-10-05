@@ -191,7 +191,7 @@ export default {
         `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
         {
           params: {
-            format: 'RASTER',
+            format: 'RAW',
             outputFormat,
           },
           responseType: 'blob',

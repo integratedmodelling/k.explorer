@@ -26,6 +26,14 @@ export default {
     mcMenuScale: 'Actual scale:',
     titleOutputFormat: 'Download observation',
     askForOuputFormat: 'Select format',
+    titleChangeScale: 'Change {type} scale',
+    askForNewScale: 'Select new scale',
+    resolutionLabel: 'Resolution value',
+    unitLabel: 'Unit value',
+    clickToEditScale: 'Click to edit',
+    labelCm: 'Centimeters',
+    labelM: 'Meters',
+    labelKm: 'Kilometers',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -38,6 +46,7 @@ export default {
     emptyReport: '<div id="mc-empty-report">Empty report</div>',
     noLoadedReport: 'No report loaded',
     copiedToClipboard: 'Copied to clipboard',
+    changeScaleResolutionError: 'Resolution must be positive',
   },
   tooltips: {
     treePane: 'View tree',

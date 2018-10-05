@@ -129,6 +129,8 @@ module.exports = function (ctx) {
         'QTab',
         'QSlider',
         'QPopover',
+        'QDialog',
+        'QSelect',
       ],
       directives: [
         'Ripple',

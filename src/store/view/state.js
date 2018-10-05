@@ -104,4 +104,11 @@ export default {
   treeSelected: null,
   treeTicked: [],
   treeExpanded: [],
+  /**
+   * true if we are editing the scale. Need for no intercept events
+   */
+  scaleEditing: {
+    active: false,
+    type: null,
+  },
 };

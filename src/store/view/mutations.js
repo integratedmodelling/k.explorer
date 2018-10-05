@@ -156,4 +156,11 @@ export default {
       state.mapSelection = { pixelSelected, layerSelected, value };
     }
   },
+
+  SET_SCALE_EDITING: (state, { active, type }) => {
+    state.scaleEditing = {
+      active,
+      type,
+    };
+  },
 };

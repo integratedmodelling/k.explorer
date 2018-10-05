@@ -138,4 +138,29 @@ export const MESSAGES_BUILDERS = {
     },
     session,
   ),
+
+  SCALE_REFERENCE: ({
+    scaleReference,
+    spaceResolution,
+    spaceUnit,
+    timeResolutionDescription = '',
+    timeUnit = '',
+    unlockSpace = false,
+    unlockTime = false,
+    session,
+  }) => buildMessage(
+    OUT.CLASS_USERCONTEXTDEFINITION,
+    OUT.TYPE_SCALEDEFINED,
+    OUT.PAYLOAD_CLASS_SCALEREFERENCE,
+    {
+      ...scaleReference,
+      spaceResolution,
+      spaceUnit,
+      timeResolutionDescription,
+      timeUnit,
+      unlockSpace,
+      unlockTime,
+    },
+    session,
+  ),
 };

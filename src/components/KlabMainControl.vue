@@ -83,12 +83,12 @@
               <q-item-separator></q-item-separator>
               <q-item>
                 <q-item-main>
-                  <scale-reference width="150px" :light="true"></scale-reference>
+                  <scale-reference width="150px" :light="true" scaleType="space" :editable="false"></scale-reference>
                 </q-item-main>
               </q-item>
               <q-item>
                 <q-item-main>
-                  <scale-reference width="150px" :light="true" scaleType="time"></scale-reference>
+                  <scale-reference width="150px" :light="true" scaleType="time" :editable="false"></scale-reference>
                 </q-item-main>
               </q-item>
             </q-list>
@@ -137,12 +137,12 @@
         <!-- scale -->
         <!-- SPACE -->
         <div id="mc-spacereference" class="mc-scalereference">
-          <scale-reference width="110px" scale-type="space"></scale-reference>
+          <scale-reference width="110px" scale-type="space" :editable="false"></scale-reference>
         </div>
         <div class="mc-separator" style="right: 290px"></div>
         <!-- TIME -->
         <div id="mc-timereference" class="mc-scalereference">
-          <scale-reference width="110px" scale-type="time"></scale-reference>
+          <scale-reference width="110px" scale-type="time" :editable="false"></scale-reference>
         </div>
         <div class="mc-separator" style="right: 160px"></div>
         <div id="mc-actions">
@@ -218,6 +218,7 @@
         >
     </q-card>
     </transition>
+    <scale-change-dialog></scale-change-dialog>
   </div>
 </template>
 
@@ -234,6 +235,7 @@ import KlabSearch from 'components/KlabSearch.vue';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
+import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 
 const { width, height } = dom;
 
@@ -387,6 +389,7 @@ export default {
   },
   components: {
     ScaleReference,
+    ScaleChangeDialog,
     KlabTreePane,
     KlabLogPane,
     KlabSpinner,

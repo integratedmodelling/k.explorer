@@ -209,4 +209,8 @@ export default {
       });
     }
   },
+
+  setScaleEditing: ({ commit }, { active, type }) => {
+    commit('SET_SCALE_EDITING', { active, type });
+  },
 };

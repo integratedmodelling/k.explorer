@@ -88,4 +88,6 @@ export default {
     return false;
   },
 
+  isScaleEditing: state => state.scaleEditing.active,
+  scaleEditingType: state => state.scaleEditing.type,
 };
