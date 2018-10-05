@@ -111,6 +111,7 @@ const Helpers = {
       header: 'default',
       folderId: observation.folderId,
       main: observation.main,
+      exportFormats: observation.exportFormats,
     },
     parentId: observation.folderId === null ? observation.parentId : observation.folderId,
   }),

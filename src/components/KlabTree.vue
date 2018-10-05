@@ -33,9 +33,7 @@
               class="kt-download"
               :style="{ right: prop.node.children.length > 0 ? '35px' : typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
               v-if="!prop.node.empty"
-              @click.native="askForOutputFormat($event, prop.node.id, [
-                { label: 'PNG format', value: 'png' },
-              ])"
+              @click.native="askForOutputFormat($event, prop.node.id, [{ label: 'PNG Image', value: 'png' }]/* prop.node.exportFormats */)"
             >
             </q-btn>
             <template v-if="prop.node.children.length > 0">
@@ -169,21 +167,29 @@ export default {
       return text;
     },
     askForOutputFormat(event, observationId, formats) {
-      event.stopPropagation();
-      this.$q.dialog({
-        title: this.$t('label.titleOutputFormat'),
-        message: this.$t('label.askForOuputFormat'),
-        options: {
-          type: 'radio',
-          model: formats[0].value,
-          items: formats,
-        },
-        cancel: true,
-        preventClose: false,
-        color: 'info',
-      }).then((data) => {
-        this.askDownload(observationId, data);
-      });
+      if (formats !== null && formats.length > 0) {
+        event.stopPropagation();
+        this.$q.dialog({
+          title: this.$t('label.titleOutputFormat'),
+          message: this.$t('label.askForOuputFormat'),
+          options: {
+            type: 'radio',
+            model: formats[0].value,
+            items: formats,
+          },
+          cancel: true,
+          preventClose: false,
+          color: 'info',
+        }).then((data) => {
+          this.askDownload(observationId, data);
+        });
+      } else {
+        this.$q.notify({
+          message: 'No available formats',
+          type: 'warn',
+          timeout: 200,
+        });
+      }
     },
     askDownload(observationId, outputFormat, label = observationId) {
       Helpers.getAxiosContent(
@@ -191,7 +197,7 @@ export default {
         `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
         {
           params: {
-            format: 'RAW',
+            format: 'RASTER', // 'RAW',
             outputFormat,
           },
           responseType: 'blob',
