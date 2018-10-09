@@ -2675,9 +2675,9 @@ dot-prop@^4.1.1:
     is-obj "^1.0.0"
 
 draggable-vue-directive@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/draggable-vue-directive/-/draggable-vue-directive-2.0.2.tgz#c3cebf0b287b2539eb0d809b8cd0d695897bc7e4"
-  integrity sha512-7KWmfK8yI9Bq1pmcsuStCjQbZ7vzoI++Sb4lr+VWuvriipcNQSGjeluJW8ne0jxQR5PmzffH6EdYj5/zVt9rag==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/draggable-vue-directive/-/draggable-vue-directive-2.0.3.tgz#9388f61ec072ff6abd75706f3ff24b553535cd9f"
+  integrity sha512-wg3R7cKEj15pr4jR1isOD7/+PHIoFI22DB36U+ZizD4Xp7rFc+xIK0kwDwuuGXsYJ54ERKDGYJ9SCuMrP8+e5g==
 
 duplexer@^0.1.1:
   version "0.1.1"
@@ -3631,7 +3631,7 @@ hash-base@^3.0.0:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-hash-sum@^1.0.2:
+hash-sum@1.0.2, hash-sum@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/hash-sum/-/hash-sum-1.0.2.tgz#33b40777754c6432573c120cc3808bbd10d47f04"
   integrity sha1-M7QHd3VMZDJXPBIMw4CLvRDUfwQ=
@@ -5215,20 +5215,20 @@ obuf@^1.0.0, obuf@^1.1.1:
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
 ol-ext@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.0.1.tgz#7b0c010809a1a916d4711612b7376764522e2442"
-  integrity sha512-M9193ZapsXrcvaNauJ6woerSyjNJHrIVEXYCZeIJYBva8rkdPNLLWf7EWBA5xoPRQwYx+BElMQvRA6pfduVBww==
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.0.2.tgz#ab499c03ac396cf66f1a1bbe2c3fe8ed8d499d12"
+  integrity sha512-PIfn8W30deXPIIqt9W8XAUzzVwDdwaKCjoTQnlzcCvRo6Bq15d8f3rZSUd+DlnSuR3vYmPT75OvLb2G1HS2ZcQ==
   dependencies:
     ajax "0.0.4"
     jquery "^3.2.1"
-    ol "^5.0.3"
+    ol "^5.1.3"
 
 ol-layerswitcher@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-3.1.0.tgz#9b398eae20cf54b9a518e8e8bbc33e0ce8861e62"
   integrity sha512-lfUt/NlG38WrvIBT0lhk06O51hhhRdRfMBj1hF9DCifrAKEOc2SvM5Xkq4m9aTEY/0v/UL9Bh2tUFH8zlIKyIQ==
 
-ol@^5.0.0, ol@^5.0.3:
+ol@^5.0.0, ol@^5.1.3:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/ol/-/ol-5.2.0.tgz#5659ba9762def144deb8dcba97357aa5f8cc8a05"
   integrity sha512-/sXlXKMT7W/4txYmEJiqZousQ5GScDoqVrltyQDl0himUD1oEV460bH74eD49AMm0OmQL9+TIn6DXKqOYzjTLw==
@@ -6103,10 +6103,10 @@ qs@6.5.1:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
   integrity sha512-eRzhrN1WSINYCDCbrz796z37LOe3m5tmW7RQf6oBntukAG1nmovJvhnwHHRMAfeoItc1m2Hk02WER2aQ/iqs+A==
 
-quasar-cli@^0.17.19:
-  version "0.17.19"
-  resolved "https://registry.yarnpkg.com/quasar-cli/-/quasar-cli-0.17.19.tgz#598d45ddc2a55caabeec97a4d39f846d1c0296fc"
-  integrity sha512-dLxsMcJCiHY7LCdalrPOLZwuk8R22jaFi5P7s7q6rbMePoC3LZwXJJR9A43io5c6YI6EDOAVzoVXo1vcD4HWYw==
+quasar-cli@^0.17.20:
+  version "0.17.20"
+  resolved "https://registry.yarnpkg.com/quasar-cli/-/quasar-cli-0.17.20.tgz#d61d2421d99b5e74159d2a6362a324a8424a52d8"
+  integrity sha512-GRE1AvnRNFMRFcJ2URP5dAmqP92G4I+jxKDmd8xRRl2KrC0nkBNd2LuU0BatFWE1LQvCXlJmCxbjizUNI7Kl4g==
   dependencies:
     "@babel/core" "7.0.0-beta.54"
     "@babel/plugin-transform-runtime" "7.0.0-beta.54"
@@ -6132,6 +6132,7 @@ quasar-cli@^0.17.19:
     file-loader "2.0.0"
     friendly-errors-webpack-plugin "1.7.0"
     fs-extra "7.0.0"
+    hash-sum "1.0.2"
     html-minifier "3.5.20"
     html-webpack-plugin "3.2.0"
     http-proxy-middleware "0.19.0"
@@ -6155,8 +6156,8 @@ quasar-cli@^0.17.19:
     postcss-rtl "1.3.2"
     postcss-safe-parser "4.0.1"
     preload-webpack-plugin "3.0.0-alpha.3"
-    quasar-extras "2.0.6"
-    quasar-framework "0.17.16"
+    quasar-extras "2.0.8"
+    quasar-framework "0.17.17"
     register-service-worker "1.5.2"
     route-cache "0.4.4"
     selfsigned "1.10.3"
@@ -6181,15 +6182,15 @@ quasar-cli@^0.17.19:
     webpack-node-externals "1.7.2"
     workbox-webpack-plugin "3.5.0"
 
-quasar-extras@2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/quasar-extras/-/quasar-extras-2.0.6.tgz#d5df62fc28352b4dd1f11e7caa8308d04c89be42"
-  integrity sha512-aUh2yn6wxJcohwf2LYJ7p18h4Ln7PVLRKxRU/LvosXfspdcTMwO4P/8fMDwZQszjsMDRwygNYMfc/3Xj6mJ9MA==
+quasar-extras@2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/quasar-extras/-/quasar-extras-2.0.8.tgz#13f73188d5f4697112724beec261eb195cdb11cb"
+  integrity sha512-FYZ1ypeUSTjR0PKNrvjke6nAvMdQXwiO0QZGcw6avXEPbfYOasj4NkFNvpt4O9ZPealiUit//G5NmvcjXkGp5g==
 
-quasar-framework@0.17.16:
-  version "0.17.16"
-  resolved "https://registry.yarnpkg.com/quasar-framework/-/quasar-framework-0.17.16.tgz#15187112ddc6d0bbaa582ac8b5d68c4bbeb9a861"
-  integrity sha512-9fKBpa3pSYJb+v9YZL2r2vKRRlvlbr/qUSVKWnY8HssFvpYLXcPtRfqRMCE0zt3kGj5CUx589xb/4HRn+GSdoQ==
+quasar-framework@0.17.17:
+  version "0.17.17"
+  resolved "https://registry.yarnpkg.com/quasar-framework/-/quasar-framework-0.17.17.tgz#e560fb17ac16e8db67e4f559a6d61fef74576455"
+  integrity sha512-evRS9rIAp8Er7gG63ZIvFs7vRh8PDYFqX3e2rtdIhEa0LDDfVrbFCs3+QfXtzWjstQKO+zwG4zaY+udT/+g2aQ==
 
 quasar@^0.0.18:
   version "0.0.18"
