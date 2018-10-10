@@ -33,7 +33,7 @@
               class="kt-download"
               :style="{ right: prop.node.children.length > 0 ? '35px' : typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
               v-if="!prop.node.empty"
-              @click.native="askForOutputFormat($event, prop.node.id, [{ label: 'PNG Image', value: 'png' }]/* prop.node.exportFormats */)"
+              @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats)"
             >
             </q-btn>
             <template v-if="prop.node.children.length > 0">
@@ -197,7 +197,7 @@ export default {
         `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
         {
           params: {
-            format: 'RASTER', // 'RAW',
+            format: 'RAW', // TODO change when RAW call work as expected
             outputFormat,
           },
           responseType: 'blob',
