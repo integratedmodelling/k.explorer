@@ -52,6 +52,7 @@
         :max-results="50"
         ref="mc-autocomplete"
         id="mc-autocomplete"
+        :class="[ notChrome() ? 'not-chrome' : '']"
       ></q-autocomplete>
     </q-input>
     </div>
@@ -65,7 +66,6 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
 import Vue from 'vue';
-// import SimpleBar from 'simplebar';
 
 export default {
   name: 'KlabSearch',
@@ -123,6 +123,9 @@ export default {
       'resetSearchLostChar',
       'storePreviousSearch',
     ]),
+    notChrome() {
+      return navigator.userAgent.indexOf('Chrome') === -1;
+    },
     onTokenFocus(token, event) {
       token.selected = event.type === 'focus';
     },
@@ -612,25 +615,32 @@ export default {
     color: #333;
     border-bottom: 1px solid #ccc;
   }
-  /*  To hide the scrollbar
-   #mc-autocomplete::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
+  /* only for webkit */
+  #mc-autocomplete::-webkit-scrollbar {
+    display:none
   }
-   OR
-  #mc-autocomplete {
+  /*
+  #mc-autocomplete: -moz-any() browser{
+    margin-right:-14px!important;
+    overflow-y:scroll;
+    margin-bottom:-14px!important;
+    overflow-x:scroll;
+  }
+  */
+
+  #mc-autocomplete.not-chrome{
     width: 100%;
     height: 100%
     overflow: hidden;
-    padding-bottom: 15px;
   }
 
-  #mc-autocomplete .q-list{
-    width: calc(100% + 14px);
-    height: 100%;
+  #mc-autocomplete.not-chrome .q-list{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: -17px; /* Increase/Decrease this value for cross-browser compatibility */
     overflow-y: scroll;
-    padding-right: 0;
-    box-sizing: content-box;
   }
-  */
+
 </style>
