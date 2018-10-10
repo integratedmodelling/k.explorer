@@ -31,9 +31,12 @@ export default {
     resolutionLabel: 'Valor de la escala',
     unitLabel: 'Unidad de la escala',
     clickToEditScale: 'Click para modificar',
+    clickToUnlock: 'Click para desbloquear la escala',
     labelCm: 'Centimetros',
     labelM: 'Metros',
     labelKm: 'Kilometros',
+    labelSpatial: 'espacial',
+    labelTemporal: 'temporal',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',
@@ -47,6 +50,7 @@ export default {
     noLoadedReport: 'No se ha cargado ningun report',
     copiedToClipboard: 'Copiado',
     changeScaleResolutionError: 'La resolución tiene que ser positiva',
+    updateScale: 'Actualizada  la escala {type}, nuevo valor {resolution} {unit}',
   },
   tooltips: {
     treePane: 'Ver árbol',

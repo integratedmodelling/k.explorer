@@ -83,12 +83,12 @@
               <q-item-separator></q-item-separator>
               <q-item>
                 <q-item-main>
-                  <scale-reference width="150px" :light="true" scaleType="space" :editable="false"></scale-reference>
+                  <scale-reference width="180px" :light="true" scaleType="space" :editable="true" :full="true"></scale-reference>
                 </q-item-main>
               </q-item>
               <q-item>
                 <q-item-main>
-                  <scale-reference width="150px" :light="true" scaleType="time" :editable="false"></scale-reference>
+                  <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
                 </q-item-main>
               </q-item>
             </q-list>

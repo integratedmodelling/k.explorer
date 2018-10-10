@@ -41,6 +41,8 @@ export default {
 
   scaleReference: state => state.scaleReference,
 
+  isScaleLocked: state => state.scaleLocked,
+
   /**
    * The search results
    */

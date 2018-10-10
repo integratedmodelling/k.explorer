@@ -255,12 +255,22 @@ export default {
     }
   },
 
-  storeSearchResult({ commit }, results) {
+  storeSearchResult: ({ commit }, results) => {
     commit('STORE_RAW_SEARCH_RESULT', results);
   },
 
-  setScaleReference({ commit }, scaleReference) {
+  setScaleReference: ({ commit }, scaleReference) => {
     console.debug(`Set scale reference: ${JSON.stringify(scaleReference, null, 2)}`);
     commit('SET_SCALE_REFERENCE', scaleReference);
+    commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
+  },
+
+  updateScaleReference: ({ commit }, { type, resolution, unit }) => {
+    console.debug(`Update scale reference: ${type}: ${resolution} ${unit}`);
+    commit('UPDATE_SCALE_REFERENCE', { type, resolution, unit });
+  },
+
+  setScaleLocked: ({ commit }, { scaleType, scaleLocked }) => {
+    commit('SET_SCALE_LOCKED', { scaleType, scaleLocked });
   },
 };

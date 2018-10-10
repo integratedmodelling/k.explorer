@@ -2,7 +2,7 @@
   <q-dialog
     v-if="scaleReference !== null"
     v-model="scaleEditing"
-    :title="$t('label.titleChangeScale', { type: scaleEditingType })"
+    :title="$t('label.titleChangeScale', { type: scaleEditingType === 'space' ? $t('label.labelSpatial') : $t('label.labelTemporal')})"
     color="info"
     :cancel="true"
     :ok="false"
@@ -79,6 +79,10 @@ export default {
     },
   },
   methods: {
+    ...mapActions('data', [
+      'setScaleLocked',
+      'updateScaleReference',
+    ]),
     ...mapActions('view', [
       'setScaleEditing',
     ]),
@@ -93,10 +97,17 @@ export default {
           scaleReference: this.scaleReference,
           ...(this.scaleEditingType === 'space' && { spaceResolution: this.resolution }),
           ...(this.scaleEditingType === 'space' && { spaceUnit: this.unit }),
-          // ...(this.scaleEditingType === 'time' && { timeResolution: this.resolution }),
-          // ...(this.scaleEditingType === 'time' && { timeUnit: this.unit }),
+          ...(this.scaleEditingType === 'time' && { timeResolution: this.resolution }),
+          ...(this.scaleEditingType === 'time' && { timeUnit: this.unit }),
           session: this.$store.state.data.session,
         }).body);
+        this.setScaleLocked({ scaleType: this.scaleEditingType, scaleLocked: true });
+        this.updateScaleReference({ type: this.scaleEditingType, resolution: this.resolution, unit: this.unit });
+        this.$q.notify({
+          message: this.$t('messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
+          type: 'info',
+          timeout: 1000,
+        });
       }
     },
     initValues() {

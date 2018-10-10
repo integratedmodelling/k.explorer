@@ -76,6 +76,10 @@ export default {
     }
    */
   scaleReference: null,
+  scaleLocked: {
+    space: false,
+    time: false,
+  },
   /**
    * Store of all observation data
    * Observation will add a viewerIdx with the id of the assigned viewer

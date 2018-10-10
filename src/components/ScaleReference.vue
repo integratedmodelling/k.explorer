@@ -1,15 +1,32 @@
 <template>
   <div id="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
-    <div id="sr-scalereference" v-if="hasScale" :style="{ cursor: editable ? 'pointer' : 'default' }">
-      <div class="sr-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']" id="sr-scaletype">{{ scaleType === 'time' ? type : '' }}</div>
-      <div id="sr-description" class="sr-item">{{ description }}</div>
-      <div id="sr-spacescale" class="sr-item">{{ scale }}</div>
-      <q-tooltip
-        v-if="editable"
-        anchor="bottom middle"
-        self="top middle"
-        :offset="[0, 5]"
-      >{{ $t('label.clickToEditScale') }}</q-tooltip>
+    <div id="sr-scalereference" v-if="hasScale" :class="[ full ? 'sr-full' : '']">
+      <div
+        v-if="full"
+        id="sr-locked"
+        class="sr-item mdi sr-icon"
+        :class="[ isScaleLocked[scaleType] ? 'mdi-lock-outline' : 'mdi-lock-open-outline']"
+        :style="{ cursor: isScaleLocked[scaleType] ? 'pointer' : 'default' }"
+        @click.prevent="isScaleLocked ? unlockScale($event) : false"
+      >
+        <q-tooltip
+          v-show="isScaleLocked[scaleType]"
+          anchor="bottom middle"
+          self="top middle"
+          :offset="[0, 5]"
+        >{{ $t('label.clickToUnlock') }}</q-tooltip>
+      </div>
+      <div id="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
+        <div class="sr-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']" id="sr-scaletype">{{ scaleType === 'time' ? type : '' }}</div>
+        <div id="sr-description" class="sr-item">{{ description }}</div>
+        <div id="sr-spacescale" class="sr-item">{{ scale }}</div>
+        <q-tooltip
+          v-if="editable"
+          anchor="bottom middle"
+          self="top middle"
+          :offset="[0, 5]"
+        >{{ $t('label.clickToEditScale') }}</q-tooltip>
+      </div>
     </div>
     <div id="sr-no-scalereference" v-else>
       <p>{{ $t('label.noScaleReference') }}</p>
@@ -20,6 +37,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 
 export default {
   name: 'ScaleReference',
@@ -41,17 +59,30 @@ export default {
       type: Boolean,
       default: false,
     },
+    // this field indicate if lock must be showed
+    full: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     ...mapGetters('data', [
       'scaleReference',
       // 'timeReference',
+      'isScaleLocked',
     ]),
+    resolution() {
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolution : '';
+    },
+    unit() {
+      return this.scaleType === 'space' ? this.scaleReference.spaceUnit : moment().year();
+    },
     type() {
       return this.scaleType === 'space' ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : moment().year();
+      // return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : moment().year();
+      return this.scaleType === 'space' ? `${this.resolution} ${this.unit}` : this.unit;
     },
     scale() {
       return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
@@ -69,9 +100,22 @@ export default {
     },
   },
   methods: {
+    ...mapActions('data', [
+      'setScaleLocked',
+    ]),
     ...mapActions('view', [
       'setScaleEditing',
     ]),
+    unlockScale(event) {
+      event.stopPropagation();
+      this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
+        scaleReference: this.scaleReference,
+        unlockSpace: this.scaleType === 'space',
+        unlockTime: this.scaleType === 'time',
+        session: this.$store.state.data.session,
+      }).body);
+      this.setScaleLocked({ scaleType: this.scaleType, scaleLocked: false });
+    },
   },
 };
 </script>
@@ -79,6 +123,7 @@ export default {
 <style lang="stylus">
   @import '~variables'
   $sr-scaletype-width = 40px
+  $sr-lock-width = 30px
   #sr-container
     height 100%
     display flex
@@ -95,6 +140,8 @@ export default {
       #sr-spacescale
         background-color #ccc
         color #333
+  #sr-editables
+    display inline
   #sr-scalereference
   #sr-no-scalereference
     width 100%
@@ -106,8 +153,13 @@ export default {
       &.lighter
         color #ccc
         text-shadow 0 0 1px #333
+      $sr-lock-width = 40px
     #sr-scaletype
       width $sr-scaletype-width
+    #sr-locked
+      width $sr-lock-width
+    #sr-scaletype
+    #sr-locked
       text-align center
       font-size 12px
       &.sr-icon
@@ -122,6 +174,9 @@ export default {
       border-radius 10px
       text-align center
       padding 5px 0 0 0
+    &.sr-full
+      #sr-description
+        width "calc(100% - %s - 20px)" % ($sr-scaletype-width + $sr-lock-width)
   .modal-scroll
     overflow hidden
   /*

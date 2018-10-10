@@ -262,4 +262,25 @@ export default {
   SET_SCALE_REFERENCE: (state, scaleReference) => {
     state.scaleReference = scaleReference;
   },
+
+  UPDATE_SCALE_REFERENCE: (state, { type, resolution, unit }) => {
+    state.scaleReference = {
+      ...state.scaleReference,
+      [`${type}Resolution`]: resolution,
+      [`${type}Unit`]: unit,
+      [`${type}ResolutionDescription`]: (resolution === 0 ? '' : `${resolution} `) + unit,
+    };
+  },
+
+  SET_SCALE_LOCKED: (state, { scaleType, scaleLocked }) => {
+    if (scaleType === 'all') {
+      state.scaleLocked.space = scaleLocked;
+      state.scaleLocked.time = scaleLocked;
+    } else if (Object.prototype.hasOwnProperty.call(state.scaleLocked, scaleType)) {
+      console.log(`Set ${scaleLocked} to ${scaleType} scale type`);
+      state.scaleLocked[scaleType] = scaleLocked;
+    } else {
+      console.error(`Try to set locked to unknow scale type: ${scaleType}`);
+    }
+  },
 };

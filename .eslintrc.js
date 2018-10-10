@@ -40,6 +40,6 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'no-unused-expressions': [1, { "allowTernary": true }],
     'no-plusplus': 0,
-
+    'no-nested-ternary': 0,
   }
 }
