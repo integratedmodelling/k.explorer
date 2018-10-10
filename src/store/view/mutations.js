@@ -114,7 +114,7 @@ export default {
   },
 
   STORE_SEARCH: (state, searchArray) => {
-    state.searchHistory.push(searchArray);
+    state.searchHistory.unshift(searchArray);
   },
 
   SET_RELOAD_REPORT: (state, reload) => {

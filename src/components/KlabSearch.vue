@@ -219,7 +219,6 @@ export default {
           } else if (this.actualSearchString !== '') {
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
-            // this.actualToken = this.actualSearchString; TODO change
           }
           break;
         case 9: // TAB force to select with TAB
@@ -262,7 +261,6 @@ export default {
             event.preventDefault();
           }
           break;
-        /*
         case 38: // Arrow up
           if (!this.suggestionShowed) {
             this.searchHistoryEvent(1, event);
@@ -273,7 +271,6 @@ export default {
             this.searchHistoryEvent(-1, event);
           }
           break;
-        */
         default:
           if (event.keyCode < 65 || event.keyCode > 90) {
             if (event.keyCode !== 39) { // right arrow
@@ -385,7 +382,6 @@ export default {
         this.inputSearchColor = 'black';
       });
     },
-    /*
     searchHistoryEvent(index, event = null) {
       if (this.actualToken === '' && this.searchHistory.length > 0
         && (this.acceptedTokens.length === 0 || this.searchHistoryIndex >= 0)
@@ -401,7 +397,6 @@ export default {
         }
       }
     },
-    */
     askForSuggestion() {
       if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
         this.search('', (results) => {
@@ -544,16 +539,14 @@ export default {
     // if a char was pressed without search input focus, is possible that it will be not write, so we do it
     searchLostChar(newValue) {
       if (newValue !== null) { // && this.actualToken === '') {
-        /*
         if (newValue === 'ArrowUp') {
           this.searchHistoryEvent(1);
         } else if (newValue === 'ArrowDown') {
           this.searchHistoryEvent(-1);
-        } else */
-        if (newValue === ' ') {
+        } else if (newValue === ' ') {
           this.askForSuggestion();
         } else {
-          this.actualSearchString += newValue;
+          this.actualSearchString = this.actualSearchString + newValue;
         }
         this.resetSearchLostChar();
       }
@@ -564,10 +557,11 @@ export default {
     this.searchInput = this.$refs['mc-search-input'];
     this.autocompleteEl = this.$refs['mc-autocomplete'];
     if (this.searchLostChar !== null) {
-      /* if (this.searchLostChar === 'ArrowUp') {
+      if (this.searchLostChar === 'ArrowUp') {
         this.searchHistoryEvent(1);
-      } else */
-      if (this.searchLostChar === ' ') {
+      } else if (this.searchLostChar === 'ArrowDown') {
+        this.searchHistoryEvent(-1);
+      } else if (this.searchLostChar === ' ') {
         this.askForSuggestion();
       } else {
         this.actualSearchString = this.searchLostChar;
@@ -576,7 +570,6 @@ export default {
       this.actualSearchString = '';
     }
     this.inputSearchColor = 'black';
-    // this.actualToken = this.actualSearchString; TODO Change
   },
 };
 </script>
