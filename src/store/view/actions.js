@@ -4,10 +4,11 @@ import { VIEWERS } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
-  addToKexplorerLog: ({ commit }, { type, payload }) => {
+  addToKexplorerLog: ({ commit }, { type, payload, important = false }) => {
     commit('ADD_TO_KEXPLORER_LOG', {
       type,
       payload,
+      important,
       time: moment(),
     });
   },

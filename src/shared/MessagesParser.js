@@ -1,8 +1,8 @@
 import { IN } from './MessagesConstants';
 import { Constants } from './Helpers';
 
-function addToKexplorerLog(dispatch, type, message, attach) {
-  dispatch('view/addToKexplorerLog', { type, payload: { message, attach } }, { root: true });
+function addToKexplorerLog(dispatch, type, message, attach, important = false) {
+  dispatch('view/addToKexplorerLog', { type, payload: { message, attach }, important }, { root: true });
 }
 
 const PARSERS = {

@@ -5,8 +5,6 @@
 </template>
 
 <script>
-// This is for IE11 Promise polyfill
-// import 'es6-promise/auto';
 import { mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
@@ -107,10 +105,10 @@ export default {
     kexplorerLog() {
       const lastKexplorerLog = this.lastKexplorerLog();
       if (lastKexplorerLog !== null && (lastKexplorerLog.type === Constants.TYPE_ERROR
-          || lastKexplorerLog.type === Constants.TYPE_WARNING)) {
+          || lastKexplorerLog.type === Constants.TYPE_WARNING || lastKexplorerLog.important)) {
         this.$q.notify({
           message: lastKexplorerLog.payload.message,
-          type: lastKexplorerLog.type === Constants.TYPE_ERROR ? 'negative' : 'warning',
+          type: lastKexplorerLog.type === Constants.TYPE_ERROR ? 'negative' : (lastKexplorerLog.type === Constants.TYPE_WARNING ? 'warning' : 'info'),
           timeout: 1000,
         });
       }
