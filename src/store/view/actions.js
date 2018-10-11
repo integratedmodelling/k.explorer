@@ -214,4 +214,12 @@ export default {
   setScaleEditing: ({ commit }, { active, type }) => {
     commit('SET_SCALE_EDITING', { active, type });
   },
+
+  setDrawContext: ({ commit }, drawContext) => {
+    commit('SET_DRAWCONTEXT', drawContext);
+  },
+
+  setEraserForContext: ({ commit }, eraserForContext) => {
+    commit('SET_ERASERFORCONTEXT', eraserForContext);
+  },
 };

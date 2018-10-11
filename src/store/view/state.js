@@ -111,4 +111,7 @@ export default {
     active: false,
     type: null,
   },
+
+  drawContext: false,
+  eraserForContext: false,
 };

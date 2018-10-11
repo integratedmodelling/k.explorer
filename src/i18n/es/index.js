@@ -37,6 +37,7 @@ export default {
     labelKm: 'Kilometros',
     labelSpatial: 'espacial',
     labelTemporal: 'temporal',
+    drawContext: 'Dibujar contexto',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',
@@ -63,6 +64,7 @@ export default {
     noReportNoObservation: 'Cannot view report,\nno observations',
     dataflowViewer: 'Ver data flow (will be...)',
     provenanceViewer: 'Ver provenance (will be...)',
+    eraseCustomContext: 'Eliminar shape actual',
   },
   errors: {
     connectionError: 'Error de conexión',

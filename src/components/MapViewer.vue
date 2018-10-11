@@ -21,7 +21,13 @@ import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import WKT from 'ol/format/WKT';
+import Feature from 'ol/Feature';
 import { transformExtent, transform } from 'ol/proj';
+import { Draw, Modify } from 'ol/interaction.js';
+import { Fill, Stroke, Style } from 'ol/style.js';
 import LayerSwitcher from 'ol-layerswitcher';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
@@ -42,8 +48,11 @@ export default {
       layers: new Collection(),
       zIndexCounter: 0,
       baseLayers: null,
+      visibleBaseLayer: null,
       mapSelectionMarker: undefined,
-
+      drawerLayer: undefined,
+      drawer: undefined,
+      drawerModify: undefined,
       // contextViewport: Constants.PARAM_VIEWPORT_SIZE,
     };
   },
@@ -60,6 +69,7 @@ export default {
       'observationInfo',
       'exploreMode',
       'mapSelection',
+      'isDrawContext',
     ]),
   },
   methods: {
@@ -67,6 +77,8 @@ export default {
       'addToKexplorerLog',
       'setSpinner',
       'setMapSelection',
+      'setDrawContext',
+      'setEraserForContext',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -82,11 +94,16 @@ export default {
       // const { map } = event;
       this.sendRegionOfInterest();
     },
-    sendRegionOfInterest() {
+    sendRegionOfInterest(geometry = null) {
       let message = null;
       try {
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(this.map.getView()
-          .calculateExtent(this.map.getSize()), 'EPSG:3857', 'EPSG:4326'), this.session);
+        let extent;
+        if (geometry !== null) {
+          extent = geometry.getExtent();
+        } else {
+          extent = this.map.getView().calculateExtent(this.map.getSize());
+        }
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         console.error(error);
         this.addToKexplorerLog({
@@ -197,15 +214,33 @@ export default {
         this.mapSelectionMarker.setPosition(undefined);
       }
     },
+    isDrawContext(newValue) {
+      this.setDrawContext(newValue);
+      if (newValue) {
+        this.map.addInteraction(this.drawer);
+      } else {
+        this.map.removeInteraction(this.drawer);
+      }
+    },
+    hasContext(newValue) {
+      this.drawerLayer.setVisible(!newValue);
+      if (newValue) {
+        this.map.addInteraction(this.drawerModify);
+      } else {
+        this.map.removeInteraction(this.drawerModify);
+      }
+    },
   },
   mounted() {
     this.baseLayers = BASE_LAYERS;
     this.baseLayers.layers.forEach((l) => {
       if (l.get('name') === this.$baseLayer) {
         l.setVisible(true);
+        this.visibleBaseLayer = l;
       }
       const layer = l;
       layer.on('propertychange', (event) => {
+        this.visibleBaseLayer = layer;
         if (event.type === 'propertychange' && event.key === 'visible' && event.target.get(event.key)) {
           Cookies.set(Constants.COOKIE_BASELAYER, layer.get('name'), {
             expires: 30,
@@ -256,6 +291,44 @@ export default {
       positioning: 'center-center',
     });
     this.map.addOverlay(this.mapSelectionMarker);
+    const source = new VectorSource();
+    this.drawerLayer = new VectorLayer({
+      id: 'DrawerLayer',
+      source: source,
+      visible: true,
+      style: new Style({
+        fill: new Fill({
+          color: 'rgba(17, 170, 187, 0.3)',
+        }),
+        stroke: new Stroke({
+          color: 'rgb(17, 170, 187)',
+          width: 2,
+        }),
+      }),
+    });
+
+    this.drawer = new Draw({
+      source: source,
+      type: 'Polygon',
+    });
+    this.drawer.on('drawstart', () => {
+      this.drawerLayer.getSource().clear(true);
+    });
+    this.drawer.on('drawend', (event) => {
+      // event.stopPropagation();
+      // this.drawerLayer.getSource().addFeature(event.feature);
+      this.sendRegionOfInterest(event.feature.getGeometry());
+      this.setDrawContext(false);
+      this.setEraserForContext(true);
+    });
+    this.drawerModify = new Modify({ source: source });
+    this.map.addInteraction(this.drawerModify);
+    this.map.addLayer(this.drawerLayer);
+    this.$eventBus.$on('resetCustomContext', () => {
+      console.log('RECEIVED resetCustomContext');
+      this.drawerLayer.getSource().clear(true);
+      this.setEraserForContext(false);
+    });
     this.drawContext();
     this.drawObservations();
   },

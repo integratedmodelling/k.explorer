@@ -37,6 +37,7 @@ export default {
     labelKm: 'Kilometri',
     labelSpatial: 'spaziale',
     labelTemporal: 'temporale',
+    drawContext: 'Disegnare contesto',
 
   },
   messages: {
@@ -64,6 +65,7 @@ export default {
     noReportNoObservation: 'Cannot view report,\nno observations',
     dataflowViewer: 'Vedere data flow (will be...)',
     provenanceViewer: 'Vedere provenance (will be...)',
+    eraseCustomContext: 'Cancellare shape attuale',
   },
   errors: {
     connectionError: 'Errore di connessione',

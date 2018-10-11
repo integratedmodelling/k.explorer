@@ -163,4 +163,12 @@ export default {
       type,
     };
   },
+
+  SET_DRAWCONTEXT: (state, drawContext) => {
+    state.drawContext = drawContext;
+  },
+
+  SET_ERASERFORCONTEXT: (state, eraserForContext) => {
+    state.eraserForContext = eraserForContext;
+  },
 };

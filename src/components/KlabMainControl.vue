@@ -91,6 +91,22 @@
                   <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
                 </q-item-main>
               </q-item>
+              <q-item-separator></q-item-separator>
+              <q-item>
+                <q-item-main>
+                  <div class="mc-menuitem mc-clickable" :class="[ isDrawContext ? 'mc-select' : '']" @click="startDrawContext()">
+                    <div id="mc-drawmode" class="mc-item mdi mdi-vector-polygon mc-icon"></div>
+                    <div id="mc-drawtext" class="mc-item mc-text">{{ $t('label.drawContext') }}</div>
+                    <div v-show="isEraserForContext" id="mc-eraserforcontext" class="mc-item mdi mdi-eraser mc-icon" @click="eraseCustomContext($event)">
+                      <q-tooltip
+                        :offset="[0, 8]"
+                        self="top middle"
+                        anchor="bottom middle"
+                      >{{ $t('tooltips.eraseCustomContext') }}</q-tooltip>
+                    </div>
+                  </div>
+                </q-item-main>
+              </q-item>
             </q-list>
           </q-popover>
         </q-btn>
@@ -269,6 +285,8 @@ export default {
       'searchIsFocused',
       'mainViewer',
       'reloadReport',
+      'isDrawContext',
+      'isEraserForContext',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -293,6 +311,7 @@ export default {
     ...mapActions('view', [
       'searchStop',
       'setMainViewer',
+      'setDrawContext',
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
@@ -354,6 +373,14 @@ export default {
       if (this.draggableElement.offsetTop >= height(this.boundingElement)) {
         this.changeDraggablePosition({ top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0), left: Math.max(this.draggableElement.offsetLeft, 0) });
       }
+    },
+    startDrawContext() {
+      this.setDrawContext(!this.isDrawContext);
+    },
+    eraseCustomContext(event) {
+      event.stopPropagation();
+      this.$eventBus.$emit('resetCustomContext');
+      console.log('Emitted resetCustomContext');
     },
   },
   watch: {
@@ -555,5 +582,29 @@ export default {
 
   .lot-of-flow
     transition top 0.05s ease 0s, left 0.05s ease 0s
-
+  .mc-menuitem
+    width 100%
+    position relative
+    padding 2px 5px
+    &.mc-clickable
+      cursor pointer
+    &.mc-select
+      background-color $main-control-main-color
+      color #fff
+    .mc-item
+      padding 0 3px
+      display inline-block
+      vertical-align middle
+      font-size 13px
+      &.lighter
+        color #ccc
+        text-shadow 0 0 1px #333
+      &.mc-icon
+        font-size 20px
+      &.mc-text
+        padding-left 10px
+  #mc-drawtext
+    width calc(100% - 50px)
+  #mc-eraserforcontext
+    padding 0 0 0 3px
 </style>

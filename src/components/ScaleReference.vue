@@ -1,10 +1,10 @@
 <template>
   <div id="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
-    <div id="sr-scalereference" v-if="hasScale" :class="[ full ? 'sr-full' : '']">
+    <div id="sr-scalereference" class="mc-menuitem" v-if="hasScale" :class="[ full ? 'sr-full' : '']">
       <div
         v-if="full"
         id="sr-locked"
-        class="sr-item mdi sr-icon"
+        class="mc-item mdi sr-icon"
         :class="[ isScaleLocked[scaleType] ? 'mdi-lock-outline' : 'mdi-lock-open-outline']"
         :style="{ cursor: isScaleLocked[scaleType] ? 'pointer' : 'default' }"
         @click.prevent="isScaleLocked ? unlockScale($event) : false"
@@ -17,9 +17,9 @@
         >{{ $t('label.clickToUnlock') }}</q-tooltip>
       </div>
       <div id="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']" id="sr-scaletype">{{ scaleType === 'time' ? type : '' }}</div>
-        <div id="sr-description" class="sr-item">{{ description }}</div>
-        <div id="sr-spacescale" class="sr-item">{{ scale }}</div>
+        <div class="mc-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']" id="sr-scaletype">{{ scaleType === 'time' ? type : '' }}</div>
+        <div id="sr-description" class="mc-item">{{ description }}</div>
+        <div id="sr-spacescale" class="mc-item">{{ scale }}</div>
         <q-tooltip
           v-if="editable"
           anchor="bottom middle"
@@ -144,16 +144,6 @@ export default {
     display inline
   #sr-scalereference
   #sr-no-scalereference
-    width 100%
-    position relative
-    .sr-item
-      padding 0 3px
-      display inline-block
-      vertical-align middle
-      &.lighter
-        color #ccc
-        text-shadow 0 0 1px #333
-      $sr-lock-width = 40px
     #sr-scaletype
       width $sr-scaletype-width
     #sr-locked
