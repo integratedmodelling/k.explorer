@@ -91,5 +91,6 @@ export default {
   isScaleEditing: state => state.scaleEditing.active,
   scaleEditingType: state => state.scaleEditing.type,
   isDrawContext: state => state.drawContext,
-  isEraserForContext: state => state.eraserForContext,
+  hasCustomContext: state => state.hasCustomContext,
+  addToCustomContext: state => state.addToCustomContext,
 };

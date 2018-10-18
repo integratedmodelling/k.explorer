@@ -113,5 +113,6 @@ export default {
   },
 
   drawContext: false,
-  eraserForContext: false,
+  hasCustomContext: false,
+  addToCustomContext: false,
 };

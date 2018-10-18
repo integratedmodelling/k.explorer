@@ -216,10 +216,14 @@ export default {
   },
 
   setDrawContext: ({ commit }, drawContext) => {
-    commit('SET_DRAWCONTEXT', drawContext);
+    commit('SET_DRAW_CONTEXT', drawContext);
   },
 
-  setEraserForContext: ({ commit }, eraserForContext) => {
-    commit('SET_ERASERFORCONTEXT', eraserForContext);
+  setHasCustomContext: ({ commit }, hasCustomContext) => {
+    commit('SET_HAS_CUSTOM_CONTEXT', hasCustomContext);
+  },
+
+  addToCustomContext: ({ commit }, addToCustomContext) => {
+    commit('ADD_TO_CUSTOM_CONTEXT', addToCustomContext);
   },
 };

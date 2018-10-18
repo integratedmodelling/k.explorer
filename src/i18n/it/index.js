@@ -24,6 +24,7 @@ export default {
     noInfoValues: '',
     noScaleReference: '',
     mcMenuScale: 'Scala attuale:',
+    mcMenuCustomContext: 'Contesto',
     titleOutputFormat: 'Download osservazione',
     askForOuputFormat: 'Selezionare un formato',
     titleChangeScale: 'Cambiare scala',
@@ -37,7 +38,9 @@ export default {
     labelKm: 'Kilometri',
     labelSpatial: 'spaziale',
     labelTemporal: 'temporale',
-    drawContext: 'Disegnare contesto',
+    drawCustomContext: 'Disegnare contesto',
+    eraseCustomContext: 'Eliminare ultimo shape',
+    addToCustomContext: 'Aggiungere shape',
 
   },
   messages: {
@@ -65,7 +68,6 @@ export default {
     noReportNoObservation: 'Cannot view report,\nno observations',
     dataflowViewer: 'Vedere data flow (will be...)',
     provenanceViewer: 'Vedere provenance (will be...)',
-    eraseCustomContext: 'Cancellare shape attuale',
   },
   errors: {
     connectionError: 'Errore di connessione',

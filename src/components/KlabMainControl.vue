@@ -91,19 +91,25 @@
                   <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
                 </q-item-main>
               </q-item>
+              <q-list-header style="padding: 16px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuCustomContext') }}</q-list-header>
               <q-item-separator></q-item-separator>
               <q-item>
                 <q-item-main>
                   <div class="mc-menuitem mc-clickable" :class="[ isDrawContext ? 'mc-select' : '']" @click="startDrawContext()">
-                    <div id="mc-drawmode" class="mc-item mdi mdi-vector-polygon mc-icon"></div>
-                    <div id="mc-drawtext" class="mc-item mc-text">{{ $t('label.drawContext') }}</div>
-                    <div v-show="isEraserForContext" id="mc-eraserforcontext" class="mc-item mdi mdi-eraser mc-icon" @click="eraseCustomContext($event)">
-                      <q-tooltip
-                        :offset="[0, 8]"
-                        self="top middle"
-                        anchor="bottom middle"
-                      >{{ $t('tooltips.eraseCustomContext') }}</q-tooltip>
-                    </div>
+                    <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
+                    <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
+                  </div>
+                </q-item-main>
+                <q-item-main>
+                  <div v-show="hasCustomContext" class="mc-menuitem mc-clickable" @click="startDrawContext()">
+                    <div class="mc-item mdi mdi-shape-polygon-plus mc-icon"></div>
+                    <div class="mc-item mc-text mc-only-text">{{ $t('label.addToCustomContext') }}</div>
+                  </div>
+                </q-item-main>
+                <q-item-main>
+                  <div v-show="hasCustomContext" class="mc-menuitem mc-clickable" @click="eraseCustomContext()">
+                    <div class="mc-item mdi mdi-shape-polygon-plus mc-icon"></div>
+                    <div class="mc-item mc-text mc-only-text">{{ $t('label.eraseCustomContext') }}</div>
                   </div>
                 </q-item-main>
               </q-item>
@@ -286,7 +292,7 @@ export default {
       'mainViewer',
       'reloadReport',
       'isDrawContext',
-      'isEraserForContext',
+      'hasCustomContext',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -312,6 +318,7 @@ export default {
       'searchStop',
       'setMainViewer',
       'setDrawContext',
+      'addToCustomContext',
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
@@ -380,7 +387,10 @@ export default {
     eraseCustomContext(event) {
       event.stopPropagation();
       this.$eventBus.$emit('resetCustomContext');
-      console.log('Emitted resetCustomContext');
+    },
+    addToContext(event) {
+      event.stopPropagation();
+      this.addToCustomContext(true);
     },
   },
   watch: {
@@ -596,6 +606,8 @@ export default {
       display inline-block
       vertical-align middle
       font-size 13px
+      &.mc-only-text
+        width 100%
       &.lighter
         color #ccc
         text-shadow 0 0 1px #333
@@ -603,8 +615,6 @@ export default {
         font-size 20px
       &.mc-text
         padding-left 10px
-  #mc-drawtext
-    width calc(100% - 50px)
   #mc-eraserforcontext
     padding 0 0 0 3px
 </style>

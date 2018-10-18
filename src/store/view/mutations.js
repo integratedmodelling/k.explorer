@@ -164,11 +164,15 @@ export default {
     };
   },
 
-  SET_DRAWCONTEXT: (state, drawContext) => {
+  SET_DRAW_CONTEXT: (state, drawContext) => {
     state.drawContext = drawContext;
   },
 
-  SET_ERASERFORCONTEXT: (state, eraserForContext) => {
-    state.eraserForContext = eraserForContext;
+  SET_HAS_CUSTOM_CONTEXT: (state, hasCustomContext) => {
+    state.hasCustomContext = hasCustomContext;
+  },
+
+  ADD_TO_CUSTOM_CONTEXT: (state, addToCustomContext) => {
+    state.addToCustomContext = addToCustomContext;
   },
 };

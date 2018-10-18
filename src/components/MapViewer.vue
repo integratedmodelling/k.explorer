@@ -78,7 +78,7 @@ export default {
       'setSpinner',
       'setMapSelection',
       'setDrawContext',
-      'setEraserForContext',
+      'setHasCustomContext',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -319,7 +319,7 @@ export default {
       // this.drawerLayer.getSource().addFeature(event.feature);
       this.sendRegionOfInterest(event.feature.getGeometry());
       this.setDrawContext(false);
-      this.setEraserForContext(true);
+      this.setHasCustomContext(true);
     });
     this.drawerModify = new Modify({ source: source });
     this.map.addInteraction(this.drawerModify);
@@ -327,7 +327,7 @@ export default {
     this.$eventBus.$on('resetCustomContext', () => {
       console.log('RECEIVED resetCustomContext');
       this.drawerLayer.getSource().clear(true);
-      this.setEraserForContext(false);
+      this.setHasCustomContext(false);
     });
     this.drawContext();
     this.drawObservations();
