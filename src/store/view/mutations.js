@@ -164,15 +164,11 @@ export default {
     };
   },
 
-  SET_DRAW_CONTEXT: (state, drawContext) => {
-    state.drawContext = drawContext;
+  SET_DRAW_MODE: (state, drawMode) => {
+    state.drawMode = drawMode;
   },
 
-  SET_HAS_CUSTOM_CONTEXT: (state, hasCustomContext) => {
-    state.hasCustomContext = hasCustomContext;
-  },
-
-  ADD_TO_CUSTOM_CONTEXT: (state, addToCustomContext) => {
-    state.addToCustomContext = addToCustomContext;
+  SET_CUSTOM_CONTEXT: (state, customContext) => {
+    state.customContext = customContext;
   },
 };

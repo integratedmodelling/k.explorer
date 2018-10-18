@@ -215,15 +215,11 @@ export default {
     commit('SET_SCALE_EDITING', { active, type });
   },
 
-  setDrawContext: ({ commit }, drawContext) => {
-    commit('SET_DRAW_CONTEXT', drawContext);
+  setDrawMode: ({ commit }, drawMode) => {
+    commit('SET_DRAW_MODE', drawMode);
   },
 
-  setHasCustomContext: ({ commit }, hasCustomContext) => {
-    commit('SET_HAS_CUSTOM_CONTEXT', hasCustomContext);
-  },
-
-  addToCustomContext: ({ commit }, addToCustomContext) => {
-    commit('ADD_TO_CUSTOM_CONTEXT', addToCustomContext);
+  setCustomContext: ({ commit }, customContext) => {
+    commit('SET_CUSTOM_CONTEXT', customContext);
   },
 };

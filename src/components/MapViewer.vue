@@ -3,6 +3,14 @@
     <div :ref="'map'+idx" :id="'map'+idx" class="fit"></div>
     <q-icon name="mdi-crosshairs" id="map-selection-marker" />
     <q-resize-observable @resize="handleResize" />
+    <div id="mv-draw-controls" v-show="isDrawMode" v-draggable="dragDCConfig">
+      <div id="mvd-title">Draw mode</div>
+      <div id="mvd-controls">
+        <q-icon class="mvd-control" id="mvd-ok" name="mdi-check-circle-outline" @click.native="drawOk()"></q-icon>
+        <q-icon class="mvd-control" :class="[ hasCustomContextFeatures ? '' : 'disabled']" id="mvd-erase" name="mdi-delete-variant" @click.native="hasCustomContextFeaturesgi ? drawErase() : false"></q-icon>
+        <q-icon class="mvd-control" id="mvd-cancel" name="mdi-close-circle-outline" @click.native="drawCancel()"></q-icon>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -29,6 +37,12 @@ import { transformExtent, transform } from 'ol/proj';
 import { Draw, Modify } from 'ol/interaction.js';
 import { Fill, Stroke, Style } from 'ol/style.js';
 import LayerSwitcher from 'ol-layerswitcher';
+import { Draggable } from 'draggable-vue-directive';
+import { io as jstsIo } from 'jsts';
+// import CascadedPolygonUnion from 'jsts/org/locationtech/jts/operation/union/CascadedPolygonUnion';
+// eslint-disable-next-line object-curly-newline
+import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon } from 'ol/geom.js';
+import LinearRing from 'ol/geom/LinearRing.js';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -54,6 +68,8 @@ export default {
       drawer: undefined,
       drawerModify: undefined,
       // contextViewport: Constants.PARAM_VIEWPORT_SIZE,
+      dragDCConfig: { resetInitialPos: true },
+      jstsParser: undefined,
     };
   },
   computed: {
@@ -69,16 +85,20 @@ export default {
       'observationInfo',
       'exploreMode',
       'mapSelection',
-      'isDrawContext',
+      'isDrawMode',
+      'hasCustomContext',
     ]),
+    hasCustomContextFeatures() {
+      return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
+    },
   },
   methods: {
     ...mapActions('view', [
       'addToKexplorerLog',
       'setSpinner',
       'setMapSelection',
-      'setDrawContext',
-      'setHasCustomContext',
+      'setDrawMode',
+      'setCustomContext',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -88,7 +108,7 @@ export default {
       }
     },
     onMoveEnd() {
-      if (this.hasContext) {
+      if (this.hasContext || this.hasCustomContext) {
         return;
       }
       // const { map } = event;
@@ -192,6 +212,44 @@ export default {
         });
       }
     },
+
+    drawOk() {
+      const features = this.drawerLayer.getSource().getFeatures();
+      if (features.length === 0) {
+        this.setCustomContext(false);
+      } else {
+        const feature = features[0];
+        const fl = features.length;
+        if (fl > 1) {
+          let jstsGeometry = null;
+          for (let i = 0; i < fl; i++) {
+            const jstsGeomTemp = this.jstsParser.read(features[i].getGeometry());
+            if (jstsGeometry === null) {
+              jstsGeometry = jstsGeomTemp;
+            } else {
+              jstsGeometry = jstsGeometry.union(jstsGeomTemp);
+            }
+          }
+          feature.setGeometry(this.jstsParser.write(jstsGeometry));
+          this.drawerLayer.getSource().clear();
+          this.drawerLayer.getSource().addFeatures([feature]);
+        }
+        this.sendRegionOfInterest(feature.getGeometry());
+        this.setCustomContext(true);
+      }
+      this.setDrawMode(false);
+    },
+
+    drawErase() {
+      this.drawerLayer.getSource().clear(true);
+      this.setCustomContext(false);
+    },
+
+    drawCancel() {
+      this.drawerLayer.getSource().clear(true);
+      this.setDrawMode(false);
+      this.setCustomContext(false);
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -214,24 +272,26 @@ export default {
         this.mapSelectionMarker.setPosition(undefined);
       }
     },
-    isDrawContext(newValue) {
-      this.setDrawContext(newValue);
+    isDrawMode(newValue) {
       if (newValue) {
         this.map.addInteraction(this.drawer);
+        this.map.addInteraction(this.drawerModify);
       } else {
         this.map.removeInteraction(this.drawer);
+        this.map.removeInteraction(this.drawerModify);
       }
     },
     hasContext(newValue) {
+      this.drawerLayer.getSource().clear(true);
       this.drawerLayer.setVisible(!newValue);
       if (newValue) {
-        this.map.addInteraction(this.drawerModify);
-      } else {
-        this.map.removeInteraction(this.drawerModify);
+        this.setCustomContext(false);
+        this.setDrawMode(false);
       }
     },
   },
   mounted() {
+    // Set base layer
     this.baseLayers = BASE_LAYERS;
     this.baseLayers.layers.forEach((l) => {
       if (l.get('name') === this.$baseLayer) {
@@ -249,6 +309,7 @@ export default {
         }
       });
     });
+    // Set main map
     this.map = new Map({
       view: new View({
         center: this.center,
@@ -259,6 +320,7 @@ export default {
       loadTilesWhileAnimating: true,
       loadTilesWhileInteracting: true,
     });
+    // Main map listeners...
     this.map.on('moveend', this.onMoveEnd);
     this.map.on('pointermove', (event) => {
       if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
@@ -281,8 +343,10 @@ export default {
         });
       }
     });
+    // ...and set some attribute for rapid access
     this.view = this.map.getView();
     this.proj = this.view.getProjection();
+    // Add components to main map
     this.map.addLayer(new Group({ layers: this.layers }));
     const layerSwitcher = new LayerSwitcher();
     this.map.addControl(layerSwitcher);
@@ -291,7 +355,12 @@ export default {
       positioning: 'center-center',
     });
     this.map.addOverlay(this.mapSelectionMarker);
+    // Configuring the drawer
     const source = new VectorSource();
+    this.drawerModify = new Modify({ source });
+    // this.map.addInteraction(this.drawerModify);
+
+    // Add drawer to map
     this.drawerLayer = new VectorLayer({
       id: 'DrawerLayer',
       source: source,
@@ -311,26 +380,23 @@ export default {
       source: source,
       type: 'Polygon',
     });
-    this.drawer.on('drawstart', () => {
-      this.drawerLayer.getSource().clear(true);
-    });
-    this.drawer.on('drawend', (event) => {
-      // event.stopPropagation();
-      // this.drawerLayer.getSource().addFeature(event.feature);
-      this.sendRegionOfInterest(event.feature.getGeometry());
-      this.setDrawContext(false);
-      this.setHasCustomContext(true);
-    });
-    this.drawerModify = new Modify({ source: source });
-    this.map.addInteraction(this.drawerModify);
+
     this.map.addLayer(this.drawerLayer);
     this.$eventBus.$on('resetCustomContext', () => {
       console.log('RECEIVED resetCustomContext');
       this.drawerLayer.getSource().clear(true);
-      this.setHasCustomContext(false);
+      this.setCustomContext(false);
     });
+    // configuring draggable box showed in draw mode: bounding box is map
+    this.dragDCConfig.boundingElement = document.getElementById(`map${this.idx}`);
+    // initialize jsts parser
+    this.jstsParser = new jstsIo.OL3Parser();
+    this.jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
     this.drawContext();
     this.drawObservations();
+  },
+  directives: {
+    Draggable,
   },
 };
 </script>
@@ -353,5 +419,49 @@ export default {
     font-size 28px
     color white
     mix-blend-mode exclusion
+  #mv-draw-controls
+    position absolute
+    top 30px
+    left calc(100vh - 100px)
+
+    background-color rgba(255, 255, 255, 0.8)
+    border-radius 20px
+    #mvd-title
+      color white
+      background-color $main-control-main-color
+      width 100%
+      padding 5px
+      font-size 16px
+      text-align center
+      border-top-left-radius 20px
+      border-top-right-radius 20px
+    #mvd-controls
+      .mvd-control
+        font-size 30px
+        font-width bold
+        width calc(33% - 10px)
+        padding 5px
+        margin 10px 5px
+        height 40px;
+        border-radius 20px
+        cursor pointer
+      #mvd-ok
+        color $positive
+        &:hover
+          background-color $positive
+          color white
+      #mvd-cancel
+        color $negative
+        &:hover
+          background-color $negative
+          color white
+      #mvd-erase
+        &.disabled
+          cursor default
+        &:not(.disabled)
+          color $main-control-yellow
+          &:hover
+            background-color $main-control-yellow
+            color white
 
 </style>

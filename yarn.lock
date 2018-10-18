@@ -4387,6 +4387,11 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
+jsts@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/jsts/-/jsts-2.0.2.tgz#dc7928adb08e36232dd90ac5ab5dfdf5139432a9"
+  integrity sha512-Vi9x6vSQtzCDEUBW9xLFh3i8GBsOI16K+jjq9JECFAgEBpNAXnwptxrFUGeHrkkzr85WT51fUR9tYhMEuykc8Q==
+
 kaiser@>=0.0.3, kaiser@>=0.0.4:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/kaiser/-/kaiser-0.0.4.tgz#d25ddf800640857fadde08dba59ffc7a5a4f5c38"

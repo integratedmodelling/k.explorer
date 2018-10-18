@@ -38,8 +38,8 @@ export default {
     labelKm: 'Kilometros',
     labelSpatial: 'espacial',
     labelTemporal: 'temporal',
-    drawCustomContext: 'Diseñar context',
-    eraseCustomContext: 'Borrar último shape',
+    drawCustomContext: 'Dibujar contexto',
+    eraseCustomContext: 'Borrar contexto',
     addToCustomContext: 'Añadir shape',
   },
   messages: {

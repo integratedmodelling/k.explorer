@@ -39,7 +39,7 @@ export default {
     labelSpatial: 'spatial',
     labelTemporal: 'temporal',
     drawCustomContext: 'Draw context',
-    eraseCustomContext: 'Erase last shape',
+    eraseCustomContext: 'Erase custom context',
     addToCustomContext: 'Add shape',
   },
   messages: {

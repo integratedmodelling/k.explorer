@@ -112,7 +112,6 @@ export default {
     type: null,
   },
 
-  drawContext: false,
-  hasCustomContext: false,
-  addToCustomContext: false,
+  drawMode: false,
+  customContext: false,
 };

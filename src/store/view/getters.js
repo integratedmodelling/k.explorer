@@ -90,7 +90,7 @@ export default {
 
   isScaleEditing: state => state.scaleEditing.active,
   scaleEditingType: state => state.scaleEditing.type,
-  isDrawContext: state => state.drawContext,
-  hasCustomContext: state => state.hasCustomContext,
-  addToCustomContext: state => state.addToCustomContext,
+
+  isDrawMode: state => state.drawMode,
+  hasCustomContext: state => state.customContext,
 };

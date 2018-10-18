@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container" id="mc-container" class="print-hide small">
+  <div ref="main-control-container" id="mc-container" class="print-hide small" v-show="!isDrawMode">
     <transition
       appear
       enter-active-class="animated fadeInLeft"
@@ -32,7 +32,7 @@
       :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
       :style="{ top: `${defaultTop}px`, left: `${centeredLeft}px` }"
       :flat="true"
-      v-draggable="draggableConfMain"
+      v-draggable="dragMCConfig"
       v-show="!isHidden"
       @mousedown.native="preventDrag"
     >
@@ -74,7 +74,7 @@
           v-show="!hasContext && !isHidden && !searchIsActive"
         >
           <q-popover
-            v-if="!searchIsActive"
+            v-if="!searchIsActive && !isDrawMode"
             anchor="top right"
             selr="top left"
           >
@@ -95,23 +95,31 @@
               <q-item-separator></q-item-separator>
               <q-item>
                 <q-item-main>
-                  <div class="mc-menuitem mc-clickable" :class="[ isDrawContext ? 'mc-select' : '']" @click="startDrawContext()">
-                    <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
-                    <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
+                  <div class="mc-container">
+                    <div class="mc-menuitem mc-clickable" id="" :class="[ isDrawMode ? 'mc-select' : '']" @click="startDraw()">
+                      <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
+                      <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
+                    </div>
                   </div>
                 </q-item-main>
+              </q-item>
+              <q-item>
+                <q-item-main v-show="hasCustomContext">
+                  <div class="mc-container">
+                    <div class="mc-menuitem mc-clickable" @click="eraseCustomContext($event)">
+                      <div class="mc-item mdi mdi-eraser mc-icon"></div>
+                      <div class="mc-item mc-text mc-only-text">{{ $t('label.eraseCustomContext') }}</div>
+                    </div>
+                  </div>
+                </q-item-main>
+                <!--
                 <q-item-main>
                   <div v-show="hasCustomContext" class="mc-menuitem mc-clickable" @click="startDrawContext()">
                     <div class="mc-item mdi mdi-shape-polygon-plus mc-icon"></div>
                     <div class="mc-item mc-text mc-only-text">{{ $t('label.addToCustomContext') }}</div>
                   </div>
                 </q-item-main>
-                <q-item-main>
-                  <div v-show="hasCustomContext" class="mc-menuitem mc-clickable" @click="eraseCustomContext()">
-                    <div class="mc-item mdi mdi-shape-polygon-plus mc-icon"></div>
-                    <div class="mc-item mc-text mc-only-text">{{ $t('label.eraseCustomContext') }}</div>
-                  </div>
-                </q-item-main>
+                -->
               </q-item>
             </q-list>
           </q-popover>
@@ -266,7 +274,7 @@ export default {
   data() {
     return {
       isHidden: false,
-      draggableConfMain: {
+      dragMCConfig: {
         handle: undefined,
         resetInitialPos: false,
         onDragEnd: this.checkWhereWasDragged,
@@ -291,7 +299,7 @@ export default {
       'searchIsFocused',
       'mainViewer',
       'reloadReport',
-      'isDrawContext',
+      'isDrawMode',
       'hasCustomContext',
     ]),
     ...mapGetters('stomp', [
@@ -317,8 +325,7 @@ export default {
     ...mapActions('view', [
       'searchStop',
       'setMainViewer',
-      'setDrawContext',
-      'addToCustomContext',
+      'setDrawMode',
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
@@ -333,11 +340,11 @@ export default {
       }
     },
     hide() {
-      this.draggableConfMain.resetInitialPos = false;
+      this.dragMCConfig.resetInitialPos = false;
       this.isHidden = true;
     },
     show() {
-      this.draggableConfMain.resetInitialPos = false;
+      this.dragMCConfig.resetInitialPos = false;
       this.isHidden = false;
     },
     getCenteredLeft() {
@@ -355,7 +362,7 @@ export default {
     changeDraggablePosition(position) {
       this.draggableElement.style.left = `${position.left}px`;
       this.draggableElement.style.top = `${position.top}px`;
-      const draggableState = JSON.parse(this.draggableConfMain.handle.getAttribute('draggable-state'));
+      const draggableState = JSON.parse(this.dragMCConfig.handle.getAttribute('draggable-state'));
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
@@ -381,16 +388,12 @@ export default {
         this.changeDraggablePosition({ top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0), left: Math.max(this.draggableElement.offsetLeft, 0) });
       }
     },
-    startDrawContext() {
-      this.setDrawContext(!this.isDrawContext);
+    startDraw() {
+      this.setDrawMode(!this.isDrawMode);
     },
     eraseCustomContext(event) {
       event.stopPropagation();
       this.$eventBus.$emit('resetCustomContext');
-    },
-    addToContext(event) {
-      event.stopPropagation();
-      this.addToCustomContext(true);
     },
   },
   watch: {
@@ -409,14 +412,14 @@ export default {
   },
   mounted() {
     this.draggableElement = document.getElementById('mc-q-card');
-    this.draggableConfMain.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
-    // this.draggableConfMain.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
+    this.dragMCConfig.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
+    // this.dragMCConfig.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     this.boundingElement = document.getElementById('viewer-container');
     this.centeredLeft = this.getCenteredLeft();
-    this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+    this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
 
     this.$eventBus.$on('map-size-changed', () => {
-      this.draggableConfMain.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+      this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
       this.checkWhereWasDragged();
     });
@@ -607,14 +610,20 @@ export default {
       vertical-align middle
       font-size 13px
       &.mc-only-text
-        width 100%
+        width calc(100% - 30px)
       &.lighter
         color #ccc
         text-shadow 0 0 1px #333
       &.mc-icon
         font-size 20px
+        width 30px
       &.mc-text
         padding-left 10px
   #mc-eraserforcontext
     padding 0 0 0 3px
+  .mc-container
+    height 100%
+    display flex
+    align-items center
+    width 180px
 </style>
