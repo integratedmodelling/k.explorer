@@ -46,6 +46,7 @@ export default {
         // send a stomp message
         sendStompMessage(message, headers, destination = opts.defaultMessageDestination) {
           observer.send(destination, message, headers);
+          console.debug(`Message sended: ${JSON.stringify(message, null, 4)}`);
         },
 
         // In this app, the subscribe destination need an id
@@ -55,10 +56,12 @@ export default {
 
         unsubscribe(id) {
           observer.unsubscribe(id);
+          console.debug(`Unsubscribe the subscription with id ${id}`);
         },
 
         reconnect() {
           if (observer.StompClient && !observer.StompClient.connected) {
+            console.debug('Try to reconnect...');
             observer.reconnect();
           }
         },
