@@ -1,8 +1,8 @@
 {
   "name": "klab.explorer",
-  "version": "0.1.0",
-  "description": "Explorer module of k.LAB",
-  "productName": "k.LAB Explorer",
+  "version": "0.9.0",
+  "description": "k.EXPLORER module of k.LAB",
+  "productName": "k.EXPLORER",
   "cordovaId": "org.cordova.quasar.app",
   "author": "Enrico Girotto <enrico.girotto@gmail.com>",
   "private": true,

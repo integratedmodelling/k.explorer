@@ -39,6 +39,7 @@ module.exports = function (ctx) {
         WS_URL: JSON.stringify('/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
+        REST_STATUS: JSON.stringify('/modeler/engine/status/'),
         REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
       },
