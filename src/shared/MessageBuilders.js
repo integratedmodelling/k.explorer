@@ -163,4 +163,16 @@ export const MESSAGES_BUILDERS = {
     },
     session,
   ),
+
+  SPATIAL_LOCATION: (wktShape, session) => buildMessage(
+    OUT.CLASS_USERCONTEXTCHANGE,
+    OUT.TYPE_FEATUREADDED,
+    OUT.PAYLOAD_CLASS_SPATIALLOCATION,
+    {
+      easting: Number.MIN_VALUE,
+      northing: Number.MIN_VALUE,
+      wktShape,
+    },
+    session,
+  ),
 };

@@ -23,16 +23,8 @@ export const OUT = Object.freeze({
   CLASS_TASKLIFECYCLE: 'TaskLifecycle',
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
 
-  PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
-  PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
-  PAYLOAD_CLASS_SEARCHREQUEST: 'SearchRequest',
-  PAYLOAD_CLASS_SEARCHMATCHACTION: 'SearchMatchAction',
-  PAYLOAD_CLASS_OBSERVATIONREQUEST: 'ObservationRequest',
-  PAYLOAD_CLASS_INTERRUPTTASK: 'InterruptTask',
-  PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
-  PAYLOAD_CLASS_EMPTY: 'String',
-
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
+  TYPE_FEATUREADDED: 'FeatureAdded',
   TYPE_PERIODOFINTEREST: 'PeriodOfInterest',
   TYPE_SUBMITSEARCH: 'SubmitSearch',
   TYPE_MATCHACTION: 'MatchAction',
@@ -40,6 +32,16 @@ export const OUT = Object.freeze({
   TYPE_RESETCONTEXT: 'ResetContext',
   TYPE_TASKINTERRUPTED: 'TaskInterrupted',
   TYPE_SCALEDEFINED: 'ScaleDefined',
+
+  PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
+  PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
+  PAYLOAD_CLASS_TEMPORALEXTENT: 'TemporalExtent',
+  PAYLOAD_CLASS_SEARCHREQUEST: 'SearchRequest',
+  PAYLOAD_CLASS_SEARCHMATCHACTION: 'SearchMatchAction',
+  PAYLOAD_CLASS_OBSERVATIONREQUEST: 'ObservationRequest',
+  PAYLOAD_CLASS_INTERRUPTTASK: 'InterruptTask',
+  PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
+  PAYLOAD_CLASS_EMPTY: 'String',
 });
 
 /**

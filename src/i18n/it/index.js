@@ -56,6 +56,7 @@ export default {
     copiedToClipboard: 'Copiato',
     changeScaleResolutionError: 'La risoluzione deve essere positiva',
     updateScale: 'Attualizata  la scala {type}, nuovo valore {resolution} {unit}',
+    invalidGeometry: 'Poligono non valido',
   },
   tooltips: {
     treePane: 'Albero',

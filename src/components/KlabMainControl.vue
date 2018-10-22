@@ -103,24 +103,6 @@
                   </div>
                 </q-item-main>
               </q-item>
-              <q-item>
-                <q-item-main v-show="hasCustomContext">
-                  <div class="mc-container">
-                    <div class="mc-menuitem mc-clickable" @click="eraseCustomContext($event)">
-                      <div class="mc-item mdi mdi-eraser mc-icon"></div>
-                      <div class="mc-item mc-text mc-only-text">{{ $t('label.eraseCustomContext') }}</div>
-                    </div>
-                  </div>
-                </q-item-main>
-                <!--
-                <q-item-main>
-                  <div v-show="hasCustomContext" class="mc-menuitem mc-clickable" @click="startDrawContext()">
-                    <div class="mc-item mdi mdi-shape-polygon-plus mc-icon"></div>
-                    <div class="mc-item mc-text mc-only-text">{{ $t('label.addToCustomContext') }}</div>
-                  </div>
-                </q-item-main>
-                -->
-              </q-item>
             </q-list>
           </q-popover>
         </q-btn>
@@ -300,7 +282,6 @@ export default {
       'mainViewer',
       'reloadReport',
       'isDrawMode',
-      'hasCustomContext',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -390,10 +371,6 @@ export default {
     },
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
-    },
-    eraseCustomContext(event) {
-      event.stopPropagation();
-      this.$eventBus.$emit('resetCustomContext');
     },
   },
   watch: {

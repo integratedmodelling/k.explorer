@@ -7,7 +7,7 @@
       <div id="mvd-title">Draw mode</div>
       <div id="mvd-controls">
         <q-icon class="mvd-control" id="mvd-ok" name="mdi-check-circle-outline" @click.native="drawOk()"></q-icon>
-        <q-icon class="mvd-control" :class="[ hasCustomContextFeatures ? '' : 'disabled']" id="mvd-erase" name="mdi-delete-variant" @click.native="hasCustomContextFeaturesgi ? drawErase() : false"></q-icon>
+        <q-icon class="mvd-control" :class="[ hasCustomContextFeatures ? '' : 'disabled']" id="mvd-erase" name="mdi-delete-variant" @click.native="hasCustomContextFeatures ? drawErase() : false"></q-icon>
         <q-icon class="mvd-control" id="mvd-cancel" name="mdi-close-circle-outline" @click.native="drawCancel()"></q-icon>
       </div>
     </div>
@@ -86,7 +86,6 @@ export default {
       'exploreMode',
       'mapSelection',
       'isDrawMode',
-      'hasCustomContext',
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
@@ -98,7 +97,6 @@ export default {
       'setSpinner',
       'setMapSelection',
       'setDrawMode',
-      'setCustomContext',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -108,21 +106,23 @@ export default {
       }
     },
     onMoveEnd() {
-      if (this.hasContext || this.hasCustomContext) {
+      if (this.hasContext) {
         return;
       }
       // const { map } = event;
       this.sendRegionOfInterest();
     },
+
+    sendSpatialLocation(feature) {
+      if (feature) {
+        const wkt = new WKT().writeGeometryText(feature.getGeometry(), { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
+        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION(wkt, this.session).body);
+      }
+    },
     sendRegionOfInterest(geometry = null) {
       let message = null;
       try {
-        let extent;
-        if (geometry !== null) {
-          extent = geometry.getExtent();
-        } else {
-          extent = this.map.getView().calculateExtent(this.map.getSize());
-        }
+        const extent = this.map.getView().calculateExtent(this.map.getSize());
         message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         console.error(error);
@@ -214,15 +214,15 @@ export default {
     },
 
     drawOk() {
-      const features = this.drawerLayer.getSource().getFeatures();
-      if (features.length === 0) {
-        this.setCustomContext(false);
-      } else {
+      // before all, we need to clear possible empty feature for invalid polygon
+      const features = this.drawerLayer.getSource().getFeatures().filter(f => f.getGeometry() !== null);
+      if (features.length !== 0) {
         const feature = features[0];
         const fl = features.length;
         if (fl > 1) {
           let jstsGeometry = null;
           for (let i = 0; i < fl; i++) {
+            // need to check to filter empty geometry for invalid polygon
             const jstsGeomTemp = this.jstsParser.read(features[i].getGeometry());
             if (jstsGeometry === null) {
               jstsGeometry = jstsGeomTemp;
@@ -231,24 +231,26 @@ export default {
             }
           }
           feature.setGeometry(this.jstsParser.write(jstsGeometry));
-          this.drawerLayer.getSource().clear();
-          this.drawerLayer.getSource().addFeatures([feature]);
+          // this.drawerLayer.getSource().addFeatures([feature]);
         }
-        this.sendRegionOfInterest(feature.getGeometry());
-        this.setCustomContext(true);
+        this.sendSpatialLocation(feature);
       }
+      this.drawerLayer.getSource().clear();
       this.setDrawMode(false);
     },
 
     drawErase() {
+      const features = this.drawerLayer.getSource().getFeatures().filter(f => f.getGeometry() !== null);
+      if (features.length > 0) {
+        features.pop();
+      }
       this.drawerLayer.getSource().clear(true);
-      this.setCustomContext(false);
+      this.drawerLayer.getSource().addFeatures(features);
     },
 
     drawCancel() {
-      this.drawerLayer.getSource().clear(true);
+      this.drawerLayer.getSource().clear();
       this.setDrawMode(false);
-      this.setCustomContext(false);
     },
   },
   watch: {
@@ -285,7 +287,6 @@ export default {
       this.drawerLayer.getSource().clear(true);
       this.drawerLayer.setVisible(!newValue);
       if (newValue) {
-        this.setCustomContext(false);
         this.setDrawMode(false);
       }
     },
@@ -381,12 +382,20 @@ export default {
       type: 'Polygon',
     });
 
-    this.map.addLayer(this.drawerLayer);
-    this.$eventBus.$on('resetCustomContext', () => {
-      console.log('RECEIVED resetCustomContext');
-      this.drawerLayer.getSource().clear(true);
-      this.setCustomContext(false);
+    this.drawer.on('drawend', (event) => {
+      const jstsGeomTemp = this.jstsParser.read(event.feature.getGeometry());
+      if (!jstsGeomTemp.isValid()) {
+        this.$q.notify({
+          message: this.$t('messages.invalidGeometry'),
+          type: 'negative',
+          timeout: 1000,
+        });
+        event.feature.setGeometry(null);
+      }
     });
+
+    this.map.addLayer(this.drawerLayer);
+
     // configuring draggable box showed in draw mode: bounding box is map
     this.dragDCConfig.boundingElement = document.getElementById(`map${this.idx}`);
     // initialize jsts parser

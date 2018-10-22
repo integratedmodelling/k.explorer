@@ -55,6 +55,7 @@ export default {
     copiedToClipboard: 'Copied to clipboard',
     changeScaleResolutionError: 'Resolution must be positive',
     updateScale: 'Updated {type} scale, new value: {resolution} {unit}',
+    invalidGeometry: 'Polygon is not valid',
   },
   tooltips: {
     treePane: 'View tree',
