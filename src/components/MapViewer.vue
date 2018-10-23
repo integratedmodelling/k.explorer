@@ -3,7 +3,7 @@
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit"></div>
     <q-icon name="mdi-crosshairs" class="map-selection-marker" />
     <q-resize-observable @resize="handleResize" />
-    <map-drawer v-if="isDrawMode" :map="map"></map-drawer>
+    <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
   </div>
 </template>
 
@@ -25,6 +25,7 @@ import Overlay from 'ol/Overlay';
 import { transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import MapDrawer from 'components/MapDrawer';
+import WKT from 'ol/format/WKT';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -46,6 +47,7 @@ export default {
       baseLayers: null,
       visibleBaseLayer: null,
       mapSelectionMarker: undefined,
+      wktInstance: new WKT(),
     };
   },
   computed: {
@@ -178,6 +180,17 @@ export default {
               }
             }
           });
+        });
+      }
+    },
+    sendSpatialLocation(feature) {
+      if (feature) {
+        const wktText = this.wktInstance.writeGeometryText(feature.getGeometry(), { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
+        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION(wktText, this.session).body);
+        this.$q.notify({
+          message: this.$t('messages.spatialLocationSended'),
+          type: 'info',
+          timeout: 500,
         });
       }
     },

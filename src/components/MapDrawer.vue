@@ -11,7 +11,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { Draggable } from 'draggable-vue-directive';
 import { io as jstsIo } from 'jsts';
 import VectorLayer from 'ol/layer/Vector';
@@ -21,7 +20,6 @@ import { Draw, Modify } from 'ol/interaction.js';
 // eslint-disable-next-line object-curly-newline
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon } from 'ol/geom.js';
 import LinearRing from 'ol/geom/LinearRing.js';
-import WKT from 'ol/format/WKT';
 /**
  * Used to draw path and modify existing path
  */
@@ -51,17 +49,6 @@ export default {
     ...mapActions('view', [
       'setDrawMode',
     ]),
-    sendSpatialLocation(feature) {
-      if (feature) {
-        const wkt = new WKT().writeGeometryText(feature.getGeometry(), { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
-        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION(wkt, this.session).body);
-        this.$q.notify({
-          message: this.$t('messages.spatialLocationSended'),
-          type: 'info',
-          timeout: 500,
-        });
-      }
-    },
     drawOk() {
       // before all, we need to clear possible empty feature for invalid polygon
       const features = this.drawerLayer.getSource().getFeatures().filter(f => f.getGeometry() !== null);
@@ -82,7 +69,7 @@ export default {
           feature.setGeometry(this.jstsParser.write(jstsGeometry));
           // this.drawerLayer.getSource().addFeatures([feature]);
         }
-        this.sendSpatialLocation(feature);
+        this.$emit('drawend', feature);
       }
       this.drawerLayer.getSource().clear();
       this.setDrawMode(false);
@@ -98,6 +85,7 @@ export default {
     },
 
     drawCancel() {
+      this.$emit('drawcancel');
       this.drawerLayer.getSource().clear();
       this.setDrawMode(false);
     },
