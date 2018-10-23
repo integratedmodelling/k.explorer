@@ -41,6 +41,10 @@ export default {
     drawCustomContext: 'Draw context',
     eraseCustomContext: 'Erase custom context',
     addToCustomContext: 'Add shape',
+    drawPoint: 'Point',
+    drawLineString: 'Line',
+    drawPolygon: 'Polygon',
+    drawCircle: 'Circle',
   },
   messages: {
     connectionClosed: 'Connection closed',

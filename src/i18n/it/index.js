@@ -41,6 +41,10 @@ export default {
     drawCustomContext: 'Disegnare contesto',
     eraseCustomContext: 'Eliminare contesto',
     addToCustomContext: 'Aggiungere shape',
+    drawPoint: 'Punto',
+    drawLineString: 'Linea',
+    drawPolygon: 'Poligono',
+    drawCircle: 'Cerchio',
 
   },
   messages: {

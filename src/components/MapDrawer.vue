@@ -6,20 +6,35 @@
       <q-icon class="md-control md-erase" :class="[ hasCustomContextFeatures ? '' : 'disabled']" name="mdi-delete-variant" @click.native="hasCustomContextFeatures ? drawErase() : false"></q-icon>
       <q-icon class="md-control md-cancel" name="mdi-close-circle-outline" @click.native="drawCancel()"></q-icon>
     </div>
+    <div class="md-selector" v-show="selectors">
+      <q-btn-toggle
+        v-model="drawType"
+        toggle-color="mc-main"
+        size="md"
+        :options="[
+          { tabindex: 1, icon: 'mdi-vector-point',/* label: $t('label.drawPoint'),*/ value: 'Point' },
+          { tabindex: 2, icon: 'mdi-vector-line',/* label: $t('label.drawLineString'), */ value: 'LineString' },
+          { tabindex: 3, icon: 'mdi-vector-polygon',/* label: $t('label.drawPolygon'), */ value: 'Polygon' },
+          { tabindex: 4, icon: 'mdi-vector-circle-variant',/* label: $t('label.drawCircle'),*/ value: 'Circle' }
+        ]"
+      ></q-btn-toggle>
+    </div>
   </div>
 </template>
 
 <script>
+/* eslint-disable object-curly-newline */
 import { mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import { io as jstsIo } from 'jsts';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { Fill, Stroke, Style } from 'ol/style.js';
+import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style.js';
 import { Draw, Modify } from 'ol/interaction.js';
-// eslint-disable-next-line object-curly-newline
-import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon } from 'ol/geom.js';
-import LinearRing from 'ol/geom/LinearRing.js';
+import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
+import LinearRing from 'ol/geom/LinearRing';
+import { fromCircle } from 'ol/geom/Polygon';
+import Feature from 'ol/Feature';
 /**
  * Used to draw path and modify existing path
  */
@@ -30,6 +45,31 @@ export default {
       type: Object,
       required: true,
     },
+    selectors: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    fillColor: {
+      type: String,
+      required: false,
+      default: 'rgba(17, 170, 187, 0.3)',
+    },
+    strokeColor: {
+      type: String,
+      required: false,
+      default: 'rgb(17, 170, 187)',
+    },
+    strokeWidth: {
+      type: Number,
+      required: false,
+      default: 2,
+    },
+    pointRadius: {
+      type: Number,
+      required: false,
+      default: 5,
+    },
   },
   data() {
     return {
@@ -38,6 +78,7 @@ export default {
       drawerModify: undefined,
       dragDCConfig: { resetInitialPos: true },
       jstsParser: undefined,
+      drawType: 'Polygon',
     };
   },
   computed: {
@@ -52,24 +93,28 @@ export default {
     drawOk() {
       // before all, we need to clear possible empty feature for invalid polygon
       const features = this.drawerLayer.getSource().getFeatures().filter(f => f.getGeometry() !== null);
-      if (features.length !== 0) {
-        const feature = features[0];
-        const fl = features.length;
-        if (fl > 1) {
-          let jstsGeometry = null;
-          for (let i = 0; i < fl; i++) {
-            // need to check to filter empty geometry for invalid polygon
-            const jstsGeomTemp = this.jstsParser.read(features[i].getGeometry());
-            if (jstsGeometry === null) {
-              jstsGeometry = jstsGeomTemp;
+      const fl = features.length;
+      const finalFeatures = [];
+      if (fl !== 0) {
+        let jstsMultiPolygon = null;
+        for (let i = 0; i < fl; i += 1) {
+          const geometry = features[i].getGeometry();
+          if (geometry instanceof Circle || geometry instanceof Polygon) {
+            const jstsGeomTemp = this.parseGeometry(features[i].getGeometry());
+            if (jstsMultiPolygon === null) {
+              jstsMultiPolygon = jstsGeomTemp;
             } else {
-              jstsGeometry = jstsGeometry.union(jstsGeomTemp);
+              jstsMultiPolygon = jstsMultiPolygon.union(jstsGeomTemp);
             }
+          } else {
+            finalFeatures.push(features[i]);
           }
-          feature.setGeometry(this.jstsParser.write(jstsGeometry));
-          // this.drawerLayer.getSource().addFeatures([feature]);
         }
-        this.$emit('drawend', feature);
+        if (jstsMultiPolygon !== null) {
+          finalFeatures.push(new Feature({ geometry: this.jstsParser.write(jstsMultiPolygon) }));
+        }
+
+        this.$emit('drawend', finalFeatures);
       }
       this.drawerLayer.getSource().clear();
       this.setDrawMode(false);
@@ -89,6 +134,37 @@ export default {
       this.drawerLayer.getSource().clear();
       this.setDrawMode(false);
     },
+
+    setDrawer() {
+      this.drawer = new Draw({
+        source: this.drawerLayer.getSource(),
+        type: this.drawType,
+      });
+      this.drawer.on('drawend', (event) => {
+        const jstsGeomTemp = this.parseGeometry(event.feature.getGeometry());
+        if (!jstsGeomTemp.isValid()) {
+          this.$q.notify({
+            message: this.$t('messages.invalidGeometry'),
+            type: 'negative',
+            timeout: 1000,
+          });
+          event.feature.setGeometry(null);
+        }
+      });
+      this.map.addInteraction(this.drawer);
+    },
+    parseGeometry(geometry) {
+      if (geometry instanceof Circle) {
+        geometry = fromCircle(geometry);
+      }
+      return this.jstsParser.read(geometry);
+    },
+  },
+  watch: {
+    drawType() {
+      this.map.removeInteraction(this.drawer);
+      this.setDrawer();
+    },
   },
   directives: {
     Draggable,
@@ -105,33 +181,25 @@ export default {
       visible: true,
       style: new Style({
         fill: new Fill({
-          color: 'rgba(17, 170, 187, 0.3)',
+          color: this.fillColor,
         }),
         stroke: new Stroke({
-          color: 'rgb(17, 170, 187)',
-          width: 2,
+          color: this.strokeColor,
+          width: this.strokeWidth,
+        }),
+        image: new CircleStyle({
+          radius: this.pointRadius,
+          fill: new Fill({
+            color: this.strokeColor,
+          }),
         }),
       }),
     });
-    this.drawer = new Draw({
-      source,
-      type: 'Polygon',
-    });
-    this.drawer.on('drawend', (event) => {
-      const jstsGeomTemp = this.jstsParser.read(event.feature.getGeometry());
-      if (!jstsGeomTemp.isValid()) {
-        this.$q.notify({
-          message: this.$t('messages.invalidGeometry'),
-          type: 'negative',
-          timeout: 1000,
-        });
-        event.feature.setGeometry(null);
-      }
-    });
+
     this.dragDCConfig.boundingElement = document.getElementById(this.map.get('target'));
     this.map.addLayer(this.drawerLayer);
-    this.map.addInteraction(this.drawer);
     this.map.addInteraction(this.drawerModify);
+    this.setDrawer();
   },
   beforeDestroy() {
     this.map.removeInteraction(this.drawer);
@@ -162,9 +230,9 @@ export default {
       .md-control
         font-size 30px
         font-width bold
-        width calc(33% - 10px)
+        width calc(33% - 24px)
         padding 5px
-        margin 10px 5px
+        margin 10px 12px
         height 40px;
         border-radius 20px
         cursor pointer
@@ -186,4 +254,14 @@ export default {
           &:hover
             background-color $main-control-yellow
             color white
+    .md-selector
+      .q-btn-group
+        border-bottom-left-radius 20px;
+        border-bottom-right-radius 20px;
+      button
+        width 50px
+        &:nth-child(1)
+          border-bottom-left-radius 20px;
+        &:nth-child(4)
+          border-bottom-right-radius 20px;
 </style>

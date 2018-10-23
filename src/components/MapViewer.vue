@@ -1,7 +1,7 @@
 <template>
   <div class="fit no-padding map-viewer">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit"></div>
-    <q-icon name="mdi-crosshairs" class="map-selection-marker" />
+    <q-icon name="mdi-crosshairs" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
   </div>
@@ -84,7 +84,7 @@ export default {
       }
     },
     onMoveEnd() {
-      if (this.hasContext) {
+      if (this.hasContext || this.isDrawMode) {
         return;
       }
       // const { map } = event;
@@ -183,9 +183,9 @@ export default {
         });
       }
     },
-    sendSpatialLocation(feature) {
-      if (feature) {
-        const wktText = this.wktInstance.writeGeometryText(feature.getGeometry(), { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
+    sendSpatialLocation(features) {
+      if (features) {
+        const wktText = this.wktInstance.writeFeaturesText(features, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
         this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION(wktText, this.session).body);
         this.$q.notify({
           message: this.$t('messages.spatialLocationSended'),
@@ -285,7 +285,7 @@ export default {
     const layerSwitcher = new LayerSwitcher();
     this.map.addControl(layerSwitcher);
     this.mapSelectionMarker = new Overlay({
-      element: document.getElementById('map-selection-marker'),
+      element: document.getElementById(`msm-${this.idx}`),
       positioning: 'center-center',
     });
     this.map.addOverlay(this.mapSelectionMarker);
