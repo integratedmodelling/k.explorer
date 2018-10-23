@@ -1,6 +1,6 @@
 <template>
   <div class="fit no-padding map-viewer">
-    <div :ref="'map'+idx" :id="'map'+idx" class="fit"></div>
+    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit"></div>
     <q-icon name="mdi-crosshairs" class="map-selection-marker" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map"></map-drawer>
@@ -22,8 +22,7 @@ import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
-import Feature from 'ol/Feature';
-import { transformExtent, transform } from 'ol/proj';
+import { transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import MapDrawer from 'components/MapDrawer';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
