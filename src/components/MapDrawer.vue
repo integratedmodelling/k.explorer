@@ -96,6 +96,8 @@ export default {
       const fl = features.length;
       const finalFeatures = [];
       if (fl !== 0) {
+        // merge polygons
+        // TODO when merged, we need to know if line and point are contained ?
         let jstsMultiPolygon = null;
         for (let i = 0; i < fl; i += 1) {
           const geometry = features[i].getGeometry();
