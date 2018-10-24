@@ -838,35 +838,6 @@
   resolved "https://registry.yarnpkg.com/@korzio/djv-draft-04/-/djv-draft-04-2.0.1.tgz#2984289426cac5ed622b26a58c3af8584aefbdfe"
   integrity sha512-MeTVcNsfCIYxK6T7jW1sroC7dBAb4IfLmQe6RoCqlxHN5NFkzNpgdnBPR+/0D2wJDUJHM9s9NQv+ouhxKjvUjg==
 
-"@material/mwc-base@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@material/mwc-base/-/mwc-base-0.2.1.tgz#e601cb8c6c5268ee4bf8342d5db26251e03ff5f7"
-  integrity sha512-yKM4tGkWKjjIFTBGvw+rCmyIq5KqXpxLqgXg1qbwhfeSiYs92tqUUmH1PWdmkpflwIeLaB3bbtwFsL5FAHPdgA==
-  dependencies:
-    "@polymer/lit-element" "^0.6.0"
-
-"@material/mwc-icon@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@material/mwc-icon/-/mwc-icon-0.2.1.tgz#16cd881e48c5de7bf0372453393a40c56e372d53"
-  integrity sha512-WpndoDOZGob7+LKRykQdjY1pEQJmkZ6ueHObrABEAU/JrHl2UUl1Nz7J1NeNouwSocK30vewgK2XFRncz94LxA==
-  dependencies:
-    "@material/mwc-base" "^0.2.1"
-    "@polymer/lit-element" "^0.6.0"
-
-"@polymer/lit-element@^0.6.0", "@polymer/lit-element@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@polymer/lit-element/-/lit-element-0.6.1.tgz#56772f8fb0c6d3d73a20a6d17f3bc82ec648664b"
-  integrity sha512-eselNs2lA4n1R1rSyPXW8XR3ISmbYVQcDtIMSINHVNZ56pCtCHOtgmaG8C4k0gONwikEMJTP9blNHD/gdYIxFA==
-  dependencies:
-    lit-html "^0.11.4"
-
-"@polymer/polymer@^3.0.5":
-  version "3.0.5"
-  resolved "https://registry.yarnpkg.com/@polymer/polymer/-/polymer-3.0.5.tgz#eaa42e70df7de818b5e1839452c82a5f83e39929"
-  integrity sha512-Zbmhtr5vZ3NoHWwFYLKI4ff7yfE6DZopI8vaS7HvmUIuNqsv/EpEDXfNEYjqePQmkMX5LU9OIKV1eX/+9aveow==
-  dependencies:
-    "@webcomponents/shadycss" "^1.2.0"
-
 "@positron/stack-trace@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@positron/stack-trace/-/stack-trace-1.0.0.tgz#14fcc712a530038ef9be1ce6952315a839f466a8"
@@ -1033,11 +1004,6 @@
     "@webassemblyjs/ast" "1.7.6"
     "@webassemblyjs/wast-parser" "1.7.6"
     "@xtuc/long" "4.2.1"
-
-"@webcomponents/shadycss@^1.2.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@webcomponents/shadycss/-/shadycss-1.5.0.tgz#109e596027eed04bc5032414c9f094e1aeb9260e"
-  integrity sha512-jNuC7alo3EfiqZPosCruJuMAaUI9qgiuGxFcFyPWjOpo4BP+vgC7hxpTzQYxbIWUgrqkn9lnfPup2hE9c/h/PQ==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
@@ -4451,11 +4417,6 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lit-html@^0.11.4:
-  version "0.11.4"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-0.11.4.tgz#fa397d2b2f2d0523ebc136e5a1699aa4e9346152"
-  integrity sha512-yfJUxQrRjhYo4cdz3Db9YlkHs9v+rTZA4fvE/dqCOrA1Q2Bmx52X2OtEgGQ+JhyCb6ddDTndLijZjsSoQ44G7Q==
-
 load-json-file@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/load-json-file/-/load-json-file-2.0.0.tgz#7947e42149af80d696cbf797bcaabcfe1fe29ca8"
@@ -7864,9 +7825,9 @@ websocket-extensions@>=0.1.1:
   integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==
 
 webstomp-client@^1.2.0:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/webstomp-client/-/webstomp-client-1.2.4.tgz#aeaa0a83a70b0e6de59c3a125d98fc3ff2231d72"
-  integrity sha512-kRlsL3BrIDUueWHp8MBx86iLaBd3woNOUjAubXmqP/sfd69dVEjShTb1/m3+SPIX89mOHJ8UxN+gXTaC6Ssicg==
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/webstomp-client/-/webstomp-client-1.2.5.tgz#b3c4bf39d372e90dae8a5fa6be6afc9b260cbf79"
+  integrity sha512-9s84St3+Dk3FtkCxiz/N5WPopcLvbr13kd9WuRpHpYIILisOezggtFXNETnWFuAM9HNcfHZT20KDVZsxId8RMg==
 
 when@~3.6.x:
   version "3.6.4"
@@ -7891,157 +7852,6 @@ wide-align@^1.1.0:
   integrity sha512-QGkOQc8XL6Bt5PwnsExKBPuMKBxnGxWWW3fU55Xt4feHozMUhdUMaBCk290qpm/wG5u/RSKzwdAC4i51YigihA==
   dependencies:
     string-width "^1.0.2 || 2"
-
-wired-button@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-button/-/wired-button-0.8.0.tgz#476d7115b839fa8c16183300a60da7a18eaad24c"
-  integrity sha512-F67KVzGnl66Fi+Jysr0sH0Y7CCii2qc28Q2UmQ8LRcnUdPfU1n6SyquB7MigZL60Wd03PSgrM+4baH2ao+n40Q==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-card@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/wired-card/-/wired-card-0.8.1.tgz#f622cbbdbb530d168cb9b57eaa1699962373bddb"
-  integrity sha512-5Cuhz0brSESrjkb0swL7bp5zjE1r+DtqpXxRCmt4GJWMx7LUNXDhqZv0W7URGEMVs913EMy6qeD+p+VVtOzd/A==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-checkbox@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-checkbox/-/wired-checkbox-0.8.0.tgz#d5139206bc4c8ebbf03bf943ae88ece1cffca6bf"
-  integrity sha512-+g9o7UpivaWHzyTmgLaptWZ4Hu80ivODZyk8E2AZPs0IpY3cCKI99t4WXPCoBIg88M0qE2e7zZ9v8ahk+ONPbg==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-combo@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/wired-combo/-/wired-combo-0.8.1.tgz#2e4ffb4b3cdd0c7ce83ce4152fab8e2b78c5db5f"
-  integrity sha512-pAPaOkZollI/U8ZjjwEuYCYt3dOm6bBb7usDi5QC1BMaPC7YgBNDy0xinaWtqhsbm3vA+DAzAAMUk4cZHFIm9Q==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-card "^0.8.1"
-    wired-item "^0.8.1"
-    wired-lib "^0.6.0"
-
-wired-elements@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/wired-elements/-/wired-elements-0.8.1.tgz#f382c4c05c26b3ee8f5ed659a8e96dd4f77403e4"
-  integrity sha512-rHoN1OHNSRBlfIUq5bCUA80AmCO2Bm/UqXNcDHj1N7apsDn8qlb7d3scYvDrisqA96JJZJApBhYEIl43F54Shw==
-  dependencies:
-    wired-button "^0.8.0"
-    wired-card "^0.8.1"
-    wired-checkbox "^0.8.0"
-    wired-combo "^0.8.1"
-    wired-icon-button "^0.8.0"
-    wired-input "^0.8.0"
-    wired-item "^0.8.1"
-    wired-lib "^0.6.0"
-    wired-listbox "^0.8.1"
-    wired-progress "^0.8.0"
-    wired-radio "^0.8.0"
-    wired-radio-group "^0.8.1"
-    wired-slider "^0.8.0"
-    wired-textarea "^0.8.0"
-    wired-toggle "^0.8.0"
-    wired-tooltip "^0.8.0"
-
-wired-icon-button@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-icon-button/-/wired-icon-button-0.8.0.tgz#fbf3c913ccfc31fd74919d13809a55f667a617c1"
-  integrity sha512-9SbB21Ssf3OMFEEnWuwzTJao49UgeSG1V6KvyLvfG3f48Obx6oeWCCJNIiFqwSFWMnHPlAIwCcNDT5c0Enx3cA==
-  dependencies:
-    "@material/mwc-icon" "^0.2.1"
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-input@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-input/-/wired-input-0.8.0.tgz#ee726d769337de725ba22a6b66bc4df8e09e5233"
-  integrity sha512-R2CegopXy+ucdzXxriHAhIpfPKhBjBtbu/+GXKsOjaud60l9nT8/v+4hPoHfywhhpS1NJqFM0Ghejo3tTcozkg==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-item@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/wired-item/-/wired-item-0.8.1.tgz#1a2df038a3c1df49d519ccf5b4f4b786fb023433"
-  integrity sha512-4DpN6UNSxFUE4+dP/uaDOaSC8TaRcaUKaxaKv42sw4EKJ+VlHbwxKCAQBC+eCsq0+VGvoFOZTBu0cUlG3Bq7/A==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-
-wired-lib@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/wired-lib/-/wired-lib-0.6.0.tgz#89b18cfa3353133e9e33d0cb2ce384668334fc76"
-  integrity sha512-a/fT6JtAlu5Yr24YdCcyL7P/YkszuZ89Rp8zCL6GpTc1E3DGcAOkFXx01mkaAQ4Is9kRTaLgn5B/RkfRpRQ2Og==
-
-wired-listbox@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/wired-listbox/-/wired-listbox-0.8.1.tgz#539d24c4c17d24335e98238bd0ca4b661e296892"
-  integrity sha512-RsFtmy7w0nV6quYQH89RbOUbyBb5N9/h5gx1FbfzY/DDzie+Uhr+ZfJzj72ZWtJPMoCu28+9q26JyHmVnQDiEg==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-item "^0.8.1"
-    wired-lib "^0.6.0"
-
-wired-progress@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-progress/-/wired-progress-0.8.0.tgz#ada118a13e94eb9677e3338a527b023bd3edd327"
-  integrity sha512-YBvanbANQDkwmSnKEVnWWgibnE0pUVT1WSOL6MLicU8uLwv874+h/Jv+16Y7pXf/mNCh/uHITbaVN0cjAB490g==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-radio-group@^0.8.1:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/wired-radio-group/-/wired-radio-group-0.8.1.tgz#93687a378c0ebd6247e09aaeb8dc784caabfd4e1"
-  integrity sha512-K3mLqoAAIu0vALPqjZRzHiYFJeXB96YRqNFIpxcdc7S23fANBjAaQd6B37dJJQVFzXWGf9Q3bkPqprWbKlFfhA==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-radio@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-radio/-/wired-radio-0.8.0.tgz#a7d1b3d38495dc0ec8a450946cc2853d0c87b56e"
-  integrity sha512-bOaEh3spFm/iZ91nXD/uFrbiateGoEMsAY3m7os9xgOnZbkGyhUkLEJXVmoey12PNcofxI2gT8+SjQDuNr8XfQ==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-slider@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-slider/-/wired-slider-0.8.0.tgz#650b2d7e13a1dba6aa176de572e59e7ee353c370"
-  integrity sha512-tNSFUXPMzIHlbUEEoMv3+URThXrox7JEM8OBIHv19qlMeKyAuQkYfxTFljz476T3fgMFt/Farq9lLcb6iXtKzQ==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    "@polymer/polymer" "^3.0.5"
-    wired-lib "^0.6.0"
-
-wired-textarea@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-textarea/-/wired-textarea-0.8.0.tgz#b2fa0c8681376290779c846b6789d50ae593f584"
-  integrity sha512-aDdsznVH874dcXv/KKWQdCsGzaChhNQIErn98hrGiy3977DB2OyX8eYDsxgWnJJnLDBkbYZvMgFMMqhSf6ojcg==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-toggle@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-toggle/-/wired-toggle-0.8.0.tgz#855a85645b697a19bf4e8235b2bc04f6681e1653"
-  integrity sha512-AYO5p4PcPaaKF4zfPfiEWQd5q/YZY9Zoh15jcfqrQ3WqByZDrid9AKJi1v9EYKomDroMw25DtL8+aTC26YLGPQ==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
-
-wired-tooltip@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/wired-tooltip/-/wired-tooltip-0.8.0.tgz#95ebfe78835dff6237e8a5a3cbc558ced6705a5c"
-  integrity sha512-Y4YlQHGXipK3ufj+LMsVKQHLr7VkAU266A9dm2mogSEwYJPbxm66hrQnKB1AH9zxmH02LpqcDMpkMrYujoxbig==
-  dependencies:
-    "@polymer/lit-element" "^0.6.1"
-    wired-lib "^0.6.0"
 
 wkt-parser@^1.2.0:
   version "1.2.3"

@@ -89,7 +89,7 @@ export default class {
     // https://github.com/JSteunou/webstomp-client/issues/6
 
     const sockJs = SockJS(this.connectionUrl, this.sockJSOptions);
-    sockJs.protocol = this.stompOptions.protocol || '';
+    // sockJs.protocol = this.stompOptions.protocol || '';
     this.StompClient = webstomp.over(sockJs, this.stompOptions);
     this.StompClient.connect(
       this.connectionHeaders,
