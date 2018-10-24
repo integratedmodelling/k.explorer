@@ -217,8 +217,6 @@ export default {
       }
     },
     hasContext(newValue) {
-      this.drawerLayer.getSource().clear(true);
-      this.drawerLayer.setVisible(!newValue);
       if (newValue) {
         this.setDrawMode(false);
       }
