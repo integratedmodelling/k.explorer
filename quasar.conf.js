@@ -84,7 +84,7 @@ module.exports = function (ctx) {
       // https: true,
       port: 8080,
       open: true, // opens browser window automatically
-      openPage: '/viewer?mode=ide&session=&test_tree=true',
+      // openPage: '/viewer?mode=ide&session=&test_tree=true',
     },
     // framework: 'all' --- includes everything; for dev only!
     framework: {

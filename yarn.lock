@@ -6771,7 +6771,7 @@ simple-swizzle@^0.2.2:
   dependencies:
     is-arrayish "^0.3.1"
 
-simplebar@^3.0.0-beta.5:
+simplebar@3.0.0-beta.5:
   version "3.0.0-beta.5"
   resolved "https://registry.yarnpkg.com/simplebar/-/simplebar-3.0.0-beta.5.tgz#31cd3344863a88ce2a2371f3c9b7bb7a8ea19b45"
   integrity sha512-uJjZiSHnQbRRxE+t+UO5NH5Vpynd2yHN//XUkN6LQUPv+tyWwfykMgpd2Zh2nOjxEcmGKumN+aZv/i0NspXQ5Q==
