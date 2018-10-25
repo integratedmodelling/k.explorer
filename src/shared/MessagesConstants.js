@@ -12,7 +12,7 @@ export const SHARED = Object.freeze({
 });
 
 /**
- * Messages sended from k.explorer to k.LAB
+ * Messages sent from k.explorer to k.LAB
  * @type {Object}
  */
 export const OUT = Object.freeze({
@@ -45,7 +45,7 @@ export const OUT = Object.freeze({
 });
 
 /**
- * Messages sended from k.LAB to k.explorer
+ * Messages sent from k.LAB to k.explorer
  * @type {Object}
  */
 export const IN = Object.freeze({

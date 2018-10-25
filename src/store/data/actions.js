@@ -5,7 +5,7 @@ export default {
   /**
    * Set the context for this session.
    * If context doesn't exists, a map with a default context is shown.
-   * Every change of map size or position is sended to engine
+   * Every change of map size or position is sent to engine
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */

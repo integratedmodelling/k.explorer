@@ -187,11 +187,13 @@ export default {
       if (features) {
         const wktShape = this.wktInstance.writeFeaturesText(features, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
         this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION({ wktShape }, this.session).body);
+        /*
         this.$q.notify({
-          message: this.$t('messages.spatialLocationSended'),
+          message: this.$t('messages.spatialLocationSent'),
           type: 'info',
           timeout: 500,
         });
+        */
       }
     },
   },

@@ -24,7 +24,7 @@ export default class {
    *   transports: string or string[]
    *   sessionId: Number or function
    * }
-   * store: if setted, everything is sended to store mutation or action,
+   * store: if setted, everything is sent to store mutation or action,
    * storeNS: if setted, indicate the Namespace of store to use for mutations or actions
    * reconnection: indicate if automatic reconnection is needed
    * reconnectionAttempts: how many reconnection attempts. Default is Infinity

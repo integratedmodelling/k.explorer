@@ -61,7 +61,7 @@ export default {
     changeScaleResolutionError: 'La risoluzione deve essere positiva',
     updateScale: 'Attualizata  la scala {type}, nuovo valore {resolution} {unit}',
     invalidGeometry: 'Poligono non valido',
-    spatialLocationSended: 'Spatial location inviata',
+    spatialLocationSent: 'Spatial location inviata',
   },
   tooltips: {
     treePane: 'Albero',

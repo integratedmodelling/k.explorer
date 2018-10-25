@@ -2,7 +2,7 @@ import Constants from 'shared/Constants';
 
 /**
  * In this state everything about stomp comm is stored.
- * Data retrieved and sended are stored in data
+ * Data retrieved and sent are stored in data
  */
 export default {
 
@@ -23,9 +23,9 @@ export default {
   subscriber: null,
 
   /**
-   * Sended message implemented MAX_LENGTH
+   * Sent message implemented MAX_LENGTH
    */
-  sendedMessages: [],
+  sentMessages: [],
 
   /**
    * Received message implemented MAX_LENGTH
@@ -35,7 +35,7 @@ export default {
   /**
    * Message queued
    * Only one because if cannot send a message we must stop working
-   * A sended message need answer to continue
+   * A sent message need answer to continue
    */
   queuedMessage: null,
 

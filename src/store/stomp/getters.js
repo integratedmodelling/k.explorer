@@ -18,8 +18,8 @@ export default {
       ? state.receivedMessages.slice(-1)[0] : null),
 
   lastSendedMessage: state => (
-    state.sendedMessages.length > 0
-      ? state.sendedMessages.slice(-1)[0] : null),
+    state.sentMessages.length > 0
+      ? state.sentMessages.slice(-1)[0] : null),
 
   subscriberId: state => (state.subscriber !== null ? state.subscriber.id : null),
 

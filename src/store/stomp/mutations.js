@@ -27,7 +27,7 @@ export default {
   },
 
   STOMP_SEND_MESSAGE(state, message) {
-    Helpers.pushElementInFixedQueue(state.sendedMessages, {
+    Helpers.pushElementInFixedQueue(state.sentMessages, {
       date: moment().format('HH:mm:ss'),
       ...message,
     });

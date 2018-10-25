@@ -60,7 +60,7 @@ export default {
     changeScaleResolutionError: 'Resolution must be positive',
     updateScale: 'Updated {type} scale, new value: {resolution} {unit}',
     invalidGeometry: 'Polygon is not valid',
-    spatialLocationSended: 'Spatial location sended',
+    spatialLocationSent: 'Spatial location sent',
   },
   tooltips: {
     treePane: 'View tree',
