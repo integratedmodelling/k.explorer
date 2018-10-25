@@ -185,8 +185,8 @@ export default {
     },
     sendSpatialLocation(features) {
       if (features) {
-        const wktText = this.wktInstance.writeFeaturesText(features, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
-        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION(wktText, this.session).body);
+        const wktShape = this.wktInstance.writeFeaturesText(features, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
+        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION({ wktShape }, this.session).body);
         this.$q.notify({
           message: this.$t('messages.spatialLocationSended'),
           type: 'info',

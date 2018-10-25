@@ -315,9 +315,8 @@ export default {
       const task = this.lastActiveTask;
       if (task !== null) {
         this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
-          session: this.$store.state.data.session,
           taskId: task.id,
-        }).body);
+        }, this.$store.state.data.session).body);
       }
     },
     hide() {

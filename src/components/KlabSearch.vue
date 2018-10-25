@@ -312,11 +312,10 @@ export default {
         requestId: this.searchRequestId,
         contextId: this.searchContextId,
         maxResults: this.maxResults,
-        session: this.$store.state.data.session,
         cancelSearch: false,
         defaultResults: terms === '',
         queryString: this.actualSearchString, // terms split space
-      }).body);
+      }, this.$store.state.data.session).body);
       this.setSpinner({
         ...Constants.SPINNER_LOADING,
         owner: this.$options.name,
@@ -343,8 +342,7 @@ export default {
           urn,
           contextId: this.contextId,
           searchContextId: null, // this.searchContextId, -> we don't want delete it for search history
-          session: this.$store.state.data.session,
-        }).body);
+        }, this.$store.state.data.session).body);
         this.$q.notify({
           message: this.$t('label.askForObservation', { urn: this.acceptedTokens.map(token => token.label).join(' ') }),
           type: 'info',

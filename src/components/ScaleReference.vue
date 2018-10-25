@@ -111,8 +111,7 @@ export default {
         scaleReference: this.scaleReference,
         unlockSpace: this.scaleType === 'space',
         unlockTime: this.scaleType === 'time',
-        session: this.$store.state.data.session,
-      }).body);
+      }, this.$store.state.data.session).body);
       this.setScaleLocked({ scaleType: this.scaleType, scaleLocked: false });
     },
   },

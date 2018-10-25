@@ -99,8 +99,7 @@ export default {
           ...(this.scaleEditingType === 'space' && { spaceUnit: this.unit }),
           ...(this.scaleEditingType === 'time' && { timeResolution: this.resolution }),
           ...(this.scaleEditingType === 'time' && { timeUnit: this.unit }),
-          session: this.$store.state.data.session,
-        }).body);
+        }, this.$store.state.data.session).body);
         this.setScaleLocked({ scaleType: this.scaleEditingType, scaleLocked: true });
         this.updateScaleReference({ type: this.scaleEditingType, resolution: this.resolution, unit: this.unit });
         this.$q.notify({

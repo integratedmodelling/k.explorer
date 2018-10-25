@@ -86,8 +86,7 @@ export const MESSAGES_BUILDERS = {
     cancelSearch = false,
     defaultResults = false,
     maxResults,
-    session,
-  }) => buildMessage(
+  }, session) => buildMessage(
     OUT.CLASS_SEARCH,
     OUT.TYPE_SUBMITSEARCH,
     OUT.PAYLOAD_CLASS_SEARCHREQUEST,
@@ -107,8 +106,7 @@ export const MESSAGES_BUILDERS = {
     urn,
     contextId,
     searchContextId = null,
-    session,
-  }) => buildMessage(
+  }, session) => buildMessage(
     OUT.CLASS_OBSERVATIONLIFECYCLE,
     OUT.TYPE_REQUESTOBSERVATION,
     OUT.PAYLOAD_CLASS_OBSERVATIONREQUEST,
@@ -128,7 +126,7 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  TASK_INTERRUPTED: ({ session, taskId, forceInterruption = true }) => buildMessage(
+  TASK_INTERRUPTED: ({ taskId, forceInterruption = true }, session) => buildMessage(
     OUT.CLASS_TASKLIFECYCLE,
     OUT.TYPE_TASKINTERRUPTED,
     OUT.PAYLOAD_CLASS_INTERRUPTTASK,
@@ -147,8 +145,7 @@ export const MESSAGES_BUILDERS = {
     timeUnit = '',
     unlockSpace = false,
     unlockTime = false,
-    session,
-  }) => buildMessage(
+  }, session) => buildMessage(
     OUT.CLASS_USERCONTEXTDEFINITION,
     OUT.TYPE_SCALEDEFINED,
     OUT.PAYLOAD_CLASS_SCALEREFERENCE,
@@ -164,7 +161,7 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  SPATIAL_LOCATION: (wktShape, session) => buildMessage(
+  SPATIAL_LOCATION: ({ wktShape, contextId = null }, session) => buildMessage(
     OUT.CLASS_USERCONTEXTCHANGE,
     OUT.TYPE_FEATUREADDED,
     OUT.PAYLOAD_CLASS_SPATIALLOCATION,
@@ -172,6 +169,7 @@ export const MESSAGES_BUILDERS = {
       easting: Number.MIN_VALUE,
       northing: Number.MIN_VALUE,
       wktShape,
+      ...(contextId !== null && { contextId }),
     },
     session,
   ),
