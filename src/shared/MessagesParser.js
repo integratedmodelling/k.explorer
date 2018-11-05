@@ -28,8 +28,8 @@ const PARSERS = {
       `New observation received with id ${observation.id}`,
       JSON.stringify(observation, null, 4),
     );
-    // TODO check the definitive condition
-    if (observation.parentId === null || observation.parentId === observation.id) {
+    // if parentId === null is context
+    if (observation.parentId === null) { // || observation.parentId === observation.id) {
       // new context
       dispatch('data/setContext', observation, { root: true });
     } else {

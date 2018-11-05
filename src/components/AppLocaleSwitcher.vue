@@ -4,12 +4,11 @@
       v-model="activeLocale"
       :options="languages"
       inverted
-    />
+    ></q-select>
   </div>
 </template>
 
 <script>
-/* eslint-disable object-shorthand */
 import { QSelect, Cookies } from 'quasar';
 import Constants from 'shared/Constants';
 // import VueCookie from 'vue-cookie';
