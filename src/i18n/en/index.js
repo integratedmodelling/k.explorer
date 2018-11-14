@@ -70,8 +70,8 @@ export default {
     dataViewer: 'View data',
     reportViewer: 'View report',
     noReportTask: 'Cannot view report,\nwait for task end',
-    noReportNoObservation: 'Cannot view report,\nno observations',
-    dataflowViewer: 'View data flow (will be...)',
+    noViewerNoObservation: 'Cannot view {viewer},\nno observations',
+    dataflowViewer: 'View data flow',
     provenanceViewer: 'View provenance (will be...)',
   },
   errors: {

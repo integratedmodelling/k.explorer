@@ -255,6 +255,10 @@ export default {
     }
   },
 
+  addDataflow: ({ commit }, dataflow) => {
+    commit('ADD_DATAFLOW', dataflow);
+  },
+
   storeSearchResult: ({ commit }, results) => {
     commit('STORE_RAW_SEARCH_RESULT', results);
   },

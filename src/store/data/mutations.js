@@ -23,7 +23,12 @@ export default {
     state.lasts = [];
     state.observations = [];
     state.tasks = [];
+    state.dataflow = null;
     state.nodeSelected = null;
+  },
+
+  ADD_DATAFLOW: (state, dataflow) => {
+    state.dataflow = dataflow;
   },
 
   ADD_OBSERVATION: (state, observation) => {

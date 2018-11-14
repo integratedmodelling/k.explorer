@@ -100,6 +100,11 @@ export default {
   observations: [],
 
   /**
+   * The dataflow of context as JSON ELK object
+   */
+  dataflow: null,
+
+  /**
    * Redundant array to find observation by task id. tasks.[taskId] = [observations]
    * IMPORTANT: observations are stored as references, so if something change, everything change!
    */

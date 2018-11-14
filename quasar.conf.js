@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = function (ctx) {
   return {
@@ -28,7 +29,7 @@ module.exports = function (ctx) {
           ? { // so on dev we'll have
             // WS_BASE_URL: JSON.stringify('http://192.168.0.124:8283'), // Fer
             WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
-            STOMP_CLIENT_DEBUG: false,
+            STOMP_CLIENT_DEBUG: true,
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
@@ -65,6 +66,8 @@ module.exports = function (ctx) {
           },
           */
         });
+        //
+        cfg.plugins.push(new webpack.IgnorePlugin(/(webworker-threads)/));
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           shared: path.resolve(__dirname, './src/shared'),

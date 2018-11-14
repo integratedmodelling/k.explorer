@@ -19,7 +19,17 @@ const PARSERS = {
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
+    if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
+      try {
+        const jsonEklLayout = JSON.parse(payload.jsonElkLayout);
+        addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
+        dispatch('data/addDataflow', jsonEklLayout, { root: true });
+      } catch (e) {
+        addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Error in dataflos layout in task ${payload.taskId}: ${e}`);
+      }
+    } else {
+      addToKexplorerLog(dispatch, Constants.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
+    }
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, dispatch) => {
     addToKexplorerLog(
