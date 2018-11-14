@@ -38,6 +38,9 @@ export default {
         console.warn(`Invalidate session ${this.session} this.session`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
+      // before subscribe, we need to restore actual session using REST
+      // TODO do it!
+      this.restoreSession();
       const subscription = this.subscribe(this.session);
       this.subscriptions.push({ id: this.session, subscription });
       console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
@@ -97,6 +100,9 @@ export default {
         this.sendStompMessage(message, headers);
       }
     },
+    ...mapActions('data', [
+      'restoreSession',
+    ]),
     ...mapActions('stomp', {
       stompCleanQueue: 'stomp_cleanqueue',
     }),

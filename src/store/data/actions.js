@@ -32,6 +32,27 @@ export default {
     }
   },
 
+  restoreSession: ({ /* commit, */state }) => {
+    const url = `${process.env.WS_BASE_URL}${process.env.REST_STATUS}`;
+    Helpers.getAxiosContent(state.session, url, {
+      transformRequest: [
+        (data, headers) => {
+          // we need to delete because we inherited it
+          // the problem is with Spring JSESSION cookie, it seems
+          // better to do this that change a lot of things to
+          // stop spring to generate its session id
+          delete headers.common.Authorization;
+          return data;
+        },
+      ],
+    }, ({ data }, finalCallback) => {
+      console.log(data);
+      Helpers.getAxiosContent()
+      finalCallback();
+      // TODO everything!
+    });
+  },
+
   /**
    * Add an observation do this:
    * Add observation to store.observations
