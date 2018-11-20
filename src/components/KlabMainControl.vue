@@ -181,7 +181,7 @@
               anchor="bottom middle"
             >{{ viewerTooltip !== null ? viewerTooltip('report') : $t('tooltips.reportViewer') }}</q-tooltip>
           </q-icon></div>
-          <!-- DATAFLOW (disabled) -->
+          <!-- DATAFLOW -->
           <div
             class="mc-button mc-action"
             @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && viewerTooltip === null ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
@@ -191,7 +191,7 @@
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ viewerTooltip !== null ? viewerTooltip('report') : $t('tooltips.dataflowViewer') }}</q-tooltip>
+            >{{ viewerTooltip !== null ? viewerTooltip('dataflow') : $t('tooltips.dataflowViewer') }}</q-tooltip>
           </q-icon></div>
           <!-- PROVENANCE (disabled) -->
           <!-- in the future

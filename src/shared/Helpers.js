@@ -16,6 +16,7 @@ import store from 'store/index';
 import Style from 'ol/style/Style';
 import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from './MapConstants';
 
+
 const WKTInstance = new WKT();
 /**
  * Helpers functions shared between components.
@@ -37,8 +38,6 @@ const Helpers = {
    * @param maxLenght max array length (optional). If not indicated
    * Constants.HIST_MAX_LENGTH is used
    */
-  WKTInstance: new WKT(),
-
   pushElementInFixedQueue: (array, element, maxLenght = Constants.HIST_MAX_LENGTH) => {
     array.push(element);
     if (array.length > maxLenght) {

@@ -256,7 +256,11 @@ export default {
   },
 
   addDataflow: ({ commit }, dataflow) => {
-    commit('ADD_DATAFLOW', dataflow);
+    if (typeof dataflow === 'undefined' || dataflow === null) {
+      console.warn('Try to layout an empty ELK dataflow');
+    } else {
+      commit('ADD_DATAFLOW', dataflow);
+    }
   },
 
   storeSearchResult: ({ commit }, results) => {

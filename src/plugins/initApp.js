@@ -1,6 +1,7 @@
 import { Helpers, Constants } from 'shared/Helpers';
 import { MAP_CONSTANTS } from 'shared/MapConstants';
 import { Cookies, colors } from 'quasar';
+import ELK from 'elkjs';
 
 export default ({ Vue, store }) => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -9,6 +10,8 @@ export default ({ Vue, store }) => {
   // helpers and costants as global resources
   Vue.prototype.$constants = Constants;
   Vue.prototype.$helpers = Helpers;
+
+  Vue.prototype.$ELK = new ELK();
 
   // Session and mode
   const session = urlParams.get(Constants.PARAMS_SESSION)
