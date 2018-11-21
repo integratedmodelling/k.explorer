@@ -8,4 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - This CHANGELOG file to hopefully serve as an evolving example of a
   standardized open source project CHANGELOG.
-- First official version of k.EXPLORER development start in 0.5.0 because previous versions doesn't exists 
+- First tagged version of k.EXPLORER
+  - Custom context for observation search
+  - Observation search with suggestions based on user certificate
+  - Logs
+  - Result tree with info about each observation
+    - histogram
+    - metadata
+    - detailed points
+    - etc.
+  - Reports
+- Update README.md 
