@@ -23,7 +23,7 @@ export default {
     state.lasts = [];
     state.observations = [];
     state.tasks = [];
-    state.dataflow = null;
+    // state.dataflow = null;
     state.nodeSelected = null;
   },
 

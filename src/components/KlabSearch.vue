@@ -405,6 +405,7 @@ export default {
           if (Array.isArray(results) && results.length > 0) {
             this.autocompleteEl.results = results;
             this.autocompleteEl.__showResults();
+            this.autocompleteEl.__keyboardShow(2);
           } else {
             this.autocompleteEl.hide();
           }

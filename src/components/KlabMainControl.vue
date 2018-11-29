@@ -171,27 +171,27 @@
           </q-icon></div>
           <!-- REPORT BUTTON -->
           <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.REPORT_VIEWER && viewerTooltip === null ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && viewerTooltip !== null }]"
+               @click="mainViewer !== VIEWERS.REPORT_VIEWER && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
+               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !hasObservations }]"
           ><q-icon name="mdi-file-document-box-outline">
             <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ viewerTooltip !== null ? viewerTooltip('report') : $t('tooltips.reportViewer') }}</q-tooltip>
+            >{{ hasObservations ? $t('tooltips.reportViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
           </q-icon></div>
           <!-- DATAFLOW -->
           <div
             class="mc-button mc-action"
-            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && viewerTooltip === null ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
-            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && viewerTooltip !== null }]"
+            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasDataflow ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
+            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && !hasDataflow }]"
           ><q-icon name="mdi-sitemap">
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ viewerTooltip !== null ? viewerTooltip('dataflow') : $t('tooltips.dataflowViewer') }}</q-tooltip>
+            >{{ hasDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
           </q-icon></div>
           <!-- PROVENANCE (disabled) -->
           <!-- in the future
@@ -274,6 +274,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'hasObservations',
+      'hasDataflow',
       'contextLabel',
       'lasts',
       'tree',
@@ -292,17 +293,6 @@ export default {
     ]),
     spinnerColor() {
       return Utils.getColorObject(this.spinner.color);
-    },
-    viewerTooltip() {
-      /*
-      if (this.hasTasks) {
-        return this.$t('tooltips.noReportTask');
-      }
-      */
-      if (!this.hasObservations) {
-        return viewer => this.$t('tooltips.noViewerNoObservation', { viewer });
-      }
-      return null;
     },
   },
   methods: {

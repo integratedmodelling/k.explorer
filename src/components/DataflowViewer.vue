@@ -6,21 +6,21 @@
 
 <script>
 import { mapGetters } from 'vuex';
+// import ELK from 'elkjs';
 // eslint-disable-next-line object-curly-newline
 import { createContainer, TYPES, FitToScreenAction, UpdateModelAction, ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
-import ELK from 'elkjs';
-import { Helpers } from '../shared/Helpers';
+
 
 export default {
   name: 'DataflowViewer',
   data() {
     return {
-      graph: undefined, // the sprotty dataflow
-      modelSource: undefined,
-      actionDispatcher: undefined,
-      elkGraphJsonToSprotty: undefined,
-      elk: undefined,
+      graph: null, // the sprotty dataflow
+      modelSource: null,
+      actionDispatcher: null,
       interval: null,
+      processing: false,
+      elkGraphJsonToSprotty: null,
     };
   },
   computed: {
@@ -30,12 +30,37 @@ export default {
   },
   methods: {
     initGraph() {
+      if (this.processing) {
+        setTimeout(this.initGraph, 1000);
+        return;
+      }
       if (this.dataflow !== null) {
-        this.elk.layout(this.dataflow).then((graph) => {
-          this.graph = this.elkGraphJsonToSprotty.transform(graph);
+        this.processing = true;
+        /*
+        this.dataflow.layoutOptions = {
+          'org.eclipse.elk.animate': false,
+          'org.eclipse.elk.direction': 'UP',
+          'org.eclipse.elk.edgeRouting': 'POLYLINE',
+          'org.eclipse.elk.nodeSize.options': 'SizeOptions.COMPUTE_PADDING',
+        };
+        */
+        const firstGraph = this.graph === null;
+        // this.elk.layout(this.dataflow).then((graph) => {
+        this.graph = new ElkGraphJsonToSprotty().transform(this.dataflow);
+        // this.graph = this.elkGraphJsonToSprotty.transform(this.dataflow);
+        if (firstGraph) {
           this.modelSource.setModel(this.graph);
           this.actionDispatcher.dispatch(new FitToScreenAction([]));
-        });
+        } else {
+          this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
+        }
+        this.processing = false;
+        // }).catch((err) => {
+        //   if (err) {
+        //     console.error(err);
+        //   }
+        // });
+        // });
       }
     },
     /*
@@ -59,6 +84,7 @@ export default {
 
     },
     */
+    /*
     changeModel() {
       const id = Math.floor(Math.random() * 30);
       const node = Helpers.findNodeById(this.graph, `N${id}`);
@@ -72,28 +98,38 @@ export default {
       this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
       // this.modelSource.update();
     },
+    */
   },
   watch: {
     dataflow() {
-      if (this.dataflow === null) {
-        this.initGraph();
-      }
+      // if (this.dataflow === null) {
+      this.initGraph();
+      // } else {
+      //   this.graph = null;
+      // }
     },
   },
   created() {
-    this.elk = new ELK();
+    // this.elk = new ELK({
+    /*
+      defaultLayoutOptions: {
+        'elk.algorithm': 'layered',
+        'elk.direction': 'DOWN',
+      },
+    */
+    // });
     this.elkGraphJsonToSprotty = new ElkGraphJsonToSprotty();
   },
   mounted() {
     // Create Sprotty viewer
-    const sprottyContainer = createContainer('info');
+    const sprottyContainer = createContainer(false, 'info');
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
     this.initGraph();
-    setInterval(() => this.changeModel(), 1000);
+    // setInterval(() => this.changeModel(), 1000);
   },
   beforeDestroy() {
-    clearInterval(this.interval);
+    // clearInterval(this.interval);
   },
 
 };
@@ -102,15 +138,15 @@ export default {
 <style lang="stylus">
   #dfv-container
     #sprotty
-      font-family Roboto
       position absolute
       top 0
       left 0
       right 0
       bottom 0
       svg
-        width 100%
-        height 100%
+        width 98%
+        height 98%
+        margin auto
         .elknode
           stroke #448
           stroke-width 1
@@ -129,9 +165,9 @@ export default {
           stroke-width 0
           stroke #000
           fill #000
-          font-family Roboto
+          font-family sans-serif
           font-size 10pt
-          dominant-baseline hanging
+          dominant-baseline middle
         .elkjunction
           stroke none
           fill #224
