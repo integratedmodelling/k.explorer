@@ -26,6 +26,8 @@ export default {
   dataflow: state => state.dataflow,
   hasDataflow: state => state.dataflow !== null,
 
+  dataflowStatuses: state => state.dataflowStatuses,
+
   /**
    * If no context, return null
    */

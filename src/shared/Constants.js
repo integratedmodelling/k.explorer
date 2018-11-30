@@ -284,3 +284,10 @@ export default {
   },
 
 };
+
+export const DATAFLOW_STATUS = {
+  WAITING: 'waiting',
+  PROCESSING: 'processing',
+  PROCESSED: 'processed',
+  ABORTED: 'aborted',
+};

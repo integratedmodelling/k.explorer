@@ -1,5 +1,6 @@
 import { IN } from './MessagesConstants';
 import { Constants } from './Helpers';
+import { DATAFLOW_STATUS } from './Constants';
 
 function addToKexplorerLog(dispatch, type, message, attach, important = false) {
   dispatch('view/addToKexplorerLog', { type, payload: { message, attach }, important }, { root: true });
@@ -8,14 +9,17 @@ function addToKexplorerLog(dispatch, type, message, attach, important = false) {
 const PARSERS = {
   [IN.TYPE_TASKSTARTED]: (task, dispatch) => {
     dispatch('stomp/taskStart', task, { root: true });
+    dispatch('data/setDataflowStatusFromTask', { taskId: task.id, status: DATAFLOW_STATUS.PROCESSING }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Started task with id ${task.id}`);
   },
   [IN.TYPE_TASKABORTED]: (task, dispatch) => {
     dispatch('stomp/taskAbort', task, { root: true });
+    dispatch('data/setDataflowStatusFromTask', { taskId: task.id, status: DATAFLOW_STATUS.ABORTED }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Aborted task with id ${task.id}`);
   },
   [IN.TYPE_TASKFINISHED]: (task, dispatch) => {
     dispatch('stomp/taskEnd', task, { root: true });
+    dispatch('data/setDataflowStatusFromTask', { taskId: task.id, status: DATAFLOW_STATUS.PROCESSED }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {

@@ -9,7 +9,7 @@ import { mapGetters } from 'vuex';
 // import ELK from 'elkjs';
 // eslint-disable-next-line object-curly-newline
 import { createContainer, TYPES, FitToScreenAction, /* UpdateModelAction, */ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
-
+// import { Helpers } from 'shared/Helpers';
 
 export default {
   name: 'DataflowViewer',
@@ -20,11 +20,14 @@ export default {
       actionDispatcher: null,
       interval: null,
       processing: false,
+      visible: false,
+      needsUpdate: true,
     };
   },
   computed: {
     ...mapGetters('data', [
       'dataflow',
+      // 'dataflowStatuses',
     ]),
   },
   methods: {
@@ -33,19 +36,37 @@ export default {
         setTimeout(this.doGraph(), 100);
         return;
       }
+      if (!this.visible) {
+        this.needsUpdate = true;
+        return;
+      }
       // clone dataflow to avoid modification while processing
       const dataflow = JSON.parse(JSON.stringify(this.dataflow));
       this.processing = true;
       // const firstGraph = this.graph === null;
       this.graph = new ElkGraphJsonToSprotty().transform(dataflow);
       // if (firstGraph) {
+      // this.updateStatuses();
       this.modelSource.setModel(this.graph);
+      console.log(JSON.stringify(this.graph, null, 4));
       this.actionDispatcher.dispatch(new FitToScreenAction([]));
       // } else {
       //  this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
       // }
       this.processing = false;
     },
+    /*
+    updateStatuses() {
+      const { length } = this.dataflowStatuses;
+      for (let i = 0; i < length; i++) {
+        const { id, status } = this.dataflowStatuses[i];
+        const node = Helpers.findNodeById(this.graph, id);
+        if (node !== null) {
+          node.status = status;
+        }
+      }
+    },
+    */
     /*
     changeModel() {
       for (let i = 0; i < this.graph.children.length; ++i) {
@@ -89,6 +110,13 @@ export default {
         this.doGraph();
       }
     },
+    /*
+    dataflowStatuses() {
+      if (this.dataflowStatuses.length > 0) {
+        this.updateStatuses();
+      }
+    },
+    */
   },
   created() {
     // this.elk = new ELK({
@@ -102,11 +130,22 @@ export default {
   },
   mounted() {
     // Create Sprotty viewer
+    // this.visible = true;
     const sprottyContainer = createContainer(false, 'info');
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
-    this.doGraph();
+    // this.doGraph();
     // setInterval(() => this.changeModel(), 1000);
+  },
+  activated() {
+    this.visible = true;
+    if (this.needsUpdate) {
+      this.doGraph();
+      this.needsUpdate = false;
+    }
+  },
+  deactivated() {
+    this.visible = false;
   },
   beforeDestroy() {
     // clearInterval(this.interval);
