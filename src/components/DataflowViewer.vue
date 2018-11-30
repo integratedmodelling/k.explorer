@@ -8,7 +8,7 @@
 import { mapGetters } from 'vuex';
 // import ELK from 'elkjs';
 // eslint-disable-next-line object-curly-newline
-import { createContainer, TYPES, FitToScreenAction, UpdateModelAction, ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
+import { createContainer, TYPES, FitToScreenAction, /* UpdateModelAction, */ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
 
 
 export default {
@@ -20,7 +20,6 @@ export default {
       actionDispatcher: null,
       interval: null,
       processing: false,
-      elkGraphJsonToSprotty: null,
     };
   },
   computed: {
@@ -29,39 +28,23 @@ export default {
     ]),
   },
   methods: {
-    initGraph() {
+    doGraph() {
       if (this.processing) {
-        setTimeout(this.initGraph, 1000);
+        setTimeout(this.doGraph(), 100);
         return;
       }
-      if (this.dataflow !== null) {
-        this.processing = true;
-        /*
-        this.dataflow.layoutOptions = {
-          'org.eclipse.elk.animate': false,
-          'org.eclipse.elk.direction': 'UP',
-          'org.eclipse.elk.edgeRouting': 'POLYLINE',
-          'org.eclipse.elk.nodeSize.options': 'SizeOptions.COMPUTE_PADDING',
-        };
-        */
-        const firstGraph = this.graph === null;
-        // this.elk.layout(this.dataflow).then((graph) => {
-        this.graph = new ElkGraphJsonToSprotty().transform(this.dataflow);
-        // this.graph = this.elkGraphJsonToSprotty.transform(this.dataflow);
-        if (firstGraph) {
-          this.modelSource.setModel(this.graph);
-          this.actionDispatcher.dispatch(new FitToScreenAction([]));
-        } else {
-          this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
-        }
-        this.processing = false;
-        // }).catch((err) => {
-        //   if (err) {
-        //     console.error(err);
-        //   }
-        // });
-        // });
-      }
+      // clone dataflow to avoid modification while processing
+      const dataflow = JSON.parse(JSON.stringify(this.dataflow));
+      this.processing = true;
+      // const firstGraph = this.graph === null;
+      this.graph = new ElkGraphJsonToSprotty().transform(dataflow);
+      // if (firstGraph) {
+      this.modelSource.setModel(this.graph);
+      this.actionDispatcher.dispatch(new FitToScreenAction([]));
+      // } else {
+      //  this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
+      // }
+      this.processing = false;
     },
     /*
     changeModel() {
@@ -102,11 +85,9 @@ export default {
   },
   watch: {
     dataflow() {
-      // if (this.dataflow === null) {
-      this.initGraph();
-      // } else {
-      //   this.graph = null;
-      // }
+      if (this.dataflow !== null) {
+        this.doGraph();
+      }
     },
   },
   created() {
@@ -118,14 +99,13 @@ export default {
       },
     */
     // });
-    this.elkGraphJsonToSprotty = new ElkGraphJsonToSprotty();
   },
   mounted() {
     // Create Sprotty viewer
     const sprottyContainer = createContainer(false, 'info');
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
-    this.initGraph();
+    this.doGraph();
     // setInterval(() => this.changeModel(), 1000);
   },
   beforeDestroy() {
@@ -166,7 +146,7 @@ export default {
           stroke #000
           fill #000
           font-family sans-serif
-          font-size 10pt
+          //font-size 10pt
           dominant-baseline middle
         .elkjunction
           stroke none
