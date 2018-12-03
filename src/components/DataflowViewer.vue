@@ -167,17 +167,17 @@ export default {
         height 98%
         margin auto
         .elknode
-          stroke #448
+          stroke #9da6e0
+          fill #eaedff
           stroke-width 1
-          fill #ddf
         .elkport
-          stroke #448
+          stroke: #777;
           stroke-width 1
           fill #66c
         .elkedge
-          fill none
-          stroke #224
-          stroke-width 1
+          fill: none;
+          stroke: #777;
+          stroke-width: 1;
         .elkedge.arrow
           fill #336
         .elklabel
@@ -195,7 +195,7 @@ export default {
         .mouseover
           stroke #88f
         .waiting
-          fill #ffab32
+          /* fill #ffab32 */
         .processed
           fill #0f0
         .processing
