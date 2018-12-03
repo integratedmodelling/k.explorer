@@ -9,17 +9,14 @@ function addToKexplorerLog(dispatch, type, message, attach, important = false) {
 const PARSERS = {
   [IN.TYPE_TASKSTARTED]: (task, dispatch) => {
     dispatch('stomp/taskStart', task, { root: true });
-    dispatch('data/setDataflowStatusFromTask', { taskId: task.id, status: DATAFLOW_STATUS.PROCESSING }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Started task with id ${task.id}`);
   },
   [IN.TYPE_TASKABORTED]: (task, dispatch) => {
     dispatch('stomp/taskAbort', task, { root: true });
-    dispatch('data/setDataflowStatusFromTask', { taskId: task.id, status: DATAFLOW_STATUS.ABORTED }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Aborted task with id ${task.id}`);
   },
   [IN.TYPE_TASKFINISHED]: (task, dispatch) => {
     dispatch('stomp/taskEnd', task, { root: true });
-    dispatch('data/setDataflowStatusFromTask', { taskId: task.id, status: DATAFLOW_STATUS.PROCESSED }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {
@@ -34,6 +31,19 @@ const PARSERS = {
     } else {
       addToKexplorerLog(dispatch, Constants.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
     }
+  },
+  [IN.TYPE_DATAFLOWSTATECHANGED]: (payload, dispatch) => {
+    let status;
+    if (payload.status === 'STARTED') {
+      status = DATAFLOW_STATUS.PROCESSING;
+    } else if (payload.status === 'FINISHED') {
+      status = DATAFLOW_STATUS.PROCESSED;
+    } else if (payload.status === 'ABORTED') {
+      status = DATAFLOW_STATUS.ABORTED;
+    } else {
+      status = DATAFLOW_STATUS.WAITING;
+    }
+    dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, dispatch) => {
     addToKexplorerLog(

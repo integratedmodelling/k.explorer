@@ -263,11 +263,8 @@ export default {
     }
   },
 
-  setDataflowStatusFromTask: ({ commit, state }, { taskId, status }) => {
-    const observation = state.observations.find(obs => obs.taskId === taskId);
-    if (typeof observation !== 'undefined') {
-      commit('SET_DATAFLOW_STATUS', { id: observation.id, status });
-    }
+  setDataflowStatus: ({ commit }, { id, status }) => {
+    commit('SET_DATAFLOW_STATUS', { id, status });
   },
 
   storeSearchResult: ({ commit }, results) => {

@@ -9,7 +9,7 @@ import { mapGetters } from 'vuex';
 // import ELK from 'elkjs';
 // eslint-disable-next-line object-curly-newline
 import { createContainer, TYPES, FitToScreenAction, /* UpdateModelAction, */ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
-// import { Helpers } from 'shared/Helpers';
+import { Helpers } from 'shared/Helpers';
 
 export default {
   name: 'DataflowViewer',
@@ -27,7 +27,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'dataflow',
-      // 'dataflowStatuses',
+      'dataflowStatuses',
     ]),
   },
   methods: {
@@ -55,18 +55,24 @@ export default {
       // }
       this.processing = false;
     },
-    /*
     updateStatuses() {
+      if (!this.visible) {
+        this.needsUpdate = true;
+        return;
+      }
+      if (this.dataflowStatuses.length === 0) {
+        return;
+      }
       const { length } = this.dataflowStatuses;
       for (let i = 0; i < length; i++) {
         const { id, status } = this.dataflowStatuses[i];
         const node = Helpers.findNodeById(this.graph, id);
         if (node !== null) {
           node.status = status;
+          this.modelSource.updateModel();
         }
       }
     },
-    */
     /*
     changeModel() {
       for (let i = 0; i < this.graph.children.length; ++i) {
@@ -110,13 +116,12 @@ export default {
         this.doGraph();
       }
     },
-    /*
-    dataflowStatuses() {
-      if (this.dataflowStatuses.length > 0) {
+    dataflowStatuses: {
+      handler() {
         this.updateStatuses();
-      }
+      },
+      deep: true,
     },
-    */
   },
   created() {
     // this.elk = new ELK({
@@ -141,6 +146,7 @@ export default {
     this.visible = true;
     if (this.needsUpdate) {
       this.doGraph();
+      this.updateStatuses();
       this.needsUpdate = false;
     }
   },
@@ -163,9 +169,8 @@ export default {
       right 0
       bottom 0
       svg
-        width 98%
-        height 98%
-        margin auto
+        width 100%
+        height 99%
         .elknode
           stroke #9da6e0
           fill #eaedff
@@ -197,7 +202,7 @@ export default {
         .waiting
           /* fill #ffab32 */
         .processed
-          fill #0f0
+          fill #8fb
         .processing
-          fill #f00
+          fill #ff b3b3
 </style>

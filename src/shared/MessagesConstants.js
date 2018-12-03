@@ -59,6 +59,7 @@ export const IN = Object.freeze({
 
   PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
   PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
+  PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
   PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
   PAYLOAD_CLASS_SEARCHRESPONSE: 'SearchResponse',
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
@@ -73,6 +74,7 @@ export const IN = Object.freeze({
   TYPE_ERROR: 'Error',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
+  TYPE_DATAFLOWSTATECHANGED: 'DataflowStateChanged',
   TYPE_NEWOBSERVATION: 'NewObservation',
   TYPE_MODIFIEDOBSERVATION: 'ModifiedObservation',
   TYPE_QUERYRESULT: 'QueryResult',
