@@ -204,5 +204,5 @@ export default {
         .processed
           fill #8fb
         .processing
-          fill #ff b3b3
+          fill #ffb3b3
 </style>
