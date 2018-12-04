@@ -171,6 +171,8 @@ export default {
       svg
         width 100%
         height 99%
+        &:focus
+          outline-style none
         .elknode
           stroke #9da6e0
           fill #eaedff
