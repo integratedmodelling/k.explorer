@@ -188,19 +188,21 @@ export default {
         &:focus
           outline-style none
         .elknode
-          stroke #9da6e0
-          fill #eaedff
+          // stroke #9da6e0
+          // fill #eaedff
+          stroke #86b38e
+          fill #e7ffee
           stroke-width 1
         .elkport
           stroke: #777;
           stroke-width 1
-          fill #66c
+          fill #35cc82
         .elkedge
           fill: none;
           stroke: #777;
           stroke-width: 1;
         .elkedge.arrow
-          fill #336
+          fill #3e664d
         .elklabel
           stroke-width 0
           stroke #000
@@ -210,11 +212,11 @@ export default {
           dominant-baseline middle
         .elkjunction
           stroke none
-          fill #224
+          fill #35443c
         .selected > rect
           stroke-width 3
         .mouseover
-          stroke #88f
+          stroke #408062
         .waiting
           /* fill #ffab32 */
         .processed
