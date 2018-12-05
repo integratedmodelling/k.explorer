@@ -173,4 +173,16 @@ export const MESSAGES_BUILDERS = {
     },
     session,
   ),
+
+  DATAFLOW_NODE_DETAILS: ({ nodeId }, session) => buildMessage(
+    OUT.CLASS_TASKLIFECYCLE,
+    OUT.TYPE_DATAFLOWNODEDETAIL,
+    OUT.PAYLOAD_CLASS_DATAFLOWSTATE,
+    {
+      nodeId,
+      monitorable: false,
+      progress: 0,
+    },
+    session,
+  ),
 };

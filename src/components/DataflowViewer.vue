@@ -6,14 +6,13 @@
 
 <script>
 import { mapGetters } from 'vuex';
-// import ELK from 'elkjs';
-// eslint-disable-next-line object-curly-newline
+import { Helpers } from 'shared/Helpers';
+import { CUSTOM_EVENTS } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
 import { createContainer, ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
 import { TYPES, FitToScreenAction } from 'sprotty/lib';
-import { Helpers } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from 'shared/Constants';
-import { ClickHandlerInitializer } from 'shared/SprottyConfig';
+import { SelectHandlerInitializer } from 'shared/SprottyHandlers';
 
 
 export default {
@@ -143,15 +142,18 @@ export default {
     // this.visible = true;
     const sprottyContainer = createContainer(false, 'info');
 
-    sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(ClickHandlerInitializer);
+    sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(SelectHandlerInitializer);
 
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
     this.$eventBus.$on(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, (action) => {
-      console.warn(`RECEIVE THIS ACTION FROM EVENTBUS: ${JSON.stringify(action)}`);
+      if (action !== null && action.selectedElementsIDs) {
+        const { length } = action.selectedElementsIDs;
+        for (let i = length - 1; i >= 0; i -= 1) {
+          this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({ nodeId: action.selectedElementsIDs[i] }, this.session).body);
+        }
+      }
     });
-    // this.doGraph();
-    // setInterval(() => this.changeModel(), 1000);
   },
   activated() {
     this.visible = true;
@@ -182,6 +184,7 @@ export default {
       svg
         width 100%
         height 99%
+        cursor default
         &:focus
           outline-style none
         .elknode
