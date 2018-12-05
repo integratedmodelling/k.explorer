@@ -1,8 +1,11 @@
 import { Helpers, Constants } from 'shared/Helpers';
 import { MAP_CONSTANTS } from 'shared/MapConstants';
 import { Cookies, colors } from 'quasar';
+import Vue from 'vue';
 
-export default ({ Vue, store }) => {
+const eventBus = new Vue();
+
+export default ({ store }) => {
   const urlParams = new URLSearchParams(window.location.search);
   Vue.prototype.$urlParams = urlParams;
 
@@ -37,7 +40,7 @@ export default ({ Vue, store }) => {
   });
 
   // create an event bus. For now only to inform map change size
-  Vue.prototype.$eventBus = new Vue();
+  Vue.prototype.$eventBus = eventBus;
 
   // session only is stored here and never touched, so directly changed
   store.state.data.session = session;
@@ -79,3 +82,5 @@ export default ({ Vue, store }) => {
   // store.state.data.viewersLayout = Helpers.VIEWER_DEFAULT;
   // console.log(`Init viewersLayout ${Helpers.VIEWER_DEFAULT}`);
 };
+
+export { eventBus };

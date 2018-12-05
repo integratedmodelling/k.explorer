@@ -284,3 +284,16 @@ export default {
   },
 
 };
+
+export const DATAFLOW_STATUS = {
+  WAITING: 'waiting',
+  PROCESSING: 'processing',
+  PROCESSED: 'processed',
+  ABORTED: 'aborted',
+};
+
+export const CUSTOM_EVENTS = {
+  MAP_SIZE_CHANGED: 'mapsizechanged',
+  UPDATE_FOLDER: 'updatefolder',
+  GRAPH_NODE_SELECTED: 'graphnodeselected',
+};

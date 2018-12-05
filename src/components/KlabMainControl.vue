@@ -239,7 +239,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import Utils from 'shared/Utils';
-import { VIEWERS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -394,7 +394,7 @@ export default {
     this.centeredLeft = this.getCenteredLeft();
     this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
 
-    this.$eventBus.$on('map-size-changed', () => {
+    this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, () => {
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
       this.checkWhereWasDragged();
