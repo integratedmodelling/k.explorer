@@ -8,8 +8,13 @@
 import { mapGetters } from 'vuex';
 // import ELK from 'elkjs';
 // eslint-disable-next-line object-curly-newline
-import { createContainer, TYPES, FitToScreenAction, /* UpdateModelAction, */ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
+import 'reflect-metadata';
+import { createContainer, ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
+import { TYPES, FitToScreenAction } from 'sprotty/lib';
 import { Helpers } from 'shared/Helpers';
+import { CUSTOM_EVENTS } from 'shared/Constants';
+import { ClickHandlerInitializer } from 'shared/SprottyConfig';
+
 
 export default {
   name: 'DataflowViewer',
@@ -137,8 +142,14 @@ export default {
     // Create Sprotty viewer
     // this.visible = true;
     const sprottyContainer = createContainer(false, 'info');
+
+    sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(ClickHandlerInitializer);
+
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
+    this.$eventBus.$on(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, (action) => {
+      console.warn(`RECEIVE THIS ACTION FROM EVENTBUS: ${JSON.stringify(action)}`);
+    });
     // this.doGraph();
     // setInterval(() => this.changeModel(), 1000);
   },

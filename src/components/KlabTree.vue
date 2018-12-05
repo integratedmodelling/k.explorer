@@ -73,6 +73,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
+import { CUSTOM_EVENTS } from 'shared/Constants';
 import SimpleBar from 'simplebar';
 
 export default {
@@ -327,13 +328,13 @@ export default {
             }).then(() => {
               this.askingForSiblings = false;
               console.debug('KlabTree -> Asked for them');
-              this.$eventBus.$emit('updateFolder', { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
+              this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
             });
           }
         }
       });
     });
-    this.$eventBus.$on('updateFolder', (event) => {
+    this.$eventBus.$on(CUSTOM_EVENTS.UPDATE_FOLDER, (event) => {
       if (event && event.folderId) {
         const folder = Helpers.findNodeById(this.tree, event.folderId);
         if (folder && folder !== null) {

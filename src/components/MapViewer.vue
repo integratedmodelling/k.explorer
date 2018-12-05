@@ -15,6 +15,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
+import { CUSTOM_EVENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -80,7 +81,7 @@ export default {
       if (this.map !== null) {
         console.debug('HandleResize called!!!');
         this.map.updateSize();
-        this.$eventBus.$emit('map-size-changed');
+        this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
       }
     },
     onMoveEnd() {

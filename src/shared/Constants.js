@@ -291,3 +291,9 @@ export const DATAFLOW_STATUS = {
   PROCESSED: 'processed',
   ABORTED: 'aborted',
 };
+
+export const CUSTOM_EVENTS = {
+  MAP_SIZE_CHANGED: 'mapsizechanged',
+  UPDATE_FOLDER: 'updatefolder',
+  GRAPH_NODE_SELECTED: 'graphnodeselected',
+};
