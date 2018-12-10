@@ -59,7 +59,7 @@ module.exports = function (ctx) {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /(node_modules|quasar)/,
+          exclude: /(node_modules|quasar|logos)/, // TODO logo only for see the logo in report locally, so remove as soon as possible
           /* used when CR+LF are changed from ide and everything breaks
           options: {
             fix: true,
@@ -155,7 +155,7 @@ module.exports = function (ctx) {
         short_name: 'k.explorer',
         description: 'Explorer for k.LAB',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'landscape',
         background_color: '#ffffff',
         theme_color: '#DB1F26',
         icons: [
