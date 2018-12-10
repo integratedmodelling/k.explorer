@@ -1,5 +1,5 @@
 <template>
-  <div class="fit no-padding" id="dfv-container">
+  <div class="fit no-padding with-background" id="dfv-container">
     <div id="sprotty"></div>
   </div>
 </template>
@@ -174,6 +174,7 @@ export default {
 </script>
 
 <style lang="stylus">
+  @import '~variables'
   #dfv-container
     #sprotty
       position absolute
@@ -188,21 +189,19 @@ export default {
         &:focus
           outline-style none
         .elknode
-          // stroke #9da6e0
-          // fill #eaedff
-          stroke #86b38e
-          fill #e7ffee
+          stroke $blue-grey-3
+          fill $blue-grey-1
           stroke-width 1
         .elkport
-          stroke: #777;
+          stroke $blue-grey-5
           stroke-width 1
-          fill #35cc82
+          fill $blue-grey-5
         .elkedge
-          fill: none;
-          stroke: #777;
-          stroke-width: 1;
+          fill none;
+          stroke $blue-grey-7
+          stroke-width 1
         .elkedge.arrow
-          fill #3e664d
+          fill $blue-grey-9
         .elklabel
           stroke-width 0
           stroke #000
@@ -212,15 +211,15 @@ export default {
           dominant-baseline middle
         .elkjunction
           stroke none
-          fill #35443c
+          fill $blue-grey-9
         .selected > rect
           stroke-width 3
         .mouseover
-          stroke #408062
+          stroke $blue-grey-11
         .waiting
           /* fill #ffab32 */
         .processed
-          fill #8fb
+          fill $blue-grey-11
         .processing
-          fill #ffb3b3
+          fill $blue-grey-13
 </style>
