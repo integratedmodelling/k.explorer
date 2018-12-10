@@ -4525,8 +4525,8 @@ kind-of@^6.0.0, kind-of@^6.0.2:
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
   integrity sha512-s5kLOcnH0XqDO+FvuaLX8DDjZ18CGFk7VygH40QoKPUQhW4e2rvM0rwUq0t8IQDOwYSeLK01U90OjzBTme2QqA==
 
-klab-elk-sprotty-bridge@../klab-elk-sprotty-bridge/:
-  version "0.2.1"
+klab-elk-sprotty-bridge@../klab-elk-sprotty-bridge:
+  version "0.3.2"
   dependencies:
     elkjs "^0.4.1"
     json5 "^2.1.0"
@@ -7777,9 +7777,9 @@ vue-hot-reload-api@^2.3.0:
   integrity sha512-AA86yKZ5uOKz87/q1UpngEXhbRkaYg1b7HMMVRobNV1IVKqZe8oLIzo6iMocVwZXnYitlGwf2k4ZRLOZlS8oPQ==
 
 vue-i18n@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.1.0.tgz#a2bce3879f595b6188b419f8d2c6a74d8aee5eb7"
-  integrity sha512-Oj1FHLmLS/rGD6vhkB/JiRNLmOAG+ZSOqR9fjTy8fbKkTl+cdHCHOd+JDvPpR2aQufWA4+BDTnVavVAyQwWK4g==
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.4.0.tgz#bc3437ff8f5f389c57235ced602e9d7bfd87995c"
+  integrity sha512-MiBI1v2pY22aAEbNrcy7GX9qigoUQE9PbmrAydrBuYNRwn0RbD1RZpMemtmGW3Ju6LBA1yn7TZOPa3lxWrT0Eg==
 
 vue-loader@15.4.2:
   version "15.4.2"
@@ -8003,9 +8003,9 @@ websocket-extensions@>=0.1.1:
   integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==
 
 webstomp-client@^1.2.0:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/webstomp-client/-/webstomp-client-1.2.5.tgz#b3c4bf39d372e90dae8a5fa6be6afc9b260cbf79"
-  integrity sha512-9s84St3+Dk3FtkCxiz/N5WPopcLvbr13kd9WuRpHpYIILisOezggtFXNETnWFuAM9HNcfHZT20KDVZsxId8RMg==
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/webstomp-client/-/webstomp-client-1.2.6.tgz#57e8a044bac0a08bfc3d0e54d43760c2aeefadab"
+  integrity sha512-9HajO6Ki2ViEGIusLZtjM2lcO2VaQUvtXhLQQ4Cm543RLjfTCEgI3sFaiXts3TvfZgrtY/vI/+qUkm2qWD/NVg==
 
 when@~3.6.x:
   version "3.6.4"
