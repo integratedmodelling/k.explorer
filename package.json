@@ -19,7 +19,7 @@
     "draggable-vue-directive": "^2.0.2",
     "elkjs": "^0.4.1",
     "jsts": "^2.0.2",
-    "klab-elk-sprotty-bridge": "../klab-elk-sprotty-bridge",
+    "k.elksprottybridge": "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#develop",
     "moment": "^2.22.1",
     "ol": "^5.0.0",
     "ol-ext": "^3.0.1",

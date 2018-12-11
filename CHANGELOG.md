@@ -18,4 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - detailed points
     - etc.
   - Reports
-- Update README.md 
+- Update README.md
+
+## 0.5.1 - 2018-12-11
+### Reconfiguration
+- Change the klab-elk-sprotty-bridge dependency has bitbucket repository dependency.
+  The way to use it is via ssh-key.
+  This resolve the problem of inversify double import

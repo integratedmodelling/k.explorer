@@ -10,9 +10,9 @@ import { Helpers } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
-import { createContainer, ElkGraphJsonToSprotty } from 'klab-elk-sprotty-bridge/lib';
-import { TYPES, FitToScreenAction } from 'sprotty/lib';
 import { SelectHandlerInitializer } from 'shared/SprottyHandlers';
+import { createContainer, ElkGraphJsonToSprotty } from 'k.elksprottybridge/lib';
+import { TYPES, FitToScreenAction } from 'sprotty/lib';
 
 
 export default {
@@ -141,7 +141,6 @@ export default {
     // Create Sprotty viewer
     // this.visible = true;
     const sprottyContainer = createContainer(false, 'info');
-
     sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(SelectHandlerInitializer);
 
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
