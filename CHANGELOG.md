@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update README.md
 
 ## 0.5.1 - 2018-12-11
-### Reconfiguration
-- Change the klab-elk-sprotty-bridge dependency has bitbucket repository dependency.
-  The way to use it is via ssh-key.
-  This resolve the problem of inversify double import
+### Added
+- Dataflow visualizer using elk and sprotty
+- Dataflow respond to engine input about dataflow components processing
+- To use elk/sprotty solution, a new library was created (klab-elk-sprotty-bridge) that is added as
+  bitbucket private repository dependency. Now the way to use it is via ssh-key  
