@@ -100,8 +100,13 @@ export default {
           },
           props: { cfg: result },
           nativeOn: {
-            // mouseenter: () => { !result.disable && (this.keyboardIndex = index) },
-            click: () => { !result.disable && this.setValue(result) }
+            mousedown: (e) => {
+              !result.disable && (this.keyboardIndex = index);
+              e.preventDefault();
+            },
+            click: () => {
+              !result.disable && this.setValue(result);
+            }
           }
         })))
     ])

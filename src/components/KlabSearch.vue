@@ -619,10 +619,10 @@ export default {
       border-bottom 1px solid #ccc
       &.q-select-highlight
         background-color transparent
-    /* TODO is necesary?
-    &:not(.text-faded):hover
-      background rgba(189,189,189,0.2)
-    */
+
+    &:not(.text-faded):active
+      background rgba(189,189,189,0.5)
+
 
   /* only for webkit */
   #mc-autocomplete::-webkit-scrollbar {
