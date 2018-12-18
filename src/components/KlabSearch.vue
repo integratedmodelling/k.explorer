@@ -406,8 +406,9 @@ export default {
           this.autocompleteEl.__clearSearch();
           if (Array.isArray(results) && results.length > 0) {
             this.autocompleteEl.results = results;
-            this.autocompleteEl.__showResults();
-            this.autocompleteEl.__keyboardShow(2);
+            Vue.nextTick(() => {
+              this.autocompleteEl.__showResults();
+            });
           } else {
             this.autocompleteEl.hide();
           }
@@ -583,42 +584,46 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .tokens {
-    display: inline-block;
-    margin-right: 1px;
-    padding: 0 3px;
-  }
-  .tokens-accepted {
+  .tokens
+    display inline-block
+    margin-right 1px
+    padding 0 3px
+
+  .tokens-accepted
     /* mix-blend-mode: difference; */
-    font-weight: 600;
-  }
-  .tokens.selected {
+    font-weight 600
+
+  .tokens.selected
     /* color: #fff; */
-    outline: none;
-  }
-  .bg-semantic-elements {
-     border-radius: 10px;
-     border-style: solid;
-     border-width: 2px;
-  }
-  .q-tooltip {
+    outline none
+
+  .bg-semantic-elements
+     border-radius 10px
+     border-style solid
+     border-width 2px
+
+  .q-tooltip
     /* background-color: rgba(155, 155, 155, 0.5); */
-    max-width: $main-control-width;
-  }
-  .q-popover {
-    max-width: $main-control-width !important;
-    border-radius: 10px;
-  }
-  #mc-autocomplete .q-item.text-faded.q-select-highlight {
-    background-color: transparent;
-  }
-  #mc-autocomplete .q-item.text-faded {
-    padding: 8px 16px 5px 16px;
-    min-height: 0;
-    font-size: 0.8em;
-    color: #333;
-    border-bottom: 1px solid #ccc;
-  }
+    max-width $main-control-width
+
+  .q-popover
+    max-width $main-control-width !important
+    border-radius 10px
+
+  #mc-autocomplete .q-item
+    &.text-faded
+      padding 8px 16px 5px 16px
+      min-height 0
+      font-size 0.8em
+      color #333
+      border-bottom 1px solid #ccc
+      &.q-select-highlight
+        background-color transparent
+    /* TODO is necesary?
+    &:not(.text-faded):hover
+      background rgba(189,189,189,0.2)
+    */
+
   /* only for webkit */
   #mc-autocomplete::-webkit-scrollbar {
     display:none
