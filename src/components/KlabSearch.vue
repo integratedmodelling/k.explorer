@@ -42,7 +42,8 @@
       @keydown="onKeyPressedOnSearchInput"
       @keyup.esc="searchEnd"
     >
-      <q-autocomplete
+
+      <klab-autocomplete
         @search="search"
         @selected="selected"
         @show="onAutocompleteShow"
@@ -53,7 +54,7 @@
         ref="mc-autocomplete"
         id="mc-autocomplete"
         :class="[ notChrome() ? 'not-chrome' : '']"
-      ></q-autocomplete>
+      ></klab-autocomplete>
     </q-input>
     </div>
   </div>
@@ -66,6 +67,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
 import Vue from 'vue';
+import KlabAutocomplete from './KlabAutocomplete';
 
 export default {
   name: 'KlabSearch',
@@ -572,6 +574,9 @@ export default {
       this.actualSearchString = '';
     }
     this.inputSearchColor = 'black';
+  },
+  components: {
+    KlabAutocomplete,
   },
 };
 </script>

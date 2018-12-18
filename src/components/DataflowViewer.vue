@@ -205,7 +205,7 @@ export default {
           stroke-width 0
           stroke #000
           fill #000
-          font-family sans-serif
+          font-family Roboto
           //font-size 10pt
           dominant-baseline middle
         .elkjunction
