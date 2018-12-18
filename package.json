@@ -3,6 +3,7 @@
   "version": "0.5.1",
   "description": "k.EXPLORER module of k.LAB",
   "productName": "k.EXPLORER",
+  "license": "AGPL-3.0-only",
   "cordovaId": "org.cordova.quasar.app",
   "author": "Enrico Girotto <enrico.girotto@gmail.com>",
   "private": true,
