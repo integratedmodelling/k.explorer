@@ -81,6 +81,11 @@ export default {
           this.__input.selectionOpen = false
           this.$emit('hide')
         }
+      },
+      nativeOn: {
+        mousedown: (e) => { // so if scrollbar is clicked, it doesn't disappear
+          e.preventDefault();
+        }
       }
     }, [
       h(QList, {

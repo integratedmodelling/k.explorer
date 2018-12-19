@@ -137,25 +137,6 @@ export default {
     },
     onAutocompleteShow() {
       this.suggestionShowed = true;
-      /*
-      if (this.autocompleteSB === null) {
-        this.$nextTick(() => {
-          const autocomplete = document.getElementById('mc-autocomplete');
-          if (autocomplete !== null) {
-            // eslint-disable-next-line no-new
-            this.autocompleteSB = new SimpleBar(autocomplete.firstChild).getContentElement();
-          }
-        });
-      } else {
-        this.$nextTick(() => {
-          const elements = document.querySelectorAll('#mc-autocomplete .q-item');
-          elements.forEach((el) => {
-            el.remove();
-            this.autocompleteSB.append(el);
-          });
-        });
-      }
-      */
     },
     onAutocompleteHide() {
       this.suggestionShowed = false;
@@ -610,46 +591,34 @@ export default {
     max-width $main-control-width !important
     border-radius 10px
 
-  #mc-autocomplete .q-item
-    &.text-faded
-      padding 8px 16px 5px 16px
-      min-height 0
-      font-size 0.8em
-      color #333
-      border-bottom 1px solid #ccc
-      &.q-select-highlight
-        background-color transparent
+  #mc-autocomplete
+    /* for ff */
+    scrollbar-color: #e5e5e5 rgba(0,0,0,0);
+    scrollbar-width: thin;
+    .q-item
+      &.text-faded
+        padding 8px 16px 5px 16px
+        min-height 0
+        font-size 0.8em
+        color #333
+        border-bottom 1px solid #ccc
+        &.q-select-highlight
+          background-color transparent
 
-    &:not(.text-faded):active
-      background rgba(189,189,189,0.5)
+      &:not(.text-faded):active
+        background rgba(189,189,189,0.5)
+    /* for webkit */
+    &::-webkit-scrollbar-track
+      border-radius 10px
+      background-color rgba(0,0,0,0)
 
+    &::-webkit-scrollbar
+      width 6px
+      background-color rgba(0,0,0,0)
 
-  /* only for webkit */
-  #mc-autocomplete::-webkit-scrollbar {
-    display:none
-  }
-  /*
-  #mc-autocomplete: -moz-any() browser{
-    margin-right:-14px!important;
-    overflow-y:scroll;
-    margin-bottom:-14px!important;
-    overflow-x:scroll;
-  }
-  */
-
-  #mc-autocomplete.not-chrome{
-    width: 100%;
-    height: 100%
-    overflow: hidden;
-  }
-
-  #mc-autocomplete.not-chrome .q-list{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: -17px; /* Increase/Decrease this value for cross-browser compatibility */
-    overflow-y: scroll;
-  }
+    &::-webkit-scrollbar-thumb
+      border-radius 10px
+      width 5px
+      background-color #e5e5e5
 
 </style>
