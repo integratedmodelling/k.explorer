@@ -1,5 +1,6 @@
 import Constants from 'shared/Constants';
 import { parseAndExecute } from 'shared/MessagesParser';
+
 /**
  * Names of actions are linked to Stomp client event name
  */

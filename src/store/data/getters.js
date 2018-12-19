@@ -23,6 +23,11 @@ export default {
 
   hasObservations: state => state.observations.length !== 0,
 
+  dataflow: state => state.dataflow,
+  hasDataflow: state => state.dataflow !== null,
+
+  dataflowStatuses: state => state.dataflowStatuses,
+
   /**
    * If no context, return null
    */

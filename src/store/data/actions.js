@@ -276,6 +276,18 @@ export default {
     }
   },
 
+  addDataflow: ({ commit }, dataflow) => {
+    if (typeof dataflow === 'undefined' || dataflow === null) {
+      console.warn('Try to layout an empty ELK dataflow');
+    } else {
+      commit('ADD_DATAFLOW', dataflow);
+    }
+  },
+
+  setDataflowStatus: ({ commit }, { id, status }) => {
+    commit('SET_DATAFLOW_STATUS', { id, status });
+  },
+
   storeSearchResult: ({ commit }, results) => {
     commit('STORE_RAW_SEARCH_RESULT', results);
   },

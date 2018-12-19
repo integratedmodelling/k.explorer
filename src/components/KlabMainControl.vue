@@ -171,24 +171,27 @@
           </q-icon></div>
           <!-- REPORT BUTTON -->
           <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip === null ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && reportTooltip !== null }]"
+               @click="mainViewer !== VIEWERS.REPORT_VIEWER && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
+               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !hasObservations }]"
           ><q-icon name="mdi-file-document-box-outline">
             <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ reportTooltip !== null ? reportTooltip : $t('tooltips.reportViewer') }}</q-tooltip>
+            >{{ hasObservations ? $t('tooltips.reportViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
           </q-icon></div>
-          <!-- DATAFLOW (disabled) -->
-          <div class="mc-button mc-action disabled"
+          <!-- DATAFLOW -->
+          <div
+            class="mc-button mc-action"
+            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasDataflow ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
+            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && !hasDataflow }]"
           ><q-icon name="mdi-sitemap">
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
+            >{{ hasDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
           </q-icon></div>
           <!-- PROVENANCE (disabled) -->
           <!-- in the future
@@ -239,7 +242,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import Utils from 'shared/Utils';
-import { VIEWERS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -271,6 +274,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'hasObservations',
+      'hasDataflow',
       'contextLabel',
       'lasts',
       'tree',
@@ -289,17 +293,6 @@ export default {
     ]),
     spinnerColor() {
       return Utils.getColorObject(this.spinner.color);
-    },
-    reportTooltip() {
-      /*
-      if (this.hasTasks) {
-        return this.$t('tooltips.noReportTask');
-      }
-      */
-      if (!this.hasObservations) {
-        return this.$t('tooltips.noReportNoObservation');
-      }
-      return null;
     },
   },
   methods: {
@@ -394,7 +387,7 @@ export default {
     this.centeredLeft = this.getCenteredLeft();
     this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
 
-    this.$eventBus.$on('map-size-changed', () => {
+    this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, () => {
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
       this.checkWhereWasDragged();

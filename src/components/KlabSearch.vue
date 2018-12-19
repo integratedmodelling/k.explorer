@@ -42,7 +42,8 @@
       @keydown="onKeyPressedOnSearchInput"
       @keyup.esc="searchEnd"
     >
-      <q-autocomplete
+
+      <klab-autocomplete
         @search="search"
         @selected="selected"
         @show="onAutocompleteShow"
@@ -53,7 +54,7 @@
         ref="mc-autocomplete"
         id="mc-autocomplete"
         :class="[ notChrome() ? 'not-chrome' : '']"
-      ></q-autocomplete>
+      ></klab-autocomplete>
     </q-input>
     </div>
   </div>
@@ -66,6 +67,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
 import Vue from 'vue';
+import KlabAutocomplete from './KlabAutocomplete';
 
 export default {
   name: 'KlabSearch',
@@ -135,25 +137,6 @@ export default {
     },
     onAutocompleteShow() {
       this.suggestionShowed = true;
-      /*
-      if (this.autocompleteSB === null) {
-        this.$nextTick(() => {
-          const autocomplete = document.getElementById('mc-autocomplete');
-          if (autocomplete !== null) {
-            // eslint-disable-next-line no-new
-            this.autocompleteSB = new SimpleBar(autocomplete.firstChild).getContentElement();
-          }
-        });
-      } else {
-        this.$nextTick(() => {
-          const elements = document.querySelectorAll('#mc-autocomplete .q-item');
-          elements.forEach((el) => {
-            el.remove();
-            this.autocompleteSB.append(el);
-          });
-        });
-      }
-      */
     },
     onAutocompleteHide() {
       this.suggestionShowed = false;
@@ -215,13 +198,16 @@ export default {
       this.noSearch = false;
       switch (event.keyCode) {
         case 8: // BACKSPACE
-          if (this.actualToken === '' && this.acceptedTokens.length !== 0) {
+          if (this.actualToken === '' && this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
             this.acceptedTokens.pop();
             this.searchHistoryIndex = -1;
             event.preventDefault();
-          } else if (this.actualSearchString !== '') {
+          } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
+          } else if (this.actualSearchString === '' && this.actualToken !== '') { // existing actual token, but is a complex suggestion, so everything must be delete
+            this.actualToken = '';
+            event.preventDefault();
           }
           break;
         case 9: // TAB force to select with TAB
@@ -404,7 +390,9 @@ export default {
           this.autocompleteEl.__clearSearch();
           if (Array.isArray(results) && results.length > 0) {
             this.autocompleteEl.results = results;
-            this.autocompleteEl.__showResults();
+            Vue.nextTick(() => {
+              this.autocompleteEl.__showResults();
+            });
           } else {
             this.autocompleteEl.hide();
           }
@@ -572,73 +560,68 @@ export default {
     }
     this.inputSearchColor = 'black';
   },
+  components: {
+    KlabAutocomplete,
+  },
 };
 </script>
 
 <style lang="stylus">
   @import '~variables'
-  .tokens {
-    display: inline-block;
-    margin-right: 1px;
-    padding: 0 3px;
-  }
-  .tokens-accepted {
+  .tokens
+    display inline-block
+    margin-right 1px
+    padding 0 3px
+
+  .tokens-accepted
     /* mix-blend-mode: difference; */
-    font-weight: 600;
-  }
-  .tokens.selected {
+    font-weight 600
+
+  .tokens.selected
     /* color: #fff; */
-    outline: none;
-  }
-  .bg-semantic-elements {
-     border-radius: 10px;
-     border-style: solid;
-     border-width: 2px;
-  }
-  .q-tooltip {
+    outline none
+
+  .bg-semantic-elements
+     border-radius 10px
+     border-style solid
+     border-width 2px
+
+  .q-tooltip
     /* background-color: rgba(155, 155, 155, 0.5); */
-    max-width: $main-control-width;
-  }
-  .q-popover {
-    max-width: $main-control-width !important;
-    border-radius: 10px;
-  }
-  #mc-autocomplete .q-item.text-faded.q-select-highlight {
-    background-color: transparent;
-  }
-  #mc-autocomplete .q-item.text-faded {
-    padding: 8px 16px 5px 16px;
-    min-height: 0;
-    font-size: 0.8em;
-    color: #333;
-    border-bottom: 1px solid #ccc;
-  }
-  /* only for webkit */
-  #mc-autocomplete::-webkit-scrollbar {
-    display:none
-  }
-  /*
-  #mc-autocomplete: -moz-any() browser{
-    margin-right:-14px!important;
-    overflow-y:scroll;
-    margin-bottom:-14px!important;
-    overflow-x:scroll;
-  }
-  */
+    max-width $main-control-width
 
-  #mc-autocomplete.not-chrome{
-    width: 100%;
-    height: 100%
-    overflow: hidden;
-  }
+  .q-popover
+    max-width $main-control-width !important
+    border-radius 10px
 
-  #mc-autocomplete.not-chrome .q-list{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: -17px; /* Increase/Decrease this value for cross-browser compatibility */
-    overflow-y: scroll;
-  }
+  #mc-autocomplete
+    /* for ff */
+    scrollbar-color: #e5e5e5 rgba(0,0,0,0);
+    scrollbar-width: thin;
+    .q-item
+      &.text-faded
+        padding 8px 16px 5px 16px
+        min-height 0
+        font-size 0.8em
+        color #333
+        border-bottom 1px solid #ccc
+        &.q-select-highlight
+          background-color transparent
+
+      &:not(.text-faded):active
+        background rgba(189,189,189,0.5)
+    /* for webkit */
+    &::-webkit-scrollbar-track
+      border-radius 10px
+      background-color rgba(0,0,0,0)
+
+    &::-webkit-scrollbar
+      width 6px
+      background-color rgba(0,0,0,0)
+
+    &::-webkit-scrollbar-thumb
+      border-radius 10px
+      width 5px
+      background-color #e5e5e5
 
 </style>

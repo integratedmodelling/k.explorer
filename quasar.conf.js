@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = function (ctx) {
   return {
@@ -28,7 +29,7 @@ module.exports = function (ctx) {
           ? { // so on dev we'll have
             // WS_BASE_URL: JSON.stringify('http://192.168.0.124:8283'), // Fer
             WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
-            STOMP_CLIENT_DEBUG: false,
+            STOMP_CLIENT_DEBUG: true,
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
@@ -44,7 +45,7 @@ module.exports = function (ctx) {
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
       },
       // distDir: 'dist/ui',
-      distDir: '../klab/klab.engine/src/main/resources/static/ui',
+      distDir: '/home/klab/workspaces/klab-workspace/k.LAB/klab/klab.engine/src/main/resources/static/ui',
       publicPath: '/modeler/ui/',
       scopeHoisting: true,
       vueRouterMode: 'history',
@@ -58,13 +59,15 @@ module.exports = function (ctx) {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /(node_modules|quasar)/,
+          exclude: /(node_modules|quasar|logos)/, // TODO logo only for see the logo in report locally, so remove as soon as possible
           /* used when CR+LF are changed from ide and everything breaks
           options: {
             fix: true,
           },
           */
         });
+        //
+        cfg.plugins.push(new webpack.IgnorePlugin(/(webworker-threads)/));
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           shared: path.resolve(__dirname, './src/shared'),
@@ -152,7 +155,7 @@ module.exports = function (ctx) {
         short_name: 'k.explorer',
         description: 'Explorer for k.LAB',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'landscape',
         background_color: '#ffffff',
         theme_color: '#DB1F26',
         icons: [

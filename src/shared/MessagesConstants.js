@@ -32,6 +32,7 @@ export const OUT = Object.freeze({
   TYPE_RESETCONTEXT: 'ResetContext',
   TYPE_TASKINTERRUPTED: 'TaskInterrupted',
   TYPE_SCALEDEFINED: 'ScaleDefined',
+  TYPE_DATAFLOWNODEDETAIL: 'DataflowNodeDetail',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -41,6 +42,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_OBSERVATIONREQUEST: 'ObservationRequest',
   PAYLOAD_CLASS_INTERRUPTTASK: 'InterruptTask',
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
+  PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
   PAYLOAD_CLASS_EMPTY: 'String',
 });
 
@@ -59,6 +61,7 @@ export const IN = Object.freeze({
 
   PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
   PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
+  PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
   PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
   PAYLOAD_CLASS_SEARCHRESPONSE: 'SearchResponse',
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
@@ -73,6 +76,7 @@ export const IN = Object.freeze({
   TYPE_ERROR: 'Error',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
+  TYPE_DATAFLOWSTATECHANGED: 'DataflowStateChanged',
   TYPE_NEWOBSERVATION: 'NewObservation',
   TYPE_MODIFIEDOBSERVATION: 'ModifiedObservation',
   TYPE_QUERYRESULT: 'QueryResult',

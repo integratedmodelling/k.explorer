@@ -49,6 +49,7 @@ import { VIEWERS } from 'shared/Constants';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
 import ReportViewer from 'components/ReportViewer.vue';
+import DataflowViewer from 'components/DataflowViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 
 import { colors } from 'quasar';
@@ -116,6 +117,7 @@ export default {
     KlabMainControl,
     DataViewer,
     ReportViewer,
+    DataflowViewer,
     KlabSpinner,
   },
   watch: {

@@ -100,6 +100,16 @@ export default {
   observations: [],
 
   /**
+   * The dataflow of context as JSON ELK object
+   */
+  dataflow: null,
+  /**
+   * Used to store the state of task processed
+   * { id: [id of observation]; status: [DATAFLOW_STATUS.WAITING|DATAFLOW_STATUS.PROCESSING|DATAFLOW_STATUS.PROCESSED]
+   */
+  dataflowStatuses: [],
+
+  /**
    * Redundant array to find observation by task id. tasks.[taskId] = [observations]
    * IMPORTANT: observations are stored as references, so if something change, everything change!
    */

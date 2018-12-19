@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Helpers } from 'shared/Helpers';
+// import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
 
@@ -23,7 +24,29 @@ export default {
     state.lasts = [];
     state.observations = [];
     state.tasks = [];
+    // state.dataflow = null;
     state.nodeSelected = null;
+  },
+
+  ADD_DATAFLOW: (state, dataflow) => {
+    state.dataflow = dataflow;
+  },
+
+  SET_DATAFLOW_STATUS: (state, { id, status }) => {
+    // if (Object.prototype.hasOwnProperty.call(DATAFLOW_STATUS, status)) {
+    const existing = state.dataflowStatuses.find(ds => ds.id === id);
+    if (typeof existing !== 'undefined') {
+      existing.status = status;
+    } else {
+      state.dataflowStatuses.push({ id, status });
+    }
+    // } else {
+    //   throw new Error(`Status not valid: ${status}`);
+    // }
+  },
+
+  CLEAR_DATAFLOW_STATUSES: (state) => {
+    state.dataflowStatuses = [];
   },
 
   ADD_OBSERVATION: (state, observation) => {

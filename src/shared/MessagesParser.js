@@ -1,5 +1,6 @@
 import { IN } from './MessagesConstants';
 import { Constants } from './Helpers';
+import { DATAFLOW_STATUS } from './Constants';
 
 function addToKexplorerLog(dispatch, type, message, attach, important = false) {
   dispatch('view/addToKexplorerLog', { type, payload: { message, attach }, important }, { root: true });
@@ -19,7 +20,30 @@ const PARSERS = {
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
+    if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
+      try {
+        const jsonEklLayout = JSON.parse(payload.jsonElkLayout);
+        addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
+        dispatch('data/addDataflow', jsonEklLayout, { root: true });
+      } catch (e) {
+        addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Error in dataflos layout in task ${payload.taskId}: ${e}`);
+      }
+    } else {
+      addToKexplorerLog(dispatch, Constants.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
+    }
+  },
+  [IN.TYPE_DATAFLOWSTATECHANGED]: (payload, dispatch) => {
+    let status;
+    if (payload.status === 'STARTED') {
+      status = DATAFLOW_STATUS.PROCESSING;
+    } else if (payload.status === 'FINISHED') {
+      status = DATAFLOW_STATUS.PROCESSED;
+    } else if (payload.status === 'ABORTED') {
+      status = DATAFLOW_STATUS.ABORTED;
+    } else {
+      status = DATAFLOW_STATUS.WAITING;
+    }
+    dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, dispatch) => {
     addToKexplorerLog(
