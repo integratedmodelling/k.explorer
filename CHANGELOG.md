@@ -26,3 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dataflow respond to engine input about dataflow components processing
 - To use elk/sprotty solution, a new library was created (klab-elk-sprotty-bridge) that is added as
   bitbucket private repository dependency. Now the way to use it is via ssh-key  
+
+## 0.5.2 - 2018-12-19
+### Changed
+- Change license to [AGPL-3.0-only](https://choosealicense.com/licenses/agpl-3.0/)
+### Solved
+- Solved bugs in searchbox:
+  - if keyboard is used on results, mouse now not interfere
+  - if there are too many results to show in small dimensions, scrollbar now is visualized, so
+  in firefox there aren't big white space. 
+  - mouse click on scrollbar now doesn't close popup 
