@@ -198,13 +198,16 @@ export default {
       this.noSearch = false;
       switch (event.keyCode) {
         case 8: // BACKSPACE
-          if (this.actualToken === '' && this.acceptedTokens.length !== 0) {
+          if (this.actualToken === '' && this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
             this.acceptedTokens.pop();
             this.searchHistoryIndex = -1;
             event.preventDefault();
-          } else if (this.actualSearchString !== '') {
+          } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
+          } else if (this.actualSearchString === '' && this.actualToken !== '') { // existing actual token, but is a complex suggestion, so everything must be delete
+            this.actualToken = '';
+            event.preventDefault();
           }
           break;
         case 9: // TAB force to select with TAB
