@@ -15,7 +15,7 @@
           color="white"
           :dark="true"
         >
-          <div slot="header-default" slot-scope="prop">
+          <div slot="header-default" slot-scope="prop" @drop="drop" @dragover="dragover">
             <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
               <q-tooltip
                 :delay="300"
@@ -160,7 +160,41 @@ export default {
       this.enableContextMenu = false;
     },
     */
+    dragover(event) {
+      event.preventDefault();
+      console.log(`Dragged over -> ${JSON.stringify(event)}`);
+    },
+    drop(event) {
+      console.log('File(s) dropped');
 
+      // Prevent default behavior (Prevent file from being opened)
+      event.preventDefault();
+
+      if (event.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        for (let i = 0; i < event.dataTransfer.items.length; i++) {
+          // If dropped items aren't files, reject them
+          if (event.dataTransfer.items[i].kind === 'file') {
+            const file = event.dataTransfer.items[i].getAsFile();
+            console.log(`... file[${i}].name = ${file.name}`);
+          }
+        }
+      } else {
+        // Use DataTransfer interface to access the file(s)
+        for (let i = 0; i < event.dataTransfer.files.length; i++) {
+          console.log(`... file[${i}].name = ${event.dataTransfer.files[i].name}`);
+        }
+      }
+
+      // Pass event to removeDragData for cleanup
+      if (event.dataTransfer.items) {
+        // Use DataTransferItemList interface to remove the drag data
+        event.dataTransfer.items.clear();
+      } else {
+        // Use DataTransfer interface to remove the drag data
+        event.dataTransfer.clearData();
+      }
+    },
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
         return text.substring(1, text.length - 1);
