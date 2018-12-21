@@ -45,7 +45,7 @@ module.exports = function (ctx) {
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
       },
       // distDir: 'dist/ui',
-      distDir: '/home/klab/workspaces/klab-workspace/k.LAB/klab/klab.engine/src/main/resources/static/ui',
+      distDir: '../klab/klab.engine/src/main/resources/static/ui',
       publicPath: '/modeler/ui/',
       scopeHoisting: true,
       vueRouterMode: 'history',
