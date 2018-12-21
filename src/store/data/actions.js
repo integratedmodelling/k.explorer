@@ -47,7 +47,7 @@ export default {
       ],
     }, ({ data }, finalCallback) => {
       console.log(data);
-      Helpers.getAxiosContent()
+      // Helpers.getAxiosContent();
       finalCallback();
       // TODO everything!
     });
