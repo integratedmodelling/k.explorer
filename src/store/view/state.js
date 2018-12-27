@@ -24,6 +24,13 @@ export default {
   kexplorerLog: [],
 
   /**
+   * Status for main control bar
+   * Each entry will be an identifier and description
+   * {id: [ID], text: [TEXT]}
+   */
+  statusTexts: [],
+
+  /**
    * Array with engine logs
    * Using an array of MAX_LENGTH
    * Log object structure is:

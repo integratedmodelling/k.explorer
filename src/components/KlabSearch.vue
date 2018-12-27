@@ -57,6 +57,7 @@
       ></klab-autocomplete>
     </q-input>
     </div>
+    <div id="status-texts" class="small-text">{{ `${Object.entries(statusTextsString).map(st => st.text).join(' - ')}` }}</div>
   </div>
 </template>
 
@@ -107,6 +108,7 @@ export default {
       'searchIsFocused',
       'searchLostChar',
       'searchHistory',
+      'statusTextsString',
     ]),
     inputSearchColor: {
       get() {
@@ -329,8 +331,9 @@ export default {
           contextId: this.contextId,
           searchContextId: null, // this.searchContextId, -> we don't want delete it for search history
         }, this.$store.state.data.session).body);
+        const searchText = this.acceptedTokens.map(token => token.label).join(' ');
         this.$q.notify({
-          message: this.$t('label.askForObservation', { urn: this.acceptedTokens.map(token => token.label).join(' ') }),
+          message: this.$t('label.askForObservation', { urn: searchText }),
           type: 'info',
           // position: 'top',
           timeout: 2000,
