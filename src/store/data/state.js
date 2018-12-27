@@ -120,7 +120,7 @@ export default {
    */
   session: null,
   /**
-   * Old observations for this session
+   * Contexts for this session
    * Will be an array of object like
    * {
    *  time: [timestamp of saved]
@@ -128,10 +128,10 @@ export default {
    *  contextLabel
    * }
    */
-  history: [],
+  contextsHistory: [],
 
   /**
-   * if an observation is received without parent,
+   * if an observation is received without parent but is an observation of actual context,
    * it is stored in this array for later use
    */
   orphans: [],

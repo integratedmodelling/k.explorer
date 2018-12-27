@@ -49,7 +49,7 @@ const PARSERS = {
     addToKexplorerLog(
       dispatch,
       Constants.TYPE_DEBUG,
-      `New observation received with id ${observation.id}`,
+      `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
       JSON.stringify(observation, null, 4),
     );
     // if parentId === null is context

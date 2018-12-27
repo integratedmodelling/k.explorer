@@ -11,14 +11,7 @@ export default {
    * @param context the new context
    */
   SET_CONTEXT: (state, context) => {
-    if (state.context !== null) {
-      // save context id in vuex store to future use
-      state.history.push({
-        time: moment(),
-        contextId: state.context.id,
-        contextLabel: state.context.label,
-      });
-    }
+    // the previous store is delegate to actions because a mutations cannot commit another mutation
     state.context = context;
     state.tree = [];
     state.lasts = [];
@@ -26,6 +19,14 @@ export default {
     state.tasks = [];
     // state.dataflow = null;
     state.nodeSelected = null;
+  },
+
+  STORE_CONTEXT: (state, context) => {
+    state.contextsHistory.push({
+      time: moment(),
+      contextId: context.id,
+      contextLabel: context.label,
+    });
   },
 
   ADD_DATAFLOW: (state, dataflow) => {

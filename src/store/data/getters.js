@@ -39,6 +39,13 @@ export default {
 
   fullContext: state => state.context,
 
+  contextsHistory: (state) => {
+    if (state.contextsHistory.length > 0) {
+      state.contextsHistory.sort();
+    }
+    return state.contextsHistory;
+  },
+
   /**
    * The session, very important accessing it using getter
    */

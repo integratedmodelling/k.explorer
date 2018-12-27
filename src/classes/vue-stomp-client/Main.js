@@ -65,6 +65,11 @@ export default {
             observer.reconnect();
           }
         },
+
+        disconnect() {
+          if (observer && observer.reconnection) { observer.reconnection = false; }
+          observer.close();
+        },
       },
       created() {
         if (this.$options.sockets) {

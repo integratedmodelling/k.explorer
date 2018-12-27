@@ -30,6 +30,20 @@ export default {
       'kexplorerLog',
     ]),
   },
+  methods: {
+    sendQueue() {
+      if (this.queuedMessage) {
+        const { message, headers } = this.queuedMessage;
+        this.sendStompMessage(message, headers);
+      }
+    },
+    ...mapActions('data', [
+      'restoreContexts',
+    ]),
+    ...mapActions('stomp', {
+      stompCleanQueue: 'stomp_cleanqueue',
+    }),
+  },
   sockets: {
     onconnect(frame) {
       console.log(`Connect to websocket: ${JSON.stringify(frame, null, 4)}`);
@@ -38,13 +52,19 @@ export default {
         console.warn(`Invalidate session ${this.session} this.session`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
-      // before subscribe, we need to restore actual session using REST
-      // TODO do it!
-      this.restoreSession();
-      const subscription = this.subscribe(this.session);
-      this.subscriptions.push({ id: this.session, subscription });
-      console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
-      this.sendQueue();
+      // before subscribe, we load contexts linked to this session
+      this.restoreContexts()
+        .then((restored) => {
+          console.log(`Restored ${restored} previous contexts`);
+          const subscription = this.subscribe(this.session);
+          this.subscriptions.push({ id: this.session, subscription });
+          console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
+          this.sendQueue();
+        })
+        .catch((error) => {
+          console.warn(`Problems with session restauration: ${error}`);
+          this.disconnect();
+        });
     },
     // onsubscribe(subscription) {
     // const subscriptionObject = this.subscriptions.find(s => s.subscription.id === subscription.id);
@@ -92,20 +112,6 @@ export default {
         console.log(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
       }
     },
-  },
-  methods: {
-    sendQueue() {
-      if (this.queuedMessage) {
-        const { message, headers } = this.queuedMessage;
-        this.sendStompMessage(message, headers);
-      }
-    },
-    ...mapActions('data', [
-      'restoreSession',
-    ]),
-    ...mapActions('stomp', {
-      stompCleanQueue: 'stomp_cleanqueue',
-    }),
   },
   watch: {
     kexplorerLog() {

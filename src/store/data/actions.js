@@ -15,12 +15,14 @@ export default {
     if (state.context !== null && state.context.id === context.id) {
       return;
     }
+    commit('STORE_CONTEXT', context);
     commit('SET_CONTEXT', context);
     dispatch('view/setContextLayer', context, { root: true });
   },
 
   resetContext: ({ commit, dispatch, state }) => {
     if (state.context !== null) {
+      commit('STORE_CONTEXT', state.context);
       commit('SET_CONTEXT', null);
       dispatch('view/resetContext', null, { root: true });
       dispatch('data/addObservation', {
@@ -32,9 +34,13 @@ export default {
     }
   },
 
-  restoreSession: ({ /* commit, */state }) => {
+  restoreContexts: ({ getters, commit }) => new Promise((resolve, reject) => {
+    if (getters.session === null) {
+      reject(new Error('No session established, no useful engine available, disconnect'));
+      return;
+    }
     const url = `${process.env.WS_BASE_URL}${process.env.REST_STATUS}`;
-    Helpers.getAxiosContent(state.session, url, {
+    Helpers.getAxiosContent(getters.session, url, {
       transformRequest: [
         (data, headers) => {
           // we need to delete because we inherited it
@@ -46,11 +52,54 @@ export default {
         },
       ],
     }, ({ data }, finalCallback) => {
-      console.log(data);
-      // Helpers.getAxiosContent();
+      console.log(JSON.stringify(data, null, 4));
+      if (data && data.sessions && data.sessions.length > 0) {
+        const session = data.sessions.find(s => s.id === getters.session);
+        if (typeof session !== 'undefined') {
+          const { rootObservations } = session;
+          if (rootObservations !== null && !(Object.keys(rootObservations).length === 0 && rootObservations.constructor === Object)) {
+            console.log(`Find ${Object.keys(rootObservations).length} root observations for this session`);
+            let counter = 0;
+            Object.entries(rootObservations).forEach(([contextId, context]) => {
+              commit('STORE_CONTEXT', context);
+              console.log(`Stored context with id ${contextId}`);
+              counter += 1;
+            });
+            resolve(counter);
+          } else {
+            console.log('No root observation founded');
+            resolve(0);
+          }
+        } else {
+          console.warn(`No information for session ${getters.session}, isn't valid session?`);
+          reject(new Error(`No information for session ${getters.session}, disconnect`));
+        }
+      }
       finalCallback();
-      // TODO everything!
     });
+  }),
+
+  restoreSession: () => {
+    /*
+    console.log(`Ask for context to restore ${contextId}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
+      .then(({ data: context }) => {
+        dispatch('setContext', context);
+        /*
+        if (state.orphans.length > 0) {
+          for (let i = state.orphans.length - 1; i >= 0; i--) {
+            if (Helpers.findNodeById(state.tree, state.orphans[i].id) !== null) {
+              state.orphans.splice(i, 1);
+            }
+            if (state.orphans[i].parentId === context.id
+                || Helpers.findNodeById(state.tree, state.orphans[i].parentId) !== null) {
+              dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
+            }
+          }
+        }
+        *
+      });
+    */
   },
 
   /**
@@ -73,7 +122,12 @@ export default {
     main = false,
     toTree = true,
     visible = false,
-  }) => new Promise((resolve) => {
+  }) => new Promise((resolve, reject) => {
+    // check if the observation refers to the current context
+    if (state.context !== null && observation.rootContextId && state.context.id === observation.rootContextId) {
+      console.warn(`Received an observation of different context, discarded. Observation id: ${observation.id}, rootContextId: ${observation.rootContextId}, actual context id: ${state.context.id}`);
+      return reject();
+    }
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
       existingObservation.main = observation.main; // is possible that main was changed to true

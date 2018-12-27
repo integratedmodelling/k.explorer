@@ -19,7 +19,7 @@
         :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
         :content-classes="['modal-borders', 'no-padding', 'no-margin']"
     >
-      <div class="bg-opaque-white modal-borders no-padding no-margin">
+      <div class="bg-opaque-white modal-borders">
           <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
             <klab-spinner
               :color="modalColor"
@@ -29,14 +29,8 @@
               :animated="modalAnimated"
               wrapperId="modal-connection-status"
             ></klab-spinner>
-            <span>{{ modalText  }}</span>
+            <span class="text-white">{{ modalText }}</span>
           </div>
-          <q-btn
-            v-if="connectionState === $constants.CONNECTION_DOWN"
-            color="secondary"
-            @click="reconnect"
-          >{{ $t('label.reconnect') }}
-          </q-btn>
       </div>
     </q-modal>
   </q-page>
@@ -176,6 +170,7 @@ export default {
     display inline-block
     line-height 100%
     vertical-align middle
+    margin-right 15px
 
   #modal-connection-status .modal-content
     min-width 200px
