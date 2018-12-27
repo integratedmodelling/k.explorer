@@ -24,6 +24,14 @@ export default {
     });
   },
 
+  addToStatusTexts: ({ commit }, { id, text }) => {
+    commit('ADD_TO_STATUS_TEXTS', { id, text });
+  },
+
+  removeFromStatusTexts: ({ commit }, id) => {
+    commit('REMOVE_FROM_STATUS_TEXTS', id);
+  },
+
   setContextLayer: ({ commit, dispatch }, contextData) => {
     // If context layer change, mutation reset everything
     Helpers.getContextGeometry(contextData).then((layer) => {

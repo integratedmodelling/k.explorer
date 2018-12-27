@@ -124,9 +124,9 @@ export default {
     visible = false,
   }) => new Promise((resolve, reject) => {
     // check if the observation refers to the current context
-    if (state.context !== null && observation.rootContextId && state.context.id === observation.rootContextId) {
+    if (state.context !== null && observation.rootContextId && state.context.id !== observation.rootContextId) {
       console.warn(`Received an observation of different context, discarded. Observation id: ${observation.id}, rootContextId: ${observation.rootContextId}, actual context id: ${state.context.id}`);
-      return reject();
+      return reject(new Error(`Received an observation of different context, discarded. Observation id: ${observation.id}, rootContextId: ${observation.rootContextId}, actual context id: ${state.context.id}`));
     }
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
