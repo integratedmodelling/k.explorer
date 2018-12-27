@@ -7,7 +7,7 @@ export default ({ Vue, store }) => {
     axiosInstance.defaults.headers.common.Authorization = store.state.data.session;
     // axiosInstance.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
   } else {
-    console.warn('No session established en axios header, check what it means');
+    console.warn('No session established en axios header, check it');
   }
   Vue.prototype.$axios = axiosInstance;
 };

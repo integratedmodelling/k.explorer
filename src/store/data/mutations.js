@@ -64,7 +64,8 @@ export default {
    */
   ADD_NODE: (state, { node, parentId }) => {
     if (state.context === null) {
-      console.log('Context is null, is it just resetted?');
+      console.log(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
+      state.orphans.push(node);
       return;
     }
     if (state.context.id === node.id) {
