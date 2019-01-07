@@ -22,7 +22,8 @@ export default {
     return reversed.find(log => log.type === type);
   },
 
-  statusTextsString: state => state.statusTexts, // Object.entries(state.statusTexts).map(st => st.text).join(' - '),
+  statusTexts: state => state.statusTexts,
+  statusTextsString: state => (state.statusTexts.length > 0 ? state.statusTexts.map(st => st.text).join(' - ') : ''),
 
   /**
    * Return the main viewer

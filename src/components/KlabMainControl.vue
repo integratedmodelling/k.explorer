@@ -63,6 +63,7 @@
         <div id="mc-text-div" class="text-white" v-else>
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
+        <div id="mc-status-texts" ref="mc-status-texts"><span :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`}">{{ statusTextsString }}</span></div>
         <q-btn
           id="mc-menubutton"
           icon="mdi-chevron-right"
@@ -268,6 +269,7 @@ export default {
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       centeredLeft: this.defaultLeft,
+      needMarquee: -1,
     };
   },
   computed: {
@@ -286,6 +288,7 @@ export default {
       'mainViewer',
       'reloadReport',
       'isDrawMode',
+      'statusTextsString',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -373,6 +376,18 @@ export default {
       });
       // this.draggableElement.classList.remove('vuela');
     },
+    statusTextsString(newValue) {
+      this.needMarquee = -1;
+      if (newValue !== '') {
+        this.$nextTick(() => {
+          const statusTextsDiv = this.$refs['mc-status-texts'];
+          if (typeof statusTextsDiv === 'undefined') {
+            this.needMarquee = -1;
+          }
+          this.needMarquee = statusTextsDiv.offsetWidth - statusTextsDiv.scrollWidth;
+        });
+      }
+    },
   },
   created() {
     this.defaultTop = 25;
@@ -433,9 +448,13 @@ export default {
           padding-left 5px
           float left
           margin-top 8px
+        /*
         #mc-search-div
           left 62px
           top 18px
+        */
+    .q-card-title
+      position relative
 
   .spinner-div
     background-color white
@@ -470,6 +489,34 @@ export default {
 
   #mc-text-div
     text-shadow 0 0 1px #555
+
+  #mc-status-texts
+    position absolute
+    bottom -4px
+    left 45px
+    font-size 11px
+    color rgba(0,0,0, 0.4)
+    width 80%
+    height 15px
+    margin 0 auto
+    white-space nowrap
+    overflow hidden
+    &:hover:not(:active)
+      color rgba(0,0,0, 0.8)
+      cursor default
+    span.marquee
+      display inline-block
+      position absolute
+      -webkit-animation: klab-marquee 10s linear infinite
+      animation klab-marquee 10s linear infinite
+      animation-delay 1s
+      // padding-right 85%
+      &:hover
+        animation-play-state paused
+
+  @keyframes klab-marquee
+    from
+      left 0px
 
   .q-card-main
     overflow auto
@@ -595,4 +642,5 @@ export default {
     display flex
     align-items center
     width 180px
+
 </style>
