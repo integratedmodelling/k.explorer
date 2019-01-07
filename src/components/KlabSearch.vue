@@ -57,7 +57,6 @@
       ></klab-autocomplete>
     </q-input>
     </div>
-    <div id="status-texts" class="small-text">{{ `${Object.entries(statusTextsString).map(st => st.text).join(' - ')}` }}</div>
   </div>
 </template>
 
@@ -108,7 +107,6 @@ export default {
       'searchIsFocused',
       'searchLostChar',
       'searchHistory',
-      'statusTextsString',
     ]),
     inputSearchColor: {
       get() {
