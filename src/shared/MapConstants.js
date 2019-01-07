@@ -29,7 +29,7 @@ export const MAP_CONSTANTS = {
   ZINDEX_MULTIPLIER_LINES: 2,
   ZINDEX_MULTIPLIER_POINTS: 3,
 
-  DEFAULT_BASELAYER: 'mapbox_cali_terrain',
+  DEFAULT_BASELAYER: 'osm_layer',
 };
 
 export const MAP_ELEMENTS = {
@@ -127,6 +127,7 @@ export const Layers = {
     visible: false,
   }),
 
+  /* Stop working (detected on 2019/01/07
   OPEN_TOPO_MAT: new Tile({
     name: 'open_topo_mat',
     title: 'Open Topo',
@@ -137,6 +138,7 @@ export const Layers = {
     }),
     visible: false,
   }),
+  */
 
   GOOGLE_HYBRID: new Tile({
     name: 'google_hybrid',
@@ -257,7 +259,7 @@ export const BASE_LAYERS = {
     Layers.EMPTY_LAYER,
     Layers.STAMEN_WATER_COLOR_LAYER,
     Layers.OSM_LAYER,
-    Layers.OPEN_TOPO_MAT,
+    // Layers.OPEN_TOPO_MAT,
     // Layers.BING_IMAGINERY,
     Layers.GOOGLE_STREET,
     Layers.GOOGLE_HYBRID,
