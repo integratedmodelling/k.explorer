@@ -23,6 +23,7 @@ export default {
   },
 
   statusTexts: state => state.statusTexts,
+  statusTextsLength: state => state.statusTexts.length,
   statusTextsString: state => (state.statusTexts.length > 0 ? state.statusTexts.map(st => st.text).join(' - ') : ''),
 
   /**

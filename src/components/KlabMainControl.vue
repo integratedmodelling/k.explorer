@@ -42,7 +42,7 @@
         ref="mc-draggable"
 
         :style="{
-          'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})`,
+          'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
       >
         <div
@@ -63,7 +63,12 @@
         <div id="mc-text-div" class="text-white" v-else>
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
-        <div id="mc-status-texts" ref="mc-status-texts"><span :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`}">{{ statusTextsString }}</span></div>
+        <div id="mc-status-texts" ref="mc-status-texts">
+          <span :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</span>
+          <transition name="mc-edge">
+            <div v-if="needMarquee < 0" class="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0%, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
+          </transition>
+        </div>
         <q-btn
           id="mc-menubutton"
           icon="mdi-chevron-right"
@@ -269,7 +274,7 @@ export default {
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       centeredLeft: this.defaultLeft,
-      needMarquee: -1,
+      needMarquee: 0,
     };
   },
   computed: {
@@ -289,6 +294,7 @@ export default {
       'reloadReport',
       'isDrawMode',
       'statusTextsString',
+      'statusTextsLength',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -367,6 +373,9 @@ export default {
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
     },
+    getBGColor(alpha) {
+      return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
+    },
   },
   watch: {
     hasContext() {
@@ -377,12 +386,12 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     statusTextsString(newValue) {
-      this.needMarquee = -1;
+      this.needMarquee = 0;
       if (newValue !== '') {
         this.$nextTick(() => {
           const statusTextsDiv = this.$refs['mc-status-texts'];
           if (typeof statusTextsDiv === 'undefined') {
-            this.needMarquee = -1;
+            this.needMarquee = 0;
           }
           this.needMarquee = statusTextsDiv.offsetWidth - statusTextsDiv.scrollWidth;
         });
@@ -507,12 +516,25 @@ export default {
     span.marquee
       display inline-block
       position absolute
-      -webkit-animation: klab-marquee 10s linear infinite
-      animation klab-marquee 10s linear infinite
-      animation-delay 1s
-      // padding-right 85%
+      animation klab-marquee 10s alternate linear infinite
       &:hover
         animation-play-state paused
+
+  .mc-status-edge
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    position:absolute;
+    height:100%;
+    display:block;
+
+  .mc-edge-enter-active
+    transition opacity 2s
+
+  .mc-edge-enter
+  .mc-edge-leave-to
+    opacity 0
 
   @keyframes klab-marquee
     from
