@@ -18,10 +18,11 @@ export default {
     commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_ERROR);
     commit('STOMP_ERROR', error);
   },
-  stomp_onmessage: ({ commit, dispatch /* rootState */}, message) => {
+  stomp_onmessage: (context, message) => {
     // save it
+    const { commit } = context;
     commit('STOMP_MESSAGE', message);
-    parseAndExecute(message, dispatch);
+    parseAndExecute(message, context);
     // processing
   },
   stomp_onsubscribe: ({ commit }, subscription) => {
