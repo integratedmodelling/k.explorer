@@ -69,49 +69,7 @@
             <div v-if="needMarquee < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
           </transition>
         </div>
-        <q-btn
-          id="mc-menubutton"
-          icon="mdi-chevron-right"
-          color="black"
-          size="sm"
-          round
-          flat
-          class="absolute-top-right"
-          v-show="!hasContext && !isHidden && !searchIsActive"
-        >
-          <q-popover
-            v-if="!searchIsActive && !isDrawMode"
-            anchor="top right"
-            selr="top left"
-          >
-            <q-list dense>
-              <q-list-header style="padding: 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
-              <q-item-separator></q-item-separator>
-              <q-item>
-                <q-item-main>
-                  <scale-reference width="180px" :light="true" scaleType="space" :editable="true" :full="true"></scale-reference>
-                </q-item-main>
-              </q-item>
-              <q-item>
-                <q-item-main>
-                  <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
-                </q-item-main>
-              </q-item>
-              <q-list-header style="padding: 16px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuCustomContext') }}</q-list-header>
-              <q-item-separator></q-item-separator>
-              <q-item>
-                <q-item-main>
-                  <div class="mc-container">
-                    <div class="mc-menuitem mc-clickable" id="" :class="[ isDrawMode ? 'mc-select' : '']" @click="startDraw()">
-                      <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
-                      <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
-                    </div>
-                  </div>
-                </q-item-main>
-              </q-item>
-            </q-list>
-          </q-popover>
-        </q-btn>
+        <main-control-menu v-show="!hasContext && !isHidden && !searchIsActive"></main-control-menu>
       </q-card-title>
 
       <q-card-main
@@ -253,6 +211,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
+import MainControlMenu from 'components/MainControlMenu.vue';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
@@ -308,7 +267,6 @@ export default {
     ...mapActions('view', [
       'searchStop',
       'setMainViewer',
-      'setDrawMode',
     ]),
     resetContext() {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
@@ -370,9 +328,6 @@ export default {
         this.changeDraggablePosition({ top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0), left: Math.max(this.draggableElement.offsetLeft, 0) });
       }
     },
-    startDraw() {
-      this.setDrawMode(!this.isDrawMode);
-    },
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
@@ -427,6 +382,7 @@ export default {
     KlabLogPane,
     KlabSpinner,
     KlabSearch,
+    MainControlMenu,
   },
 };
 </script>
@@ -618,10 +574,6 @@ export default {
     border-radius 5px
     background-color $main-control-main-color
 
-  #mc-menubutton
-    top 10px
-    right 10px
-
   #btn-reset-context
     width 15px
     height 15px
@@ -662,10 +614,5 @@ export default {
         padding-left 10px
   #mc-eraserforcontext
     padding 0 0 0 3px
-  .mc-container
-    height 100%
-    display flex
-    align-items center
-    width 180px
 
 </style>
