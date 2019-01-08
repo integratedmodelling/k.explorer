@@ -49,22 +49,30 @@ const PARSERS = {
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, context) => {
-    const { getters, dispatch } = context;
-    // check if is an observation linkable to actual context (checking taskId)
-    console.log(`GETTERS --->${JSON.stringify(getters)}`);
-    addToKexplorerLog(
-      dispatch,
-      Constants.TYPE_DEBUG,
-      `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
-      JSON.stringify(observation, null, 4),
-    );
+    const { rootGetters, dispatch } = context;
+    // check if it is an observation linkable to actual context (checking taskId)
+    if (rootGetters['stomp/taskIsAlive'](observation.taskId)) {
+      addToKexplorerLog(
+        dispatch,
+        Constants.TYPE_DEBUG,
+        `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
+        JSON.stringify(observation, null, 4),
+      );
 
-    // if parentId === null is context
-    if (observation.parentId === null) { // || observation.parentId === observation.id) {
-      // new context
-      dispatch('data/setContext', observation, { root: true });
+      // if parentId === null is context
+      if (observation.parentId === null) { // || observation.parentId === observation.id) {
+        // new context
+        dispatch('data/setContext', observation, { root: true });
+      } else {
+        dispatch('data/addObservation', { observation }, { root: true });
+      }
     } else {
-      dispatch('data/addObservation', { observation }, { root: true });
+      addToKexplorerLog(
+        dispatch,
+        Constants.TYPE_WARNING,
+        'Received an observation of unlinked task',
+        JSON.stringify(observation, null, 4),
+      );
     }
   },
   [IN.TYPE_QUERYRESULT]: (results, { dispatch }) => {
