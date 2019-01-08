@@ -64,9 +64,9 @@
           {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
-          <span :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</span>
+          <div :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
           <transition name="mc-edge">
-            <div v-if="needMarquee < 0" class="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0%, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
+            <div v-if="needMarquee < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
           </transition>
         </div>
         <q-btn
@@ -513,21 +513,24 @@ export default {
     &:hover:not(:active)
       color rgba(0,0,0, 0.8)
       cursor default
-    span.marquee
+      div.marquee
+        animation-play-state paused
+      #mc-status-edge
+        display none
+
+    div.marquee
       display inline-block
       position absolute
-      animation klab-marquee 10s alternate linear infinite
-      &:hover
-        animation-play-state paused
+      animation klab-marquee alternate linear infinite
+    #mc-status-edge
+      left 0
+      right 0
+      top 0
+      bottom 0
+      position absolute
+      height 100%
+      display block
 
-  .mc-status-edge
-    left:0;
-    right:0;
-    top:0;
-    bottom:0;
-    position:absolute;
-    height:100%;
-    display:block;
 
   .mc-edge-enter-active
     transition opacity 2s
