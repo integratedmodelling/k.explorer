@@ -114,7 +114,7 @@ export default {
     },
   },
   mounted() {
-    console.log(`Contexts: ${JSON.stringify(this.contextsHistory, null, 4)}`);
+    console.debug(`Contexts: ${JSON.stringify(this.contextsHistory, null, 4)}`);
   },
   components: {
     ScaleReference,
