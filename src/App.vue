@@ -130,7 +130,7 @@ export default {
   },
   beforeDestroy() {
     const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
-    if (typeof sessionSubscription !== 'undefined') {
+    if (typeof sessionSubscription !== 'undefined' && typeof sessionSubscription.unsubscribe === 'function') {
       sessionSubscription.unsubscribe();
     }
     this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
