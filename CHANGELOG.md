@@ -36,3 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - if there are too many results to show in small dimensions, scrollbar now is visualized, so
   in firefox there aren't big white space. 
   - mouse click on scrollbar now doesn't close popup 
+
+## 0.5.3 - 2019-01-09
+### Added
+- Added a status text that show the current running task
+### Solved
+- Solved partial sibling load in big screens 
