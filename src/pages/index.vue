@@ -78,7 +78,7 @@ export default {
         return this.connectionState !== this.$constants.CONNECTION_UP;
       },
       set(visible) {
-        console.warn(`try to set modalVisible as ${visible}`);
+        console.warn(`Try to set modalVisible as ${visible}`);
       },
     },
     modalText() {
@@ -119,7 +119,7 @@ export default {
       const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
       const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
-      console.warn(`Setted max siblings as ${minResults}`);
+      console.info(`Setted max siblings as ${minResults}`);
       this.$store.state.data.siblingsToAskFor = minResults;
     },
   },

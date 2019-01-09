@@ -100,7 +100,7 @@ export default {
   RECALCULATE_TREE: (state, taskId) => {
     const filtered = state.tasks[taskId]; // state.observations.filter(observation => observation.taskId === taskId);
     if (typeof filtered === 'undefined') {
-      console.warn(`No observations for taskId ${taskId}`);
+      console.info(`No observations for taskId ${taskId}`);
       return;
     }
     if (filtered.length === 0) {
