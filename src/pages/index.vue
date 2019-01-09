@@ -6,6 +6,7 @@
         <component :is="mainViewer"></component>
         <!-- </transition> -->
       </keep-alive>
+      <q-resize-observable @resize="setSiblingsToAskFor" />
     </div>
     <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
@@ -112,6 +113,15 @@ export default {
       'searchFocus',
       'setMainViewer',
     ]),
+    setSiblingsToAskFor() {
+      // calculate and set min results for siblings
+      // we suppose that maxHeight is vh and childMinHeight are pixels
+      const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
+      const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
+      const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
+      console.warn(`Setted max siblings as ${minResults}`);
+      this.$store.state.data.siblingsToAskFor = minResults;
+    },
   },
   components: {
     KlabMainControl,
@@ -148,6 +158,7 @@ export default {
         }
       }
     });
+    this.setSiblingsToAskFor();
   },
 };
 </script>

@@ -323,7 +323,7 @@ export default {
               nodeId: last.observationId,
               folderId: last.folderId,
               offset: last.offset,
-              count: Constants.SIBLINGS_TO_ASK_FOR,
+              count: this.$store.state.data.siblingsToAskFor,
               visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
             }).then(() => {
               this.askingForSiblings = false;
@@ -363,6 +363,9 @@ export default {
   }
   .q-tree-node-header {
     margin-top: 0;
+  }
+  .q-tree-node.q-tree-node-child {
+    min-height: var(--q-tree-no-child-min-height);
   }
   #kt-tree-container .q-tree-node-selected {
     background-color rgba(0, 0, 0, 0.15)
@@ -416,12 +419,12 @@ export default {
   }
   #kt-container {
     /* removed 30px of padding and scrollbar padding-bottom */
-    max-height "calc(90vh - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     padding: 10px 0
   }
   #kt-container.with-splitter {
     /* removed 30px of padding and scrollbar padding-bottom */
-    max-height "calc(90vh - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
   }
   .tree-q-tooltip {
     background-color #333

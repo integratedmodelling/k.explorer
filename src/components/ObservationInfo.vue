@@ -228,8 +228,8 @@ export default {
 
   #oi-container
     height $main-control-height - $main-control-spc-height - $main-control-scrollbar
-    max-height "calc(90vh - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
-    min-height $oi-histogram-height + $main-control-spc-height
+    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+    // min-height $oi-histogram-height + $main-control-spc-height
     padding 10px 0 0 0
 
   #oi-metadata-map-wrapper

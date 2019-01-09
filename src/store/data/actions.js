@@ -119,7 +119,7 @@ export default {
           nodeId: observation.id,
           folderId,
           offset: 0,
-          count: Constants.SIBLINGS_TO_ASK_FOR,
+          count: state.siblingsToAskFor,
         });
       }
       if (toTree) {
@@ -149,7 +149,7 @@ export default {
     nodeId,
     folderId,
     offset = 0,
-    count = Constants.SIBLINGS_TO_ASK_FOR,
+    count = state.siblingsToAskFor,
     toTree = true,
     visible = false,
   }) => new Promise((resolve) => {

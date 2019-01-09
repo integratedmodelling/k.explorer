@@ -76,7 +76,7 @@ export default {
 <style lang="stylus">
   @import '~variables'
   #klab-log-pane
-    max-height: "calc(90vh - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
+    max-height: "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
     .q-item.log-item
       font-size 10px
     .log-item .q-item-side
