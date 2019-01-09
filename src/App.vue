@@ -49,7 +49,7 @@ export default {
       console.log(`Connect to websocket: ${JSON.stringify(frame, null, 4)}`);
       const sessionSubscriptionObject = this.subscriptions.find(ts => ts.id === this.session);
       if (typeof sessionSubscriptionObject !== 'undefined') {
-        console.warn(`Invalidate session ${this.session} this.session`); // very strange behaviour
+        console.warn(`Invalidate session ${this.session}`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
       // before subscribe, we load contexts linked to this session
@@ -136,13 +136,13 @@ export default {
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
-        console.warn(`[Vue warn]: ${msg}${trace}`);
+        console.warn(`[Intercepted Vue warn]: ${msg}${trace}`);
       }
     };
   },
   beforeDestroy() {
     const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
-    if (typeof sessionSubscription !== 'undefined') {
+    if (typeof sessionSubscription !== 'undefined' && typeof sessionSubscription.unsubscribe === 'function') {
       sessionSubscription.unsubscribe();
     }
     this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);

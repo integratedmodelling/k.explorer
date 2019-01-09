@@ -34,8 +34,9 @@ export default {
 
   /**
    * Default siblings to ask for
+   * substituted by store.data.siblingsToAskFor
    */
-  SIBLINGS_TO_ASK_FOR: 25,
+  // SIBLINGS_TO_ASK_FOR: 25,
 
   /**
    * Connections states

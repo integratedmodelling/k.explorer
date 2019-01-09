@@ -140,4 +140,10 @@ export default {
    * Search results
    */
   searchResult: null,
+
+  /**
+   * When we ask for siblings, we ask for a number that depends of view, but we store here for confort
+   * and with a default value given from history
+   */
+  siblingsToAskFor: 25,
 };
