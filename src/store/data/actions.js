@@ -153,7 +153,7 @@ export default {
     toTree = true,
     visible = false,
   }) => new Promise((resolve) => {
-    console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
+    console.debug(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
       params: {
         count,

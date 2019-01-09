@@ -17,13 +17,13 @@ export default ({ app, Vue }) => {
   let cookieLocale = 'en';
   if (Cookies.has(Constants.COOKIE_LANG)) {
     cookieLocale = Cookies.get(Constants.COOKIE_LANG);
-    console.log(`Locale setted from cookie to ${cookieLocale}`);
+    console.debug(`Locale setted from cookie to ${cookieLocale}`);
   } else {
     Cookies.set(Constants.COOKIE_LANG, cookieLocale, {
       expires: 30,
       path: '/',
     });
-    console.log(`Lang cookie setted to ${cookieLocale}`);
+    console.debug(`Lang cookie setted to ${cookieLocale}`);
   }
 
   app.i18n = new VueI18n({

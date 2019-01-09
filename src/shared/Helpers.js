@@ -146,7 +146,7 @@ const Helpers = {
                   // very approximate calculation of projection extent
                   const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
                   newProj.setExtent(extent);
-                  console.log(`New projection registered: ${newProjCode}`);
+                  console.info(`New projection registered: ${newProjCode}`);
                   resolve(newProj);
                 } else {
                   reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
@@ -252,7 +252,7 @@ const Helpers = {
         if (parent !== null && parent.spatialProjection) {
           spatialProjection = parent.spatialProjection;
         } else {
-          console.log(`Unknown parent with id ${observation.parentId}`);
+          console.debug(`Unknown parent with id ${observation.parentId}`);
         }
       }
     } else {

@@ -32,7 +32,7 @@ export default {
         expires: 30,
         path: '/',
       });
-      console.log(`New locale = ${this.$i18n.locale} : activeLocale = ${this.activeLocale}`);
+      console.info(`New locale = ${this.$i18n.locale} : activeLocale = ${this.activeLocale}`);
     },
   },
   watch: {

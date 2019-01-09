@@ -337,7 +337,7 @@ export default {
           timeout: 2000,
         });
       } else {
-        console.log('Nothing to search for');
+        console.info('Nothing to search for');
       }
       this.searchEnd();
     },
@@ -439,7 +439,7 @@ export default {
         }
         this.result = newResult;
       } else {
-        console.log(`Result discarded for bad request id:\n
+        console.warn(`Result discarded for bad request id:\n
         actual: ${this.searchRequestId} / received: ${requestId}\n`);
         this.setSpinner({
           ...Constants.SPINNER_ERROR,
