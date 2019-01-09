@@ -22,11 +22,14 @@ export default {
   },
 
   STORE_CONTEXT: (state, context) => {
-    state.contextsHistory.push({
-      time: moment(),
-      contextId: context.id,
-      contextLabel: context.label,
-    });
+    const exists = state.contextsHistory.find(ctxt => ctxt.contextId === context.id);
+    if (typeof exists === 'undefined') {
+      state.contextsHistory.push({
+        time: moment(context.time),
+        contextId: context.id,
+        contextLabel: context.label,
+      });
+    }
   },
 
   ADD_DATAFLOW: (state, dataflow) => {

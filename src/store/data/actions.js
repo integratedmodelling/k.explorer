@@ -34,6 +34,33 @@ export default {
     }
   },
 
+  loadContext: ({ dispatch }, contextId) => {
+    console.log(`Ask for context to restore ${contextId}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
+      .then(({ data: context }) => {
+        dispatch('setContext', context);
+        console.info(`Result:\n${JSON.stringify(context, null, 2)}`);
+        /*
+        if (context.children.length > 0) {
+          dispatch('addObservation', { observation: context.children[0] });
+        }
+        */
+        /*
+        if (state.orphans.length > 0) {
+          for (let i = state.orphans.length - 1; i >= 0; i--) {
+            if (Helpers.findNodeById(state.tree, state.orphans[i].id) !== null) {
+              state.orphans.splice(i, 1);
+            }
+            if (state.orphans[i].parentId === context.id
+                || Helpers.findNodeById(state.tree, state.orphans[i].parentId) !== null) {
+              dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
+            }
+          }
+        }
+        */
+      });
+  },
+
   restoreContexts: ({ getters, commit }) => new Promise((resolve, reject) => {
     if (getters.session === null) {
       reject(new Error('No session established, no useful engine available, disconnect'));
@@ -79,28 +106,28 @@ export default {
     });
   }),
 
-  restoreSession: () => {
-    /*
-    console.log(`Ask for context to restore ${contextId}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
-      .then(({ data: context }) => {
-        dispatch('setContext', context);
-        /*
-        if (state.orphans.length > 0) {
-          for (let i = state.orphans.length - 1; i >= 0; i--) {
-            if (Helpers.findNodeById(state.tree, state.orphans[i].id) !== null) {
-              state.orphans.splice(i, 1);
-            }
-            if (state.orphans[i].parentId === context.id
-                || Helpers.findNodeById(state.tree, state.orphans[i].parentId) !== null) {
-              dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
+  //  restoreSession: () => {
+  /*
+      console.log(`Ask for context to restore ${contextId}`);
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
+        .then(({ data: context }) => {
+          dispatch('setContext', context);
+          /*
+          if (state.orphans.length > 0) {
+            for (let i = state.orphans.length - 1; i >= 0; i--) {
+              if (Helpers.findNodeById(state.tree, state.orphans[i].id) !== null) {
+                state.orphans.splice(i, 1);
+              }
+              if (state.orphans[i].parentId === context.id
+                  || Helpers.findNodeById(state.tree, state.orphans[i].parentId) !== null) {
+                dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
+              }
             }
           }
-        }
-        *
-      });
-    */
-  },
+          *
+        });
+      */
+  // },
 
   /**
    * Add an observation do this:
