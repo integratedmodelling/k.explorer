@@ -9,7 +9,6 @@ const inversify = require('inversify');
 class SelectActionHandler {
   handle(action) {
     if (action instanceof SelectAction) {
-      console.log(`Click: ${JSON.stringify(action)}`);
       eventBus.$emit(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, action);
     }
   }

@@ -114,11 +114,11 @@ export default {
       }
     }
     if (viewerType !== null) {
-      console.log(`Need a viewer of type ${viewerType}`);
+      console.debug(`Need a viewer of type ${viewerType}`);
       const viewer = getters.dataViewers.find(v => v.type === viewerType);
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
-        console.log(`Create new viewer of type ${viewerType}`);
+        console.info(`Create new viewer of type ${viewerType}`);
         commit('ADD_VIEWER_ELEMENT', {
           main,
           type: viewerType,

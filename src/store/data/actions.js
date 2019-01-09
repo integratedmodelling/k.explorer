@@ -35,7 +35,7 @@ export default {
   },
 
   loadContext: ({ dispatch }, contextId) => {
-    console.log(`Ask for context to restore ${contextId}`);
+    console.info(`Ask for context to restore ${contextId}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
       .then(({ data: context }) => {
         dispatch('setContext', context);
@@ -79,22 +79,22 @@ export default {
         },
       ],
     }, ({ data }, finalCallback) => {
-      console.log(JSON.stringify(data, null, 4));
+      console.debug(`Contexts history:\n${JSON.stringify(data, null, 4)}`);
       if (data && data.sessions && data.sessions.length > 0) {
         const session = data.sessions.find(s => s.id === getters.session);
         if (typeof session !== 'undefined') {
           const { rootObservations } = session;
           if (rootObservations !== null && !(Object.keys(rootObservations).length === 0 && rootObservations.constructor === Object)) {
-            console.log(`Find ${Object.keys(rootObservations).length} root observations for this session`);
+            console.debug(`Find ${Object.keys(rootObservations).length} root observations for this session`);
             let counter = 0;
             Object.entries(rootObservations).forEach(([contextId, context]) => {
               commit('STORE_CONTEXT', context);
-              console.log(`Stored context with id ${contextId}`);
+              console.debug(`Stored context with id ${contextId}`);
               counter += 1;
             });
             resolve(counter);
           } else {
-            console.log('No root observation founded');
+            console.debug('No root observation founded');
             resolve(0);
           }
         } else {
@@ -250,7 +250,7 @@ export default {
     toTree = true,
     visible = false,
   }) => new Promise((resolve) => {
-    console.log(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
+    console.debug(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
       params: {
         count,

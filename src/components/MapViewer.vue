@@ -134,7 +134,7 @@ export default {
       }
       // need to create new layer
       try {
-        console.log(`Creating layer: ${observation.label}`);
+        console.debug(`Creating layer: ${observation.label}`);
         const layer = await Helpers.getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
         this.zIndexCounter += 1;
         observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
@@ -159,7 +159,7 @@ export default {
         this.baseLayers.removeMask();
       }
       if (this.contextGeometry === null) {
-        console.log('No context, send region of interest');
+        console.debug('No context, send region of interest');
         this.sendRegionOfInterest();
         return;
       }

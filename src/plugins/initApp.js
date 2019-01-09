@@ -59,7 +59,7 @@ export default ({ store }) => {
     expires: 30,
     path: '/',
   });
-  console.log(`Session: ${session} / mode: ${mode}`);
+  console.info(`Session: ${session} / mode: ${mode}`);
 
   /*
   Use color.getBrand(xxx)

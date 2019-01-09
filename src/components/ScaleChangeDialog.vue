@@ -87,7 +87,7 @@ export default {
       'setScaleEditing',
     ]),
     async choose(okFn) {
-      console.log(`resolution: ${this.resolution} & unit: ${this.unit}`);
+      console.info(`Resolution: ${this.resolution} and unit: ${this.unit}`);
       if (this.resolution === '' || this.resolution <= 0) {
         this.resolutionError = true;
       } else {

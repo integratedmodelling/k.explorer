@@ -314,9 +314,7 @@ export default {
         const ltc = document.getElementById(`node-${last.observationId}`);
         if (ltc !== null) {
           const ltcBoundingClinetRect = ltc.getBoundingClientRect();
-          console.debug(`KlabTree -> Last element is over bottom? Element bottom: ${ltcBoundingClinetRect.bottom} / Scroll container bottom: ${bottom}`);
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
-            console.log('KlabTree -> Ask for more siblings');
             this.askingForSiblings = true;
             const folder = Helpers.findNodeById(this.tree, last.folderId);
             this.askForSiblings({

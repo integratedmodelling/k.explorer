@@ -46,7 +46,8 @@ export default {
   },
   sockets: {
     onconnect(frame) {
-      console.log(`Connect to websocket: ${JSON.stringify(frame, null, 4)}`);
+      console.info('Connected to websocket');
+      console.debug(`Connect frame:\n${JSON.stringify(frame, null, 4)}`);
       const sessionSubscriptionObject = this.subscriptions.find(ts => ts.id === this.session);
       if (typeof sessionSubscriptionObject !== 'undefined') {
         console.warn(`Invalidate session ${this.session}`); // very strange behaviour
@@ -55,10 +56,10 @@ export default {
       // before subscribe, we load contexts linked to this session
       this.restoreContexts()
         .then((restored) => {
-          console.log(`Restored ${restored} previous contexts`);
+          console.info(`Restored ${restored} previous contexts`);
           const subscription = this.subscribe(this.session);
           this.subscriptions.push({ id: this.session, subscription });
-          console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
+          console.info(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
           this.sendQueue();
         })
         .catch((error) => {
@@ -77,7 +78,7 @@ export default {
       if (type === IN.TYPE_TASKSTARTED) {
         const subscription = this.subscribe(payload.id);
         this.subscriptions.push({ id: payload.id, subscription });
-        console.log(`Task ${payload.id} subscribed with subscriptionid ${subscription.id}`);
+        console.debug(`Task ${payload.id} subscribed with subscriptionid ${subscription.id}`);
       } else if (type === IN.TYPE_TASKABORTED || type === IN.TYPE_TASKFINISHED) {
         const subscriptionObject = this.subscriptions.find(ts => ts.id === payload.id);
         if (typeof subscriptionObject !== 'undefined') {
@@ -109,7 +110,7 @@ export default {
     onsend({ headers, message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
-        console.log(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
+        console.debug(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
       }
     },
   },

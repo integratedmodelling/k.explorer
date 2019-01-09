@@ -52,7 +52,7 @@ export default {
       // if (firstGraph) {
       // this.updateStatuses();
       this.modelSource.setModel(this.graph);
-      console.log(JSON.stringify(this.graph, null, 4));
+      console.debug(JSON.stringify(this.graph, null, 4));
       this.actionDispatcher.dispatch(new FitToScreenAction([]));
       // } else {
       //  this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
@@ -205,8 +205,8 @@ export default {
           stroke-width 0
           stroke #000
           fill #000
-          font-family Roboto
-          //font-size 10pt
+          font-family monospace
+          font-size 10pt
           dominant-baseline middle
         .elkjunction
           stroke none
