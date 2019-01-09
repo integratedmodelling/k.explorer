@@ -22,6 +22,8 @@ export default {
     return reversed.find(log => log.type === type);
   },
 
+  statusTextsString: state => state.statusTexts, // Object.entries(state.statusTexts).map(st => st.text).join(' - '),
+
   /**
    * Return the main viewer
    * @param state

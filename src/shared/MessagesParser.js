@@ -10,14 +10,17 @@ const PARSERS = {
   [IN.TYPE_TASKSTARTED]: (task, dispatch) => {
     dispatch('stomp/taskStart', task, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Started task with id ${task.id}`);
+    dispatch('view/addToStatusTexts', { id: task.id, text: task.description }, { root: true });
   },
   [IN.TYPE_TASKABORTED]: (task, dispatch) => {
     dispatch('stomp/taskAbort', task, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Aborted task with id ${task.id}`);
+    dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
   [IN.TYPE_TASKFINISHED]: (task, dispatch) => {
     dispatch('stomp/taskEnd', task, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
+    dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
   [IN.TYPE_DATAFLOWCOMPILED]: (payload, dispatch) => {
     if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {

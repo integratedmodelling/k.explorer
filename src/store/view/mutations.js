@@ -11,6 +11,17 @@ export default {
     Helpers.pushElementInFixedQueue(state.klabLog, log);
   },
 
+  ADD_TO_STATUS_TEXTS: (state, { id, text }) => {
+    state.statusTexts.push({ id, text });
+  },
+
+  REMOVE_FROM_STATUS_TEXTS: (state, id) => {
+    const index = state.statusTexts.findIndex(st => st.id === id);
+    if (index !== -1) {
+      state.statusTexts.splice(index, 1);
+    }
+  },
+
   SET_CONTEXT_LAYER: (state, contextGeometry) => {
     // when a new context exists, we must reset everything
     state.dataViewers.splice(0, state.dataViewers.length);
