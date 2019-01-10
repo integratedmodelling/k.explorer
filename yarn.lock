@@ -4385,8 +4385,8 @@ jsts@^2.0.2:
   integrity sha512-Vi9x6vSQtzCDEUBW9xLFh3i8GBsOI16K+jjq9JECFAgEBpNAXnwptxrFUGeHrkkzr85WT51fUR9tYhMEuykc8Q==
 
 "k.elksprottybridge@git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#develop":
-  version "0.4.0"
-  resolved "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#5c8157d6e2d63efb0780d8cf53254d801588243a"
+  version "0.4.1"
+  resolved "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#34d3a212fb11e5cc462fd68593e2552229b87843"
   dependencies:
     elkjs "^0.4.1"
     reflect-metadata "^0.1.12"

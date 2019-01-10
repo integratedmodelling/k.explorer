@@ -140,7 +140,7 @@ export default {
   mounted() {
     // Create Sprotty viewer
     // this.visible = true;
-    const sprottyContainer = createContainer(false, 'info');
+    const sprottyContainer = createContainer({ needsClientLayout: false, needsServerLayout: true }, 'info');
     sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(SelectHandlerInitializer);
 
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
