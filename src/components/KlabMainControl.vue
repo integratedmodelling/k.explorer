@@ -40,7 +40,6 @@
         id="mc-q-card-title"
         class="q-pa-xs"
         ref="mc-draggable"
-
         :style="{
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
@@ -60,13 +59,15 @@
         </div>
 
         <klab-search v-if="searchIsActive"></klab-search>
-        <div id="mc-text-div" class="text-white" v-else>
-          {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
+        <div id="mc-text-div" class="text-white" ref="mc-text-div"  v-else>
+          <div id="mc-text-div-content" ref="mc-text-div-content" :class="{ marquee: needMarqueeCTX < 0 }" :style="{ left: `${needMarqueeCTX}px` }">
+            {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
+          </div>
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
-          <div :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
+          <div :class="{ marquee: needMarqueeTS < 0 }" :style="{ left: `${needMarqueeTS}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
           <transition name="mc-edge">
-            <div v-if="needMarquee < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
+            <div v-if="needMarqueeTS < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
           </transition>
         </div>
         <q-btn
@@ -274,7 +275,8 @@ export default {
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       centeredLeft: this.defaultLeft,
-      needMarquee: 0,
+      needMarqueeTS: 0, // status texts
+      needMarqueeCTX: 0, // context text
     };
   },
   computed: {
@@ -376,6 +378,13 @@ export default {
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
+    isNeededMarquee(ref) {
+      const textDiv = this.$refs[ref];
+      if (typeof textDiv === 'undefined') {
+        return 0;
+      }
+      return textDiv.offsetWidth - textDiv.scrollWidth;
+    },
   },
   watch: {
     hasContext() {
@@ -386,14 +395,18 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     statusTextsString(newValue) {
-      this.needMarquee = 0;
+      this.needMarqueeTS = 0;
       if (newValue !== '') {
         this.$nextTick(() => {
-          const statusTextsDiv = this.$refs['mc-status-texts'];
-          if (typeof statusTextsDiv === 'undefined') {
-            this.needMarquee = 0;
-          }
-          this.needMarquee = statusTextsDiv.offsetWidth - statusTextsDiv.scrollWidth;
+          this.needMarqueeTS = this.isNeededMarquee('mc-status-texts');
+        });
+      }
+    },
+    contextLabel(newValue) {
+      this.needMarqueeCTX = 0;
+      if (newValue !== null && newValue !== '') {
+        this.$nextTick(() => {
+          this.needMarqueeCTX = this.isNeededMarquee('mc-text-div-content');
         });
       }
     },
@@ -452,11 +465,27 @@ export default {
         background-color rgba(35, 35, 35 ,.8)
         border-radius 5px
         #mc-q-card-title
+          overflow hidden
           margin 15px
-        #mc-text-div
-          padding-left 5px
-          float left
-          margin-top 8px
+          #mc-text-div
+            position: absolute;
+            left: 45px;
+            margin-top: 8px;
+            width: 85%;
+            white-space: nowrap;
+            overflow: hidden;
+            #mc-text-div-content
+              position relative
+              display inline-block
+              overflow hidden
+              &:hover.marquee
+                animation klab-marquee 5s alternate linear infinite
+              &:not(:hover)
+                left 0 !important
+                width 100%
+                text-overflow ellipsis
+
+
         /*
         #mc-search-div
           left 62px
@@ -505,7 +534,7 @@ export default {
     left 45px
     font-size 11px
     color rgba(0,0,0, 0.4)
-    width 80%
+    width 85%
     height 15px
     margin 0 auto
     white-space nowrap
@@ -522,6 +551,7 @@ export default {
       display inline-block
       position absolute
       animation klab-marquee alternate linear infinite
+
     #mc-status-edge
       left 0
       right 0
@@ -619,7 +649,7 @@ export default {
     background-color $main-control-main-color
 
   #mc-menubutton
-    top 10px
+    top 6px
     right 10px
 
   #btn-reset-context
@@ -667,5 +697,4 @@ export default {
     display flex
     align-items center
     width 180px
-
 </style>
