@@ -18,9 +18,9 @@
         <q-item-separator></q-item-separator>
         <q-item>
           <div class="mc-container">
-            <div class="mc-menuitem mc-clickable">
+            <div class="mc-menuitem mc-no-clickable" :class="{ 'mc-not-available': contextsHistory.length === 0 }">
               <div class="mc-item mdi mdi-history mc-icon"></div>
-              <div class="mc-item mc-text mc-only-text" @hover="$refs['mc-contexts-popover'].show();">{{ $t('label.previousContexts') }}</div>
+              <div class="mc-item mc-text mc-only-text">{{ $t('label.previousContexts') }}</div>
               <q-btn
                 id="mc-contextbutton"
                 icon="mdi-chevron-right"
@@ -37,11 +37,16 @@
                   self="top left"
                 >
                   <q-list dense>
-                    <q-item v-for="context in contextsHistory" :key="context.contextId">
+                    <q-item v-for="context in contextsHistory" :key="context.id">
                       <q-item-main>
                         <div class="mc-container">
                           <div class="mc-menuitem mc-clickable">
-                            <div class="mc-item mc-text mc-only-text" @click="closeAndCall(context.contextId)">{{ context.time }}</div>
+                            <div class="mc-item mc-large-text" @mouseover="tooltipIt($event, context.id)" @click="closeAndCall(context.id)">
+                              {{ formatContextCreationTime(context.creationTime) }}: {{ context.label }}
+                              <q-tooltip v-show="needTooltip(context.id)" anchor="center right" self="center left" :offset="[10, 10]">
+                                {{ context.label }}
+                              </q-tooltip>
+                            </div>
                           </div>
                         </div>
                       </q-item-main>
@@ -81,11 +86,14 @@
 </template>
 
 <script>
+import moment from 'moment';
 import { mapGetters, mapActions } from 'vuex';
 import ScaleReference from 'components/ScaleReference.vue';
+import TooltipIt from 'shared/TooltipItMixin';
 
 export default {
   name: 'MainControlMenu',
+  mixins: [TooltipIt],
   data() {
     return {};
   },
@@ -111,6 +119,14 @@ export default {
     closeAndCall(contextId) {
       this.$refs['mc-contexts-popover'].hide();
       this.loadContext(contextId);
+    },
+    formatContextCreationTime(timestamp) {
+      if (timestamp && timestamp !== null) {
+        const dateTime = moment(timestamp);
+        const isToday = moment().diff(dateTime, 'days') === 0;
+        return isToday ? dateTime.format('HH:mm:ss') : dateTime.format('YYYY/mm/dd HH:mm:ss');
+      }
+      return '';
     },
   },
   mounted() {

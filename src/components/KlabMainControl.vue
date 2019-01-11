@@ -594,6 +594,10 @@ export default {
     padding 2px 5px
     &.mc-clickable
       cursor pointer
+    &.mc-no-clickable
+      cursor default
+    &.mc-not-available
+      cursor not-allowed
     &.mc-select
       background-color $main-control-main-color
       color #fff
@@ -604,6 +608,12 @@ export default {
       font-size 13px
       &.mc-only-text
         width calc(100% - 30px)
+      &.mc-large-text
+        width 100%;
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       &.lighter
         color #ccc
         text-shadow 0 0 1px #333

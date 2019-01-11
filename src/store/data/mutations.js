@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { Helpers } from 'shared/Helpers';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
@@ -24,11 +23,7 @@ export default {
   STORE_CONTEXT: (state, context) => {
     const exists = state.contextsHistory.find(ctxt => ctxt.contextId === context.id);
     if (typeof exists === 'undefined') {
-      state.contextsHistory.push({
-        time: moment(context.time),
-        contextId: context.id,
-        contextLabel: context.label,
-      });
+      state.contextsHistory.push(context);
     }
   },
 
