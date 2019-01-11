@@ -45,6 +45,7 @@
           :style="{ width:`${histogramWidth}%` }"
           @mouseover="infoShowed = { index, categories: observationInfo.dataSummary.categories, values: observationInfo.dataSummary.histogram }"
         >
+          <q-tooltip :offset="[0,10]" :delay="500">{{ infoShowed.values[infoShowed.index] }}</q-tooltip>
           <div class="oi-histogram-val" :style="{ height: `${getHistogramDataHeight(data)}%` }">
           </div>
         </div>
@@ -63,17 +64,17 @@
       </div>
       <!-- info about everything FIXED sixe -->
       <div id="oi-data-details">
-        <div id="oi-histogram-min" class="oi-data-details" @mouseover="tooltipIt($event, 'q-hmin')">{{ histogramMin }}<q-tooltip v-show="ellipsed.includes('q-hmin')" class="oi-tooltip">{{ histogramMin }}</q-tooltip></div>
+        <div id="oi-histogram-min" class="oi-data-details" @mouseover="tooltipIt($event, `q-hmin-${infoShowed.index}`)">{{ histogramMin }}<q-tooltip v-show="needTooltip(`q-hmin-${infoShowed.index}`)" class="oi-tooltip">{{ histogramMin }}</q-tooltip></div>
         <template v-if="infoShowed.index === -1"><div id="oi-data-nodetail" class="oi-data-details">{{ $t('label.noInfoValues') }}</div></template>
         <template v-else>
-          <div id="oi-data-detail" class="oi-data-details" @mouseover="tooltipIt($event, 'q-hdata')">
-            {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}: ` : '' }}<em>{{ infoShowed.values[infoShowed.index] }}</em>
-            <q-tooltip class="oi-tooltip" v-show="ellipsed.includes('q-hdata')">
-              {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}: ` : '' }}<em>{{ infoShowed.values[infoShowed.index] }}</em>
+          <div id="oi-data-detail" class="oi-data-details" @mouseover="tooltipIt($event, `q-hdata-${infoShowed.index}`)">
+            {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}: ` : '' }}<!-- {{ infoShowed.values[infoShowed.index] }} -->
+            <q-tooltip class="oi-tooltip" v-show="needTooltip(`q-hdata-${infoShowed.index}`)" anchor="center right" self="center left" :offset="[10, 10]">
+              {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}: ` : '' }}<!-- {{ infoShowed.values[infoShowed.index] }} -->
             </q-tooltip>
           </div>
         </template>
-        <div id="oi-histogram-max" class="oi-data-details" @mouseover="tooltipIt($event, 'q-hmax')">{{ histogramMax }}<q-tooltip v-show="ellipsed.includes('q-hmax')" class="oi-tooltip">{{ histogramMax }}</q-tooltip></div>
+        <div id="oi-histogram-max" class="oi-data-details" @mouseover="tooltipIt($event, `q-hmax-${infoShowed.index}`)">{{ histogramMax }}<q-tooltip v-show="needTooltip(`q-hmax-${infoShowed.index}`)" class="oi-tooltip">{{ histogramMax }}</q-tooltip></div>
       </div>
     </div>
   </div>
@@ -83,6 +84,7 @@
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
 import Utils from 'shared/Utils';
+import TooltipIt from 'shared/TooltipItMixin';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Layers } from 'shared/MapConstants';
@@ -90,6 +92,7 @@ import { Layers } from 'shared/MapConstants';
 
 export default {
   name: 'ObservationInfo',
+  mixins: [TooltipIt],
   data() {
     return {
       scrollBar: undefined,
@@ -98,7 +101,6 @@ export default {
         categories: [],
         values: [],
       },
-      ellipsed: [],
       infoMap: null,
     };
   },
@@ -149,13 +151,6 @@ export default {
         type: 'info',
         timeout: 500,
       });
-    },
-    tooltipIt(event, ref) {
-      if (event.target.offsetWidth < event.target.scrollWidth) {
-        this.ellipsed.push(ref);
-      } else {
-        this.ellipsed.splice(this.ellipsed.indexOf(ref), 1);
-      }
     },
     getContainerClasses() {
       const finalClasses = [];
@@ -363,7 +358,7 @@ export default {
     border-left 1px solid #696969
     border-right 1px solid #696969
 
-  #oi-data-detail em, .oi-tooltip em
+  #oi-data-detail, .oi-tooltip
     color $main-control-yellow
     transition none
     font-style normal
