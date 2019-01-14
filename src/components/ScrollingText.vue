@@ -134,12 +134,12 @@ export default {
     bottom 0
     position absolute
     height 100%
+    opacity 0
     mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
     mask-size: 5% 100%;
     mask-repeat: no-repeat;
     mask-position: left center, right center;
-    transition background-color 0.8s
-    opacity 0
+    transition background-color 0.8s, opacity 0.8s
 
   @keyframes klab-marquee
     from
