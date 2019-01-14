@@ -59,10 +59,13 @@
         </div>
 
         <klab-search v-if="searchIsActive"></klab-search>
-        <div id="mc-text-div" class="text-white" ref="mc-text-div"  v-else>
+        <div id="mc-context" class="text-white" v-else>
+          <scrolling-text ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
+          <!--
           <div id="mc-text-div-content" ref="mc-text-div-content" :class="{ marquee: needMarqueeCTX < 0 }" :style="{ left: `${needMarqueeCTX}px` }">
             {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
           </div>
+          -->
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
           <div :class="{ marquee: needMarqueeTS < 0 }" :style="{ left: `${needMarqueeTS}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
@@ -258,6 +261,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
+import ScrollingText from 'components/ScrollingText.vue';
 
 const { width, height } = dom;
 
@@ -403,12 +407,15 @@ export default {
       }
     },
     contextLabel(newValue) {
+      /*
       this.needMarqueeCTX = 0;
       if (newValue !== null && newValue !== '') {
         this.$nextTick(() => {
           this.needMarqueeCTX = this.isNeededMarquee('mc-text-div-content');
         });
       }
+      */
+      this.$refs['st-context-text'].changeText(newValue);
     },
   },
   created() {
@@ -434,6 +441,7 @@ export default {
     Draggable,
   },
   components: {
+    ScrollingText,
     ScaleReference,
     ScaleChangeDialog,
     KlabTreePane,
@@ -467,23 +475,23 @@ export default {
         #mc-q-card-title
           overflow hidden
           margin 15px
-          #mc-text-div
-            position: absolute;
-            left: 45px;
-            margin-top: 8px;
-            width: 85%;
-            white-space: nowrap;
-            overflow: hidden;
-            #mc-text-div-content
-              position relative
-              display inline-block
-              overflow hidden
-              &:hover.marquee
-                animation klab-marquee 5s alternate linear infinite
-              &:not(:hover)
-                left 0 !important
-                width 100%
-                text-overflow ellipsis
+      #mc-context
+        position: absolute;
+        left: 45px;
+        margin-top: 8px;
+        width: 85%;
+        white-space: nowrap;
+        overflow: hidden;
+        #mc-text-div-content
+          position relative
+          display inline-block
+          overflow hidden
+          &:hover.marquee
+            animation klab-marquee 5s alternate linear infinite
+          &:not(:hover)
+            left 0 !important
+            width 100%
+            text-overflow ellipsis
 
 
         /*
