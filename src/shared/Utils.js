@@ -74,7 +74,7 @@ export function getColorObject(color) {
     hex = color;
     rgb = hexToRgb(color);
   } else if (color.indexOf(',') !== -1) {
-    rgb = this.textToRgb(color);
+    rgb = textToRgb(color);
     hex = rgbToHex(rgb);
   } else {
     hex = getBrand(color);
@@ -99,8 +99,8 @@ export function getGradient(first, last, steps) {
   if (first === null || last === null || steps < 1) {
     console.warn(`Bad colors: ${first}, ${last}`);
   }
-  const c1 = this.getColorObject(first).rgb;
-  const c2 = this.getColorObject(last).rgb;
+  const c1 = getColorObject(first).rgb;
+  const c2 = getColorObject(last).rgb;
   const stepFactor = 1 / (steps - 1);
   const colorList = [];
   let r;

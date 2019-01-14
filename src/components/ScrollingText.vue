@@ -124,7 +124,7 @@ export default {
 
   /* animation and transition */
   .st-edges-animation-enter-active
-    transition opacity 2s
+    transition opacity 1.2s
 
   .st-edges-animation-enter
   .st-edges-animation-leave-to
