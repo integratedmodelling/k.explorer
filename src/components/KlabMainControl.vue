@@ -63,7 +63,7 @@
           <scrolling-text width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
-          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true" initialText="very very very very very very very very very very very very very very very very very very very very very very very very very very very large text"></scrolling-text>
+          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
         </div>
         <q-btn
           id="mc-menubutton"
