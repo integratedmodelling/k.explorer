@@ -1,4 +1,5 @@
 import { Helpers } from 'shared/Helpers';
+import { getColorObject } from 'shared/Utils';
 
 export default {
   hasPalette: state => state.mainWin.paletteVisible,
@@ -64,6 +65,7 @@ export default {
   spinnerIsAnimated: state => state.spinner.animated,
   spinner: state => state.spinner,
   spinnerOwners: state => state.spinnerOwners,
+  spinnerColor: state => (this.spinner !== null ? getColorObject(state.spinner.color) : null),
 
   searchIsActive: state => state.searchActive,
   searchIsFocused: state => state.searchFocus,

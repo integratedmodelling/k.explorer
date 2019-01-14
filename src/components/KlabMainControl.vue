@@ -61,20 +61,9 @@
         <klab-search v-if="searchIsActive"></klab-search>
         <div id="mc-context" class="text-white" v-else>
           <scrolling-text width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
-          <!--
-          <div id="mc-text-div-content" ref="mc-text-div-content" :class="{ marquee: needMarqueeCTX < 0 }" :style="{ left: `${needMarqueeCTX}px` }">
-            {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
-          </div>
-          -->
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
-          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true" initialText="very very very very very very very very very very very very very very very very very very very very large text"></scrolling-text>
-          <!--
-          <div :class="{ marquee: needMarqueeTS < 0 }" :style="{ left: `${needMarqueeTS}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
-          <transition name="mc-edge">
-            <div v-if="needMarqueeTS < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
-          </transition>
-          -->
+          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
         </div>
         <q-btn
           id="mc-menubutton"
@@ -254,7 +243,6 @@
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import Utils from 'shared/Utils';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
@@ -296,7 +284,7 @@ export default {
       'tree',
     ]),
     ...mapGetters('view', [
-      'spinner',
+      'spinnerColor',
       'searchIsActive',
       'searchIsFocused',
       'mainViewer',
@@ -309,9 +297,6 @@ export default {
       'hasTasks',
       'lastActiveTask',
     ]),
-    spinnerColor() {
-      return Utils.getColorObject(this.spinner.color);
-    },
   },
   methods: {
     ...mapActions('view', [

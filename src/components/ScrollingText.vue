@@ -11,7 +11,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import Utils from 'shared/Utils';
 
 export default {
   name: 'ScrollingText',
@@ -43,11 +42,8 @@ export default {
   },
   computed: {
     ...mapGetters('view', [
-      'spinner',
+      'spinnerColor',
     ]),
-    color() {
-      return Utils.getColorObject(this.spinner.color);
-    },
   },
   methods: {
     isNeededMarquee() {
@@ -70,7 +66,7 @@ export default {
       }
     },
     getBGColor(alpha) {
-      return `rgba(${this.color.rgb.r},${this.color.rgb.g},${this.color.rgb.b}, ${alpha})`;
+      return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
   },
   mounted() {
