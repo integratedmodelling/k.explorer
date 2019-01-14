@@ -3,9 +3,9 @@
     <div ref="st-text" class="st-text" :class="{ 'st-accentuate': accentuate }" :style="{ left: `${needMarquee < 0 ? needMarquee : 0}px`, 'animation-duration': `${animationDuration}s` }">
       {{ text }}
     </div>
-    <transition name="st-edges-animation">
-      <div v-if="needMarquee < 0" class="st-edges" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
-    </transition>
+
+    <div class="st-edges" :style="{ 'background-color': spinnerColor.color  }"></div>
+
   </div>
 </template>
 
@@ -38,6 +38,7 @@ export default {
       needMarquee: 0,
       animationDuration: this.duration,
       text: this.initialText,
+      edgeBgGradient: '',
     };
   },
   computed: {
@@ -65,14 +66,27 @@ export default {
         });
       }
     },
-    getBGColor(alpha) {
-      return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
+    getBGColor(color, alpha) {
+      return `rgba(${color.rgb.r},${color.rgb.g},${color.rgb.b}, ${alpha})`;
+    },
+    getEdgeGradient() {
+      return `linear-gradient(to right,
+        ${this.getBGColor(this.spinnerColor, 1)} 0,
+        ${this.getBGColor(this.spinnerColor, 0)} 5%,
+        ${this.getBGColor(this.spinnerColor, 0)} 95%,
+        ${this.getBGColor(this.spinnerColor, 1)} 100%)`;
+    },
+  },
+  watch: {
+    spinnerColor() {
+      this.edgeBgGradient = this.getEdgeGradient();
     },
   },
   mounted() {
     this.$nextTick(() => {
       this.needMarquee = this.isNeededMarquee(this.ref);
     });
+    this.edgeBgGradient = this.getEdgeGradient();
   },
 };
 </script>
@@ -87,7 +101,7 @@ export default {
         .st-text
           animation klab-marquee alternate linear infinite
         .st-edges
-          display block
+          opacity 1
        /* not hover, reset text position and ellipsis */
       &:not(:hover)
         .st-text
@@ -106,28 +120,25 @@ export default {
           cursor default
       &:not(:hover)
         .st-edges
-          display block
+          opacity 1
 
     .st-text
       position relative
       display inline-block
       overflow hidden
 
-    .st-edges
-      left -5px
-      right 0
-      top 0
-      bottom 0
-      position absolute
-      height 100%
-      display none
-
-  /* animation and transition */
-  .st-edges-animation-enter-active
-    transition opacity 1.2s
-
-  .st-edges-animation-enter
-  .st-edges-animation-leave-to
+  .st-edges
+    left -5px
+    right 0
+    top 0
+    bottom 0
+    position absolute
+    height 100%
+    mask-image: linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0));
+    mask-size: 5% 100%;
+    mask-repeat: no-repeat;
+    mask-position: left center, right center;
+    transition background-color 0.8s
     opacity 0
 
   @keyframes klab-marquee
