@@ -40,7 +40,6 @@
         id="mc-q-card-title"
         class="q-pa-xs"
         ref="mc-draggable"
-
         :style="{
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
@@ -60,14 +59,11 @@
         </div>
 
         <klab-search v-if="searchIsActive"></klab-search>
-        <div id="mc-text-div" class="text-white" v-else>
-          {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
+        <div id="mc-context" class="text-white" v-else>
+          <scrolling-text width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
-          <div :class="{ marquee: needMarquee < 0 }" :style="{ left: `${needMarquee}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
-          <transition name="mc-edge">
-            <div v-if="needMarquee < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
-          </transition>
+          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
         </div>
         <main-control-menu v-show="!hasContext && !isHidden && !searchIsActive"></main-control-menu>
       </q-card-title>
@@ -205,7 +201,6 @@
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import Utils from 'shared/Utils';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
@@ -216,6 +211,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
+import ScrollingText from 'components/ScrollingText.vue';
 
 const { width, height } = dom;
 
@@ -233,7 +229,8 @@ export default {
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       centeredLeft: this.defaultLeft,
-      needMarquee: 0,
+      needMarqueeTS: 0, // status texts
+      needMarqueeCTX: 0, // context text
     };
   },
   computed: {
@@ -246,7 +243,7 @@ export default {
       'tree',
     ]),
     ...mapGetters('view', [
-      'spinner',
+      'spinnerColor',
       'searchIsActive',
       'searchIsFocused',
       'mainViewer',
@@ -259,9 +256,6 @@ export default {
       'hasTasks',
       'lastActiveTask',
     ]),
-    spinnerColor() {
-      return Utils.getColorObject(this.spinner.color);
-    },
   },
   methods: {
     ...mapActions('view', [
@@ -331,6 +325,13 @@ export default {
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
+    isNeededMarquee(ref) {
+      const textDiv = this.$refs[ref];
+      if (typeof textDiv === 'undefined') {
+        return 0;
+      }
+      return textDiv.offsetWidth - textDiv.scrollWidth;
+    },
   },
   watch: {
     hasContext() {
@@ -341,16 +342,26 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     statusTextsString(newValue) {
-      this.needMarquee = 0;
+      /*
+      this.needMarqueeTS = 0;
       if (newValue !== '') {
         this.$nextTick(() => {
-          const statusTextsDiv = this.$refs['mc-status-texts'];
-          if (typeof statusTextsDiv === 'undefined') {
-            this.needMarquee = 0;
-          }
-          this.needMarquee = statusTextsDiv.offsetWidth - statusTextsDiv.scrollWidth;
+          this.needMarqueeTS = this.isNeededMarquee('mc-status-texts');
         });
       }
+      */
+      this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
+    },
+    contextLabel(newValue) {
+      /*
+      this.needMarqueeCTX = 0;
+      if (newValue !== null && newValue !== '') {
+        this.$nextTick(() => {
+          this.needMarqueeCTX = this.isNeededMarquee('mc-text-div-content');
+        });
+      }
+      */
+      this.$refs['st-context-text'].changeText(newValue);
     },
   },
   created() {
@@ -376,6 +387,7 @@ export default {
     Draggable,
   },
   components: {
+    ScrollingText,
     ScaleReference,
     ScaleChangeDialog,
     KlabTreePane,
@@ -408,16 +420,27 @@ export default {
         background-color rgba(35, 35, 35 ,.8)
         border-radius 5px
         #mc-q-card-title
+          overflow hidden
           margin 15px
-        #mc-text-div
-          padding-left 5px
-          float left
-          margin-top 8px
-        /*
-        #mc-search-div
-          left 62px
-          top 18px
-        */
+      #mc-context
+        position absolute
+        left 45px
+        width 85%
+        margin-top 8px
+        white-space nowrap
+        overflow hidden
+      #mc-status-texts
+        position absolute
+        bottom -4px
+        left 45px
+        font-size 11px
+        color rgba(0,0,0, 0.4)
+        height 15px
+        margin 0 auto
+        white-space nowrap
+        overflow hidden
+        width 85%
+
     .q-card-title
       position relative
 
@@ -454,50 +477,6 @@ export default {
 
   #mc-text-div
     text-shadow 0 0 1px #555
-
-  #mc-status-texts
-    position absolute
-    bottom -4px
-    left 45px
-    font-size 11px
-    color rgba(0,0,0, 0.4)
-    width 80%
-    height 15px
-    margin 0 auto
-    white-space nowrap
-    overflow hidden
-    &:hover:not(:active)
-      color rgba(0,0,0, 0.8)
-      cursor default
-      div.marquee
-        animation-play-state paused
-      #mc-status-edge
-        display none
-
-    div.marquee
-      display inline-block
-      position absolute
-      animation klab-marquee alternate linear infinite
-    #mc-status-edge
-      left 0
-      right 0
-      top 0
-      bottom 0
-      position absolute
-      height 100%
-      display block
-
-
-  .mc-edge-enter-active
-    transition opacity 2s
-
-  .mc-edge-enter
-  .mc-edge-leave-to
-    opacity 0
-
-  @keyframes klab-marquee
-    from
-      left 0px
 
   .q-card-main
     overflow auto
@@ -574,6 +553,10 @@ export default {
     border-radius 5px
     background-color $main-control-main-color
 
+  #mc-menubutton
+    top 6px
+    right 10px
+
   #btn-reset-context
     width 15px
     height 15px
@@ -624,5 +607,9 @@ export default {
         padding-left 10px
   #mc-eraserforcontext
     padding 0 0 0 3px
-
+  .mc-container
+    height 100%
+    display flex
+    align-items center
+    width 180px
 </style>
