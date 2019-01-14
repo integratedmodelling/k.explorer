@@ -60,7 +60,7 @@
 
         <klab-search v-if="searchIsActive"></klab-search>
         <div id="mc-context" class="text-white" v-else>
-          <scrolling-text ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
+          <scrolling-text width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
           <!--
           <div id="mc-text-div-content" ref="mc-text-div-content" :class="{ marquee: needMarqueeCTX < 0 }" :style="{ left: `${needMarqueeCTX}px` }">
             {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
@@ -68,10 +68,13 @@
           -->
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
+          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true" initialText="very very very very very very very very very very very very very very very very very very very very large text"></scrolling-text>
+          <!--
           <div :class="{ marquee: needMarqueeTS < 0 }" :style="{ left: `${needMarqueeTS}px`, 'animation-duration': `${statusTextsLength * 5}s`}">{{ statusTextsString }}</div>
           <transition name="mc-edge">
             <div v-if="needMarqueeTS < 0" id="mc-status-edge" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
           </transition>
+          -->
         </div>
         <q-btn
           id="mc-menubutton"
@@ -399,12 +402,15 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     statusTextsString(newValue) {
+      /*
       this.needMarqueeTS = 0;
       if (newValue !== '') {
         this.$nextTick(() => {
           this.needMarqueeTS = this.isNeededMarquee('mc-status-texts');
         });
       }
+      */
+      this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },
     contextLabel(newValue) {
       /*
@@ -476,29 +482,24 @@ export default {
           overflow hidden
           margin 15px
       #mc-context
-        position: absolute;
-        left: 45px;
-        margin-top: 8px;
-        width: 85%;
-        white-space: nowrap;
-        overflow: hidden;
-        #mc-text-div-content
-          position relative
-          display inline-block
-          overflow hidden
-          &:hover.marquee
-            animation klab-marquee 5s alternate linear infinite
-          &:not(:hover)
-            left 0 !important
-            width 100%
-            text-overflow ellipsis
+        position absolute
+        left 45px
+        width 85%
+        margin-top 8px
+        white-space nowrap
+        overflow hidden
+      #mc-status-texts
+        position absolute
+        bottom -4px
+        left 45px
+        font-size 11px
+        color rgba(0,0,0, 0.4)
+        height 15px
+        margin 0 auto
+        white-space nowrap
+        overflow hidden
+        width 85%
 
-
-        /*
-        #mc-search-div
-          left 62px
-          top 18px
-        */
     .q-card-title
       position relative
 
@@ -535,51 +536,6 @@ export default {
 
   #mc-text-div
     text-shadow 0 0 1px #555
-
-  #mc-status-texts
-    position absolute
-    bottom -4px
-    left 45px
-    font-size 11px
-    color rgba(0,0,0, 0.4)
-    width 85%
-    height 15px
-    margin 0 auto
-    white-space nowrap
-    overflow hidden
-    &:hover:not(:active)
-      color rgba(0,0,0, 0.8)
-      cursor default
-      div.marquee
-        animation-play-state paused
-      #mc-status-edge
-        display none
-
-    div.marquee
-      display inline-block
-      position absolute
-      animation klab-marquee alternate linear infinite
-
-    #mc-status-edge
-      left 0
-      right 0
-      top 0
-      bottom 0
-      position absolute
-      height 100%
-      display block
-
-
-  .mc-edge-enter-active
-    transition opacity 2s
-
-  .mc-edge-enter
-  .mc-edge-leave-to
-    opacity 0
-
-  @keyframes klab-marquee
-    from
-      left 0px
 
   .q-card-main
     overflow auto

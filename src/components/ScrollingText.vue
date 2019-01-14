@@ -3,7 +3,7 @@
     <div ref="st-text" class="st-text" :class="{ 'st-accentuate': accentuate }" :style="{ left: `${needMarquee < 0 ? needMarquee : 0}px`, 'animation-duration': `${animationDuration}s` }">
       {{ text }}
     </div>
-    <transition name="st-edges.animation">
+    <transition name="st-edges-animation">
       <div v-if="needMarquee < 0" class="st-edges" :style="{ background: `linear-gradient(to right, ${getBGColor(1)} 0, ${getBGColor(0)} 5%, ${getBGColor(0)} 95%, ${getBGColor(1)} 100%)` }"></div>
     </transition>
   </div>
@@ -22,7 +22,9 @@ export default {
     },
     initialText: {
       type: String,
+      default: '',
     },
+    // duration of animation in seconds
     duration: {
       type: Number,
       default: 10,
@@ -82,12 +84,8 @@ export default {
 <style lang="stylus">
   /* container with marquee */
   .st-container.marquee
-    .st-text
-      animation klab-marquee alternate linear infinite
     /* if activate on hover */
     &.hover-active
-      .st-text
-        animation-play-state paused
       /* on hover animation and display edges */
       &:hover
         .st-text
@@ -99,14 +97,15 @@ export default {
         .st-text
           left 0 !important
           width 100%
-          overflow hidden
           text-overflow ellipsis
     /* if is activate and stopped when not hover */
     &:not(.hover-active)
+      .st-text
+        animation klab-marquee alternate linear infinite
       &:hover
         .st-text
           animation-play-state paused
-        &:not(.active) .accentuate
+        &:not(.active) .st-accentuate
           color rgba(0,0,0, 0.8)
           cursor default
       &:not(:hover)
@@ -116,10 +115,10 @@ export default {
     .st-text
       position relative
       display inline-block
-      width 100%
+      overflow hidden
 
     .st-edges
-      left 0
+      left -5px
       right 0
       top 0
       bottom 0
