@@ -51,13 +51,20 @@ export default {
     state.dataflowStatuses = [];
   },
 
-  ADD_OBSERVATION: (state, observation) => {
+  ADD_OBSERVATION: (state, { observation, restored = false }) => {
     state.observations.push(observation);
     console.info(`Added observation: ${observation.label}`);
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
-    if (state.tasks[observation.taskId]) {
-      state.tasks[observation.taskId].push(observation);
+    if (typeof state.tasks[observation.taskId] === 'undefined') {
+      // if observation task not exists we add it only if we are restoring
+      // if we add it and is not restoring moment, we can have problem with orphans observations
+      if (restored) {
+        state.tasks[observation.taskId] = [];
+      } else {
+        return;
+      }
     }
+    state.tasks[observation.taskId].push(observation);
   },
 
   /**
@@ -100,7 +107,7 @@ export default {
     }
   },
 
-  RECALCULATE_TREE: (state, taskId) => {
+  RECALCULATE_TREE: (state, { taskId, restored }) => {
     const filtered = state.tasks[taskId]; // state.observations.filter(observation => observation.taskId === taskId);
     if (typeof filtered === 'undefined') {
       console.info(`No observations for taskId ${taskId}`);
@@ -120,7 +127,7 @@ export default {
     const children = []; // no main, children of main observation
     filtered.forEach((observation, index) => {
       if (observation.main) {
-        if (index === filtered.length - 1) {
+        if ((!restored && index === filtered.length - 1) || (restored && index === 0)) {
           main = Helpers.getNodeFromObservation(observation).node;
         } else {
           mains.push(Helpers.getNodeFromObservation(observation).node);

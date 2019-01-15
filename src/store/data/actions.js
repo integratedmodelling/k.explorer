@@ -37,31 +37,32 @@ export default {
     console.info(`Ask for context to restore ${contextId}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
       params: {
-        childLevel: 0,
+        collapseSiblings: true,
       },
     })
-      .then(({ data: context }) => {
+      .then(async ({ data: context }) => {
         dispatch('setContext', context);
         console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
-        console.dir(context);
-        /*
+        // console.dir(context);
         if (context.children.length > 0) {
-          dispatch('addObservation', { observation: context.children[0] });
-        }
-        */
-        /*
-        if (state.orphans.length > 0) {
-          for (let i = state.orphans.length - 1; i >= 0; i--) {
-            if (Helpers.findNodeById(state.tree, state.orphans[i].id) !== null) {
-              state.orphans.splice(i, 1);
-            }
-            if (state.orphans[i].parentId === context.id
-                || Helpers.findNodeById(state.tree, state.orphans[i].parentId) !== null) {
-              dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
+          const tasks = [];
+          const cl = context.children.length;
+          for (let i = 0; i < cl; i++) {
+            const child = context.children[i];
+            if (child.taskId !== null) {
+              if (tasks.indexOf(child.taskId) === -1) {
+                tasks.push(child.taskId);
+              }
+              dispatch('addObservation', { observation: child, restored: true });
             }
           }
+          await Promise.all(tasks); // await for all observation to add
+          if (tasks !== null) {
+            tasks.forEach((taskId) => {
+              dispatch('recalculateTree', { taskId, restored: true });
+            });
+          }
         }
-        */
       });
   },
 
@@ -183,7 +184,7 @@ export default {
       observation.layerOpacity = 1;
       observation.colormap = null;
       // add observation
-      commit('ADD_OBSERVATION', observation);
+      commit('ADD_OBSERVATION', { observation, restored });
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
         // is default observation, nothing needed
         return resolve();
@@ -206,7 +207,7 @@ export default {
           },
           parentId: observation.parentId,
         });
-        needSiblings = !restored;
+        needSiblings = true;
       }
       observation.folderId = folderId;
       // ask for children
@@ -238,12 +239,12 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit }, taskId) => {
+  recalculateTree: ({ commit }, { taskId, restored = false }) => {
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
     return new Promise((resolve) => {
-      commit('RECALCULATE_TREE', taskId);
+      commit('RECALCULATE_TREE', { taskId, restored });
       resolve();
     });
   },
@@ -294,11 +295,6 @@ export default {
               if (folder !== null) {
                 folder.siblingsLoaded += data.siblings.length;
               }
-              /* TODO ask to Ferdinando: task id for REST?
-              dispatch('data/recalculateTree', data.siblings[0].taskId, { root: true }).then(() => {
-                dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: data.siblings[0].taskId }, { root: true });
-              });
-              */
             }
           });
         }

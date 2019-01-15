@@ -1,12 +1,11 @@
 <template>
   <q-btn
-    id="mc-menubutton"
     icon="mdi-chevron-right"
     color="black"
     size="sm"
     round
     flat
-    class="absolute-top-right"
+    class="mc-menubutton absolute-top-right"
   >
     <q-popover
       v-if="!searchIsActive && !isDrawMode"
@@ -14,7 +13,7 @@
       self="top left"
     >
       <q-list dense>
-        <q-list-header style="padding: 16px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
+        <q-list-header style="padding: 6px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
         <q-item-separator></q-item-separator>
         <q-item>
           <div class="mc-container">
@@ -22,13 +21,12 @@
               <div class="mc-item mdi mdi-history mc-icon"></div>
               <div class="mc-item mc-text mc-only-text">{{ $t('label.previousContexts') }}</div>
               <q-btn
-                id="mc-contextbutton"
                 icon="mdi-chevron-right"
                 color="black"
                 size="sm"
                 round
                 flat
-                class="absolute-top-right"
+                class="mc-contextbutton absolute-top-right"
                 :disable="contextsHistory.length === 0"
               >
                 <q-popover
@@ -39,7 +37,7 @@
                   <q-list dense>
                     <q-item v-for="context in contextsHistory" :key="context.id">
                       <q-item-main>
-                        <div class="mc-container">
+                        <div class="mc-container mcm-context-label">
                           <div class="mc-menuitem mc-clickable">
                             <div class="mc-item mc-large-text" @mouseover="tooltipIt($event, context.id)" @click="closeAndCall(context.id)">
                               {{ formatContextCreationTime(context.creationTime) }}: {{ context.label }}
@@ -141,15 +139,61 @@ export default {
 
 <style lang="stylus">
 
-  #mc-menubutton
-    top 5px
+  .mc-menubutton
+    top 6px
     right 10px
-  #mc-contextbutton
+
+  .mc-contextbutton
     right -10px
+
   .mc-container
     height 100%
     display flex
     align-items center
     width 180px
+    &.mcm-context-label
+      width 250px
+
+  .mc-menuitem
+    width 100%
+    position relative
+    padding 2px 5px
+    &.mc-clickable
+      cursor pointer
+    &.mc-no-clickable
+      cursor default
+    &.mc-not-available
+      cursor not-allowed
+    &.mc-select
+      background-color $main-control-main-color
+      color #fff
+    .mc-item
+      padding 0 3px
+      display inline-block
+      vertical-align middle
+      font-size 13px
+      &.mc-only-text
+        width calc(100% - 30px)
+      &.mc-large-text
+        width 100%;
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      &.lighter
+        color #ccc
+        text-shadow 0 0 1px #333
+      &.mc-icon
+        font-size 20px
+        width 30px
+      &.mc-text
+        padding-left 10px
+
+  #btn-reset-context
+    width 15px
+    height 15px
+
+  #mc-eraserforcontext
+    padding 0 0 0 3px
 
 </style>

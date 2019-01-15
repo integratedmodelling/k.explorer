@@ -553,14 +553,6 @@ export default {
     border-radius 5px
     background-color $main-control-main-color
 
-  #mc-menubutton
-    top 6px
-    right 10px
-
-  #btn-reset-context
-    width 15px
-    height 15px
-
   .component-fade-enter-active
   .component-fade-leave-active
     transition opacity .3s ease
@@ -571,45 +563,5 @@ export default {
 
   .lot-of-flow
     transition top 0.05s ease 0s, left 0.05s ease 0s
-  .mc-menuitem
-    width 100%
-    position relative
-    padding 2px 5px
-    &.mc-clickable
-      cursor pointer
-    &.mc-no-clickable
-      cursor default
-    &.mc-not-available
-      cursor not-allowed
-    &.mc-select
-      background-color $main-control-main-color
-      color #fff
-    .mc-item
-      padding 0 3px
-      display inline-block
-      vertical-align middle
-      font-size 13px
-      &.mc-only-text
-        width calc(100% - 30px)
-      &.mc-large-text
-        width 100%;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      &.lighter
-        color #ccc
-        text-shadow 0 0 1px #333
-      &.mc-icon
-        font-size 20px
-        width 30px
-      &.mc-text
-        padding-left 10px
-  #mc-eraserforcontext
-    padding 0 0 0 3px
-  .mc-container
-    height 100%
-    display flex
-    align-items center
-    width 180px
+
 </style>
