@@ -35,10 +35,15 @@ export default {
 
   loadContext: ({ dispatch }, contextId) => {
     console.info(`Ask for context to restore ${contextId}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
+      params: {
+        childLevel: 0,
+      },
+    })
       .then(({ data: context }) => {
         dispatch('setContext', context);
-        console.info(`Result:\n${JSON.stringify(context, null, 2)}`);
+        console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
+        console.dir(context);
         /*
         if (context.children.length > 0) {
           dispatch('addObservation', { observation: context.children[0] });
@@ -60,7 +65,7 @@ export default {
       });
   },
 
-  restoreContexts: ({ getters, commit }) => new Promise((resolve, reject) => {
+  getSessionContexts: ({ getters, commit }) => new Promise((resolve, reject) => {
     if (getters.session === null) {
       reject(new Error('No session established, no useful engine available, disconnect'));
       return;
@@ -148,6 +153,7 @@ export default {
     main = false,
     toTree = true,
     visible = false,
+    restored = false,
   }) => new Promise((resolve) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
@@ -179,6 +185,7 @@ export default {
       // add observation
       commit('ADD_OBSERVATION', observation);
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
+        // is default observation, nothing needed
         return resolve();
       }
       let needSiblings = false;
@@ -199,7 +206,7 @@ export default {
           },
           parentId: observation.parentId,
         });
-        needSiblings = true;
+        needSiblings = !restored;
       }
       observation.folderId = folderId;
       // ask for children

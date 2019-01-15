@@ -38,7 +38,7 @@ export default {
       }
     },
     ...mapActions('data', [
-      'restoreContexts',
+      'getSessionContexts',
     ]),
     ...mapActions('stomp', {
       stompCleanQueue: 'stomp_cleanqueue',
@@ -54,9 +54,9 @@ export default {
         sessionSubscriptionObject.subscription.unsubscribe();
       }
       // before subscribe, we load contexts linked to this session
-      this.restoreContexts()
+      this.getSessionContexts()
         .then((restored) => {
-          console.info(`Restored ${restored} previous contexts`);
+          console.info(`Retrieved ${restored} previous contexts`);
           const subscription = this.subscribe(this.session);
           this.subscriptions.push({ id: this.session, subscription });
           console.info(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);

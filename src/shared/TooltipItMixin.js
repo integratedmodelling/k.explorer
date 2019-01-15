@@ -22,5 +22,8 @@ export default {
     needTooltip(ref) {
       return this.ellipsed.includes(ref);
     },
+    clearTooltip() {
+      this.ellipsed = [];
+    },
   },
 };

@@ -26,7 +26,7 @@ export default {
       console.log(`Added new context in store with id ${context.id}`);
       state.contextsHistory.push(context);
     } else {
-      console.warn(`Try to add a existing context with id ${context.id}, skipped`);
+      console.log(`Context with id ${context.id} yet exists in contextHistory`);
     }
   },
 

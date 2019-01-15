@@ -118,6 +118,7 @@ export default {
     },
     closeAndCall(contextId) {
       this.$refs['mc-contexts-popover'].hide();
+      this.clearTooltip();
       this.loadContext(contextId);
     },
     formatContextCreationTime(timestamp) {
