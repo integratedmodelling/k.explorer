@@ -21,9 +21,12 @@ export default {
   },
 
   STORE_CONTEXT: (state, context) => {
-    const exists = state.contextsHistory.find(ctxt => ctxt.contextId === context.id);
+    const exists = state.contextsHistory.find(ctxt => ctxt.id === context.id);
     if (typeof exists === 'undefined') {
+      console.log(`Added new context in store with id ${context.id}`);
       state.contextsHistory.push(context);
+    } else {
+      console.warn(`Try to add a existing context with id ${context.id}, skipped`);
     }
   },
 

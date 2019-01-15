@@ -15,7 +15,6 @@ export default {
     if (state.context !== null && state.context.id === context.id) {
       return;
     }
-    commit('STORE_CONTEXT', context);
     commit('SET_CONTEXT', context);
     dispatch('view/setContextLayer', context, { root: true });
   },

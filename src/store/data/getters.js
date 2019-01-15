@@ -1,3 +1,4 @@
+/* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
 import { Helpers } from 'shared/Helpers';
 
 export default {
@@ -41,7 +42,7 @@ export default {
 
   contextsHistory: (state) => {
     if (state.contextsHistory.length > 0) {
-      state.contextsHistory.sort();
+      state.contextsHistory.sort((c1, c2) => ((c1.creationTime === c2.creationTime) ? 0 : ((c1.creationTime > c2.creationTime) ? -1 : 1)));
     }
     return state.contextsHistory;
   },
