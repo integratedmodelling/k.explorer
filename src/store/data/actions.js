@@ -40,7 +40,7 @@ export default {
         collapseSiblings: true,
       },
     })
-      .then(async ({ data: context }) => {
+      .then(({ data: context }) => {
         dispatch('setContext', context);
         console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
         // console.dir(context);
@@ -56,12 +56,14 @@ export default {
               dispatch('addObservation', { observation: child, restored: true });
             }
           }
+          /*
           await Promise.all(tasks); // await for all observation to add
           if (tasks !== null) {
             tasks.forEach((taskId) => {
               dispatch('recalculateTree', { taskId, restored: true });
             });
           }
+          */
         }
       });
   },
