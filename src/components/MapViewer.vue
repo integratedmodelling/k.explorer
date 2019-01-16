@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     observations() {
-      return this.$store.getters['data/observations'](this.idx);
+      return this.$store.getters['data/observationsOfViewer'](this.idx);
     },
     ...mapGetters('data', [
       'hasContext',
@@ -205,7 +205,6 @@ export default {
     observations: {
       handler() {
         this.drawObservations(false);
-        // TODO if true, it try to resize extent but not work. Check before delete it
       },
       deep: true,
     },

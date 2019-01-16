@@ -17,10 +17,8 @@ export default {
    * Return observations of a viewer
    * If viewer not exists, return empty array
    */
-  observations: state => (viewerIdx) => {
-    const obs = state.observations.filter(observation => observation.viewerIdx === viewerIdx);
-    return obs;
-  },
+  observations: state => state.observations,
+  observationsOfViewer: state => viewerIdx => state.observations.filter(observation => observation.viewerIdx === viewerIdx),
 
   hasObservations: state => state.observations.length !== 0,
 

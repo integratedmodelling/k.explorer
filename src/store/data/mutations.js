@@ -222,7 +222,8 @@ export default {
     callback = null,
   }) => {
     // set observation visible (for layer)
-    const observation = state.observations.find(o => o.id === id);
+    const observationIdx = state.observations.findIndex(o => o.id === id);
+    const observation = state.observations[observationIdx];
     if (typeof observation !== 'undefined') {
       // store the offset, we need to set top to false only for observations with same offset
       const offset = observation.zIndexOffset;
@@ -244,6 +245,7 @@ export default {
       if (node) {
         node.ticked = visible;
       }
+      state.observations.splice(observationIdx, 1, observation);
     } else {
       console.warn(`Try to change visibility to no existing observations with id ${id}`);
     }

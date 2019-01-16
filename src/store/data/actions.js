@@ -24,10 +24,10 @@ export default {
       commit('STORE_CONTEXT', state.context);
       commit('SET_CONTEXT', null);
       dispatch('view/resetContext', null, { root: true });
-      dispatch('data/addObservation', {
+      dispatch('addObservation', {
         observation: Helpers.OBSERVATION_DEFAULT,
         main: true,
-      }, { root: true });
+      });
     } else {
       console.warn('Try to reset null context');
     }
@@ -40,30 +40,29 @@ export default {
         collapseSiblings: true,
       },
     })
-      .then(({ data: context }) => {
-        dispatch('setContext', context);
+      .then(async ({ data: context }) => {
         console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
         // console.dir(context);
         if (context.children.length > 0) {
           const tasks = [];
-          const cl = context.children.length;
-          for (let i = 0; i < cl; i++) {
-            const child = context.children[i];
-            if (child.taskId !== null) {
-              if (tasks.indexOf(child.taskId) === -1) {
-                tasks.push(child.taskId);
+          const observations = context.children;
+          observations.forEach((observation) => {
+            if (observation.taskId !== null) {
+              if (tasks.indexOf(observation.taskId) === -1) {
+                tasks.push(observation.taskId);
               }
-              dispatch('addObservation', { observation: child, restored: true });
+              dispatch('addObservation', { observation, restored: true });
             }
-          }
-          /*
+          });
+
           await Promise.all(tasks); // await for all observation to add
           if (tasks !== null) {
             tasks.forEach((taskId) => {
               dispatch('recalculateTree', { taskId, restored: true });
             });
           }
-          */
+          await Promise.all(tasks);
+          dispatch('stomp/clearTasks', null, { root: true });
         }
       });
   },

@@ -64,4 +64,8 @@ export default {
       dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
     });
   },
+
+  clearTasks: ({ commit }) => {
+    commit('TASK_RESET_ALL');
+  },
 };
