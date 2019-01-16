@@ -41,6 +41,7 @@ export default {
       },
     })
       .then(async ({ data: context }) => {
+        dispatch('setContext', context);
         console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
         // console.dir(context);
         if (context.children.length > 0) {
