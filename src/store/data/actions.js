@@ -194,8 +194,8 @@ export default {
       let needSiblings = false;
       if (observation.siblingCount > 1 && folderId === null) {
         // if has siblings, create folder and ask for them
-        // fake folder id is ff_[time]
-        folderId = `ff_${Math.floor(Date.now() / 1000)}`;
+        // fake folder id is ff_[id of observation with siblings]
+        folderId = `ff_${observation.id}`;
         commit('ADD_NODE', {
           node: {
             id: folderId,
