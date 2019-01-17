@@ -39,37 +39,39 @@ export default {
       params: {
         collapseSiblings: true,
       },
-    })
-      .then(({ data: context }) => {
-        dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: contextId }, { root: true }).then(async () => {
-          await dispatch('setContext', context);
-          commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
-          console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
-          // console.dir(context);
-          if (context.children.length > 0) {
-            const tasks = [];
-            const observations = context.children;
-            observations.forEach((observation) => {
-              if (observation.taskId !== null) {
-                if (tasks.indexOf(observation.taskId) === -1) {
-                  tasks.push(observation.taskId);
-                }
-                dispatch('addObservation', { observation, restored: true });
-              }
-            });
-
-            await Promise.all(tasks); // await for all observation to add
-            if (tasks !== null) {
-              tasks.forEach((taskId) => {
-                dispatch('recalculateTree', { taskId, restored: true });
-              });
+    }).then(async ({ data: context }) => {
+      await dispatch('setContext', context);
+      commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
+      console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
+      // console.dir(context);
+      if (context.children.length > 0) {
+        const tasks = [];
+        const observations = context.children;
+        observations.forEach((observation) => {
+          if (observation.taskId !== null) {
+            if (tasks.indexOf(observation.taskId) === -1) {
+              tasks.push(observation.taskId);
             }
-            await Promise.all(tasks);
-            dispatch('stomp/clearTasks', null, { root: true });
-            dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true });
+            dispatch('addObservation', { observation, restored: true });
           }
         });
-      });
+
+        await Promise.all(tasks); // await for all observation to add
+        if (tasks !== null) {
+          tasks.forEach((taskId) => {
+            dispatch('recalculateTree', { taskId, restored: true });
+          });
+        }
+        dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
+      }
+    }).catch((error) => {
+      dispatch('view/setSpinner', {
+        ...Constants.SPINNER_ERROR,
+        owner: contextId,
+        errorMessage: error,
+      }, { root: true });
+      throw error;
+    });
   },
 
   getSessionContexts: ({ getters, commit }) => new Promise((resolve, reject) => {

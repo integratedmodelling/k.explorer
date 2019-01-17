@@ -16,6 +16,7 @@ export default {
     state.lasts = [];
     state.observations = [];
     state.dataflow = null;
+    state.dataflowStatuses = [];
     state.nodeSelected = null;
     if (context === null) {
       state.contextsHistory = [];
@@ -47,10 +48,6 @@ export default {
     // } else {
     //   throw new Error(`Status not valid: ${status}`);
     // }
-  },
-
-  CLEAR_DATAFLOW_STATUSES: (state) => {
-    state.dataflowStatuses = [];
   },
 
   ADD_OBSERVATION: (state, { observation }) => {

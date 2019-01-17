@@ -86,6 +86,7 @@
 <script>
 import moment from 'moment';
 import { mapGetters, mapActions } from 'vuex';
+import Constants from 'shared/Constants';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
 
@@ -110,6 +111,7 @@ export default {
     ]),
     ...mapActions('view', [
       'setDrawMode',
+      'setSpinner',
     ]),
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
@@ -117,8 +119,10 @@ export default {
     async closeAndCall(contextId) {
       this.$refs['mc-contexts-popover'].hide();
       this.clearTooltip();
-      await this.$nextTick();
-      this.loadContext(contextId);
+      this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
+      this.$nextTick(() => {
+        this.loadContext(contextId);
+      });
     },
     formatContextTime(context) {
       let timestamp = context.lastUpdate;

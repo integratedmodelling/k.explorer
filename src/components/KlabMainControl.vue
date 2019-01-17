@@ -339,9 +339,11 @@ export default {
   },
   watch: {
     hasContext() {
-      this.changeDraggablePosition({
-        top: this.defaultTop,
-        left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
+      this.$nextTick(() => {
+        this.changeDraggablePosition({
+          top: this.defaultTop,
+          left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
+        });
       });
       // this.draggableElement.classList.remove('vuela');
     },

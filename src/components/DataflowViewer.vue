@@ -56,6 +56,7 @@ export default {
             reject(new Error('Ask for dataflow but no context'));
           }
           */
+          console.info('Ask for dataflow');
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
             .then(({ data }) => {
               if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
