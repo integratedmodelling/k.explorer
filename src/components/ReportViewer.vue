@@ -8,7 +8,7 @@
 /* eslint-disable no-underscore-dangle */
 
 import { axiosInstance } from 'plugins/axios';
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 // import SimpleBar from 'simplebar';
 
 export default {
@@ -25,7 +25,7 @@ export default {
       'contextId',
       'hasObservations',
     ]),
-    ...mapGetters('view', [
+    ...mapState('view', [
       'reloadReport',
     ]),
   },
@@ -52,14 +52,10 @@ export default {
       if (!this._inactive) {
         this.loadReport();
       }
-      // this.scrollBar.recalculate();
     },
   },
   activated() {
     this.loadReport();
-  },
-  mounted() {
-    // this.scrollBar = new SimpleBar(document.getElementById('mc-report-content'));
   },
 };
 </script>

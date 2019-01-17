@@ -21,19 +21,19 @@ export default {
 
   resetContext: ({ commit, dispatch, state }) => {
     if (state.context !== null) {
-      commit('STORE_CONTEXT', state.context);
       commit('SET_CONTEXT', null);
       dispatch('view/resetContext', null, { root: true });
       dispatch('addObservation', {
         observation: Helpers.OBSERVATION_DEFAULT,
         main: true,
       });
+      dispatch('getSessionContexts');
     } else {
       console.warn('Try to reset null context');
     }
   },
 
-  loadContext: ({ dispatch }, contextId) => {
+  loadContext: ({ commit, dispatch }, contextId) => {
     console.info(`Ask for context to restore ${contextId}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
       params: {
@@ -43,6 +43,7 @@ export default {
       .then(({ data: context }) => {
         dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: contextId }, { root: true }).then(async () => {
           await dispatch('setContext', context);
+          commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
           console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
           // console.dir(context);
           if (context.children.length > 0) {
@@ -364,6 +365,7 @@ export default {
       console.warn('Try to layout an empty ELK dataflow');
     } else {
       commit('ADD_DATAFLOW', dataflow);
+      commit('view/SET_RELOAD_DATAFLOW', true, { root: true });
     }
   },
 

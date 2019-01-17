@@ -91,8 +91,16 @@ export default {
 
   /**
    * If true, when report button is clicked, we ask for report
+   * Need to notify that we have unview report too
    */
   reloadReport: false,
+
+  /**
+   * If true, when dataflow button is clicked, if dataflow not exists we ask for it.
+   * Need to notify that we have unview dataflow too
+   */
+  reloadDataflow: false,
+
 
   /**
    * More info content

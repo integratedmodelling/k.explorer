@@ -72,8 +72,6 @@ export default {
   searchLostChar: state => state.searchLostChar,
   searchHistory: state => state.searchHistory,
 
-  reloadReport: state => state.reloadReport,
-
   observationInfo: state => state.observationInfo,
   mapSelection: state => state.mapSelection,
 

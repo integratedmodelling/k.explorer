@@ -40,7 +40,7 @@
                         <div class="mc-container mcm-context-label">
                           <div class="mc-menuitem mc-clickable">
                             <div class="mc-item mc-large-text" @mouseover="tooltipIt($event, context.id)" @click="closeAndCall(context.id)">
-                              {{ formatContextCreationTime(context.creationTime) }}: {{ context.label }}
+                              {{ formatContextTime(context) }}: {{ context.label }}
                               <q-tooltip v-show="needTooltip(context.id)" anchor="center right" self="center left" :offset="[10, 10]">
                                 {{ context.label }}
                               </q-tooltip>
@@ -114,12 +114,17 @@ export default {
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
     },
-    closeAndCall(contextId) {
+    async closeAndCall(contextId) {
       this.$refs['mc-contexts-popover'].hide();
       this.clearTooltip();
+      await this.$nextTick();
       this.loadContext(contextId);
     },
-    formatContextCreationTime(timestamp) {
+    formatContextTime(context) {
+      let timestamp = context.lastUpdate;
+      if (typeof timestamp === 'undefined' || timestamp === null) {
+        timestamp = context.creationTime;
+      }
       if (timestamp && timestamp !== null) {
         const dateTime = moment(timestamp);
         const isToday = moment().diff(dateTime, 'days') === 0;

@@ -144,9 +144,10 @@
           <!-- DATAFLOW -->
           <div
             class="mc-button mc-action"
-            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasDataflow ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
-            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && !hasDataflow }]"
+            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasContext ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
+            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && !hasContext }]"
           ><q-icon name="mdi-sitemap">
+            <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasContext && reloadDataflow"></span>
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
@@ -199,7 +200,7 @@
 
 <script>
 // import Vue from 'vue';
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
@@ -234,6 +235,10 @@ export default {
     };
   },
   computed: {
+    ...mapState('view', [
+      'reloadReport',
+      'reloadDataflow',
+    ]),
     ...mapGetters('data', [
       'hasContext',
       'hasObservations',
@@ -247,7 +252,6 @@ export default {
       'searchIsActive',
       'searchIsFocused',
       'mainViewer',
-      'reloadReport',
       'isDrawMode',
       'statusTextsString',
       'statusTextsLength',
@@ -342,25 +346,9 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     statusTextsString(newValue) {
-      /*
-      this.needMarqueeTS = 0;
-      if (newValue !== '') {
-        this.$nextTick(() => {
-          this.needMarqueeTS = this.isNeededMarquee('mc-status-texts');
-        });
-      }
-      */
       this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },
     contextLabel(newValue) {
-      /*
-      this.needMarqueeCTX = 0;
-      if (newValue !== null && newValue !== '') {
-        this.$nextTick(() => {
-          this.needMarqueeCTX = this.isNeededMarquee('mc-text-div-content');
-        });
-      }
-      */
       this.$refs['st-context-text'].changeText(newValue);
     },
   },

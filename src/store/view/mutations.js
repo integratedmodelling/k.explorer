@@ -133,6 +133,10 @@ export default {
     state.reloadReport = reload;
   },
 
+  SET_RELOAD_DATAFLOW: (state, reload) => {
+    state.reloadDataflow = reload;
+  },
+
   SET_OBSERVATION_INFO: (state, observation) => {
     if (observation === null) {
       state.treeSelected = null;

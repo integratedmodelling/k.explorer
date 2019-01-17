@@ -15,8 +15,11 @@ export default {
     state.tree = [];
     state.lasts = [];
     state.observations = [];
-    // state.dataflow = null;
+    state.dataflow = null;
     state.nodeSelected = null;
+    if (context === null) {
+      state.contextsHistory = [];
+    }
   },
 
   STORE_CONTEXT: (state, context) => {
@@ -116,7 +119,11 @@ export default {
       idsToDelete.push(observation.id);
     });
     if (main === null) {
-      console.warn('No main observation found');
+      if (!restored) {
+        console.warn('No main observation found, stopped?'); // if restoring, is possible to haven't main
+      } else {
+        console.info('No main observation found'); // if restoring, is possible to haven't main
+      }
       return;
     }
     // main.header = 'main';
