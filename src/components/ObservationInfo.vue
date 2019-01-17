@@ -68,9 +68,9 @@
         <template v-if="infoShowed.index === -1"><div id="oi-data-nodetail" class="oi-data-details">{{ $t('label.noInfoValues') }}</div></template>
         <template v-else>
           <div id="oi-data-detail" class="oi-data-details" @mouseover="tooltipIt($event, `q-hdata-${infoShowed.index}`)">
-            {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}` : '' }}<!-- {{ infoShowed.values[infoShowed.index] }} -->
+            {{ infoShowedText }}
             <q-tooltip class="oi-tooltip" v-show="needTooltip(`q-hdata-${infoShowed.index}`)" anchor="center right" self="center left" :offset="[10, 10]">
-              {{ infoShowed.categories.length > 0 ? `${infoShowed.categories[infoShowed.index]}` : '' }}<!-- {{ infoShowed.values[infoShowed.index] }} -->
+              {{ infoShowedText }}
             </q-tooltip>
           </div>
         </template>
@@ -138,6 +138,22 @@ export default {
       return this.exploreMode
         && this.mapSelection.pixelSelected !== null
         && `cl_${this.observationInfo.id}` === this.mapSelection.layerSelected.get('id');
+    },
+    infoShowedText() {
+      let text;
+      if (this.infoShowed.categories.length > 0) {
+        text = this.infoShowed.categories[this.infoShowed.index];
+        if (typeof text !== 'undefined' && text !== null && text !== '') {
+          return text;
+        }
+      }
+      if (this.infoShowed.values.length > 0) {
+        text = this.infoShowed.values[this.infoShowed.index];
+        if (typeof text !== 'undefined' && text !== null && text !== '') {
+          return text;
+        }
+      }
+      return '';
     },
   },
   methods: {
