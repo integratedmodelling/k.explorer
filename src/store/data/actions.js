@@ -22,15 +22,24 @@ export default {
   resetContext: ({ commit, dispatch, state }) => {
     if (state.context !== null) {
       commit('SET_CONTEXT', null);
-      dispatch('view/resetContext', null, { root: true });
-      dispatch('addObservation', {
-        observation: Helpers.OBSERVATION_DEFAULT,
-        main: true,
-      });
       dispatch('getSessionContexts');
+      dispatch('view/resetContext', null, { root: true });
+      if (state.waitingForReset !== null) {
+        dispatch('loadContext', state.waitingForReset);
+        state.waitingForReset = null;
+      } else {
+        dispatch('addObservation', {
+          observation: Helpers.OBSERVATION_DEFAULT,
+          main: true,
+        });
+      }
     } else {
       console.warn('Try to reset null context');
     }
+  },
+
+  setWaitinForReset: ({ commit }, contextId = null) => {
+    commit('WAITING_FOR_RESET', contextId);
   },
 
   loadContext: ({ commit, dispatch }, contextId) => {
@@ -40,6 +49,7 @@ export default {
         collapseSiblings: true,
       },
     }).then(async ({ data: context }) => {
+      context.restored = true;
       await dispatch('setContext', context);
       commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
       console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
@@ -59,7 +69,7 @@ export default {
         await Promise.all(tasks); // await for all observation to add
         if (tasks !== null) {
           tasks.forEach((taskId) => {
-            dispatch('recalculateTree', { taskId, restored: true });
+            dispatch('recalculateTree', { taskId });
           });
         }
         dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
@@ -247,12 +257,12 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit }, { taskId, restored = false }) => {
+  recalculateTree: ({ commit }, { taskId }) => {
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
     return new Promise((resolve) => {
-      commit('RECALCULATE_TREE', { taskId, restored });
+      commit('RECALCULATE_TREE', { taskId });
       resolve();
     });
   },

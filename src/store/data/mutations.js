@@ -23,6 +23,12 @@ export default {
     }
   },
 
+
+  WAITING_FOR_RESET(state, contextId) {
+    // if null, no context will be load
+    state.waitingForReset = contextId;
+  },
+
   STORE_CONTEXT: (state, context) => {
     const exists = state.contextsHistory.find(ctxt => ctxt.id === context.id);
     if (typeof exists === 'undefined') {
@@ -89,8 +95,9 @@ export default {
     }
   },
 
-  RECALCULATE_TREE: (state, { taskId, restored }) => {
+  RECALCULATE_TREE: (state, { taskId }) => {
     const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
+    const restored = typeof state.context.restored !== 'undefined';
     if (filtered.length === 0) {
       console.info('No recalculation needed, no observation for this task');
       return;

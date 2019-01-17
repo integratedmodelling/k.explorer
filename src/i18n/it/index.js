@@ -38,6 +38,7 @@ export default {
     labelKm: 'Kilometri',
     labelSpatial: 'spaziale',
     labelTemporal: 'temporale',
+    newContext: 'Constesto nuovo',
     previousContexts: 'Contesti precedenti',
     drawCustomContext: 'Disegnare contesto',
     eraseCustomContext: 'Eliminare contesto',

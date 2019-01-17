@@ -8,13 +8,22 @@
     class="mcm-menubutton absolute-top-right"
   >
     <q-popover
-      v-if="!searchIsActive && !isDrawMode"
+      v-if="!isDrawMode"
       anchor="top right"
       self="top left"
+      ref="mcm-main-popover"
     >
       <q-list dense>
         <q-list-header style="padding: 6px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
         <q-item-separator></q-item-separator>
+        <q-item v-if="hasContext">
+          <div class="mc-container">
+            <div class="mc-menuitem mc-clickable"  @click="closeAndCall(null)">
+              <div class="mc-item mdi mdi-star-four-points-outline mc-icon"></div>
+              <div class="mc-item mc-text mc-only-text">{{ $t('label.newContext') }}</div>
+            </div>
+          </div>
+        </q-item>
         <q-item>
           <div class="mc-container">
             <div class="mc-menuitem mc-no-clickable" :class="{ 'mc-not-available': contextsHistory.length === 0 }">
@@ -35,11 +44,11 @@
                   self="top left"
                 >
                   <q-list dense>
-                    <q-item v-for="context in contextsHistory" :key="context.id">
+                    <q-item v-for="context in cleanContextsHistory" :key="context.id">
                       <q-item-main>
                         <div class="mc-container mcm-context-label">
                           <div class="mc-menuitem mc-clickable">
-                            <div class="mc-item mc-large-text" @mouseover="tooltipIt($event, context.id)" @click="closeAndCall(context.id)">
+                            <div class="mc-item mc-large-text" :style="{ 'font-style': taskIsAlive(context.id) ? 'italic' : 'normal' }" @mouseover="tooltipIt($event, context.id)" @click="closeAndCall(context.id)">
                               {{ formatContextTime(context) }}: {{ context.label }}
                               <q-tooltip v-show="needTooltip(context.id)" anchor="center right" self="center left" :offset="[10, 10]">
                                 {{ context.label }}
@@ -55,29 +64,30 @@
             </div>
           </div>
         </q-item>
-        <q-item>
-          <q-item-main>
-            <div class="mc-container">
-              <div class="mc-menuitem mc-clickable" :class="[ isDrawMode ? 'mc-select' : '']" @click="startDraw()">
-                <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
-                <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
+        <template v-if="!(searchIsActive || hasContext)">
+          <q-item>
+            <q-item-main>
+              <div class="mc-container">
+                <div class="mc-menuitem mc-clickable" :class="[ isDrawMode ? 'mc-select' : '']" @click="startDraw()">
+                  <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
+                  <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
+                </div>
               </div>
-            </div>
-          </q-item-main>
-        </q-item>
-        <q-list-header style="padding: 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
-        <q-item-separator></q-item-separator>
-        <q-item>
-          <q-item-main>
-            <scale-reference width="180px" :light="true" scaleType="space" :editable="true" :full="true"></scale-reference>
-          </q-item-main>
-        </q-item>
-        <q-item>
-          <q-item-main>
-            <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
-          </q-item-main>
-        </q-item>
-
+            </q-item-main>
+          </q-item>
+          <q-list-header style="padding: 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
+          <q-item-separator></q-item-separator>
+          <q-item>
+            <q-item-main>
+              <scale-reference width="180px" :light="true" scaleType="space" :editable="true" :full="true"></scale-reference>
+            </q-item-main>
+          </q-item>
+          <q-item>
+            <q-item-main>
+              <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
+            </q-item-main>
+          </q-item>
+        </template>
       </q-list>
     </q-popover>
   </q-btn>
@@ -85,8 +95,9 @@
 
 <script>
 import moment from 'moment';
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import Constants from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
 
@@ -94,20 +105,38 @@ export default {
   name: 'MainControlMenu',
   mixins: [TooltipIt],
   data() {
-    return {};
+    return {
+      waitingForReset: null,
+    };
   },
   computed: {
     ...mapGetters('data', [
       'contextsHistory',
+      'hasContext',
+      'contextId',
+    ]),
+    ...mapState('stomp', [
+      'subscriptions',
+    ]),
+    ...mapGetters('stomp', [
+      'lastActiveTask',
+      'tasks',
     ]),
     ...mapGetters('view', [
       'searchIsActive',
       'isDrawMode',
     ]),
+    cleanContextsHistory() {
+      return this.contextsHistory.filter(ch => ch.id !== this.contextId);
+    },
+    taskIsAlive() {
+      return contextId => typeof this.tasks.find(t => t.task.contextId === contextId) !== 'undefined';
+    },
   },
   methods: {
     ...mapActions('data', [
       'loadContext',
+      'setWaitinForReset',
     ]),
     ...mapActions('view', [
       'setDrawMode',
@@ -119,10 +148,26 @@ export default {
     async closeAndCall(contextId) {
       this.$refs['mc-contexts-popover'].hide();
       this.clearTooltip();
-      this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
-      this.$nextTick(() => {
+      if (contextId !== null) {
+        this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
+      }
+      if (this.hasContext) {
+        const task = this.lastActiveTask;
+        if (task !== null) {
+          const subscriptionObject = this.subscriptions.find(ts => ts.id === task.id);
+          if (typeof subscriptionObject !== 'undefined') {
+            subscriptionObject.subscription.unsubscribe();
+          }
+        }
+        this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+        if (contextId !== null) {
+          this.setWaitinForReset(contextId);
+        } else {
+          this.$refs['mcm-main-popover'].hide();
+        }
+      } else {
         this.loadContext(contextId);
-      });
+      }
     },
     formatContextTime(context) {
       let timestamp = context.lastUpdate;
@@ -135,6 +180,15 @@ export default {
         return isToday ? dateTime.format('HH:mm:ss') : dateTime.format('YYYY/mm/dd HH:mm:ss');
       }
       return '';
+    },
+
+  },
+  watch: {
+    hasContext(newValue) {
+      if (newValue && this.waitingForReset !== null) {
+        this.loadContext(this.waitingForReset);
+        this.waitingForReset = null;
+      }
     },
   },
   mounted() {
@@ -150,7 +204,7 @@ export default {
 
   .mcm-menubutton
     top 6px
-    right 10px
+    right 5px
 
   .mcm-contextbutton
     right -10px

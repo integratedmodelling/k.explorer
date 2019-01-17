@@ -65,7 +65,7 @@
         <div id="mc-status-texts" ref="mc-status-texts">
           <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
         </div>
-        <main-control-menu v-show="!hasContext && !isHidden && !searchIsActive"></main-control-menu>
+        <main-control-menu v-show="!isHidden"></main-control-menu>
       </q-card-title>
 
       <q-card-main

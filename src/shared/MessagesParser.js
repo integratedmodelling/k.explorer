@@ -19,6 +19,7 @@ const PARSERS = {
   },
   [IN.TYPE_TASKFINISHED]: (task, { dispatch }) => {
     dispatch('stomp/taskEnd', task, { root: true });
+    dispatch('data/recalculateTree', { taskId: task.id }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
@@ -64,7 +65,7 @@ const PARSERS = {
       // check if it is an observation linkable to actual context (checking rootContextId)
       addToKexplorerLog(
         dispatch,
-        Constants.TYPE_DEBUG,
+        Constants.TYPE_INFO,
         `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
         JSON.stringify(observation, null, 4),
       );
@@ -72,7 +73,7 @@ const PARSERS = {
     } else {
       addToKexplorerLog(
         dispatch,
-        Constants.TYPE_WARNING,
+        Constants.TYPE_INFO,
         'Received an observation of different actual context',
         JSON.stringify(observation, null, 4),
       );

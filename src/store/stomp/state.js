@@ -48,4 +48,6 @@ export default {
    * }
    */
   tasks: [],
+
+  subscriptions: [],
 };

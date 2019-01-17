@@ -30,6 +30,7 @@ export default {
   /**
    * Return if a task is alive
    */
+  tasks: state => state.tasks,
   taskIsAlive: state => id => typeof state.tasks.find(task => task.id === id) !== 'undefined',
 
   hasTasks: state => state.tasks.length !== 0,

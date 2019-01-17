@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
@@ -13,12 +13,10 @@ import Vue from 'vue';
 
 export default {
   name: 'App',
-  data() {
-    return {
-      subscriptions: [],
-    };
-  },
   computed: {
+    ...mapState('stomp', [
+      'subscriptions',
+    ]),
     ...mapGetters('data', [
       'session',
     ]),
