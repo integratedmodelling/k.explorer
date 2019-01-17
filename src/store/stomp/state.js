@@ -42,6 +42,10 @@ export default {
   /**
    * From websocket we received complex tasks.
    * Tasks in this array are alive and will be deleted on finish
+   * {
+   *  taskId: taskId
+   *  task: task as received from STOMP message or null if come from reload
+   * }
    */
   tasks: [],
 };

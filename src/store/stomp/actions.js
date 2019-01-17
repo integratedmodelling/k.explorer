@@ -50,7 +50,7 @@ export default {
   taskStart: ({ commit, dispatch }, task) => {
     dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: task.id }, { root: true });
     commit('TASK_START', task);
-    commit('data/ADD_TASKID', task.id, { root: true });
+    // commit('data/ADD_TASKID', task.id, { root: true }); this is managed by data/addObservation
   },
 
   taskAbort: ({ commit, dispatch }, task) => {

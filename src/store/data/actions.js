@@ -40,31 +40,34 @@ export default {
         collapseSiblings: true,
       },
     })
-      .then(async ({ data: context }) => {
-        dispatch('setContext', context);
-        console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
-        // console.dir(context);
-        if (context.children.length > 0) {
-          const tasks = [];
-          const observations = context.children;
-          observations.forEach((observation) => {
-            if (observation.taskId !== null) {
-              if (tasks.indexOf(observation.taskId) === -1) {
-                tasks.push(observation.taskId);
+      .then(({ data: context }) => {
+        dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: contextId }, { root: true }).then(async () => {
+          await dispatch('setContext', context);
+          console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
+          // console.dir(context);
+          if (context.children.length > 0) {
+            const tasks = [];
+            const observations = context.children;
+            observations.forEach((observation) => {
+              if (observation.taskId !== null) {
+                if (tasks.indexOf(observation.taskId) === -1) {
+                  tasks.push(observation.taskId);
+                }
+                dispatch('addObservation', { observation, restored: true });
               }
-              dispatch('addObservation', { observation, restored: true });
-            }
-          });
-
-          await Promise.all(tasks); // await for all observation to add
-          if (tasks !== null) {
-            tasks.forEach((taskId) => {
-              dispatch('recalculateTree', { taskId, restored: true });
             });
+
+            await Promise.all(tasks); // await for all observation to add
+            if (tasks !== null) {
+              tasks.forEach((taskId) => {
+                dispatch('recalculateTree', { taskId, restored: true });
+              });
+            }
+            await Promise.all(tasks);
+            dispatch('stomp/clearTasks', null, { root: true });
+            dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true });
           }
-          await Promise.all(tasks);
-          dispatch('stomp/clearTasks', null, { root: true });
-        }
+        });
       });
   },
 
