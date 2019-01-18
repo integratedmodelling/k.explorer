@@ -60,10 +60,10 @@
 
         <klab-search v-if="searchIsActive"></klab-search>
         <div id="mc-context" class="text-white" v-else>
-          <scrolling-text width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
+          <scrolling-text :edgeOpacity="hasContext ? 1 : searchIsFocused ? 0.6 : 0.2" width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
         </div>
         <div id="mc-status-texts" ref="mc-status-texts">
-          <scrolling-text width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
+          <scrolling-text :edgeOpacity="hasContext ? 1 : searchIsFocused ? 0.6 : 0.2" width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
         </div>
         <main-control-menu v-show="!isHidden"></main-control-menu>
       </q-card-title>
@@ -462,7 +462,7 @@ export default {
     overflow-y hidden
     white-space nowrap
     position absolute
-    left 50px
+    left 45px
     margin-top 8px
 
   #mc-text-div

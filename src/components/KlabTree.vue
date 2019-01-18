@@ -1,5 +1,5 @@
 <template>
-    <div id="kt-container" class="relative-position" :class="[ hasObservationInfo ? 'with-splitter' : '' ]">
+    <div id="kt-container" class="relative-position" :class="{ 'with-splitter': hasObservationInfo, 'loading':  taskIsAlive }">
       <div id="kt-tree-container" class="simplebar-vertical-only">
         <q-tree
           id="kt-tree"
@@ -99,6 +99,10 @@ export default {
       'treeNode',
       'lasts',
       'contextReloaded',
+      'contextId',
+    ]),
+    ...mapGetters('stomp', [
+      'tasks',
     ]),
     ...mapGetters('view', [
       'observationInfo',
@@ -111,6 +115,9 @@ export default {
     ]),
     filter() {
       return this.$previouslyNotified === Constants.PARAMS_PN_ONLY ? 'filter' : '';
+    },
+    taskIsAlive() {
+      return typeof this.tasks.find(t => t.task.contextId === this.contextId) !== 'undefined';
     },
   },
   methods: {
@@ -429,19 +436,17 @@ export default {
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     padding: 10px 0
   }
+  #kt-container.loading {
+    background: linear-gradient(90deg, #333, #999);
+    background-size: 200% 100%;
+    animation: Gradient 4s linear infinite;
+  }
   #kt-container.with-splitter {
     /* removed 30px of padding and scrollbar padding-bottom */
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
   }
   .tree-q-tooltip {
     background-color #333
-  }
-  @keyframes flash {
-    0% { opacity: 1; }
-    25% { opacity: .5; }
-    50% { opacity: 1; }
-    75% { opacity: .5; }
-    100% { opacity: 1; }
   }
   [data-simplebar] {
     padding-bottom: 10px;
@@ -452,5 +457,16 @@ export default {
   #kt-container .q-tree-children {
     margin-bottom: 4px;
   }
-
+  @keyframes flash {
+    0% { opacity: 1; }
+    25% { opacity: .5; }
+    50% { opacity: 1; }
+    75% { opacity: .5; }
+    100% { opacity: 1; }
+  }
+  @keyframes Gradient {
+    0% { background-position: 0% 0% }
+    50% { background-position: 100% 0% }
+    100% { background-position: 0% 0% }
+  }
 </style>

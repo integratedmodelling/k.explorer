@@ -4,7 +4,7 @@
       {{ text }}
     </div>
 
-    <div class="st-edges" :style="{ 'background-color': spinnerColor.color  }"></div>
+    <div class="st-edges" :style="{ 'background-color': getBGColor(spinnerColor, edgeOpacity) }"></div>
 
   </div>
 </template>
@@ -31,6 +31,10 @@ export default {
     accentuate: {
       type: Boolean,
       default: false,
+    },
+    edgeOpacity: {
+      type: Number,
+      default: 1,
     },
   },
   data() {
@@ -101,7 +105,7 @@ export default {
         .st-text
           animation klab-marquee alternate linear infinite
         .st-edges
-          opacity 1
+          opacity inherit
        /* not hover, reset text position and ellipsis */
       &:not(:hover)
         .st-text
@@ -112,15 +116,14 @@ export default {
     &:not(.hover-active)
       .st-text
         animation klab-marquee alternate linear infinite
+      .st-edges
+        opacity inherit
       &:hover
         .st-text
           animation-play-state paused
         &:not(.active) .st-accentuate
           color rgba(0,0,0, 0.8)
           cursor default
-      &:not(:hover)
-        .st-edges
-          opacity 1
 
     .st-text
       position relative
