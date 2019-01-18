@@ -566,6 +566,9 @@ export default {
     padding 2px 5px
     &.mc-clickable
       cursor pointer
+      &:hover:not(.mc-not-available)
+        background-color #ddd
+        border-radius 5px
     &.mc-no-clickable
       cursor default
     &.mc-not-available

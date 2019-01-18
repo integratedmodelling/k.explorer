@@ -12,13 +12,14 @@
       anchor="top right"
       self="top left"
       ref="mcm-main-popover"
+      :persistent="true"
     >
       <q-list dense>
         <q-list-header style="padding: 6px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
         <q-item-separator></q-item-separator>
         <q-item v-if="hasContext">
           <div class="mc-container">
-            <div class="mc-menuitem mc-clickable"  @click="closeAndCall(null)">
+            <div class="mc-menuitem mc-clickable" @click="closeAndCall(null)">
               <div class="mc-item mdi mdi-star-four-points-outline mc-icon"></div>
               <div class="mc-item mc-text mc-only-text">{{ $t('label.newContext') }}</div>
             </div>
@@ -26,29 +27,39 @@
         </q-item>
         <q-item>
           <div class="mc-container">
-            <div class="mc-menuitem mc-no-clickable" :class="{ 'mc-not-available': contextsHistory.length === 0 }">
+            <div class="mc-menuitem mc-clickable"
+                 :class="{ 'mc-not-available': contextsHistory.length === 0 }"
+                 @click="toggleContextsHistory"
+            >
               <div class="mc-item mdi mdi-history mc-icon"></div>
               <div class="mc-item mc-text mc-only-text">{{ $t('label.previousContexts') }}</div>
-              <q-btn
-                icon="mdi-chevron-right"
-                color="black"
-                size="sm"
-                round
-                flat
-                class="mcm-contextbutton absolute-top-right"
-                :disable="contextsHistory.length === 0"
-              >
+              <div>
+                <q-icon
+                  name="mdi-chevron-right"
+                  color="black"
+                  size="sm"
+                  class="mcm-contextbutton"
+                ></q-icon>
                 <q-popover
-                  ref="mc-contexts-popover"
+                  ref="mcm-contexts-popover"
                   anchor="top right"
                   self="top left"
+                  :offset="[18,28]"
                 >
-                  <q-list dense>
-                    <q-item v-for="context in cleanContextsHistory" :key="context.id">
+                  <q-list dense >
+                    <q-item v-for="context in contextsHistory" :key="context.id">
                       <q-item-main>
                         <div class="mc-container mcm-context-label">
-                          <div class="mc-menuitem mc-clickable">
-                            <div class="mc-item mc-large-text" :style="{ 'font-style': taskIsAlive(context.id) ? 'italic' : 'normal' }" @mouseover="tooltipIt($event, context.id)" @click="closeAndCall(context.id)">
+                          <div class="mc-menuitem"
+                               @click="closeAndCall(context.id)"
+                               :class="[ context.id === contextId ? 'mc-no-clickable' : 'mc-clickable']"
+                          >
+                            <div
+                              class="mc-item mc-large-text"
+                              :class="{ 'mcm-actual-context': context.id === contextId }"
+                              :style="{ 'font-style': taskIsAlive(context.id) ? 'italic' : 'normal' }"
+                              @mouseover="tooltipIt($event, context.id)"
+                            >
                               {{ formatContextTime(context) }}: {{ context.label }}
                               <q-tooltip v-show="needTooltip(context.id)" anchor="center right" self="center left" :offset="[10, 10]">
                                 {{ context.label }}
@@ -60,7 +71,7 @@
                     </q-item>
                   </q-list>
                 </q-popover>
-              </q-btn>
+              </div>
             </div>
           </div>
         </q-item>
@@ -126,9 +137,11 @@ export default {
       'searchIsActive',
       'isDrawMode',
     ]),
+    /*
     cleanContextsHistory() {
       return this.contextsHistory.filter(ch => ch.id !== this.contextId);
     },
+    */
     taskIsAlive() {
       return contextId => typeof this.tasks.find(t => t.task.contextId === contextId) !== 'undefined';
     },
@@ -145,8 +158,17 @@ export default {
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
     },
+    toggleContextsHistory() {
+      if (this.contextsHistory.length > 0) {
+        this.$refs['mcm-contexts-popover'].toggle();
+      }
+    },
     async closeAndCall(contextId) {
-      this.$refs['mc-contexts-popover'].hide();
+      if (this.contextId === contextId) {
+        return;
+      }
+      this.$refs['mcm-main-popover'].hide();
+      this.$refs['mcm-contexts-popover'].hide();
       this.clearTooltip();
       if (contextId !== null) {
         this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
@@ -209,7 +231,7 @@ export default {
     right 5px
 
   .mcm-contextbutton
-    right -10px
+    right -5px
 
   .mc-container.mcm-context-label
     width 250px
@@ -220,5 +242,13 @@ export default {
 
   #mc-eraserforcontext
     padding 0 0 0 3px
+
+  .mcm-actual-context
+    color #999
+
+  .q-icon.mcm-contextbutton
+    position absolute
+    top 7px
+    right 5px
 
 </style>

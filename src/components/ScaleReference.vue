@@ -1,6 +1,6 @@
 <template>
   <div class="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
-    <div class="sr-scalereference mc-menuitem" v-if="hasScale" :class="[ full ? 'sr-full' : '']">
+    <div class="sr-scalereference mc-menuitem" v-if="hasScale" :class="{ 'sr-full': full, 'mc-clickable': editable }">
       <div
         v-if="full"
         class="sr-locked mc-item mdi sr-icon"
