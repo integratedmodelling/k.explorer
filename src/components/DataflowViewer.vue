@@ -49,41 +49,32 @@ export default {
       'addDataflow',
     ]),
     loadDataflow() {
-      return new Promise((resolve, reject) => {
-        if (this.dataflow === null) {
-          /* This is possible?
-          if (!this.hasContext) {
-            reject(new Error('Ask for dataflow but no context'));
+      /* This is possible?
+      if (!this.hasContext) {
+        reject(new Error('Ask for dataflow but no context'));
+      }
+      */
+      console.info('Ask for dataflow');
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
+        .then(({ data }) => {
+          if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
+            try {
+              const jsonEklLayout = JSON.parse(data.jsonElkLayout);
+              this.addDataflow(jsonEklLayout);
+            } catch (e) {
+              console.error(`Error in dataflos layout for the context ${data.taskId}: ${e}`);
+            }
+          } else {
+            console.error(`Dataflow in task ${data.taskId} has no layout`);
           }
-          */
-          console.info('Ask for dataflow');
-          axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
-            .then(({ data }) => {
-              if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
-                try {
-                  const jsonEklLayout = JSON.parse(data.jsonElkLayout);
-                  this.addDataflow(jsonEklLayout);
-                  this.doGraph();
-                  this.reloadDataflow = false;
-                  resolve();
-                } catch (e) {
-                  reject(new Error(`Error in dataflos layout for the context ${data.taskId}: ${e}`));
-                }
-              } else {
-                reject(new Error(`Dataflow in task ${data.taskId} has no layout`));
-              }
-            });
-        } else {
-          this.reloadDataflow = false;
-          resolve();
-        }
-      });
+        });
     },
     doGraph() {
       if (this.dataflow === null) {
         return;
       }
       if (this.processing) {
+        setTimeout(this.doGraph(), 100);
         return;
       }
       if (!this.visible) {
@@ -93,17 +84,12 @@ export default {
       // clone dataflow to avoid modification while processing
       const dataflow = JSON.parse(JSON.stringify(this.dataflow));
       this.processing = true;
-      // const firstGraph = this.graph === null;
       this.graph = new ElkGraphJsonToSprotty().transform(dataflow);
-      // if (firstGraph) {
-      // this.updateStatuses();
       this.modelSource.setModel(this.graph);
       console.debug(JSON.stringify(this.graph, null, 4));
       this.actionDispatcher.dispatch(new FitToScreenAction([]));
-      // } else {
-      //  this.actionDispatcher.dispatch(new UpdateModelAction(this.graph));
-      // }
       this.processing = false;
+      this.reloadDataflow = false;
     },
     updateStatuses() {
       if (!this.visible) {
@@ -138,17 +124,17 @@ export default {
       },
       deep: true,
     },
+    /*
     reloadDataflow() {
       // eslint-disable-next-line no-underscore-dangle
       if (!this._inactive) {
         this.loadDataflow();
       }
     },
+    */
   },
 
   mounted() {
-    // Create Sprotty viewer
-    // this.visible = true;
     const sprottyContainer = createContainer({ needsClientLayout: false, needsServerLayout: true }, 'info');
     sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(SelectHandlerInitializer);
 
@@ -162,26 +148,20 @@ export default {
         }
       }
     });
-    this.loadDataflow();
   },
 
   activated() {
-    this.loadDataflow().then(() => {
-      this.visible = true;
-      if (this.needsUpdate) {
-        this.doGraph();
-        this.updateStatuses();
-        this.needsUpdate = false;
-      }
-    }).catch((error) => {
-      console.error(error);
-    });
+    this.visible = true;
+    if (this.dataflow === null) {
+      this.loadDataflow();
+    } else if (this.needsUpdate) {
+      this.doGraph();
+      this.updateStatuses();
+      this.needsUpdate = false;
+    }
   },
   deactivated() {
     this.visible = false;
-  },
-  beforeDestroy() {
-    // clearInterval(this.interval);
   },
 
 };
