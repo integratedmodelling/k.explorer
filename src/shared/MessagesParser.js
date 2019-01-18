@@ -19,7 +19,7 @@ const PARSERS = {
   },
   [IN.TYPE_TASKFINISHED]: (task, { dispatch }) => {
     dispatch('stomp/taskEnd', task, { root: true });
-    dispatch('data/recalculateTree', { taskId: task.id }, { root: true });
+    dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
@@ -51,6 +51,11 @@ const PARSERS = {
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, context) => {
     const { rootState, dispatch } = context;
+    // check if taskId exists
+    if (typeof rootState.stomp.tasks.find(task => task.id === observation.taskId) === 'undefined') {
+      dispatch('stomp/taskStart', { id: observation.taskId, description: 'Previous observations results' }, { root: true });
+      dispatch('view/addToStatusTexts', { id: observation.taskId, text: 'Previous observations results' }, { root: true });
+    }
     // check if is context
     if (observation.parentId === null) { // || observation.parentId === observation.id) {
       // new context
@@ -69,6 +74,7 @@ const PARSERS = {
         `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
         JSON.stringify(observation, null, 4),
       );
+      observation.previouslyNotified = true; // needed in case of observation added to a reloaded context
       dispatch('data/addObservation', { observation }, { root: true });
     } else {
       addToKexplorerLog(

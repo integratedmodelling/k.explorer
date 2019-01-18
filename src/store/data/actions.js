@@ -69,7 +69,7 @@ export default {
         await Promise.all(tasks); // await for all observation to add
         if (tasks !== null) {
           tasks.forEach((taskId) => {
-            dispatch('recalculateTree', { taskId });
+            dispatch('recalculateTree', { taskId, fromTask: false });
           });
         }
         dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
@@ -258,12 +258,12 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit }, { taskId }) => {
+  recalculateTree: ({ commit }, { taskId, fromTask }) => {
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
     return new Promise((resolve) => {
-      commit('RECALCULATE_TREE', { taskId });
+      commit('RECALCULATE_TREE', { taskId, fromTask });
       resolve();
     });
   },

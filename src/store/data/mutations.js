@@ -20,6 +20,8 @@ export default {
     state.nodeSelected = null;
     if (context === null) {
       state.contextsHistory = [];
+    } else if (typeof state.context.restored === 'undefined') {
+      state.context.restored = false;
     }
   },
 
@@ -97,7 +99,7 @@ export default {
     }
   },
 
-  RECALCULATE_TREE: (state, { taskId }) => {
+  RECALCULATE_TREE: (state, { taskId, fromTask }) => {
     const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
     const restored = typeof state.context.restored !== 'undefined';
     if (filtered.length === 0) {
@@ -114,7 +116,7 @@ export default {
     const children = []; // no main, children of main observation
     filtered.forEach((observation, index) => {
       if (observation.main) {
-        if ((!restored && index === filtered.length - 1) || (restored && index === 0)) {
+        if ((fromTask && index === filtered.length - 1) || (restored && index === 0)) {
           main = Helpers.getNodeFromObservation(observation).node;
         } else {
           mains.push(Helpers.getNodeFromObservation(observation).node);
