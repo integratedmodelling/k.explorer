@@ -79,7 +79,7 @@ export default {
     if (state.context.id === parentId) {
       // is a tree root node
       state.tree.push(node);
-    } else {
+    } else if (node.rootContextId === state.context.id) {
       const parent = Helpers.findNodeById(state.tree, parentId);
       if (parent !== null) {
         parent.children.push({
@@ -92,6 +92,8 @@ export default {
         console.warn(`Orphan founded with id ${node.id}`);
         state.orphans.push(node);
       }
+    } else {
+      console.warn(`Try to add to tree an observation of other context. Actual: ${state.context.id} / Node: ${node.rootContextId}`);
     }
   },
 

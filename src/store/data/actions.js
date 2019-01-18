@@ -222,6 +222,7 @@ export default {
             siblingsLoaded: 1,
             children: [],
             main: observation.main,
+            rootContextId: observation.rootContextId,
           },
           parentId: observation.parentId,
         });
