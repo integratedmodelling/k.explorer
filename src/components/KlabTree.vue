@@ -5,6 +5,8 @@
           id="kt-tree"
           ref="klabTree"
           :nodes="tree"
+          :filter="filter"
+          :filterMethod="filterMethod"
           node-key="id"
           :ticked.sync="ticked"
           :selected.sync="selected"
@@ -96,6 +98,7 @@ export default {
       'tree',
       'treeNode',
       'lasts',
+      'contextReloaded',
     ]),
     ...mapGetters('view', [
       'observationInfo',
@@ -106,6 +109,9 @@ export default {
       'treeTicked',
       'treeExpanded',
     ]),
+    filter() {
+      return this.$previouslyNotified === Constants.PARAMS_PN_ONLY ? 'filter' : '';
+    },
   },
   methods: {
     ...mapActions('data', [
@@ -118,6 +124,9 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
+    filterMethod(node) {
+      return !this.contextReloaded || node.previouslyNotified;
+    },
     /* TODO context menu better implementation
     rightClickHandler(e) {
       e.preventDefault();

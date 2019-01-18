@@ -45,6 +45,9 @@ export default {
     return state.contextsHistory;
   },
 
+  contextReloaded: state => state.context !== null && typeof state.context.restored !== 'undefined' && state.context.restored,
+
+
   /**
    * The session, very important accessing it using getter
    */
