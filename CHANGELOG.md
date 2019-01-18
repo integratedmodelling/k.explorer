@@ -42,3 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a status text that show the current running task
 ### Solved
 - Solved partial sibling load in big screens 
+
+## 0.5.4 - 2019-01-18
+### Added
+- Possibility to load previous context
+- Possibility to switch to previous or new context while waiting for calculation
+### Solved
+- various improvements in logic and UI

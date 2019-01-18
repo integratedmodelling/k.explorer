@@ -80,7 +80,7 @@ const PARSERS = {
       addToKexplorerLog(
         dispatch,
         Constants.TYPE_INFO,
-        'Received an observation of different actual context',
+        'Received an observation of different context',
         JSON.stringify(observation, null, 4),
       );
     }
