@@ -60,9 +60,7 @@ export default {
 
   taskEnd: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
-    dispatch('data/recalculateTree', { taskId: task.id, restored: false }, { root: true }).then(() => {
-      dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
-    });
+    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
 
   clearTasks: ({ commit }) => {
