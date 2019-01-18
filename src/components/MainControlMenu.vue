@@ -152,6 +152,7 @@ export default {
         this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
       }
       if (this.hasContext) {
+        /*
         const task = this.lastActiveTask;
         if (task !== null) {
           const subscriptionObject = this.subscriptions.find(ts => ts.id === task.id);
@@ -159,6 +160,7 @@ export default {
             subscriptionObject.subscription.unsubscribe();
           }
         }
+        */
         this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
         if (contextId !== null) {
           this.setWaitinForReset(contextId);
