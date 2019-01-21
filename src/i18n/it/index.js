@@ -2,6 +2,8 @@ export default {
   label: {
     appTitle: 'k.LAB Explorer IT',
     appRunning: 'Funzionando  con Quasar v{version}',
+    appClose: 'Chiudi',
+    appOK: 'Ok',
     klabNoMessage: 'Nessun messaggio',
     klabUnknownError: 'Errore sconosciuto',
     klabNoDate: 'Nessuna data',
@@ -47,7 +49,7 @@ export default {
     drawLineString: 'Linea',
     drawPolygon: 'Poligono',
     drawCircle: 'Cerchio',
-
+    optionShowSecundary: 'Vedere secondarie',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

@@ -61,7 +61,7 @@ export default ({ store }) => {
     expires: 30,
     path: '/',
   });
-  Vue.prototype.$notified = notified;
+  store.state.view.showNotified = notified;
   Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
     expires: 30,
     path: '/',

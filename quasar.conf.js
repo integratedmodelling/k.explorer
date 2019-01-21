@@ -130,6 +130,7 @@ module.exports = function (ctx) {
         'QDialog',
         'QContextMenu',
         'QResizeObservable',
+        'QToggle',
       ],
       directives: [
         'Ripple',

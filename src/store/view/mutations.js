@@ -187,4 +187,8 @@ export default {
   SET_CUSTOM_CONTEXT: (state, customContext) => {
     state.customContext = customContext;
   },
+
+  SET_SHOW_NOTIFIED: (state, showNotified) => {
+    state.showNotified = showNotified;
+  },
 };
