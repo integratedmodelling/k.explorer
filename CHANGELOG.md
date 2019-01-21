@@ -49,3 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Possibility to switch to previous or new context while waiting for calculation
 ### Solved
 - various improvements in logic and UI
+### Link
+Feature notification on Integrated Modelling Confluence
+[
+ Access to previous contexts and concurrent computations are implemented in k.Explorer](https://integratedmodelling.org/confluence/display/ATS/Feature+notification)
+
