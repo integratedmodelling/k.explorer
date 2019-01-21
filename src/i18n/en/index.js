@@ -2,6 +2,8 @@ export default {
   label: {
     appTitle: 'k.LAB Explorer EN',
     appRunning: 'Running on Quasar v{version}',
+    appClose: 'Close',
+    appOK: 'Ok',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
     klabNoDate: 'No date',
@@ -25,6 +27,7 @@ export default {
     noScaleReference: '',
     mcMenuScale: 'Actual scale:',
     mcMenuContext: 'Context',
+    mcMenuOption: 'Options',
     titleOutputFormat: 'Download observation',
     askForOuputFormat: 'Select format',
     titleChangeScale: 'Change {type} scale',
@@ -47,6 +50,7 @@ export default {
     drawLineString: 'Line',
     drawPolygon: 'Polygon',
     drawCircle: 'Circle',
+    optionShowSecundary: 'Show secondary',
   },
   messages: {
     connectionClosed: 'Connection closed',

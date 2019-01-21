@@ -14,8 +14,17 @@
       ref="mcm-main-popover"
       :persistent="true"
     >
+      <q-btn
+        icon="mdi-close"
+        class="mcm-icon-close-popover"
+        @click="$refs['mcm-main-popover'].hide()"
+        color="grey-8"
+        size="xs"
+        flat
+        round
+      ></q-btn>
       <q-list dense>
-        <q-list-header style="padding: 6px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
+        <q-list-header style="padding: 0 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
         <q-item-separator></q-item-separator>
         <q-item v-if="hasContext">
           <div class="mc-container">
@@ -86,7 +95,7 @@
               </div>
             </q-item-main>
           </q-item>
-          <q-list-header style="padding: 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
+          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
           <q-item-separator></q-item-separator>
           <q-item>
             <q-item-main>
@@ -97,6 +106,20 @@
             <q-item-main>
               <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
             </q-item-main>
+          </q-item>
+        </template>
+        <template v-if="hasContext && contextReloaded">
+          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
+          <q-item-separator></q-item-separator>
+          <q-item>
+            <div class="mc-container">
+              <div class="mc-menuitem">
+                <div class="mc-item">{{ $t('label.optionShowSecundary') }}</div>
+              </div>
+              <q-item-side right>
+                <q-toggle v-model="showAll" color="mc-main" />
+              </q-item-side>
+            </div>
           </q-item>
         </template>
       </q-list>
@@ -111,6 +134,7 @@ import Constants from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
+import { Cookies } from 'quasar';
 
 export default {
   name: 'MainControlMenu',
@@ -125,6 +149,7 @@ export default {
       'contextsHistory',
       'hasContext',
       'contextId',
+      'contextReloaded',
     ]),
     ...mapState('stomp', [
       'subscriptions',
@@ -137,6 +162,17 @@ export default {
       'searchIsActive',
       'isDrawMode',
     ]),
+    ...mapState('view', [
+      'showNotified',
+    ]),
+    showAll: {
+      get() {
+        return this.showNotified === Constants.PARAMS_NOTIFIED_ALL;
+      },
+      set(showAll) {
+        this.changeShowAll(showAll);
+      },
+    },
     /*
     cleanContextsHistory() {
       return this.contextsHistory.filter(ch => ch.id !== this.contextId);
@@ -205,7 +241,14 @@ export default {
       }
       return '';
     },
-
+    changeShowAll(showAll) {
+      const notified = (showAll) ? Constants.PARAMS_NOTIFIED_ALL : Constants.PARAMS_NOTIFIED_ONLY;
+      this.$store.commit('view/SET_SHOW_NOTIFIED', notified, { root: true });
+      Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
+        expires: 30,
+        path: '/',
+      });
+    },
   },
   watch: {
     hasContext(newValue) {
@@ -215,9 +258,6 @@ export default {
       }
     },
   },
-  mounted() {
-    console.debug(`Contexts: ${JSON.stringify(this.contextsHistory, null, 4)}`);
-  },
   components: {
     ScaleReference,
   },
@@ -225,6 +265,11 @@ export default {
 </script>
 
 <style lang="stylus">
+
+  .mcm-icon-close-popover
+    position absolute
+    right 4px
+    top 6px
 
   .mcm-menubutton
     top 6px

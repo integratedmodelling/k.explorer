@@ -112,9 +112,10 @@ export default {
       'treeSelected',
       'treeTicked',
       'treeExpanded',
+      'showNotified',
     ]),
     filter() {
-      return this.$notified === Constants.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
+      return this.showNotified === Constants.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
     },
     taskIsAlive() {
       return typeof this.tasks.find(t => t.task.contextId === this.contextId) !== 'undefined';
