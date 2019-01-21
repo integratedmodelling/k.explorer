@@ -240,7 +240,7 @@ export default {
       if (needSiblings) {
         dispatch('askForSiblings', {
           nodeId: observation.id,
-          previouslyNotified: observation.previouslyNotified,
+          notified: observation.notified || observation.previouslyNotified,
           folderId,
           offset: 0,
           count: state.siblingsToAskFor,
@@ -276,7 +276,7 @@ export default {
     count = state.siblingsToAskFor,
     toTree = true,
     visible = false,
-    previouslyNotified = true,
+    notified = true,
   }) => new Promise((resolve) => {
     console.debug(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
@@ -291,7 +291,7 @@ export default {
           dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: nodeId }, { root: true }).then(() => {
             if (data.siblings && data.siblings.length > 0) {
               data.siblings.forEach((sibling, index, array) => {
-                sibling.previouslyNotified = previouslyNotified;
+                sibling.notified = notified;
                 dispatch('addObservation', {
                   observation: sibling,
                   folderId,

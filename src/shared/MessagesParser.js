@@ -74,7 +74,7 @@ const PARSERS = {
         `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
         JSON.stringify(observation, null, 4),
       );
-      observation.previouslyNotified = true; // needed in case of observation added to a reloaded context
+      observation.notified = true; // needed in case of observation added to a reloaded context
       dispatch('data/addObservation', { observation }, { root: true });
     } else {
       addToKexplorerLog(

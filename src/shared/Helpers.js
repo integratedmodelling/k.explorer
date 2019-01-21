@@ -107,7 +107,7 @@ const Helpers = {
       children: [],
       tickable: observation.viewerIdx !== null && !observation.empty,
       disabled: observation.empty,
-      previouslyNotified: typeof observation.previouslyNotified === 'undefined' || observation.previouslyNotified,
+      notified: observation.notified || observation.previouslyNotified,
       empty: observation.empty, // disabled can change
       actions: observation.actions,
       header: 'default',

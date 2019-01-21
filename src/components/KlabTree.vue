@@ -114,7 +114,7 @@ export default {
       'treeExpanded',
     ]),
     filter() {
-      return this.$previouslyNotified === Constants.PARAMS_PN_ONLY ? 'filter' : '';
+      return this.$notified === Constants.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
     },
     taskIsAlive() {
       return typeof this.tasks.find(t => t.task.contextId === this.contextId) !== 'undefined';
@@ -132,7 +132,7 @@ export default {
       'setSpinner',
     ]),
     filterMethod(node) {
-      return !this.contextReloaded || node.previouslyNotified;
+      return !this.contextReloaded || node.notified;
     },
     /* TODO context menu better implementation
     rightClickHandler(e) {

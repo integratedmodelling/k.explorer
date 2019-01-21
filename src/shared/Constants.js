@@ -223,9 +223,9 @@ export default {
   PARAMS_LOG: 'log',
   PARAMS_LOG_HIDDEN: 'hidden',
   PARAMS_LOG_VISIBLE: 'visible',
-  PARAMS_PREVIOUSLY_NOTIFIED: 'previously',
-  PARAMS_PN_ONLY: 'only',
-  PARAMS_PN_ALL: 'all',
+  PARAMS_NOTIFIED: 'notified',
+  PARAMS_NOTIFIED_ONLY: 'only',
+  PARAMS_NOTIFIED_ALL: 'all',
 
   /**
    * Cookies name
@@ -235,7 +235,7 @@ export default {
   COOKIE_MODE: 'klab_mode',
   COOKIE_LOG: 'klab_log',
   COOKIE_BASELAYER: 'klab_baselayer',
-  COOKIE_PN: 'klab_pn', // previously notified
+  COOKIE_NOTIFIED: 'klab_notified',
 
   /**
    * Viewer components type

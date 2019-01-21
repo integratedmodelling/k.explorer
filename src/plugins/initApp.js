@@ -21,8 +21,8 @@ export default ({ store }) => {
   const log = urlParams.get(Constants.PARAMS_LOG)
     || Cookies.get(Constants.COOKIE_LOG) || Constants.PARAMS_LOG_HIDDEN;
   const baseLayer = Cookies.get(Constants.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;
-  const previouslyNotified = urlParams.get(Constants.PARAMS_PREVIOUSLY_NOTIFIED)
-    || Cookies.get(Constants.COOKIE_PN) || Constants.PARAMS_PN_ONLY;
+  const notified = urlParams.get(Constants.PARAMS_NOTIFIED)
+    || Cookies.get(Constants.COOKIE_NOTIFIED) || Constants.PARAMS_NOTIFIED_ONLY;
 
   Vue.mixin({
     methods: {
@@ -61,8 +61,8 @@ export default ({ store }) => {
     expires: 30,
     path: '/',
   });
-  Vue.prototype.$previouslyNotified = previouslyNotified;
-  Cookies.set(Constants.COOKIE_PN, previouslyNotified, {
+  Vue.prototype.$notified = notified;
+  Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
     expires: 30,
     path: '/',
   });
