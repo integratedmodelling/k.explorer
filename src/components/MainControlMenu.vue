@@ -114,7 +114,7 @@
           <q-item>
             <div class="mc-container">
               <div class="mc-menuitem">
-                <div class="mc-item">{{ $t('label.optionShowSecundary') }}</div>
+                <div class="mc-item">{{ $t('label.optionShowAll') }}</div>
               </div>
               <q-item-side right>
                 <q-toggle v-model="showAll" color="mc-main" />
