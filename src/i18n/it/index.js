@@ -49,7 +49,7 @@ export default {
     drawLineString: 'Linea',
     drawPolygon: 'Poligono',
     drawCircle: 'Cerchio',
-    optionShowSecundary: 'Vedere secondarie',
+    optionShowAll: 'Vedere tutte',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

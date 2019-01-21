@@ -50,7 +50,7 @@ export default {
     drawLineString: 'Line',
     drawPolygon: 'Polygon',
     drawCircle: 'Circle',
-    optionShowSecundary: 'Show secondary',
+    optionShowAll: 'Show all',
   },
   messages: {
     connectionClosed: 'Connection closed',
