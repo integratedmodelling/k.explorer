@@ -199,6 +199,8 @@ export default {
           color: 'info',
         }).then((data) => {
           this.askDownload(observationId, data);
+        }).catch(() => {
+          // pressed cancel, the Quasar Framework manage it with catch, we don't need it
         });
       } else {
         this.$q.notify({
