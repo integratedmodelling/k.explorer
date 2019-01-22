@@ -49,10 +49,10 @@ const PARSERS = {
     }
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
-  [IN.TYPE_NEWOBSERVATION]: (observation, context) => {
-    const { rootState, dispatch } = context;
-    // check if is context
-    if (observation.parentId === null) { // || observation.parentId === observation.id) {
+  [IN.TYPE_NEWOBSERVATION]: (observation, vuexContext) => {
+    const { rootState, dispatch } = vuexContext;
+    // check if is context and is a new context
+    if (rootState.data.context === null && observation.parentId === null) { // || observation.parentId === observation.id) {
       // new context
       addToKexplorerLog(
         dispatch,
