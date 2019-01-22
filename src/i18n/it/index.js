@@ -52,7 +52,7 @@ export default {
     drawPolygon: 'Poligono',
     drawCircle: 'Cerchio',
     optionShowAll: 'Vedere tutte',
-    optionSaveLocation: 'Salvare posizione',
+    optionSaveLocation: 'Ricordare posizione',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
