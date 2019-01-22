@@ -54,3 +54,6 @@ Feature notification on Integrated Modelling Confluence
 [
  Access to previous contexts and concurrent computations are implemented in k.Explorer](https://integratedmodelling.org/confluence/display/ATS/Feature+notification)
 
+## 0.5.5 - 2019-01-22
+### Added
+- Save location and geolocation if no location cookie is found
