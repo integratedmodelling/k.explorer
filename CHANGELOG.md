@@ -57,3 +57,7 @@ Feature notification on Integrated Modelling Confluence
 ## 0.5.5 - 2019-01-22
 ### Added
 - Save location and geolocation if no location cookie is found
+
+## 0.5.6 - 2019-
+### Solved
+- Changed some text
