@@ -24,7 +24,7 @@
           ></q-btn>
           <q-btn
             :label="$t('label.appCancel')"
-            @click="stopGeolocation"
+            @click="stopGeolocation(true)"
             color="mc-main"
           ></q-btn>
           </div>
@@ -97,7 +97,7 @@ export default {
       'isDrawMode',
     ]),
     ...mapState('view', [
-      'storePosition',
+      'saveLocation',
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
@@ -125,6 +125,9 @@ export default {
       this.sendRegionOfInterest();
     },
     sendRegionOfInterest(geometry = null) {
+      if (this.geolocationWaiting) {
+        return;
+      }
       let message = null;
       const view = this.map.getView();
       try {
@@ -142,7 +145,7 @@ export default {
       }
       if (message && message.body) {
         this.sendStompMessage(message.body);
-        if (this.storePosition) {
+        if (this.saveLocation) {
           Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: view.getCenter(), zoom: view.getZoom() }, {
             expires: 30,
             path: '/',
@@ -234,9 +237,8 @@ export default {
         navigator.geolocation.clearWatch(this.geolocationId);
       }
       this.geolocationId = navigator.geolocation.watchPosition((position) => {
-        console.log(`Coord: [${position.coords.longitude},${position.coords.latitude}]`);
         this.center = transform([position.coords.longitude, position.coords.latitude], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857);
-        this.geolocationWaiting = false;
+        this.stopGeolocation();
       }, (error) => {
         switch (error.code) {
           case error.PERMISSION_DENIED:
@@ -255,17 +257,20 @@ export default {
       }, {
         enableHighAccuracy: true,
         maximumAge: 30000,
-        timeout: 5000,
+        timeout: 60000,
       });
     },
     retryGeolocation() {
       this.geolocationIncidence = null;
       this.doGeolocation();
     },
-    stopGeolocation() {
+    stopGeolocation(force = false) {
       navigator.geolocation.clearWatch(this.geolocationId);
       this.$nextTick(() => {
         this.geolocationWaiting = false;
+        if (force) {
+          this.sendRegionOfInterest();
+        }
       });
     },
   },
@@ -379,6 +384,7 @@ export default {
 </script>
 
 <style lang="stylus">
+  @import '~variables'
   .layer-switcher
     top 5em
     button
@@ -405,6 +411,10 @@ export default {
         margin-left .5em
     h5
       margin 0.2em 0 0.5em 0
+      font-weight bold
+    em
+      color $main-control-main-color
+      font-style normal
       font-weight bold
 
 </style>

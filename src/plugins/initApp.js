@@ -24,7 +24,7 @@ export default ({ store }) => {
   const notified = urlParams.get(Constants.PARAMS_NOTIFIED)
     || Cookies.get(Constants.COOKIE_NOTIFIED) || Constants.PARAMS_NOTIFIED_ONLY;
   const mapDefaults = Cookies.get(Constants.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
-  const storePosition = Cookies.has(Constants.COOKIE_STOREPOSITION) ? Cookies.get(Constants.COOKIE_STOREPOSITION) : true;
+  const saveLocation = Cookies.has(Constants.COOKIE_SAVELOCATION) ? Cookies.get(Constants.COOKIE_SAVELOCATION) : true;
 
   Vue.mixin({
     methods: {
@@ -69,8 +69,8 @@ export default ({ store }) => {
     path: '/',
   });
   Vue.prototype.$mapDefaults = mapDefaults;
-  store.state.view.storePosition = storePosition;
-  Cookies.set(Constants.COOKIE_STOREPOSITION, storePosition, {
+  store.state.view.saveLocation = saveLocation;
+  Cookies.set(Constants.COOKIE_SAVELOCATION, saveLocation, {
     expires: 30,
     path: '/',
   });

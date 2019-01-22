@@ -123,10 +123,10 @@
         <q-item v-if="!hasContext">
           <div class="mc-container">
             <div class="mc-menuitem">
-              <div class="mc-item">{{ $t('label.optionStorePosition') }}</div>
+              <div class="mc-item">{{ $t('label.optionSaveLocation') }}</div>
             </div>
             <q-item-side right>
-              <q-toggle v-model="storePositionVar" color="mc-main" />
+              <q-toggle v-model="saveLocationVar" color="mc-main" />
             </q-item-side>
           </div>
         </q-item>
@@ -172,7 +172,7 @@ export default {
     ]),
     ...mapState('view', [
       'showNotified',
-      'storePosition',
+      'saveLocation',
     ]),
     showAll: {
       get() {
@@ -182,12 +182,12 @@ export default {
         this.changeShowAll(showAll);
       },
     },
-    storePositionVar: {
+    saveLocationVar: {
       get() {
-        return this.storePosition;
+        return this.saveLocation;
       },
-      set(storePosition) {
-        this.changeStorePosition(storePosition);
+      set(saveLocation) {
+        this.changeSaveLocation(saveLocation);
       },
     },
     /*
@@ -266,9 +266,9 @@ export default {
         path: '/',
       });
     },
-    changeStorePosition(storePosition) {
-      this.$store.commit('view/SET_STORE_POSITION', storePosition, { root: true });
-      Cookies.set(Constants.COOKIE_STOREPOSITION, storePosition, {
+    changeSaveLocation(saveLocation) {
+      this.$store.commit('view/SET_SAVE_LOCATION', saveLocation, { root: true });
+      Cookies.set(Constants.COOKIE_SAVELOCATION, saveLocation, {
         expires: 30,
         path: '/',
       });

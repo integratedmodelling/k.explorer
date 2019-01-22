@@ -192,7 +192,7 @@ export default {
     state.showNotified = showNotified;
   },
 
-  SET_STORE_POSITION: (state, storePosition) => {
-    state.storePosition = storePosition;
+  SET_SAVE_LOCATION: (state, saveLocation) => {
+    state.saveLocation = saveLocation;
   },
 };
