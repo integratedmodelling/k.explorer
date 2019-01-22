@@ -118,7 +118,7 @@ export default {
       return this.showNotified === Constants.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
     },
     taskIsAlive() {
-      return typeof this.tasks.find(t => t.task.contextId === this.contextId) !== 'undefined';
+      return typeof this.tasks.find(t => (t.contextId === this.contextId && t.alive)) !== 'undefined';
     },
   },
   methods: {

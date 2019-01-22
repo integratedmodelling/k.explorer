@@ -171,7 +171,7 @@
         <div class="mc-button"
              id="mc-reset-context"
              @click="resetContext"
-             v-if="!hasTasks"
+             v-if="!hasTasks(contextId)"
         ><q-icon name="mdi-close-circle-outline">
           <q-tooltip
             :offset="[0, 8]"
@@ -182,13 +182,13 @@
         <div class="mc-button"
              id="mc-interrupt-task"
              @click="interruptTask"
-             v-if="hasTasks"
+             v-if="hasTasks(contextId)"
         ><q-icon name="mdi-stop-circle-outline">
           <q-tooltip
             :offset="[0, 8]"
             self="top middle"
             anchor="bottom middle"
-          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTask === null ? '' : lastActiveTask.task.description }) }}</q-tooltip>
+          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTask(contextId) === null ? '' : lastActiveTask(contextId).description }) }}</q-tooltip>
         </q-icon></div>
       </q-card-actions
         >
@@ -244,6 +244,7 @@ export default {
       'hasObservations',
       'hasDataflow',
       'contextLabel',
+      'contextId',
       'lasts',
       'tree',
     ]),
@@ -259,6 +260,7 @@ export default {
     ...mapGetters('stomp', [
       'hasTasks',
       'lastActiveTask',
+      'tasks',
     ]),
   },
   methods: {
@@ -270,8 +272,8 @@ export default {
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
     },
     interruptTask() {
-      const task = this.lastActiveTask;
-      if (task !== null) {
+      const task = this.lastActiveTask(this.contextId);
+      if (task !== null && task.alive) {
         this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
           taskId: task.id,
         }, this.$store.state.data.session).body);

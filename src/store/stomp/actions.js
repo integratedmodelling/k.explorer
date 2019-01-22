@@ -62,8 +62,4 @@ export default {
     commit('TASK_END', task);
     dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
-
-  clearTasks: ({ commit }) => {
-    commit('TASK_RESET_ALL');
-  },
 };

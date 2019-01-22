@@ -51,11 +51,6 @@ const PARSERS = {
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, context) => {
     const { rootState, dispatch } = context;
-    // check if taskId exists
-    if (typeof rootState.stomp.tasks.find(task => task.id === observation.taskId) === 'undefined') {
-      dispatch('stomp/taskStart', { id: observation.taskId, description: 'Previous observations results' }, { root: true });
-      dispatch('view/addToStatusTexts', { id: observation.taskId, text: 'Previous observations results' }, { root: true });
-    }
     // check if is context
     if (observation.parentId === null) { // || observation.parentId === observation.id) {
       // new context
@@ -76,6 +71,17 @@ const PARSERS = {
       );
       observation.notified = true; // needed in case of observation added to a reloaded context
       dispatch('data/addObservation', { observation }, { root: true });
+    } else if (rootState.stomp.tasks.findIndex(task => task.id === observation.taskId) === -1
+        && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.rootContextId) !== -1) {
+      // task not exists and context is one of possible, so I start a fake task
+      dispatch('stomp/taskStart', { id: observation.taskId, description: 'Previous observations results', contextId: observation.rootContextId }, { root: true });
+      dispatch('view/addToStatusTexts', { id: observation.taskId, text: 'Previous observations results' }, { root: true });
+      addToKexplorerLog(
+        dispatch,
+        Constants.TYPE_INFO,
+        'Received an observation of previous context with no task associated. Session was been reloaded?',
+        JSON.stringify(observation, null, 4),
+      );
     } else {
       addToKexplorerLog(
         dispatch,

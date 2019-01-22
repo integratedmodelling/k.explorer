@@ -66,7 +66,7 @@
                             <div
                               class="mc-item mc-large-text"
                               :class="{ 'mcm-actual-context': context.id === contextId }"
-                              :style="{ 'font-style': taskIsAlive(context.id) ? 'italic' : 'normal' }"
+                              :style="{ 'font-style': contextTaskIsAlive(context.id) ? 'italic' : 'normal' }"
                               @mouseover="tooltipIt($event, context.id)"
                             >
                               {{ formatContextTime(context) }}: {{ context.label }}
@@ -164,7 +164,7 @@ export default {
     ]),
     ...mapGetters('stomp', [
       'lastActiveTask',
-      'tasks',
+      'contextTaskIsAlive',
     ]),
     ...mapGetters('view', [
       'searchIsActive',
@@ -194,10 +194,11 @@ export default {
     cleanContextsHistory() {
       return this.contextsHistory.filter(ch => ch.id !== this.contextId);
     },
-    */
+
     taskIsAlive() {
-      return contextId => typeof this.tasks.find(t => t.task.contextId === contextId) !== 'undefined';
+      return contextId => typeof this.tasks.find(t => (t.contextId === contextId && t.alive)) !== 'undefined';
     },
+    */
   },
   methods: {
     ...mapActions('data', [

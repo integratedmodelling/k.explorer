@@ -31,10 +31,18 @@ export default {
    * Return if a task is alive
    */
   tasks: state => state.tasks,
-  taskIsAlive: state => id => typeof state.tasks.find(task => task.id === id) !== 'undefined',
 
-  hasTasks: state => state.tasks.length !== 0,
+  taskIsAlive: state => id => typeof state.tasks.find(task => (task.id === id && task.alive)) !== 'undefined',
+  contextTaskIsAlive: state => contextId => typeof state.tasks.find(t => (t.contextId === contextId && t.alive)) !== 'undefined',
 
-  lastActiveTask: state => (state.tasks.length > 0 ? state.tasks.slice(-1)[0] : null),
+  hasTasks: state => (contextId = null) => (state.tasks.findIndex(task => (task.alive && (contextId === null || task.contextId === contextId))) !== -1),
+
+  lastActiveTask: state => (contextId = null) => {
+    const alives = state.tasks.filter(task => (task.alive && (contextId === null || task.contextId === contextId)));
+    if (alives.length > 0) {
+      return alives.pop();
+    }
+    return null;
+  },
 
 };
