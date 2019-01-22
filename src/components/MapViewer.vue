@@ -4,6 +4,33 @@
     <q-icon name="mdi-crosshairs" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
+    <q-modal
+      v-model="geolocationWaiting"
+      no-esc-dismiss
+      no-backdrop-dismiss
+      :content-classes="['gl-msg-content']"
+    >
+      <div class="bg-opaque-white">
+        <div class="q-pa-xs">
+          <h5>{{ $t('messages.geolocationWaitingTitle') }}</h5>
+          <p v-html="$t('messages.geolocationWaitingText')"></p>
+          <p v-show="geolocationIncidence !== null" class="gl-incidence">{{ geolocationIncidence }}</p>
+          <div class="gl-btn-container">
+          <q-btn
+            v-show="geolocationIncidence !== null"
+            :label="$t('label.appRetry')"
+            @click="retryGeolocation"
+            color="primary"
+          ></q-btn>
+          <q-btn
+            :label="$t('label.appCancel')"
+            @click="stopGeolocation"
+            color="mc-main"
+          ></q-btn>
+          </div>
+        </div>
+      </div>
+    </q-modal>
   </div>
 </template>
 
@@ -23,7 +50,7 @@ import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
-import { transformExtent } from 'ol/proj';
+import { transform, transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
 import MapDrawer from 'components/MapDrawer';
 import WKT from 'ol/format/WKT';
@@ -49,6 +76,9 @@ export default {
       visibleBaseLayer: null,
       mapSelectionMarker: undefined,
       wktInstance: new WKT(),
+      geolocationWaiting: true,
+      geolocationId: null,
+      geolocationIncidence: null,
     };
   },
   computed: {
@@ -199,6 +229,45 @@ export default {
         */
       }
     },
+    doGeolocation() {
+      if (this.geolocationId !== null) {
+        navigator.geolocation.clearWatch(this.geolocationId);
+      }
+      this.geolocationId = navigator.geolocation.watchPosition((position) => {
+        console.log(`Coord: [${position.coords.longitude},${position.coords.latitude}]`);
+        this.center = transform([position.coords.longitude, position.coords.latitude], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857);
+        this.geolocationWaiting = false;
+      }, (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+          case error.TIMEOUT:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+          default:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+        }
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 30000,
+        timeout: 5000,
+      });
+    },
+    retryGeolocation() {
+      this.geolocationIncidence = null;
+      this.doGeolocation();
+    },
+    stopGeolocation() {
+      navigator.geolocation.clearWatch(this.geolocationId);
+      this.$nextTick(() => {
+        this.geolocationWaiting = false;
+      });
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -226,10 +295,14 @@ export default {
       }
     },
   },
+  created() {
+    this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
+  },
   mounted() {
     // Set base layer
     // this.center = this.$mapDefaults.center;
     // this.zoom = this.$mapDefaults.zoom;
+
     this.baseLayers = BASE_LAYERS;
     this.baseLayers.layers.forEach((l) => {
       if (l.get('name') === this.$baseLayer) {
@@ -295,6 +368,9 @@ export default {
     this.map.addOverlay(this.mapSelectionMarker);
     this.drawContext();
     this.drawObservations();
+    if (this.geolocationWaiting) {
+      this.doGeolocation();
+    }
   },
   components: {
     MapDrawer,
@@ -318,4 +394,17 @@ export default {
     font-size 28px
     color white
     mix-blend-mode exclusion
+  .gl-msg-content
+    border-radius 20px
+    padding 20px
+    background-color rgba(255, 255, 255, .7)
+    .gl-btn-container
+      text-align right
+      padding .2em
+      .q-btn
+        margin-left .5em
+    h5
+      margin 0.2em 0 0.5em 0
+      font-weight bold
+
 </style>

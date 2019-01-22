@@ -1,9 +1,11 @@
 export default {
   label: {
     appTitle: 'k.LAB Explorer IT',
-    appRunning: 'Funzionando  con Quasar v{version}',
+    appRunning: 'Esecutandosi con Quasar v{version}',
     appClose: 'Chiudi',
     appOK: 'Ok',
+    appCancel: 'Cancellare',
+    appRetry: 'Riprovare',
     klabNoMessage: 'Nessun messaggio',
     klabUnknownError: 'Errore sconosciuto',
     klabNoDate: 'Nessuna data',
@@ -67,6 +69,12 @@ export default {
     updateScale: 'Attualizata  la scala {type}, nuovo valore {resolution} {unit}',
     invalidGeometry: 'Poligono non valido',
     spatialLocationSent: 'Spatial location inviata',
+    geolocationWaitingTitle: 'Waiting for geolocation',
+    geolocationWaitingText: 'You need to authorize page to get it<br />If you don\'t want, please press cancel',
+    geolocationErrorPermissionDenied: 'User denied the request for Geolocation',
+    geolocationErrorPositionUnavailable: 'Location information is unavailable',
+    geolocationErrorTimeout: 'The request to get user location timed out',
+    geolocationErrorUnknown: 'An unknown error occurred',
   },
   tooltips: {
     treePane: 'Albero',
