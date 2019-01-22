@@ -51,6 +51,7 @@ export default {
     drawPolygon: 'Polygon',
     drawCircle: 'Circle',
     optionShowAll: 'Show all',
+    optionStorePosition: 'Store position',
   },
   messages: {
     connectionClosed: 'Connection closed',

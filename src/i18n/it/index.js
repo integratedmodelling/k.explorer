@@ -50,6 +50,7 @@ export default {
     drawPolygon: 'Poligono',
     drawCircle: 'Cerchio',
     optionShowAll: 'Vedere tutte',
+    optionStorePosition: 'Salvare posizione',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

@@ -191,4 +191,8 @@ export default {
   SET_SHOW_NOTIFIED: (state, showNotified) => {
     state.showNotified = showNotified;
   },
+
+  SET_STORE_POSITION: (state, storePosition) => {
+    state.storePosition = storePosition;
+  },
 };

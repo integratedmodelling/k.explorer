@@ -108,20 +108,28 @@
             </q-item-main>
           </q-item>
         </template>
-        <template v-if="hasContext && contextReloaded">
-          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
-          <q-item-separator></q-item-separator>
-          <q-item>
-            <div class="mc-container">
-              <div class="mc-menuitem">
-                <div class="mc-item">{{ $t('label.optionShowAll') }}</div>
-              </div>
-              <q-item-side right>
-                <q-toggle v-model="showAll" color="mc-main" />
-              </q-item-side>
+        <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
+        <q-item-separator></q-item-separator>
+        <q-item v-if="hasContext && contextReloaded">
+          <div class="mc-container">
+            <div class="mc-menuitem">
+              <div class="mc-item">{{ $t('label.optionShowAll') }}</div>
             </div>
-          </q-item>
-        </template>
+            <q-item-side right>
+              <q-toggle v-model="showAll" color="mc-main" />
+            </q-item-side>
+          </div>
+        </q-item>
+        <q-item v-if="!hasContext">
+          <div class="mc-container">
+            <div class="mc-menuitem">
+              <div class="mc-item">{{ $t('label.optionStorePosition') }}</div>
+            </div>
+            <q-item-side right>
+              <q-toggle v-model="storePositionVar" color="mc-main" />
+            </q-item-side>
+          </div>
+        </q-item>
       </q-list>
     </q-popover>
   </q-btn>
@@ -164,6 +172,7 @@ export default {
     ]),
     ...mapState('view', [
       'showNotified',
+      'storePosition',
     ]),
     showAll: {
       get() {
@@ -171,6 +180,14 @@ export default {
       },
       set(showAll) {
         this.changeShowAll(showAll);
+      },
+    },
+    storePositionVar: {
+      get() {
+        return this.storePosition;
+      },
+      set(storePosition) {
+        this.changeStorePosition(storePosition);
       },
     },
     /*
@@ -245,6 +262,13 @@ export default {
       const notified = (showAll) ? Constants.PARAMS_NOTIFIED_ALL : Constants.PARAMS_NOTIFIED_ONLY;
       this.$store.commit('view/SET_SHOW_NOTIFIED', notified, { root: true });
       Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
+        expires: 30,
+        path: '/',
+      });
+    },
+    changeStorePosition(storePosition) {
+      this.$store.commit('view/SET_STORE_POSITION', storePosition, { root: true });
+      Cookies.set(Constants.COOKIE_STOREPOSITION, storePosition, {
         expires: 30,
         path: '/',
       });

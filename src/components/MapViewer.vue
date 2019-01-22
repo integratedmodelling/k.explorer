@@ -11,7 +11,7 @@
 <script>
 /* eslint-disable object-shorthand,space-before-function-paren,no-unused-vars */
 
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
@@ -66,6 +66,9 @@ export default {
       'mapSelection',
       'isDrawMode',
     ]),
+    ...mapState('view', [
+      'storePosition',
+    ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
     },
@@ -109,10 +112,12 @@ export default {
       }
       if (message && message.body) {
         this.sendStompMessage(message.body);
-        Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: view.getCenter(), zoom: view.getZoom() }, {
-          expires: 30,
-          path: '/',
-        });
+        if (this.storePosition) {
+          Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: view.getCenter(), zoom: view.getZoom() }, {
+            expires: 30,
+            path: '/',
+          });
+        }
       }
     },
 
