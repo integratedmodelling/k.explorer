@@ -236,6 +236,7 @@ export default {
   COOKIE_LOG: 'klab_log',
   COOKIE_BASELAYER: 'klab_baselayer',
   COOKIE_NOTIFIED: 'klab_notified',
+  COOKIE_MAPDEFAULT: 'klab_mapdefault',
 
   /**
    * Viewer components type

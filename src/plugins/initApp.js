@@ -1,5 +1,5 @@
 import { Helpers, Constants } from 'shared/Helpers';
-import { MAP_CONSTANTS } from 'shared/MapConstants';
+import { MAP_CONSTANTS, DEFAULT_OPTIONS } from 'shared/MapConstants';
 import { Cookies, colors } from 'quasar';
 import Vue from 'vue';
 
@@ -23,6 +23,7 @@ export default ({ store }) => {
   const baseLayer = Cookies.get(Constants.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;
   const notified = urlParams.get(Constants.PARAMS_NOTIFIED)
     || Cookies.get(Constants.COOKIE_NOTIFIED) || Constants.PARAMS_NOTIFIED_ONLY;
+  const mapDefaults = Cookies.get(Constants.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
 
   Vue.mixin({
     methods: {
@@ -63,6 +64,11 @@ export default ({ store }) => {
   });
   store.state.view.showNotified = notified;
   Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
+    expires: 30,
+    path: '/',
+  });
+  Vue.prototype.$mapDefaults = mapDefaults;
+  Cookies.set(Constants.COOKIE_MAPDEFAULT, mapDefaults, {
     expires: 30,
     path: '/',
   });

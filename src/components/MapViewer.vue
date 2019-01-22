@@ -39,8 +39,8 @@ export default {
   },
   data() {
     return {
-      center: DEFAULT_OPTIONS.center,
-      zoom: DEFAULT_OPTIONS.zoom,
+      center: this.$mapDefaults.center,
+      zoom: this.$mapDefaults.zoom,
       map: null,
       view: null,
       layers: new Collection(),
@@ -93,8 +93,9 @@ export default {
     },
     sendRegionOfInterest(geometry = null) {
       let message = null;
+      const view = this.map.getView();
       try {
-        const extent = this.map.getView().calculateExtent(this.map.getSize());
+        const extent = view.calculateExtent(this.map.getSize());
         message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         console.error(error);
@@ -108,13 +109,9 @@ export default {
       }
       if (message && message.body) {
         this.sendStompMessage(message.body);
-        this.addToKexplorerLog({
-          // message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARNING, // TODO need to be warning? I think no
-          type: this.$constants.TYPE_INFO,
-          payload: {
-            message: `Message ${message.validated ? '' : 'not '} validated`,
-            attach: message,
-          },
+        Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: view.getCenter(), zoom: view.getZoom() }, {
+          expires: 30,
+          path: '/',
         });
       }
     },
@@ -226,6 +223,8 @@ export default {
   },
   mounted() {
     // Set base layer
+    // this.center = this.$mapDefaults.center;
+    // this.zoom = this.$mapDefaults.zoom;
     this.baseLayers = BASE_LAYERS;
     this.baseLayers.layers.forEach((l) => {
       if (l.get('name') === this.$baseLayer) {
