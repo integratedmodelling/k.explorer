@@ -108,7 +108,7 @@
             </q-item-main>
           </q-item>
         </template>
-        <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
+        <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuOption') }}</q-list-header>
         <q-item-separator></q-item-separator>
         <q-item v-if="hasContext && contextReloaded">
           <div class="mc-container">

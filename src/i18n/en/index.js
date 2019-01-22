@@ -53,7 +53,7 @@ export default {
     drawPolygon: 'Polygon',
     drawCircle: 'Circle',
     optionShowAll: 'Show all',
-    optionSaveLocation: 'Store position',
+    optionSaveLocation: 'Remember location',
   },
   messages: {
     connectionClosed: 'Connection closed',
