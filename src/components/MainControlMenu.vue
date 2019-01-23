@@ -149,6 +149,7 @@ export default {
   mixins: [TooltipIt],
   data() {
     return {
+      waitingForReset: null,
     };
   },
   computed: {
@@ -275,8 +276,11 @@ export default {
     },
   },
   watch: {
-    hasContext() {
-      this.$refs['mcm-main-popover'].hide();
+    hasContext(newValue) {
+      if (newValue && this.waitingForReset !== null) {
+        this.loadContext(this.waitingForReset);
+        this.waitingForReset = null;
+      }
     },
   },
   components: {

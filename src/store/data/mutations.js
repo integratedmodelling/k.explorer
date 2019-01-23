@@ -25,6 +25,12 @@ export default {
     }
   },
 
+
+  WAITING_FOR_RESET(state, contextId) {
+    // if null, no context will be load
+    state.waitingForReset = contextId;
+  },
+
   STORE_CONTEXT: (state, context) => {
     const exists = state.contextsHistory.find(ctxt => ctxt.id === context.id);
     if (typeof exists === 'undefined') {
