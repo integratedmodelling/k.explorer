@@ -3,7 +3,7 @@
     <div class="col row full-height" id="viewer-container">
       <keep-alive>
         <!-- <transition name="component-fade" mode="out-in"> -->
-        <component :is="mainViewer"></component>
+        <component :is="mainViewer.name"></component>
         <!-- </transition> -->
       </keep-alive>
       <q-resize-observable @resize="setSiblingsToAskFor" />
@@ -11,7 +11,9 @@
     <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
     </div>
-    <klab-main-control></klab-main-control>
+    <transition name="component-fade" mode="out-in">
+      <klab-main-control v-show="mainViewer.mainControl"></klab-main-control>
+    </transition>
     <q-modal
         id="modal-connection-status"
         v-model="modalVisible"
@@ -61,6 +63,7 @@ export default {
     ...mapGetters('view', [
       'searchIsActive',
       'searchIsFocused',
+      'mainViewerName',
       'mainViewer',
       'isScaleEditing',
     ]),

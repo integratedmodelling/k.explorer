@@ -9,10 +9,26 @@ export const COLORS = {
 };
 
 export const VIEWERS = {
-  DATA_VIEWER: 'DataViewer',
-  REPORT_VIEWER: 'ReportViewer',
-  DATAFLOW_VIEWER: 'DataflowViewer',
-  PROVENANCE_VIEWER: 'ProvenanceViewer',
+  DATA_VIEWER: {
+    name: 'DataViewer',
+    leftMenu: false,
+    mainControl: true,
+  },
+  REPORT_VIEWER: {
+    name: 'ReportViewer',
+    leftMenu: true,
+    mainControl: false,
+  },
+  DATAFLOW_VIEWER: {
+    name: 'DataflowViewer',
+    leftMenu: true,
+    mainControl: false,
+  },
+  PROVENANCE_VIEWER: {
+    name: 'ProvenanceViewer',
+    leftMenu: true,
+    mainControl: false,
+  },
 };
 
 /**

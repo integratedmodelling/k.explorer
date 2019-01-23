@@ -137,3 +137,34 @@ body .ol-zoom
     overflow-y: hidden
   .simplebar-content
     margin-right: 0 !important;
+
+/* Default buttons style for main control and left menu */
+.klab-button
+  position relative
+  padding 5px 10px 7px 10px
+  cursor pointer
+  display inline-block
+  font-size 22px
+  color rgb(119,119,119)
+  text-shadow 0 1px 0 #333
+  &:hover
+    color white /* background #e0e0e0 */
+  &.active
+    color white
+    cursor auto
+.klab-button-notification
+  display block
+  position absolute
+  top 6px
+  right 4px
+  width 10px
+  height 10px
+  border-radius 5px
+  background-color $main-control-main-color
+.klab-action
+  padding 5px 6px 7px 6px
+  position relative
+  &:not(.disabled):hover
+    color $main-control-main-color
+  &.active
+    color $main-control-main-color
