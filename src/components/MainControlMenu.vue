@@ -249,7 +249,7 @@ export default {
     },
     formatContextTime(context) {
       let timestamp = context.lastUpdate;
-      if (typeof timestamp === 'undefined' || timestamp === null) {
+      if (timestamp === 0) {
         timestamp = context.creationTime;
       }
       if (timestamp && timestamp !== null) {

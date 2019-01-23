@@ -1,12 +1,10 @@
 <template>
-    <div class="kt-container relative-position" :class="{ 'with-splitter': hasObservationInfo, 'loading':  taskIsAlive }">
-      <div class="kt-tree-container simplebar-vertical-only">
+    <div id="kt-container" class="relative-position" :class="{ 'with-splitter': hasObservationInfo, 'loading':  taskIsAlive }">
+      <div id="kt-tree-container" class="simplebar-vertical-only">
         <q-tree
-          class="kt-tree"
+          id="kt-tree"
           ref="klabTree"
-          :nodes="tree"
-          :filter="filter"
-          :filterMethod="filterMethod"
+          :nodes="visibleTree(filter)"
           node-key="id"
           :ticked.sync="ticked"
           :selected.sync="selected"
@@ -25,7 +23,7 @@
                 self="top left"
                 anchor="bottom middle"
                 class="kt-q-tooltip"
-              >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
+              >{{ clearObservable(prop.node.observable) }}</q-tooltip>
             </span>
             <q-btn
               round
@@ -96,6 +94,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'tree',
+      'visibleTree',
       'treeNode',
       'lasts',
       'contextReloaded',
@@ -372,7 +371,7 @@ export default {
 <style lang="stylus">
   @import '~variables'
 
-  .kt-container
+  #kt-container
     /* removed 30px of padding and scrollbar padding-bottom */
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     padding 10px 0
@@ -385,7 +384,9 @@ export default {
       max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     [data-simplebar]
       padding-bottom 10px
-    .kt-tree-container
+    #kt-tree-container
+      .q-tree > .q-tree-node
+          padding 0
       .q-tree-node-collapsible
         overflow-x hidden
       .q-tree-children

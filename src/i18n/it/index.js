@@ -75,6 +75,7 @@ export default {
     geolocationErrorPositionUnavailable: 'Posizione non disponibile',
     geolocationErrorTimeout: 'Terminato il tempo di attesa per la geolocalizzazione',
     geolocationErrorUnknown: 'Errore imprevisto',
+    unknownSearchObservation: 'Risultato di osservazioni previe',
   },
   tooltips: {
     treePane: 'Albero',

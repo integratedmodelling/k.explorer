@@ -60,6 +60,9 @@ Feature notification on Integrated Modelling Confluence
 
 ## 0.5.6 - 2019-
 ### Solved
-- Changed some text
+- Changed some muddler text
 - Changed the way tasks are managed, now if page is reload, observation of previous context are linked to it
+- Solved bug with context without children and spinner
+- Solved bug with context date
+
 
