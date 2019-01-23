@@ -188,7 +188,7 @@
             :offset="[0, 8]"
             self="top middle"
             anchor="bottom middle"
-          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTask(contextId) === null ? '' : lastActiveTask(contextId).description }) }}</q-tooltip>
+          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTaskText }) }}</q-tooltip>
         </q-icon></div>
       </q-card-actions
         >
@@ -202,7 +202,7 @@
 // import Vue from 'vue';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, FAKE_TEXTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -262,6 +262,13 @@ export default {
       'lastActiveTask',
       'tasks',
     ]),
+    lastActiveTaskText() {
+      const text = this.lastActiveTask(this.contextId) === null ? '' : this.lastActiveTask(this.contextId).description;
+      if (text === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
+        return this.$t('messages.unknownSearchObservation');
+      }
+      return text;
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -350,6 +357,9 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     statusTextsString(newValue) {
+      if (newValue === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
+        newValue = this.$t('messages.unknownSearchObservation');
+      }
       this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },
     contextLabel(newValue) {

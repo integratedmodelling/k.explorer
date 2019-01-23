@@ -148,9 +148,7 @@ export default {
   name: 'MainControlMenu',
   mixins: [TooltipIt],
   data() {
-    return {
-      waitingForReset: null,
-    };
+    return {};
   },
   computed: {
     ...mapGetters('data', [
@@ -249,7 +247,7 @@ export default {
     },
     formatContextTime(context) {
       let timestamp = context.lastUpdate;
-      if (typeof timestamp === 'undefined' || timestamp === null) {
+      if (timestamp === 0) {
         timestamp = context.creationTime;
       }
       if (timestamp && timestamp !== null) {
@@ -276,11 +274,8 @@ export default {
     },
   },
   watch: {
-    hasContext(newValue) {
-      if (newValue && this.waitingForReset !== null) {
-        this.loadContext(this.waitingForReset);
-        this.waitingForReset = null;
-      }
+    hasContext() {
+      this.$refs['mcm-main-popover'].hide();
     },
   },
   components: {
