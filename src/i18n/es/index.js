@@ -75,6 +75,7 @@ export default {
     geolocationErrorPositionUnavailable: 'No hay información de posicionamiento',
     geolocationErrorTimeout: 'Se ha superado el tiempo de espera para la geolocalización',
     geolocationErrorUnknown: 'Ha habido un error desconocido',
+    unknownSearchObservation: 'Resultado de observaciones previas',
   },
   tooltips: {
     treePane: 'Ver árbol',

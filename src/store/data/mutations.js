@@ -100,6 +100,10 @@ export default {
   },
 
   RECALCULATE_TREE: (state, { taskId, fromTask }) => {
+    if (state.context === null) {
+      // context was reset while processing
+      return;
+    }
     const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
     const restored = typeof state.context.restored !== 'undefined';
     if (filtered.length === 0) {

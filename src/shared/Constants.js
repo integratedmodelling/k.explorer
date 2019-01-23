@@ -289,7 +289,10 @@ export default {
       animated: false,
     },
   },
+};
 
+export const FAKE_TEXTS = {
+  UNKNOWN_SEARCH_OBSERVATION: '$$UNKNOWN_SEARCH_OBSERVATION$$',
 };
 
 export const DATAFLOW_STATUS = {

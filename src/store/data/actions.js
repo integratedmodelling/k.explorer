@@ -72,8 +72,8 @@ export default {
             dispatch('recalculateTree', { taskId, fromTask: false });
           });
         }
-        dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
       }
+      dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
     }).catch((error) => {
       dispatch('view/setSpinner', {
         ...Constants.SPINNER_ERROR,
@@ -223,6 +223,7 @@ export default {
             children: [],
             main: observation.main,
             rootContextId: observation.rootContextId,
+            notified: observation.notified || observation.previouslyNotified,
           },
           parentId: observation.parentId,
         });

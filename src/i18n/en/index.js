@@ -54,6 +54,7 @@ export default {
     drawCircle: 'Circle',
     optionShowAll: 'Show all',
     optionSaveLocation: 'Remember location',
+    noNodes: 'No results: is waiting?',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -76,6 +77,7 @@ export default {
     geolocationErrorPositionUnavailable: 'Location information is unavailable',
     geolocationErrorTimeout: 'A request to get the user location timed out',
     geolocationErrorUnknown: 'An unknown error occurred',
+    unknownSearchObservation: 'Previous observations results',
   },
   tooltips: {
     treePane: 'View tree',
