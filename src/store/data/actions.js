@@ -177,6 +177,10 @@ export default {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
       existingObservation.main = observation.main; // is possible that main was changed to true
+      // If a complex model that isn't completely calculate is part of a reloaded context, the main observation
+      // is notified but not still calculate. We need to check if previouslyNotified change from false to true
+      // TODO engine must doesn't send it
+      existingObservation.notified = existingObservation.notified || observation.previouslyNotified;
       if (existingObservation.main && existingObservation.folderId !== null && existingObservation.folderId.indexOf('ff_') === 0) {
         // is a main observations in a fake folder, so if main is true we need to translate value to folder
         const folder = Helpers.findNodeById(state.tree, existingObservation.folderId);
