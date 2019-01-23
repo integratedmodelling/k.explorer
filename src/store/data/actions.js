@@ -24,15 +24,10 @@ export default {
       commit('SET_CONTEXT', null);
       dispatch('getSessionContexts');
       dispatch('view/resetContext', null, { root: true });
-      if (state.waitingForReset !== null) {
-        dispatch('loadContext', state.waitingForReset);
-        state.waitingForReset = null;
-      } else {
-        dispatch('addObservation', {
-          observation: Helpers.OBSERVATION_DEFAULT,
-          main: true,
-        });
-      }
+      dispatch('addObservation', {
+        observation: Helpers.OBSERVATION_DEFAULT,
+        main: true,
+      });
     } else {
       console.warn('Try to reset null context');
     }
