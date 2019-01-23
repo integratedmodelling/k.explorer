@@ -1,8 +1,8 @@
 <template>
-    <div id="kt-container" class="relative-position" :class="{ 'with-splitter': hasObservationInfo, 'loading':  taskIsAlive }">
-      <div id="kt-tree-container" class="simplebar-vertical-only">
+    <div class="kt-container relative-position" :class="{ 'with-splitter': hasObservationInfo, 'loading':  taskIsAlive }">
+      <div class="kt-tree-container simplebar-vertical-only">
         <q-tree
-          id="kt-tree"
+          class="kt-tree"
           ref="klabTree"
           :nodes="tree"
           :filter="filter"
@@ -24,7 +24,7 @@
                 :offset="[0, 8]"
                 self="top left"
                 anchor="bottom middle"
-                class="tree-q-tooltip"
+                class="kt-q-tooltip"
               >{{ hasObservationInfo ? `${prop.node.label}: ` : '' }}{{ clearObservable(prop.node.observable) }}</q-tooltip>
             </span>
             <q-btn
@@ -371,95 +371,76 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
-  .q-tree
-  .q-tree > .q-tree-node-child > .q-tree-node-header {
-    /* padding-left: 24px; */
-  }
-  .q-tree-node {
-    padding: 0 0 3px 15px;
-  }
-  .q-tree-node-header {
-    margin-top: 0;
-  }
-  .q-tree-node.q-tree-node-child {
-    min-height: var(--q-tree-no-child-min-height);
-  }
-  #kt-tree-container .q-tree-node-selected {
-    background-color rgba(0, 0, 0, 0.15)
-  }
-  .q-tree-node-header:before {
-    width: 25px;
-    left: -28px;
-  }
-  .q-chip.node-chip {
-    position:absolute;
-    right: 10px;
-    height: 20px;
-    min-width: 20px;
-    top: 4px;
-    text-align: center;
-  }
-  .kt-download
-    position absolute
-    top 4px
-    display none
-    z-index 9999
-    color #eee
-    border 2px solid #eee
-    width 20px
-    height 20px
-    padding-left 1px
-  .q-tree-node-header:hover
-    .kt-download
-      display block
-      &:hover
-        background-color #fff
-        border none
-        color #666
-    /*
-  .node-emphasized::after {
-    font-family: Ionicons;
-    content: " \f4b3";
-  }
-  */
-  .node-emphasized {
-    color: #fff;
-    font-weight 700;
-    animation: flash linear 2s;
-  }
-  .node-element {
-    text-shadow: none;
-  }
-  .node-selected {
-    text-decoration: underline $main-control-yellow dotted
-    color $main-control-yellow
-  }
-  #kt-container {
+
+  .kt-container
     /* removed 30px of padding and scrollbar padding-bottom */
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
-    padding: 10px 0
-  }
-  #kt-container.loading {
-    background: linear-gradient(90deg, #333, #999);
-    background-size: 200% 100%;
-    animation: Gradient 4s linear infinite;
-  }
-  #kt-container.with-splitter {
-    /* removed 30px of padding and scrollbar padding-bottom */
-    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
-  }
-  .tree-q-tooltip {
-    background-color #333
-  }
-  [data-simplebar] {
-    padding-bottom: 10px;
-  }
-  #kt-container .q-tree-node-collapsible {
-    overflow-x: hidden;
-  }
-  #kt-container .q-tree-children {
-    margin-bottom: 4px;
-  }
+    padding 10px 0
+    &.loading
+      background linear-gradient(90deg, #333, #999)
+      background-size 200% 100%
+      animation loading-gradient 4s linear infinite
+    &.with-splitter
+      /* removed 30px of padding and scrollbar padding-bottom */
+      max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+    [data-simplebar]
+      padding-bottom 10px
+    .kt-tree-container
+      .q-tree-node-collapsible
+        overflow-x hidden
+      .q-tree-children
+        margin-bottom 4px
+      .q-tree-node-selected
+        background-color rgba(0, 0, 0, 0.15)
+      .q-tree-node
+        padding: 0 0 3px 15px;
+        &.q-tree-node-child
+          min-height var(--q-tree-no-child-min-height)
+      .q-tree-node-header
+        margin-top 0
+        &:before
+          width 25px
+          left -28px
+        &:hover
+          .kt-download
+            display block
+            &:hover
+              background-color #fff
+              border none
+              color #666
+
+      .q-chip.node-chip
+        position absolute
+        right 10px
+        height 20px
+        min-width 20px
+        top 4px
+        text-align center
+
+      .kt-download
+        position absolute
+        top 4px
+        display none
+        z-index 9999
+        color #eee
+        border 2px solid #eee
+        width 20px
+        height 20px
+        padding-left 1px
+
+      .node-emphasized
+        color #fff
+        font-weight 700
+        animation flash linear 2s
+      .node-element
+        text-shadow none
+      .node-selected
+        text-decoration underline $main-control-yellow dotted
+        color $main-control-yellow
+
+      .kt-q-tooltip
+        background-color #333
+
   @keyframes flash {
     0% { opacity: 1; }
     25% { opacity: .5; }
@@ -467,7 +448,7 @@ export default {
     75% { opacity: .5; }
     100% { opacity: 1; }
   }
-  @keyframes Gradient {
+  @keyframes loading-gradient {
     0% { background-position: 0% 0% }
     50% { background-position: 100% 0% }
     100% { background-position: 0% 0% }
