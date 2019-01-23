@@ -4368,11 +4368,6 @@ joi@^11.1.1:
     isemail "3.x.x"
     topo "2.x.x"
 
-jquery@^3.2.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
-  integrity sha512-Ubldcmxp5np52/ENotGxlLe6aGMvmF4R8S6tZjsP6Knsaxd/xp3Zrh50cG93lR6nPXyUFwzN3ZSOQI0wRJNdGg==
-
 js-levenshtein@^1.1.3:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/js-levenshtein/-/js-levenshtein-1.1.6.tgz#c6cee58eb3550372df8deb85fad5ce66ce01d59d"
@@ -4458,13 +4453,13 @@ jsonify@~0.0.0:
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
 jsts@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/jsts/-/jsts-2.0.2.tgz#dc7928adb08e36232dd90ac5ab5dfdf5139432a9"
-  integrity sha512-Vi9x6vSQtzCDEUBW9xLFh3i8GBsOI16K+jjq9JECFAgEBpNAXnwptxrFUGeHrkkzr85WT51fUR9tYhMEuykc8Q==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/jsts/-/jsts-2.0.3.tgz#30f421ae6d888ff5d3d855bee5c70d28b9cd25bc"
+  integrity sha512-wlRQolftLo2x98Cjtq7VshICr9oVhOrOZx/qUXUssVKXgZLHv8qItSUwiYEpdm5R2+Ja4jHQHnCCZGX14aSjHw==
 
 "k.elksprottybridge@git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#develop":
-  version "0.4.1"
-  resolved "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#34d3a212fb11e5cc462fd68593e2552229b87843"
+  version "0.4.2"
+  resolved "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#5ed208187034e9ab3e1def669676d1390e0c444c"
   dependencies:
     elkjs "^0.4.1"
     reflect-metadata "^0.1.12"
@@ -5284,20 +5279,19 @@ obuf@^1.0.0, obuf@^1.1.2:
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
 ol-ext@^3.0.1:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.0.2.tgz#ab499c03ac396cf66f1a1bbe2c3fe8ed8d499d12"
-  integrity sha512-PIfn8W30deXPIIqt9W8XAUzzVwDdwaKCjoTQnlzcCvRo6Bq15d8f3rZSUd+DlnSuR3vYmPT75OvLb2G1HS2ZcQ==
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.1.0.tgz#6daef1a66906adfffcb3c1415df214220c0a1509"
+  integrity sha512-1eg63olAmZL7clPCECGBsaRJUwbaW679qUUHS1WkjXhgsQgz3KQW01ARSg1f5uImEc+sBqizsn88m4OCosdd/g==
   dependencies:
     ajax "0.0.4"
-    jquery "^3.2.1"
-    ol "^5.1.3"
+    ol "^5.3.0"
 
 ol-layerswitcher@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-3.2.0.tgz#f4ef6427a997738d6adfe1004d98038600b22ef3"
   integrity sha512-c17P/cq5FAOPDcAHOwYdYB7MIGKlKe+ZVgj9a8rJZpDVh9fi+e6j51IJzI+UeOfEk+HPu/FOIlW+TOkIyXUXRw==
 
-ol@^5.0.0, ol@^5.1.3:
+ol@^5.0.0, ol@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/ol/-/ol-5.3.0.tgz#106b870561fabb9b790b5869b3d93025cb03d389"
   integrity sha512-UrOJGNI5XdYfE9n43RJdsMq25SjI4nIi5Kf0kxi+q6vEknzeRxM/wgYf8FMs7Ss3URuIbsKmetW9dVMOYB/DkQ==
@@ -6413,9 +6407,9 @@ readdirp@^2.0.0:
     readable-stream "^2.0.2"
 
 reflect-metadata@^0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.12.tgz#311bf0c6b63cd782f228a81abe146a2bfa9c56f2"
-  integrity sha512-n+IyV+nGz3+0q3/Yf1ra12KpCyi001bi4XFxSjbiWWjfqb52iTTtpGXmCCAOWWIAn9KEuFZKGqBERHmrtScZ3A==
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
+  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
 
 regenerate-unicode-properties@^7.0.0:
   version "7.0.0"
