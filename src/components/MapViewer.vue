@@ -297,6 +297,9 @@ export default {
     hasContext(newValue) {
       if (newValue) {
         this.setDrawMode(false);
+      } else {
+        // to manage if user move map while a context exists
+        this.sendRegionOfInterest();
       }
     },
   },
