@@ -72,7 +72,7 @@ const PARSERS = {
     }
     // check if is context and is a new context
     if (observation.parentId === null) { // || observation.parentId === observation.id) {
-      if (rootState.data.context === null) {
+      if (rootState.data.context === null && !observation.previouslyNotified) {
         // new context
         addToKexplorerLog(
           dispatch,

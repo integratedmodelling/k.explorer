@@ -148,9 +148,7 @@ export default {
   name: 'MainControlMenu',
   mixins: [TooltipIt],
   data() {
-    return {
-      waitingForReset: null,
-    };
+    return {};
   },
   computed: {
     ...mapGetters('data', [
@@ -276,11 +274,8 @@ export default {
     },
   },
   watch: {
-    hasContext(newValue) {
-      if (newValue && this.waitingForReset !== null) {
-        this.loadContext(this.waitingForReset);
-        this.waitingForReset = null;
-      }
+    hasContext() {
+      this.$refs['mcm-main-popover'].hide();
     },
   },
   components: {
