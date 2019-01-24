@@ -2,7 +2,7 @@
   <q-layout view="hHh lpR fFf">
     <q-layout-drawer
       side="left"
-      behavior="desktop"
+      :overlay="false"
       v-model="leftDrawerVisible"
       :width="100"
       :content-style="{ 'background-color': 'rgba(0,0,0,0)' }"

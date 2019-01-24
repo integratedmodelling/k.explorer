@@ -29,7 +29,7 @@
       @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
       :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && !hasContext }]"
     ><q-icon name="mdi-sitemap">
-      <span class="klab-button-notification" ><!-- v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow" --></span>
+      <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
       <q-tooltip
         :offset="[0, 8]"
         self="top middle"
@@ -105,13 +105,19 @@ export default {
   .vertical
     .klab-button
       display block
-      font-size 48px
-      width 60px
+      font-size 40px
+      width 52px
+      height 52px
+      padding 0 5px
+      margin 15px 10px
+      border 1px solid #333
+      &:hover
+        border 1px solid $main-control-main-color
     .klab-button-notification
       width 16px
       height 16px
       border-radius 8px
-      top 6px
-      right 4px
+      top -10px
+      right -10px
 
 </style>

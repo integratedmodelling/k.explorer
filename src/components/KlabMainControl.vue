@@ -8,7 +8,7 @@
       <div
         id="spinner-lonely-div"
         class="spinner-div"
-        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, border: `2px solid ${hasTasks ? spinnerColor.color : 'white'}` }"
+        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
         v-show="isHidden"
       >
       <klab-spinner
@@ -416,6 +416,7 @@ export default {
     position absolute
     width 44px
     height 44px
+    border 2px solid
 
   .q-card-title
     line-height inherit
