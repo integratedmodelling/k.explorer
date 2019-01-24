@@ -78,6 +78,7 @@ export default {
     geolocationErrorTimeout: 'A request to get the user location timed out',
     geolocationErrorUnknown: 'An unknown error occurred',
     unknownSearchObservation: 'Previous observations results',
+    noLogItems: 'Empty log',
   },
   tooltips: {
     treePane: 'View tree',

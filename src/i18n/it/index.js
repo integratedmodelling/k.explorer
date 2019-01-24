@@ -76,6 +76,7 @@ export default {
     geolocationErrorTimeout: 'Terminato il tempo di attesa per la geolocalizzazione',
     geolocationErrorUnknown: 'Errore imprevisto',
     unknownSearchObservation: 'Risultato di osservazioni previe',
+    noLogItems: 'Il log è vuoto',
   },
   tooltips: {
     treePane: 'Albero',

@@ -2,8 +2,6 @@ import { Helpers } from 'shared/Helpers';
 import { getColorObject } from 'shared/Utils';
 
 export default {
-  hasPalette: state => state.mainWin.paletteVisible,
-
   /**
    * LOGS
    */
@@ -14,7 +12,7 @@ export default {
   lastKlabLog: state => type => Helpers.lastFilteredLogElement(state.klabLog, type),
   klabLogReversedAndFiltered: state => (type) => {
     if (state.klabLog.length === 0) {
-      return state.klabLog;
+      return [];
     }
     const reversed = [...state.klabLog].reverse();
     if (type === undefined) {
