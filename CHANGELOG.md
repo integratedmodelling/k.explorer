@@ -66,3 +66,7 @@ Feature notification on Integrated Modelling Confluence
 - Bug with context without children and spinner fixed
 - Bug with context date fixed
 - Various bug fixes
+
+## 0.6 ?
+### Solved
+- Text when log is empty
