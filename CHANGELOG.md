@@ -58,9 +58,15 @@ Feature notification on Integrated Modelling Confluence
 ### Added
 - Save location and geolocation if no location cookie is found
 
-## 0.5.6 - 2019-
+## 0.5.6 - 2019-01-23
 ### Solved
 - Changed some muddler text
 - Changed the way tasks are managed, now if page is reload, observation of previous context are linked to it
-- Solved bug with context without children and spinner
-- Solved bug with context date
+- Better management of context changes
+- Bug with context without children and spinner fixed
+- Bug with context date fixed
+- Various bug fixes
+
+## 0.6 ?
+### Solved
+- Text when log is empty
