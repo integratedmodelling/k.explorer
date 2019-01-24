@@ -4,8 +4,8 @@
       side="left"
       :overlay="false"
       v-model="leftDrawerVisible"
-      :width="100"
-      :content-style="{ 'background-color': 'rgba(0,0,0,0)' }"
+      :width="mainViewer && mainViewer.leftMenu === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZE ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
+      :content-class="[ 'klab-left' ]"
     >
       <klab-left-menu></klab-left-menu>
     </q-layout-drawer>
@@ -18,6 +18,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { LEFTMENU_VISIBILITY } from 'shared/Constants';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
 export default {
@@ -35,7 +36,7 @@ export default {
     ]),
     leftDrawerVisible: {
       get() {
-        return typeof this.mainViewer !== 'undefined' && this.mainViewer.leftMenu;
+        return typeof this.mainViewer !== 'undefined' && this.mainViewer.leftMenu !== LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN;
       },
       set(visible) {
         this.$store.state.view.mainViewer.leftMenu = visible;
@@ -44,10 +45,15 @@ export default {
   },
   methods: {
   },
-  mounted() {
+  created() {
+    this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
   },
 };
 </script>
 
-<style scoped lang="stylus">
+<style lang="stylus">
+  @import '~variables'
+
+  .klab-left
+    background-color rgba(35, 35, 35, 0)
 </style>

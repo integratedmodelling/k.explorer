@@ -7,26 +7,33 @@ export const COLORS = {
   SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
   SPINNER_ERROR_COLOR: 'negative',
 };
+export const LEFTMENU_VISIBILITY = {
+  LEFTMENU_MAXSIZE: 512,
+  LEFTMENU_MINSIZE: 80,
+  LEFTMENU_MAXIMIZE: 'max',
+  LEFTMENU_MINIMIZE: 'min',
+  LEFTMENU_HIDDEN: 'hidden',
+};
 
 export const VIEWERS = {
   DATA_VIEWER: {
     name: 'DataViewer',
-    leftMenu: false,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
     mainControl: true,
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
-    leftMenu: true,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZE,
     mainControl: false,
   },
   DATAFLOW_VIEWER: {
     name: 'DataflowViewer',
-    leftMenu: true,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZE,
     mainControl: false,
   },
   PROVENANCE_VIEWER: {
     name: 'ProvenanceViewer',
-    leftMenu: true,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZE,
     mainControl: false,
   },
 };

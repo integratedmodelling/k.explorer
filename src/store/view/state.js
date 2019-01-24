@@ -4,12 +4,6 @@
 import Constants from 'shared/Constants';
 
 export default {
-  mainWin: {
-    /**
-     * Indicate if palette is visible
-     */
-    paletteVisible: true,
-  },
   /**
    * Array with app logs
    * Using an array of MAX_LENGTH
@@ -53,6 +47,12 @@ export default {
 
   /**
    * In index, the main viewer can be a DataViewer, ReportViewer, DataflowViewer or ProvenanceViewer
+   * Each viewer has this structure:
+   * {
+   *   name: [name of component]
+   *   leftMenu: [default show in left menu]
+   *   mainControl: [default show in main control]
+   * }
    */
   mainViewer: undefined,
 

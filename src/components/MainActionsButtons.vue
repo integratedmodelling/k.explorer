@@ -7,8 +7,8 @@
     ><q-icon name="mdi-eye-outline">
       <q-tooltip
         :offset="[0, 8]"
-        self="top middle"
-        anchor="bottom middle"
+        :self="tooltipAnchor('top')"
+        :anchor="tooltipAnchor('bottom')"
       >{{ $t('tooltips.dataViewer') }}</q-tooltip>
     </q-icon></div>
     <!-- REPORT BUTTON -->
@@ -19,8 +19,8 @@
       <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadReport"></span>
       <q-tooltip
         :offset="[0, 8]"
-        self="top middle"
-        anchor="bottom middle"
+        :self="tooltipAnchor('top')"
+        :anchor="tooltipAnchor('bottom')"
       >{{ hasObservations ? $t('tooltips.reportViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
     </q-icon></div>
     <!-- DATAFLOW -->
@@ -32,8 +32,8 @@
       <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
       <q-tooltip
         :offset="[0, 8]"
-        self="top middle"
-        anchor="bottom middle"
+        :self="tooltipAnchor('top')"
+        :anchor="tooltipAnchor('bottom')"
       >{{ hasDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
     </q-icon></div>
     <!-- PROVENANCE (disabled) -->
@@ -93,6 +93,9 @@ export default {
     ...mapActions('view', [
       'setMainViewer',
     ]),
+    tooltipAnchor(where) {
+      return `${where} ${this.orientation === 'horizontal' ? 'middle' : 'left'}`;
+    },
   },
   created() {
     this.VIEWERS = VIEWERS;
@@ -101,23 +104,4 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
-  .vertical
-    .klab-button
-      display block
-      font-size 40px
-      width 52px
-      height 52px
-      padding 0 5px
-      margin 15px 10px
-      border 1px solid #333
-      &:hover
-        border 1px solid $main-control-main-color
-    .klab-button-notification
-      width 16px
-      height 16px
-      border-radius 8px
-      top -10px
-      right -10px
-
 </style>
