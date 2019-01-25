@@ -1,33 +1,38 @@
 <template>
   <div id="lm-container" class="full-height">
-    <div id="spinner-leftmenu-container">
-      <div
-        id="spinner-leftmenu-div"
-        :style="{ 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
-      >
-        <klab-spinner
-          id="spinner-leftmenu"
-          :store-controlled="true"
-          :size="50"
-          :ball="22"
-          wrapperId="spinner-leftmenu-div"
-        ></klab-spinner>
+    <div id="lm-actions">
+      <div id="spinner-leftmenu-container">
+        <div
+          id="spinner-leftmenu-div"
+          :style="{ 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
+        >
+          <klab-spinner
+            id="spinner-leftmenu"
+            :store-controlled="true"
+            :size="50"
+            :ball="22"
+            wrapperId="spinner-leftmenu-div"
+          ></klab-spinner>
+        </div>
+      </div>
+      <div class="lm-separator"></div>
+      <main-actions-buttons orientation="vertical"></main-actions-buttons>
+      <div class="lm-separator"></div>
+      <div id="lm-bottom-menu">
+        <div class="klab-button klab-action"
+             :class="[{ active: showLog }]"
+             @click="showLog = !showLog"
+        ><q-icon name="mdi-console">
+          <q-tooltip
+            :offset="[0, 8]"
+            self="top left"
+            anchor="bottom left"
+          >{{ $t('tooltips.logPane') }}</q-tooltip>
+        </q-icon></div>
       </div>
     </div>
-    <div class="lm-separator"></div>
-    <main-actions-buttons orientation="vertical"></main-actions-buttons>
-    <div class="lm-separator"></div>
-    <div id="lm-bottom-menu">
-      <div class="klab-button"
-           :class="[{ active: showLog }]"
-           @click="showLog = !showLog"
-      ><q-icon name="mdi-console">
-        <q-tooltip
-          :offset="[0, 8]"
-          self="top left"
-          anchor="bottom left"
-        >{{ $t('tooltips.logPane') }}</q-tooltip>
-      </q-icon></div>
+    <div id="lm-content">
+
     </div>
   </div>
 </template>
@@ -36,6 +41,7 @@
 import { mapGetters } from 'vuex';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
+import KlabLogPane from 'components/KlabLogPane.vue';
 
 export default {
   name: 'KlabLeftMenu',
@@ -47,6 +53,7 @@ export default {
   components: {
     KlabSpinner,
     MainActionsButtons,
+    KlabLogPane,
   },
   computed: {
     ...mapGetters('stomp', [
@@ -54,6 +61,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'spinnerColor',
+      'isLeftMenuHidden',
     ]),
   },
 };
@@ -97,11 +105,23 @@ export default {
       border 1px solid #333
       &:hover
         border 1px solid alpha($main-control-main-color, 50%)
+      &:active
+        color white
     .klab-button-notification
       width 16px
       height 16px
       border-radius 8px
       top -10px
       right -10px
+    #lm-bottom-menu
+      width 100%
+      position fixed
+      bottom 0
+      left 0
+      .klab-button
+        border none
+        &.active
+          cursor pointer
+          color $main-control-main-color !important
 
 </style>

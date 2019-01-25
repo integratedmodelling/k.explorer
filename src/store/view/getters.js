@@ -1,4 +1,5 @@
 import { Helpers } from 'shared/Helpers';
+import { LEFTMENU_VISIBILITY } from 'shared/Constants';
 import { getColorObject } from 'shared/Utils';
 
 export default {
@@ -31,7 +32,8 @@ export default {
    */
   mainViewer: state => state.mainViewer,
   mainViewerName: state => (state.mainViewer ? state.mainViewer.name : null),
-
+  isLeftMenuMaximized: state => state.mainViewer && state.mainViewer.leftMenu === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED,
+  isLeftMenuHidden: state => state.mainViewer && state.mainViewer.leftMenu === LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
   /**
    * Context layer
    */

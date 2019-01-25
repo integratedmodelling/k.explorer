@@ -10,8 +10,8 @@ export const COLORS = {
 export const LEFTMENU_VISIBILITY = {
   LEFTMENU_MAXSIZE: 512,
   LEFTMENU_MINSIZE: 80,
-  LEFTMENU_MAXIMIZE: 'max',
-  LEFTMENU_MINIMIZE: 'min',
+  LEFTMENU_MAXIMIZED: 'max',
+  LEFTMENU_MINIMIZED: 'min',
   LEFTMENU_HIDDEN: 'hidden',
 };
 
@@ -23,17 +23,17 @@ export const VIEWERS = {
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZE,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
     mainControl: false,
   },
   DATAFLOW_VIEWER: {
     name: 'DataflowViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZE,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
     mainControl: false,
   },
   PROVENANCE_VIEWER: {
     name: 'ProvenanceViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZE,
+    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
     mainControl: false,
   },
 };

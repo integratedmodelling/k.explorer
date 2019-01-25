@@ -4,7 +4,7 @@
       side="left"
       :overlay="false"
       v-model="leftDrawerVisible"
-      :width="mainViewer && mainViewer.leftMenu === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZE ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
+      :width="isLeftMenuMaximized ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
       :content-class="[ 'klab-left' ]"
     >
       <klab-left-menu></klab-left-menu>
@@ -33,10 +33,12 @@ export default {
     ...mapGetters('view', [
       'hasPalette',
       'mainViewer',
+      'isLeftMenuMaximized',
+      'isLeftMenuHidden',
     ]),
     leftDrawerVisible: {
       get() {
-        return typeof this.mainViewer !== 'undefined' && this.mainViewer.leftMenu !== LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN;
+        return !this.isLeftMenuHidden;
       },
       set(visible) {
         this.$store.state.view.mainViewer.leftMenu = visible;
