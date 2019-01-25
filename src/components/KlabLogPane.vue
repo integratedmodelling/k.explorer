@@ -58,11 +58,6 @@ export default {
     ...mapGetters('view', [
       'klabLogReversedAndFiltered',
     ]),
-    klabLog() {
-      const res = this.klabLogReversedAndFiltered();
-      console.warn(this.klabLogReversedAndFiltered().length);
-      return res;
-    },
   },
   methods: {
     logText(log) {
