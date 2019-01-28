@@ -519,7 +519,7 @@ export default {
   #mc-interrupt-task
     position absolute
     right 2px
-    color $main-control-red
+    color $main-control-red !important
 
   .mc-button
     padding 5px 10px 7px 10px
