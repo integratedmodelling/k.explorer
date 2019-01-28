@@ -15,25 +15,55 @@ export const LEFTMENU_VISIBILITY = {
   LEFTMENU_HIDDEN: 'hidden',
 };
 
+/**
+ * The viewers asociated component for left menu
+ * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
+ */
+export const LEFT_MENU_COMPONENTS = {
+  DATA_VIEWER_COMPONENT: 'klab-tree-pane',
+  REPORT_VIEWER_COMPONENT: 'reports-details',
+  DATAFLOW_VIEWER_COMPONENT: 'dataflow-details',
+  PROVENANCE_VIEWER_COMPONENT: 'provenance-details',
+  LOG_COMPONENT: 'klab-log-pane',
+};
+
+/**
+ * Viewers:
+ * DATA_VIEWER: container for maps, graph or everything that represent an observation
+ * REPORT_VIEWER: container for reports
+ * DATAFLOW_VIEWER: container for dataflow
+ * PROVENANCE_VIEWER: container for provenance (not implemented)
+ * @type {{VIEWER: {
+ *   name: string,
+ *   leftMenuState: string,
+ *   leftMenuContent: undefined,
+ *   mainControl: boolean
+ * }
+ * }}
+ */
 export const VIEWERS = {
   DATA_VIEWER: {
     name: 'DataViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
+    leftMenuContent: LEFT_MENU_COMPONENTS.DATA_VIEWER_COMPONENT,
     mainControl: true,
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFT_MENU_COMPONENTS.REPORT_VIEWER_COMPONENT,
     mainControl: false,
   },
   DATAFLOW_VIEWER: {
     name: 'DataflowViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFT_MENU_COMPONENTS.DATAFLOW_VIEWER_COMPONENT,
     mainControl: false,
   },
   PROVENANCE_VIEWER: {
     name: 'ProvenanceViewer',
-    leftMenu: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFT_MENU_COMPONENTS.PROVENANCE_VIEWER_COMPONENT,
     mainControl: false,
   },
 };

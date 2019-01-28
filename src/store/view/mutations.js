@@ -39,6 +39,26 @@ export default {
   SET_MAIN_VIEWER: (state, viewer) => {
     state.mainViewer = viewer;
   },
+
+  /**
+   * set the left menu content
+   * @param state
+   * @param visibility
+   * @constructor
+   */
+  SET_LEFTMENU_CONTENT: (state, content) => {
+    state.leftMenuContent = content;
+  },
+
+  /**
+   * set the left menu visibility
+   * @param state
+   * @param visibility
+   * @constructor
+   */
+  SET_LEFTMENU_STATE: (state, visibility) => {
+    state.leftMenuState = visibility;
+  },
   /**
    * Set the main data viewer by viewer index
    * @param idx the viewer idx

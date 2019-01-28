@@ -54,8 +54,20 @@ export default {
   }),
   */
 
-  setMainViewer: ({ commit }, viewer) => {
+  setMainViewer: ({ commit, dispatch }, viewer) => {
     commit('SET_MAIN_VIEWER', viewer);
+    if (viewer) {
+      dispatch('setLeftMenuState', viewer.leftMenuState);
+      dispatch('setLeftMenuContent', viewer.leftMenuContent);
+    }
+  },
+
+  setLeftMenuContent: ({ commit }, component) => {
+    commit('SET_LEFTMENU_CONTENT', component);
+  },
+
+  setLeftMenuState: ({ commit }, visibility) => {
+    commit('SET_LEFTMENU_STATE', visibility);
   },
 
   setMainDataViewer: ({ commit }, idx) => {

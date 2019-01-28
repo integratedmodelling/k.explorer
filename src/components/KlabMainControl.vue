@@ -472,7 +472,7 @@ export default {
   #mc-interrupt-task
     position absolute
     right 2px
-    color $main-control-red
+    color $main-control-red !important
 
   .mc-tab.active
     background-color alpha($faded, 85%)

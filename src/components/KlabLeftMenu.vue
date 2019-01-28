@@ -1,6 +1,6 @@
 <template>
   <div id="lm-container" class="full-height">
-    <div id="lm-actions">
+    <div id="lm-actions" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
       <div id="spinner-leftmenu-container">
         <div
           id="spinner-leftmenu-div"
@@ -18,10 +18,10 @@
       <div class="lm-separator"></div>
       <main-actions-buttons orientation="vertical"></main-actions-buttons>
       <div class="lm-separator"></div>
-      <div id="lm-bottom-menu">
+      <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
         <div class="klab-button klab-action"
              :class="[{ active: showLog }]"
-             @click="showLog = !showLog"
+             @click="logAction"
         ><q-icon name="mdi-console">
           <q-tooltip
             :offset="[0, 8]"
@@ -31,14 +31,25 @@
         </q-icon></div>
       </div>
     </div>
-    <div id="lm-content">
-
+    <div
+      id="lm-content"
+      v-if="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED && leftMenuContent"
+      :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE - LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }"
+    >
+      <div id="lm-content-container">
+        <keep-alive>
+          <transition name="component-fade" mode="out-in">
+            <component class="lm-component" :is="leftMenuContent"></component>
+          </transition>
+        </keep-alive>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+import { LEFTMENU_VISIBILITY, LEFT_MENU_COMPONENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -61,8 +72,30 @@ export default {
     ]),
     ...mapGetters('view', [
       'spinnerColor',
-      'isLeftMenuHidden',
+      'mainViewer',
+      'leftMenuContent',
+      'leftMenuState',
     ]),
+  },
+  methods: {
+    ...mapActions('view', [
+      'setLeftMenuState',
+      'setLeftMenuContent',
+    ]),
+    logAction() {
+      if (this.showLog) {
+        this.showLog = false;
+        this.setLeftMenuContent(this.mainViewer.leftMenuContent);
+        this.setLeftMenuState(this.mainViewer.leftMenuState);
+      } else {
+        this.showLog = true;
+        this.setLeftMenuContent(LEFT_MENU_COMPONENTS.LOG_COMPONENT);
+        this.setLeftMenuState(LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED);
+      }
+    },
+  },
+  created() {
+    this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
   },
 };
 </script>
@@ -88,6 +121,8 @@ export default {
       -moz-border-radius 40px
       border-radius 40px
       border 2px solid
+    #lm-actions
+      float left
     .lm-separator
       width 90%
       left 5%

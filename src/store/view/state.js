@@ -1,7 +1,7 @@
 /**
  * State of view
  */
-import Constants from 'shared/Constants';
+import Constants, { LEFTMENU_VISIBILITY } from 'shared/Constants';
 
 export default {
   /**
@@ -50,11 +50,21 @@ export default {
    * Each viewer has this structure:
    * {
    *   name: [name of component]
-   *   leftMenu: [default show in left menu]
+   *   leftMenuState: [default show in left menu]
    *   mainControl: [default show in main control]
    * }
    */
   mainViewer: undefined,
+
+  /**
+   * The content of left menu. Is decided using the mainViewer leftMenuContent or punctual action (like open log)
+   * Will be a string with the component name
+   */
+  leftMenuContent: null,
+  /**
+   * The state of left menu. Will be one of LEFTMENU_VISIBILITY constants
+   */
+  leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
 
   /**
    * Layer with the context shape shared between dataViewers

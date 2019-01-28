@@ -3,8 +3,8 @@
     <q-layout-drawer
       side="left"
       :overlay="false"
-      v-model="leftDrawerVisible"
-      :width="isLeftMenuMaximized ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
+      v-model="leftMenuVisible"
+      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
       :content-class="[ 'klab-left' ]"
     >
       <klab-left-menu></klab-left-menu>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { LEFTMENU_VISIBILITY } from 'shared/Constants';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
@@ -33,19 +33,21 @@ export default {
     ...mapGetters('view', [
       'hasPalette',
       'mainViewer',
-      'isLeftMenuMaximized',
-      'isLeftMenuHidden',
+      'leftMenuState',
     ]),
-    leftDrawerVisible: {
+    leftMenuVisible: {
       get() {
-        return !this.isLeftMenuHidden;
+        return this.leftMenuState !== LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN;
       },
-      set(visible) {
-        this.$store.state.view.mainViewer.leftMenu = visible;
+      set(visibility) {
+        this.setLeftMenuState(visibility);
       },
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setLeftMenuState',
+    ]),
   },
   created() {
     this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
