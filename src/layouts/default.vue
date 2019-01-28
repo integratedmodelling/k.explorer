@@ -6,6 +6,7 @@
       v-model="leftMenuVisible"
       :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
       :content-class="[ 'klab-left' ]"
+      class="print-hide"
     >
       <klab-left-menu></klab-left-menu>
     </q-layout-drawer>

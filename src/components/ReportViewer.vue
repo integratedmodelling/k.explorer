@@ -60,5 +60,5 @@ export default {
 };
 </script>
 
-<style>
+<style lang="stylus">
 </style>
