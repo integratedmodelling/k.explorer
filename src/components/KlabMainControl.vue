@@ -117,33 +117,8 @@
           <scale-reference width="110px" scale-type="time" :editable="false"></scale-reference>
         </div>
         <div class="mc-separator" style="right: 160px"></div>
-        <div id="mc-actions"><main-actions-buttons orientation="horizontal"></main-actions-buttons></div>
-        <div class="mc-separator" style="right: 45px"></div>
-        <!-- RESET CONTEXT or INTERRUPT TASK-->
-        <div class="klab-button"
-             id="mc-reset-context"
-             @click="resetContext"
-             v-if="!hasTasks(contextId)"
-        ><q-icon name="mdi-close-circle-outline">
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.resetContext') }}</q-tooltip>
-        </q-icon></div>
-        <div class="klab-button"
-             id="mc-interrupt-task"
-             @click="interruptTask"
-             v-if="hasTasks(contextId)"
-        ><q-icon name="mdi-stop-circle-outline">
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTaskText }) }}</q-tooltip>
-        </q-icon></div>
-      </q-card-actions
-        >
+        <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
+      </q-card-actions>
     </q-card>
     </transition>
     <scale-change-dialog></scale-change-dialog>
@@ -160,7 +135,6 @@ import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
@@ -227,30 +201,12 @@ export default {
       'lastActiveTask',
       'tasks',
     ]),
-    lastActiveTaskText() {
-      const text = this.lastActiveTask(this.contextId) === null ? '' : this.lastActiveTask(this.contextId).description;
-      if (text === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
-        return this.$t('messages.unknownSearchObservation');
-      }
-      return text;
-    },
   },
   methods: {
     ...mapActions('view', [
       'searchStop',
       'setMainViewer',
     ]),
-    resetContext() {
-      this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
-    },
-    interruptTask() {
-      const task = this.lastActiveTask(this.contextId);
-      if (task !== null && task.alive) {
-        this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
-          taskId: task.id,
-        }, this.$store.state.data.session).body);
-      }
-    },
     hide() {
       this.dragMCConfig.resetInitialPos = false;
       this.isHidden = true;
@@ -398,6 +354,18 @@ export default {
     .q-card-title
       position relative
 
+    .klab-main-actions
+      position absolute
+      right 55px
+    .klab-button-notification
+      top 6px
+      right 4px
+      width 10px
+      height 10px
+    .klab-destructive-actions .klab-button
+      position absolute
+      right 2px
+
   .spinner-div
     background-color white
     -webkit-border-radius 40px
@@ -446,10 +414,6 @@ export default {
     margin 0
     position relative
 
-  #mc-actions
-    position absolute
-    right 55px
-
   .mc-separator
     width 2px
     height 60%
@@ -457,7 +421,8 @@ export default {
     top 20%
     border-left 1px solid #444
     border-right 1px solid #666
-
+    &.mab-separator
+      right 45px
   .mc-scalereference
     position absolute
     height 37px
@@ -467,12 +432,6 @@ export default {
 
   #mc-timereference
     right 175px
-
-  #mc-reset-context
-  #mc-interrupt-task
-    position absolute
-    right 2px
-    color $main-control-red !important
 
   .mc-tab.active
     background-color alpha($faded, 85%)

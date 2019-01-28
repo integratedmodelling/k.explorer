@@ -16,7 +16,7 @@
         </div>
       </div>
       <div class="lm-separator"></div>
-      <main-actions-buttons orientation="vertical"></main-actions-buttons>
+      <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
       <div class="lm-separator"></div>
       <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
         <div class="klab-button klab-action"
@@ -140,17 +140,16 @@ export default {
       height 52px
       padding 0 5px
       margin 15px auto
-      border 1px solid #333
+    .klab-main-actions .klab-button
       &:hover
-        border 1px solid alpha($main-control-main-color, 50%)
+        color $main-control-main-color !important
       &:active
         color white
     .klab-button-notification
-      width 16px
-      height 16px
-      border-radius 8px
-      top -10px
-      right -10px
+      width 13px
+      height 13px
+      top 5px
+      right 8px
     #lm-bottom-menu
       width 100%
       position fixed
