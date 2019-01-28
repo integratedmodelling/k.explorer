@@ -50,7 +50,8 @@ export default {
       },
     }).then(async ({ data: context }) => {
       context.restored = true;
-      await dispatch('setContext', context);
+      // remove children so no reactive observations are loaded
+      await dispatch('setContext', { ...context, children: [] });
       commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
       console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
       // console.dir(context);
