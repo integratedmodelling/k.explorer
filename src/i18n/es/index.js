@@ -62,7 +62,7 @@ export default {
     noSearchResults: 'No hay resultados',
     noActionForObservation: 'No hay acciones disponibles',
     noTime: 'sin información',
-    emptyReport: '<div id="mc-empty-report" class="print-hide">Report vacío</div>',
+    emptyReport: 'Report vacío',
     noLoadedReport: 'No se ha cargado ningun report',
     copiedToClipboard: 'Copiado',
     changeScaleResolutionError: 'La resolución tiene que ser positiva',
