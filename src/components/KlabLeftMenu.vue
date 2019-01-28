@@ -1,6 +1,6 @@
 <template>
   <div id="lm-container" class="full-height">
-    <div id="lm-actions" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
+    <div id="lm-actions" class="full-height" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
       <div id="spinner-leftmenu-container">
         <div
           id="spinner-leftmenu-div"
@@ -35,6 +35,7 @@
       id="lm-content"
       v-if="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED && leftMenuContent"
       :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE - LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }"
+      class="full-height"
     >
       <div id="lm-content-container">
         <keep-alive>
@@ -105,9 +106,9 @@ export default {
   #lm-container
     width 100%
     background-color rgba(35, 35, 35, .5)
-    border-right 1px solid rgba(135, 135, 135, .2)
     // background: linear-gradient(to right, rgba(35, 35, 35, .5) 0, rgba(35, 35, 35, .5) 95%, rgba(35, 35, 35, 0) 100%)
     // box-shadow 1px 0 3px 0 rgba(150,150,150,0.5)
+
     #spinner-leftmenu-container
       padding-top 10px
     #spinner-leftmenu-div
@@ -122,7 +123,9 @@ export default {
       border-radius 40px
       border 2px solid
     #lm-actions
+    #lm-content
       float left
+      border-right 1px solid rgba(135, 135, 135, .2)
     .lm-separator
       width 90%
       left 5%

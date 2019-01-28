@@ -1,5 +1,5 @@
 <template>
-  <div id="oi-container" class="relative-position">
+  <div id="oi-container" class="relative-position klab-menu-component">
     <!-- slider FIXED WIDTH -->
     <div id="oi-slider" v-show="observationInfo.visible">
       <q-slider
