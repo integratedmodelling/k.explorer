@@ -4,7 +4,7 @@
       side="left"
       :overlay="false"
       v-model="leftMenuVisible"
-      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
+      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE + 10 : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE + 10"
       :content-class="[ 'klab-left' ]"
       class="print-hide"
     >
@@ -58,7 +58,6 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-
   .klab-left
     background-color rgba(35, 35, 35, 0)
 </style>

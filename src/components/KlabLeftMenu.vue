@@ -1,6 +1,6 @@
 <template>
   <div id="lm-container" class="full-height">
-    <div id="lm-actions" class="full-height" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
+    <div id="lm-actions" class="full-height klab-lm-panel" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
       <div id="spinner-leftmenu-container">
         <div
           id="spinner-leftmenu-div"
@@ -20,7 +20,7 @@
       <div class="lm-separator"></div>
       <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
         <div class="klab-button klab-action"
-             :class="[{ active: showLog }]"
+             :class="[{ active: logShowed }]"
              @click="logAction"
         ><q-icon name="mdi-console">
           <q-tooltip
@@ -33,9 +33,9 @@
     </div>
     <div
       id="lm-content"
-      v-if="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED && leftMenuContent"
+      v-if="maximized"
       :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE - LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }"
-      class="full-height"
+      class="full-height klab-lm-panel"
     >
       <div id="lm-content-container">
         <keep-alive>
@@ -50,7 +50,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { LEFTMENU_VISIBILITY, LEFT_MENU_COMPONENTS } from 'shared/Constants';
+import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
 import KlabLogPane from 'components/KlabLogPane.vue';
@@ -58,9 +58,7 @@ import KlabLogPane from 'components/KlabLogPane.vue';
 export default {
   name: 'KlabLeftMenu',
   data() {
-    return {
-      showLog: false,
-    };
+    return {};
   },
   components: {
     KlabSpinner,
@@ -77,6 +75,12 @@ export default {
       'leftMenuContent',
       'leftMenuState',
     ]),
+    logShowed() {
+      return this.leftMenuContent === LEFTMENU_COMPONENTS.LOG_COMPONENT;
+    },
+    maximized() {
+      return this.leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED && this.leftMenuContent;
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -84,13 +88,11 @@ export default {
       'setLeftMenuContent',
     ]),
     logAction() {
-      if (this.showLog) {
-        this.showLog = false;
+      if (this.logShowed) {
         this.setLeftMenuContent(this.mainViewer.leftMenuContent);
         this.setLeftMenuState(this.mainViewer.leftMenuState);
       } else {
-        this.showLog = true;
-        this.setLeftMenuContent(LEFT_MENU_COMPONENTS.LOG_COMPONENT);
+        this.setLeftMenuContent(LEFTMENU_COMPONENTS.LOG_COMPONENT);
         this.setLeftMenuState(LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED);
       }
     },
@@ -105,12 +107,12 @@ export default {
   @import '~variables'
   #lm-container
     width 100%
-    background-color rgba(35, 35, 35, .5)
     // background: linear-gradient(to right, rgba(35, 35, 35, .5) 0, rgba(35, 35, 35, .5) 95%, rgba(35, 35, 35, 0) 100%)
     // box-shadow 1px 0 3px 0 rgba(150,150,150,0.5)
 
     #spinner-leftmenu-container
       padding-top 10px
+      padding-bottom 20px
     #spinner-leftmenu-div
       width 52px
       height 52px
@@ -126,13 +128,15 @@ export default {
     #lm-content
       float left
       border-right 1px solid rgba(135, 135, 135, .2)
+      &.klab-lm-panel
+        background-color rgba(35, 35, 35, .5)
     .lm-separator
       width 90%
       left 5%
       height 2px
       border-top 1px solid #333
       border-bottom 1px solid #444
-      margin 20px auto
+      margin 0 auto
     .klab-button
       display block
       font-size 40px

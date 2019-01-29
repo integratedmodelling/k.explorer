@@ -19,7 +19,7 @@ export const LEFTMENU_VISIBILITY = {
  * The viewers asociated component for left menu
  * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
  */
-export const LEFT_MENU_COMPONENTS = {
+export const LEFTMENU_COMPONENTS = {
   DATA_VIEWER_COMPONENT: 'klab-tree-pane',
   REPORT_VIEWER_COMPONENT: 'reports-details',
   DATAFLOW_VIEWER_COMPONENT: 'dataflow-details',
@@ -45,25 +45,25 @@ export const VIEWERS = {
   DATA_VIEWER: {
     name: 'DataViewer',
     leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
-    leftMenuContent: LEFT_MENU_COMPONENTS.DATA_VIEWER_COMPONENT,
+    leftMenuContent: LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT,
     mainControl: true,
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
     leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
-    leftMenuContent: LEFT_MENU_COMPONENTS.REPORT_VIEWER_COMPONENT,
+    leftMenuContent: LEFTMENU_COMPONENTS.REPORT_VIEWER_COMPONENT,
     mainControl: false,
   },
   DATAFLOW_VIEWER: {
     name: 'DataflowViewer',
     leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
-    leftMenuContent: LEFT_MENU_COMPONENTS.DATAFLOW_VIEWER_COMPONENT,
+    leftMenuContent: LEFTMENU_COMPONENTS.DATAFLOW_VIEWER_COMPONENT,
     mainControl: false,
   },
   PROVENANCE_VIEWER: {
     name: 'ProvenanceViewer',
     leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
-    leftMenuContent: LEFT_MENU_COMPONENTS.PROVENANCE_VIEWER_COMPONENT,
+    leftMenuContent: LEFTMENU_COMPONENTS.PROVENANCE_VIEWER_COMPONENT,
     mainControl: false,
   },
 };
