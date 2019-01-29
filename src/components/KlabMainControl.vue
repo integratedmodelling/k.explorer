@@ -11,14 +11,14 @@
         :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
         v-show="isHidden"
       >
-      <klab-spinner
-        id="spinner-lonely"
-        :store-controlled="true"
-        :size="35"
-        :ball="22"
-        wrapperId="spinner-lonely-div"
-        @dblclick.native="show"
-      ></klab-spinner>
+        <klab-spinner
+          id="spinner-lonely"
+          :store-controlled="true"
+          :size="35"
+          :ball="22"
+          wrapperId="spinner-lonely-div"
+          @dblclick.native="show"
+        ></klab-spinner>
       </div>
     </transition>
     <transition
@@ -366,128 +366,85 @@ export default {
       position absolute
       right 2px
 
-  .spinner-div
-    background-color white
-    -webkit-border-radius 40px
-    -moz-border-radius 40px
-    border-radius 40px
-    padding 3px
-    margin 0
+    .spinner-div
+      background-color white
+      -webkit-border-radius 40px
+      -moz-border-radius 40px
+      border-radius 40px
+      padding 3px
+      margin 0
 
-  #spinner-main
-    float left
-    border none
-    width 40px
-    height 40px
+    #spinner-main
+      float left
+      border none
+      width 40px
+      height 40px
 
-  #spinner-lonely-div
-    position absolute
-    width 44px
-    height 44px
-    border 2px solid
+    #spinner-lonely-div
+      position absolute
+      width 44px
+      height 44px
+      border 2px solid
 
-  .q-card-title
-    line-height inherit
+    .q-card-title
+      line-height inherit
 
-  #mc-search-div
-    width 85%
-    overflow-x hidden
-    overflow-y hidden
-    white-space nowrap
-    position absolute
-    left 45px
-    margin-top 8px
+    #mc-search-div
+      width 85%
+      overflow-x hidden
+      overflow-y hidden
+      white-space nowrap
+      position absolute
+      left 45px
+      margin-top 8px
 
-  #mc-text-div
-    text-shadow 0 0 1px #555
+    #mc-text-div
+      text-shadow 0 0 1px #555
 
-  .q-card-main
-    overflow auto
-    line-height inherit
-    background-color alpha($faded, 85%)
-    padding 0 /* 0 0 10px 0*/
+    .q-card-main
+      overflow auto
+      line-height inherit
+      background-color alpha($faded, 85%)
+      padding 0 /* 0 0 10px 0*/
 
-  #context-actions
-    border-bottom-left-radius 5px
-    border-bottom-right-radius 5px
-    padding 0
-    margin 0
-    position relative
+    #context-actions
+      border-bottom-left-radius 5px
+      border-bottom-right-radius 5px
+      padding 0
+      margin 0
+      position relative
 
-  .mc-separator
-    width 2px
-    height 60%
-    position absolute
-    top 20%
-    border-left 1px solid #444
-    border-right 1px solid #666
-    &.mab-separator
-      right 45px
-  .mc-scalereference
-    position absolute
-    height 37px
+    .mc-separator
+      width 2px
+      height 60%
+      position absolute
+      top 20%
+      border-left 1px solid #444
+      border-right 1px solid #666
+      &.mab-separator
+        right 45px
+    .mc-scalereference
+      position absolute
+      height 37px
 
-  #mc-spacereference
-    right 305px
+    #mc-spacereference
+      right 305px
 
-  #mc-timereference
-    right 175px
+    #mc-timereference
+      right 175px
 
-  .mc-tab.active
-    background-color alpha($faded, 85%)
+    .mc-tab.active
+      background-color alpha($faded, 85%)
 
-  .component-fade-enter-active
-  .component-fade-leave-active
-    transition opacity .3s ease
+    .component-fade-enter-active
+    .component-fade-leave-active
+      transition opacity .3s ease
 
-  .component-fade-enter
-  .component-fade-leave-to
-    opacity 0
+    .component-fade-enter
+    .component-fade-leave-to
+      opacity 0
 
-  .lot-of-flow
-    transition top 0.05s ease 0s, left 0.05s ease 0s
+    .lot-of-flow
+      transition top 0.05s ease 0s, left 0.05s ease 0s
 
-  .mc-container
-    height 100%
-    display flex
-    align-items center
-    width 180px
-
-  .mc-menuitem
-    width 100%
-    position relative
-    padding 2px 5px
-    &.mc-clickable
-      cursor pointer
-      &:hover:not(.mc-not-available)
-        background-color #ddd
-        border-radius 5px
-    &.mc-no-clickable
-      cursor default
-    &.mc-not-available
-      cursor not-allowed
-    &.mc-select
-      background-color $main-control-main-color
-      color #fff
-    .mc-item
-      padding 0 3px
-      display inline-block
-      vertical-align middle
-      font-size 13px
-      &.mc-only-text
-        width calc(100% - 30px)
-      &.mc-large-text
-        width 100%;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      &.lighter
-        color #ccc
-        text-shadow 0 0 1px #333
-      &.mc-icon
-        font-size 20px
-        width 30px
-      &.mc-text
-        padding-left 10px
 </style>

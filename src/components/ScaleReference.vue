@@ -1,9 +1,9 @@
 <template>
   <div class="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
-    <div class="sr-scalereference mc-menuitem" v-if="hasScale" :class="{ 'sr-full': full, 'mc-clickable': editable }">
+    <div class="sr-scalereference klab-menuitem" v-if="hasScale" :class="{ 'sr-full': full, 'klab-clickable': editable }">
       <div
         v-if="full"
-        class="sr-locked mc-item mdi sr-icon"
+        class="sr-locked klab-item mdi sr-icon"
         :class="[ isScaleLocked[scaleType] ? 'mdi-lock-outline' : 'mdi-lock-open-outline']"
         :style="{ cursor: isScaleLocked[scaleType] ? 'pointer' : 'default' }"
         @click.prevent="isScaleLocked ? unlockScale($event) : false"
@@ -16,9 +16,9 @@
         >{{ $t('label.clickToUnlock') }}</q-tooltip>
       </div>
       <div class="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-scaletype mc-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']">{{ scaleType === 'time' ? type : '' }}</div>
-        <div class="sr-description mc-item">{{ description }}</div>
-        <div class="sr-spacescale mc-item">{{ scale }}</div>
+        <div class="sr-scaletype klab-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']">{{ scaleType === 'time' ? type : '' }}</div>
+        <div class="sr-description klab-item">{{ description }}</div>
+        <div class="sr-spacescale klab-item">{{ scale }}</div>
         <q-tooltip
           v-if="editable"
           anchor="bottom middle"
