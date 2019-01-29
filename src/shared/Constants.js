@@ -8,7 +8,7 @@ export const COLORS = {
   SPINNER_ERROR_COLOR: 'negative',
 };
 export const LEFTMENU_VISIBILITY = {
-  LEFTMENU_MAXSIZE: 512,
+  LEFTMENU_MAXSIZE: 400,
   LEFTMENU_MINSIZE: 80,
   LEFTMENU_MAXIMIZED: 'max',
   LEFTMENU_MINIMIZED: 'min',
@@ -20,7 +20,8 @@ export const LEFTMENU_VISIBILITY = {
  * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
  */
 export const LEFTMENU_COMPONENTS = {
-  DATA_VIEWER_COMPONENT: 'klab-tree-pane',
+  DATA_VIEWER_COMPONENT: 'klab-main-control',
+  DOCKED_DATA_VIEWER_COMPONENT: 'docked-main-control',
   REPORT_VIEWER_COMPONENT: 'reports-details',
   DATAFLOW_VIEWER_COMPONENT: 'dataflow-details',
   PROVENANCE_VIEWER_COMPONENT: 'provenance-details',
@@ -47,6 +48,12 @@ export const VIEWERS = {
     leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
     leftMenuContent: LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT,
     mainControl: true,
+  },
+  DOCKED_DATA_VIEWER: {
+    name: 'DataViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT,
+    mainControl: false,
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
@@ -359,4 +366,5 @@ export const CUSTOM_EVENTS = {
   MAP_SIZE_CHANGED: 'mapsizechanged',
   UPDATE_FOLDER: 'updatefolder',
   GRAPH_NODE_SELECTED: 'graphnodeselected',
+  SPINNER_DOUBLE_CLICK: 'spinnerdoubleclick',
 };

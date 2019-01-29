@@ -12,7 +12,7 @@
       <klab-log v-if="logVisible"></klab-log>
     </div>
     <transition name="component-fade" mode="out-in">
-      <klab-main-control v-show="mainViewer.mainControl"></klab-main-control>
+      <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
     </transition>
     <q-modal
         id="modal-connection-status"
@@ -66,6 +66,7 @@ export default {
       'mainViewerName',
       'mainViewer',
       'isScaleEditing',
+      'isDrawMode',
     ]),
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
@@ -137,7 +138,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isScaleEditing) {
+      if (this.modalVisible || this.isScaleEditing || this.isDrawMode) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {

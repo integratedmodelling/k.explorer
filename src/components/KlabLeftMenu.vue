@@ -54,6 +54,7 @@ import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
 import KlabLogPane from 'components/KlabLogPane.vue';
+import DockedMainControl from 'components/DockedMainControl.vue';
 
 export default {
   name: 'KlabLeftMenu',
@@ -64,6 +65,7 @@ export default {
     KlabSpinner,
     MainActionsButtons,
     KlabLogPane,
+    DockedMainControl,
   },
   computed: {
     ...mapGetters('stomp', [

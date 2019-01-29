@@ -4,7 +4,7 @@
       side="left"
       :overlay="false"
       v-model="leftMenuVisible"
-      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE + 10 : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE + 10"
+      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
       :content-class="[ 'klab-left' ]"
       class="print-hide"
     >

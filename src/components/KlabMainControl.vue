@@ -44,28 +44,7 @@
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
       >
-        <div
-          id="spinner-main"
-          class="spinner-div"
-        >
-          <klab-spinner
-            :store-controlled="true"
-            :color="spinnerColor.hex"
-            :size="35"
-            :ball="22"
-            wrapperId="spinner-main"
-            @dblclick.native="hide"
-          ></klab-spinner>
-        </div>
-
-        <klab-search v-if="searchIsActive"></klab-search>
-        <div id="mc-context" class="text-white" v-else>
-          <scrolling-text :edgeOpacity="hasContext ? 1 : searchIsFocused ? 0.6 : 0.2" width="90%" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
-        </div>
-        <div id="mc-status-texts" ref="mc-status-texts">
-          <scrolling-text :edgeOpacity="hasContext ? 1 : searchIsFocused ? 0.6 : 0.2" width="85%" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
-        </div>
-        <main-control-menu v-show="!isHidden"></main-control-menu>
+        <klab-search-bar></klab-search-bar>
       </q-card-title>
 
       <q-card-main
@@ -122,6 +101,11 @@
     </q-card>
     </transition>
     <scale-change-dialog></scale-change-dialog>
+    <transition appear
+                enter-active-class="animated zoomIn"
+                leave-active-class="animated zoomOut">
+      <div class="mc-docking full-height" v-if="askForDocking" :style="{ width: leftMenuMaximized }"></div>
+    </transition>
   </div>
 </template>
 
@@ -129,13 +113,17 @@
 // import Vue from 'vue';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import { VIEWERS, CUSTOM_EVENTS, FAKE_TEXTS } from 'shared/Constants';
+import {
+  VIEWERS,
+  CUSTOM_EVENTS,
+  LEFTMENU_VISIBILITY,
+} from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
-import KlabSearch from 'components/KlabSearch.vue';
+import KlabSearchBar from 'components/KlabSearchBar.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
-import { dom } from 'quasar';
+import { dom, debounce } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -152,7 +140,7 @@ export default {
     KlabTreePane,
     KlabLogPane,
     KlabSpinner,
-    KlabSearch,
+    KlabSearchBar,
     MainControlMenu,
     MainActionsButtons,
   },
@@ -165,11 +153,19 @@ export default {
       dragMCConfig: {
         handle: undefined,
         resetInitialPos: false,
+        onPositionChange: debounce((positionDiff, absolutePosition) => {
+          this.onDebouncedPositionChanged(absolutePosition);
+        }, 200),
+        onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
       },
+      dragging: false,
+      askForDocking: false,
+      leftMenuMaximized: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE}px`,
       boundingElement: undefined,
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
+      draggableElementWidth: 0,
       centeredLeft: this.defaultLeft,
       needMarqueeTS: 0, // status texts
       needMarqueeCTX: 0, // context text
@@ -189,12 +185,9 @@ export default {
     ]),
     ...mapGetters('view', [
       'spinnerColor',
-      'searchIsActive',
       'searchIsFocused',
       'mainViewerName',
       'isDrawMode',
-      'statusTextsString',
-      'statusTextsLength',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -207,6 +200,13 @@ export default {
       'searchStop',
       'setMainViewer',
     ]),
+    onDebouncedPositionChanged(absolutePosition) {
+      if (this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
+        this.askForDocking = true;
+      } else {
+        this.askForDocking = false;
+      }
+    },
     hide() {
       this.dragMCConfig.resetInitialPos = false;
       this.isHidden = true;
@@ -217,7 +217,7 @@ export default {
     },
     getCenteredLeft() {
       if (typeof this.draggableElement !== 'undefined' && !this.hasContext) {
-        const elWidth = width(this.draggableElement);
+        const elWidth = this.draggableElementWidth;
         const contWidth = width(this.boundingElement);
         return (contWidth - elWidth) / 2;
       }
@@ -243,6 +243,11 @@ export default {
       event.preventDefault();
     },
     checkWhereWasDragged() {
+      this.dragging = false;
+      if (this.askForDocking) {
+        this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
+        return;
+      }
       if (this.draggableElement.offsetTop < 0) { // upper than window
         this.changeDraggablePosition({ top: 0, left: Math.max(this.draggableElement.offsetLeft, 0) });
       }
@@ -277,15 +282,6 @@ export default {
       });
       // this.draggableElement.classList.remove('vuela');
     },
-    statusTextsString(newValue) {
-      if (newValue === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
-        newValue = this.$t('messages.unknownSearchObservation');
-      }
-      this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
-    },
-    contextLabel(newValue) {
-      this.$refs['st-context-text'].changeText(newValue);
-    },
   },
   created() {
     this.defaultTop = 25;
@@ -294,12 +290,15 @@ export default {
   },
   mounted() {
     this.draggableElement = document.getElementById('mc-q-card');
+    this.draggableElementWidth = width(this.draggableElement);
     this.dragMCConfig.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
     // this.dragMCConfig.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     this.boundingElement = document.getElementById('viewer-container');
     this.centeredLeft = this.getCenteredLeft();
     this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
-
+    this.$eventBus.$on(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK, () => {
+      this.hide();
+    });
     this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, () => {
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
@@ -332,39 +331,9 @@ export default {
         #mc-q-card-title
           overflow hidden
           margin 15px
-      #mc-context
-        position absolute
-        left 45px
-        width 85%
-        margin-top 8px
-        white-space nowrap
-        overflow hidden
-      #mc-status-texts
-        position absolute
-        bottom -4px
-        left 45px
-        font-size 11px
-        color rgba(0,0,0, 0.4)
-        height 15px
-        margin 0 auto
-        white-space nowrap
-        overflow hidden
-        width 85%
 
     .q-card-title
       position relative
-
-    .klab-main-actions
-      position absolute
-      right 55px
-    .klab-button-notification
-      top 6px
-      right 4px
-      width 10px
-      height 10px
-    .klab-destructive-actions .klab-button
-      position absolute
-      right 2px
 
     .spinner-div
       background-color white
@@ -389,15 +358,6 @@ export default {
     .q-card-title
       line-height inherit
 
-    #mc-search-div
-      width 85%
-      overflow-x hidden
-      overflow-y hidden
-      white-space nowrap
-      position absolute
-      left 45px
-      margin-top 8px
-
     #mc-text-div
       text-shadow 0 0 1px #555
 
@@ -406,6 +366,18 @@ export default {
       line-height inherit
       background-color alpha($faded, 85%)
       padding 0 /* 0 0 10px 0*/
+
+    .klab-main-actions
+      position absolute
+      right 55px
+    .klab-button-notification
+      top 6px
+      right 4px
+      width 10px
+      height 10px
+    .klab-destructive-actions .klab-button
+      position absolute
+      right 2px
 
     #context-actions
       border-bottom-left-radius 5px
@@ -446,5 +418,12 @@ export default {
 
     .lot-of-flow
       transition top 0.05s ease 0s, left 0.05s ease 0s
+    .mc-docking
+      position fixed
+      left 0
+      top 0
+      background-color rgba(35, 35, 35, .1)
+      border 1px solid rgba(135, 135, 135, .5)
+      animation-duration .2s
 
 </style>

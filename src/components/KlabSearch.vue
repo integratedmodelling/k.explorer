@@ -1,5 +1,5 @@
 <template>
-  <div id="mc-search-div" ref="mc-search-div">
+  <div id="ks-container" ref="ks-container">
     <!-- <div id="left-shadow"></div>  TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
@@ -543,7 +543,7 @@ export default {
     },
   },
   mounted() {
-    this.searchDiv = this.$refs['mc-search-div'];
+    this.searchDiv = this.$refs['ks-container'];
     this.searchInput = this.$refs['mc-search-input'];
     this.autocompleteEl = this.$refs['mc-autocomplete'];
     if (this.searchLostChar !== null) {
@@ -569,6 +569,11 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  #ks-container
+    overflow-x hidden
+    overflow-y hidden
+    white-space nowrap
+
   .tokens
     display inline-block
     margin-right 1px
