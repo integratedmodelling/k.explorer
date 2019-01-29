@@ -206,8 +206,8 @@ export default {
       observation.zIndex = 0;
       observation.layerOpacity = 1;
       observation.colormap = null;
-      // add observation
-      commit('ADD_OBSERVATION', { observation, restored });
+      // add observation. Children attribute is override to prevent reactivity on then
+      commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
         // is default observation, nothing needed
         return resolve();
