@@ -68,5 +68,8 @@ Feature notification on Integrated Modelling Confluence
 - Various bug fixes
 
 ## 0.6 ?
+### Added
+- Left menu with main actions and log viewer
 ### Solved
 - Text when log is empty
+- Better style for report
