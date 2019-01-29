@@ -1,5 +1,5 @@
 <template>
-    <div id="kt-container" class="relative-position" :class="{ 'with-splitter': hasObservationInfo, 'loading':  taskIsAlive }">
+    <div id="kt-container" class="relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
       <div id="kt-tree-container" class="simplebar-vertical-only">
         <q-tree
           id="kt-tree"
@@ -370,18 +370,17 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
-
   #kt-container
     /* removed 30px of padding and scrollbar padding-bottom */
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     padding 10px 0
+    &.with-splitter
+      /* removed 30px of padding and scrollbar padding-bottom */
+      max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     &.loading
       background linear-gradient(90deg, #333, #999)
       background-size 200% 100%
       animation loading-gradient 4s linear infinite
-    &.with-splitter
-      /* removed 30px of padding and scrollbar padding-bottom */
-      max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     [data-simplebar]
       padding-bottom 10px
     #kt-tree-container

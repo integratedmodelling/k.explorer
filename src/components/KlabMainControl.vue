@@ -8,7 +8,7 @@
       <div
         id="spinner-lonely-div"
         class="spinner-div"
-        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, border: `2px solid ${hasTasks ? spinnerColor.color : 'white'}` }"
+        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
         v-show="isHidden"
       >
       <klab-spinner
@@ -85,7 +85,7 @@
       >
         <!-- TABS -->
         <div id="mc-tabs">
-          <div class="mc-button mc-tab"
+          <div class="klab-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
             @click="selectedTab = 'klab-log-pane'"
           ><q-icon name="mdi-console">
@@ -95,7 +95,7 @@
               anchor="bottom middle"
             >{{ $t('tooltips.logPane') }}</q-tooltip>
           </q-icon></div>
-          <div class="mc-button mc-tab"
+          <div class="klab-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
             @click="selectedTab = 'klab-tree-pane'"
           ><q-icon name="mdi-file-tree">
@@ -117,81 +117,8 @@
           <scale-reference width="110px" scale-type="time" :editable="false"></scale-reference>
         </div>
         <div class="mc-separator" style="right: 160px"></div>
-        <div id="mc-actions">
-          <!-- MAP BUTTON -->
-          <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.DATA_VIEWER }]"
-          ><q-icon name="mdi-eye-outline">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ $t('tooltips.dataViewer') }}</q-tooltip>
-          </q-icon></div>
-          <!-- REPORT BUTTON -->
-          <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.REPORT_VIEWER && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !hasObservations }]"
-          ><q-icon name="mdi-file-document-box-outline">
-            <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ hasObservations ? $t('tooltips.reportViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
-          </q-icon></div>
-          <!-- DATAFLOW -->
-          <div
-            class="mc-button mc-action"
-            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasContext ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
-            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && !hasContext }]"
-          ><q-icon name="mdi-sitemap">
-            <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasContext && reloadDataflow"></span>
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ hasDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
-          </q-icon></div>
-          <!-- PROVENANCE (disabled) -->
-          <!-- in the future
-          <div class="mc-button mc-action disabled"
-          ><q-icon name="mdi-brain">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
-          </q-icon></div>
-          -->
-        </div>
-        <div class="mc-separator" style="right: 45px"></div>
-        <!-- RESET CONTEXT or INTERRUPT TASK-->
-        <div class="mc-button"
-             id="mc-reset-context"
-             @click="resetContext"
-             v-if="!hasTasks(contextId)"
-        ><q-icon name="mdi-close-circle-outline">
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.resetContext') }}</q-tooltip>
-        </q-icon></div>
-        <div class="mc-button"
-             id="mc-interrupt-task"
-             @click="interruptTask"
-             v-if="hasTasks(contextId)"
-        ><q-icon name="mdi-stop-circle-outline">
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTaskText }) }}</q-tooltip>
-        </q-icon></div>
-      </q-card-actions
-        >
+        <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
+      </q-card-actions>
     </q-card>
     </transition>
     <scale-change-dialog></scale-change-dialog>
@@ -208,16 +135,30 @@ import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ScrollingText from 'components/ScrollingText.vue';
+import MainActionsButtons from 'components/MainActionsButtons';
 
 const { width, height } = dom;
 
 export default {
   name: 'klabMainControl',
+  components: {
+    ScrollingText,
+    ScaleReference,
+    ScaleChangeDialog,
+    KlabTreePane,
+    KlabLogPane,
+    KlabSpinner,
+    KlabSearch,
+    MainControlMenu,
+    MainActionsButtons,
+  },
+  directives: {
+    Draggable,
+  },
   data() {
     return {
       isHidden: false,
@@ -245,14 +186,12 @@ export default {
       'hasDataflow',
       'contextLabel',
       'contextId',
-      'lasts',
-      'tree',
     ]),
     ...mapGetters('view', [
       'spinnerColor',
       'searchIsActive',
       'searchIsFocused',
-      'mainViewer',
+      'mainViewerName',
       'isDrawMode',
       'statusTextsString',
       'statusTextsLength',
@@ -262,30 +201,12 @@ export default {
       'lastActiveTask',
       'tasks',
     ]),
-    lastActiveTaskText() {
-      const text = this.lastActiveTask(this.contextId) === null ? '' : this.lastActiveTask(this.contextId).description;
-      if (text === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
-        return this.$t('messages.unknownSearchObservation');
-      }
-      return text;
-    },
   },
   methods: {
     ...mapActions('view', [
       'searchStop',
       'setMainViewer',
     ]),
-    resetContext() {
-      this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
-    },
-    interruptTask() {
-      const task = this.lastActiveTask(this.contextId);
-      if (task !== null && task.alive) {
-        this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
-          taskId: task.id,
-        }, this.$store.state.data.session).body);
-      }
-    },
     hide() {
       this.dragMCConfig.resetInitialPos = false;
       this.isHidden = true;
@@ -385,19 +306,6 @@ export default {
       this.checkWhereWasDragged();
     });
   },
-  directives: {
-    Draggable,
-  },
-  components: {
-    ScrollingText,
-    ScaleReference,
-    ScaleChangeDialog,
-    KlabTreePane,
-    KlabLogPane,
-    KlabSpinner,
-    KlabSearch,
-    MainControlMenu,
-  },
 };
 </script>
 
@@ -446,6 +354,18 @@ export default {
     .q-card-title
       position relative
 
+    .klab-main-actions
+      position absolute
+      right 55px
+    .klab-button-notification
+      top 6px
+      right 4px
+      width 10px
+      height 10px
+    .klab-destructive-actions .klab-button
+      position absolute
+      right 2px
+
   .spinner-div
     background-color white
     -webkit-border-radius 40px
@@ -464,6 +384,7 @@ export default {
     position absolute
     width 44px
     height 44px
+    border 2px solid
 
   .q-card-title
     line-height inherit
@@ -493,10 +414,15 @@ export default {
     margin 0
     position relative
 
-  #mc-actions
+  .mc-separator
+    width 2px
+    height 60%
     position absolute
-    right 55px
-
+    top 20%
+    border-left 1px solid #444
+    border-right 1px solid #666
+    &.mab-separator
+      right 45px
   .mc-scalereference
     position absolute
     height 37px
@@ -507,53 +433,8 @@ export default {
   #mc-timereference
     right 175px
 
-  .mc-separator
-    width 2px
-    height 60%
-    position absolute
-    top 20%
-    border-left 1px solid #444
-    border-right 1px solid #666
-
-  #mc-reset-context
-  #mc-interrupt-task
-    position absolute
-    right 2px
-    color $main-control-red !important
-
-  .mc-button
-    padding 5px 10px 7px 10px
-    cursor pointer
-    display inline-block
-    font-size 22px
-    color rgb(119,119,119)
-    text-shadow 0 1px 0 #333
-    &:hover
-      color white /* background #e0e0e0 */
-    &.active
-      color white
-      cursor auto
-
-  .mc-action
-    padding 5px 6px 7px 6px
-    position relative
-    &:not(.disabled):hover
-      color $main-control-main-color
-    &.active
-      color $main-control-main-color
-
   .mc-tab.active
     background-color alpha($faded, 85%)
-
-  .mc-button-notification
-    display block
-    position absolute
-    top 6px
-    right 4px
-    width 10px
-    height 10px
-    border-radius 5px
-    background-color $main-control-main-color
 
   .component-fade-enter-active
   .component-fade-leave-active

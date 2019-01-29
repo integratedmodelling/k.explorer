@@ -1,5 +1,5 @@
 <template>
-  <div id="klab-log-pane">
+  <div id="klab-log-pane" class="klab-menu-component">
     <q-list
       striped
       dense

@@ -1,5 +1,16 @@
 <template>
   <q-layout view="hHh lpR fFf">
+    <q-layout-drawer
+      side="left"
+      :overlay="false"
+      v-model="leftMenuVisible"
+      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE + 10 : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE + 10"
+      :content-class="[ 'klab-left' ]"
+      class="print-hide"
+    >
+      <klab-left-menu></klab-left-menu>
+    </q-layout-drawer>
+
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -7,37 +18,46 @@
 </template>
 
 <script>
-import { openURL } from 'quasar';
-import { mapGetters } from 'vuex';
-import AppLocaleSwitcher from 'components/AppLocaleSwitcher.vue';
+import { mapActions, mapGetters } from 'vuex';
+import { LEFTMENU_VISIBILITY } from 'shared/Constants';
+import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
 export default {
   name: 'LayoutDefault',
+  components: {
+    KlabLeftMenu,
+  },
   data() {
-    return {
-      leftDrawerOpen: !this.$q.platform.is.desktop,
-    };
+    return {};
   },
   computed: {
     ...mapGetters('view', [
       'hasPalette',
+      'mainViewer',
+      'leftMenuState',
     ]),
-    isOnIde() {
-      return this.$mode === this.$constants.PARAMS_MODE_IDE;
+    leftMenuVisible: {
+      get() {
+        return this.leftMenuState !== LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN;
+      },
+      set(visibility) {
+        this.setLeftMenuState(visibility);
+      },
     },
   },
   methods: {
-    openURL,
+    ...mapActions('view', [
+      'setLeftMenuState',
+    ]),
   },
-  components: {
-    AppLocaleSwitcher,
-  },
-  mounted() {
+  created() {
+    this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
   },
 };
 </script>
 
-<style scoped lang="stylus">
-.q-toolbar-title
-  height = 60px !important
+<style lang="stylus">
+  @import '~variables'
+  .klab-left
+    background-color rgba(35, 35, 35, 0)
 </style>

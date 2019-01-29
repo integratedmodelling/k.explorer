@@ -7,12 +7,65 @@ export const COLORS = {
   SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
   SPINNER_ERROR_COLOR: 'negative',
 };
+export const LEFTMENU_VISIBILITY = {
+  LEFTMENU_MAXSIZE: 512,
+  LEFTMENU_MINSIZE: 80,
+  LEFTMENU_MAXIMIZED: 'max',
+  LEFTMENU_MINIMIZED: 'min',
+  LEFTMENU_HIDDEN: 'hidden',
+};
 
+/**
+ * The viewers asociated component for left menu
+ * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
+ */
+export const LEFTMENU_COMPONENTS = {
+  DATA_VIEWER_COMPONENT: 'klab-tree-pane',
+  REPORT_VIEWER_COMPONENT: 'reports-details',
+  DATAFLOW_VIEWER_COMPONENT: 'dataflow-details',
+  PROVENANCE_VIEWER_COMPONENT: 'provenance-details',
+  LOG_COMPONENT: 'klab-log-pane',
+};
+
+/**
+ * Viewers:
+ * DATA_VIEWER: container for maps, graph or everything that represent an observation
+ * REPORT_VIEWER: container for reports
+ * DATAFLOW_VIEWER: container for dataflow
+ * PROVENANCE_VIEWER: container for provenance (not implemented)
+ * @type {{VIEWER: {
+ *   name: string,
+ *   leftMenuState: string,
+ *   leftMenuContent: undefined,
+ *   mainControl: boolean
+ * }
+ * }}
+ */
 export const VIEWERS = {
-  DATA_VIEWER: 'DataViewer',
-  REPORT_VIEWER: 'ReportViewer',
-  DATAFLOW_VIEWER: 'DataflowViewer',
-  PROVENANCE_VIEWER: 'ProvenanceViewer',
+  DATA_VIEWER: {
+    name: 'DataViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
+    leftMenuContent: LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT,
+    mainControl: true,
+  },
+  REPORT_VIEWER: {
+    name: 'ReportViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.REPORT_VIEWER_COMPONENT,
+    mainControl: false,
+  },
+  DATAFLOW_VIEWER: {
+    name: 'DataflowViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.DATAFLOW_VIEWER_COMPONENT,
+    mainControl: false,
+  },
+  PROVENANCE_VIEWER: {
+    name: 'ProvenanceViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.PROVENANCE_VIEWER_COMPONENT,
+    mainControl: false,
+  },
 };
 
 /**

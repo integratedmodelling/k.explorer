@@ -30,6 +30,9 @@ export default {
    * @param state
    */
   mainViewer: state => state.mainViewer,
+  mainViewerName: state => (state.mainViewer ? state.mainViewer.name : null),
+  leftMenuContent: state => state.leftMenuContent,
+  leftMenuState: state => state.leftMenuState,
 
   /**
    * Context layer

@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { Helpers, Constants } from 'shared/Helpers';
-import { VIEWERS } from 'shared/Constants';
+import { Helpers } from 'shared/Helpers';
+import Constants, { VIEWERS, LEFTMENU_VISIBILITY } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
@@ -47,6 +47,8 @@ export default {
     commit('SET_MAIN_VIEWER', VIEWERS.DATA_VIEWER);
     commit('RESET_SEARCH');
     commit('SET_OBSERVATION_INFO', null);
+    commit('SET_LEFTMENU_CONTENT', null);
+    commit('SET_LEFTMENU_STATE', LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
@@ -54,8 +56,20 @@ export default {
   }),
   */
 
-  setMainViewer: ({ commit }, viewer) => {
+  setMainViewer: ({ commit, dispatch }, viewer) => {
     commit('SET_MAIN_VIEWER', viewer);
+    if (viewer) {
+      dispatch('setLeftMenuState', viewer.leftMenuState);
+      dispatch('setLeftMenuContent', viewer.leftMenuContent);
+    }
+  },
+
+  setLeftMenuContent: ({ commit }, component) => {
+    commit('SET_LEFTMENU_CONTENT', component);
+  },
+
+  setLeftMenuState: ({ commit }, visibility) => {
+    commit('SET_LEFTMENU_STATE', visibility);
   },
 
   setMainDataViewer: ({ commit }, idx) => {

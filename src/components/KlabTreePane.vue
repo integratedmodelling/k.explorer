@@ -2,7 +2,7 @@
   <div id="klab-tree-pane">
     <klab-splitter :margin="0" :hidden="hasObservationInfo ? '' : 'right'" @close-info="onCloseInfo">
       <div slot="left-pane">
-        <klab-tree v-if="hasTree"></klab-tree>
+        <klab-tree v-if="hasTree" :class="{ 'with-splitter': hasObservationInfo }"></klab-tree>
         <div class="q-ma-md text-center text-white" v-else>
           {{ $t('label.noObservation') }}
         </div>

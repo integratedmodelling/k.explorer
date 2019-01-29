@@ -1,15 +1,9 @@
 /**
  * State of view
  */
-import Constants from 'shared/Constants';
+import Constants, { LEFTMENU_VISIBILITY } from 'shared/Constants';
 
 export default {
-  mainWin: {
-    /**
-     * Indicate if palette is visible
-     */
-    paletteVisible: true,
-  },
   /**
    * Array with app logs
    * Using an array of MAX_LENGTH
@@ -53,8 +47,24 @@ export default {
 
   /**
    * In index, the main viewer can be a DataViewer, ReportViewer, DataflowViewer or ProvenanceViewer
+   * Each viewer has this structure:
+   * {
+   *   name: [name of component]
+   *   leftMenuState: [default show in left menu]
+   *   mainControl: [default show in main control]
+   * }
    */
   mainViewer: undefined,
+
+  /**
+   * The content of left menu. Is decided using the mainViewer leftMenuContent or punctual action (like open log)
+   * Will be a string with the component name
+   */
+  leftMenuContent: null,
+  /**
+   * The state of left menu. Will be one of LEFTMENU_VISIBILITY constants
+   */
+  leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
 
   /**
    * Layer with the context shape shared between dataViewers
