@@ -176,6 +176,7 @@ export default {
       left 0
       right 0
       bottom 0
+      padding 10px
       svg
         width 100%
         height 99%
