@@ -9,7 +9,7 @@
           <klab-spinner
             id="spinner-leftmenu"
             :store-controlled="true"
-            :size="50"
+            :size="40"
             :ball="22"
             wrapperId="spinner-leftmenu-div"
           ></klab-spinner>
@@ -116,8 +116,8 @@ export default {
       padding-top 10px
       padding-bottom 20px
     #spinner-leftmenu-div
-      width 52px
-      height 52px
+      width 42px
+      height 42px
       margin-top 10px
       margin-left auto
       margin-right auto

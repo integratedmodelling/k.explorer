@@ -2,35 +2,61 @@
   <div
     id="ksb-container"
     :class="[hasContext ? 'with-context' : 'without-context', isDocked ? 'ksb-docked' : '']"
-    :style="{ 'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2') }">
+    >
     <div
       id="ksb-spinner"
-      class="spinner-div"
+      class="klab-spinner-div"
       v-if="!isDocked"
     >
       <klab-spinner
         :store-controlled="true"
         :color="spinnerColor.hex"
-        :size="35"
+        :size="40"
         :ball="22"
         wrapperId="ksb-spinner"
         @dblclick.native="emitSpinnerDoubleclick"
       ></klab-spinner>
     </div>
-    <klab-search v-if="searchIsActive"></klab-search>
-    <div class="ksb-context-text text-white" v-else>
-      <scrolling-text :with-edge="false" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
+    <div
+      id="ksb-undock"
+      v-else
+    >
+      <div
+        id="ksb-undock-icon"
+        @click = "undock"
+      >
+        <q-icon
+          name="mdi-pin"
+          size="1.2em"
+        ></q-icon>
+        <q-tooltip
+          :offset="[5,0]"
+          self="top left"
+          anchor="top right"
+        >{{ $t('tooltips.undock') }}</q-tooltip>
+      </div>
     </div>
-    <div class="ksb-status-texts" ref="ksb-status-texts">
-      <scrolling-text :with-edge="false" ref="st-status-text" :hoverActive="false" :accentuate="true"></scrolling-text>
+    <div
+      id="ksb-search-container"
+      :style="{
+          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
+          'border-right': '2px solid '+ spinnerColor.color
+        }">
+      <klab-search v-if="searchIsActive"></klab-search>
+      <div class="ksb-context-text text-white" v-else>
+        <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
+      </div>
+      <div class="ksb-status-texts" ref="ksb-status-texts">
+        <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .6 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
+      </div>
+      <main-control-menu></main-control-menu>
     </div>
-    <main-control-menu></main-control-menu>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { FAKE_TEXTS, CUSTOM_EVENTS } from 'shared/Constants';
+import { mapGetters, mapActions } from 'vuex';
+import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS } from 'shared/Constants';
 import KlabSearch from 'components/KlabSearch.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -65,11 +91,17 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setMainViewer',
+    ]),
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);
+    },
+    undock() {
+      this.setMainViewer(VIEWERS.DATA_VIEWER);
     },
   },
   watch: {
@@ -83,24 +115,33 @@ export default {
       this.$refs['st-context-text'].changeText(newValue);
     },
   },
+  mounted() {
+    console.dir(this.spinnerColor);
+  },
 };
 </script>
 
 <style lang="stylus">
+  @import '~variables'
   #ksb-container
     width 100%
     transition background-color 0.8s
     line-height inherit
     &.ksb-docked
-      position relative
-      padding 10px 5px
-      height 40px
-      .ksb-context-text
-        width 90%
-      .ksb-status-texts
-        width 90%
+      #ksb-search-container
         position relative
-        bottom 6px
+        padding 16px 10px
+        height 52px
+        .ksb-context-text
+          width 90%
+          position relative
+        .ksb-status-texts
+          width 90%
+          position relative
+          bottom 2px
+        .mcm-menubutton
+          top 11px
+
     &:not(.ksb-docked)
       border-radius 30px
       cursor move
@@ -126,14 +167,19 @@ export default {
       border none
       width 40px
       height 40px
-    .spinner-div
-      background-color white
-      -webkit-border-radius 40px
-      -moz-border-radius 40px
-      border-radius 40px
-      padding 3px
-      margin 0
 
+    #ksb-undock
+      text-align right
+      #ksb-undock-icon
+        padding 6px 10px
+        text-align center
+        display inline-block
+        cursor pointer
+        transition .1s
+        color #999
+        &:hover
+          color $main-control-main-color
+          transform translate(5px) rotate(33deg)
     .ksb-context-text
       white-space nowrap
       overflow hidden

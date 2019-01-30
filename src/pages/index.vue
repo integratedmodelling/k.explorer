@@ -178,6 +178,13 @@ export default {
   .klab-spinner
     display inline
     vertical-align middle
+    background-color white
+    -webkit-border-radius 40px
+    -moz-border-radius 40px
+    border-radius 40px
+    padding 3px
+    margin 0
+
   #modal-spinner
     margin-right 10px
     margin-left 5px

@@ -92,6 +92,7 @@ export default {
     noDataflow: 'Dataflow not availble',
     dataflowViewer: 'View data flow',
     provenanceViewer: 'View provenance (will be...)',
+    undock: 'Undock',
   },
   errors: {
     connectionError: 'Connection error',

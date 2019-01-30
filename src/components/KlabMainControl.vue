@@ -7,7 +7,7 @@
     >
       <div
         id="spinner-lonely-div"
-        class="spinner-div"
+        class="klab-spinner-div"
         :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
         v-show="isHidden"
       >
@@ -111,18 +111,13 @@
 
 <script>
 // import Vue from 'vue';
-import { mapState, mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import {
-  VIEWERS,
-  CUSTOM_EVENTS,
-  LEFTMENU_VISIBILITY,
-} from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import KlabSearchBar from 'components/KlabSearchBar.vue';
-import MainControlMenu from 'components/MainControlMenu.vue';
 import { dom, debounce } from 'quasar';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
@@ -141,7 +136,6 @@ export default {
     KlabLogPane,
     KlabSpinner,
     KlabSearchBar,
-    MainControlMenu,
     MainActionsButtons,
   },
   directives: {
@@ -155,7 +149,7 @@ export default {
         resetInitialPos: false,
         onPositionChange: debounce((positionDiff, absolutePosition) => {
           this.onDebouncedPositionChanged(absolutePosition);
-        }, 200),
+        }, 100),
         onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
       },
@@ -167,41 +161,27 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       centeredLeft: this.defaultLeft,
-      needMarqueeTS: 0, // status texts
-      needMarqueeCTX: 0, // context text
     };
   },
   computed: {
-    ...mapState('view', [
-      'reloadReport',
-      'reloadDataflow',
-    ]),
     ...mapGetters('data', [
       'hasContext',
-      'hasObservations',
-      'hasDataflow',
-      'contextLabel',
-      'contextId',
     ]),
     ...mapGetters('view', [
       'spinnerColor',
       'searchIsFocused',
-      'mainViewerName',
       'isDrawMode',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
-      'lastActiveTask',
-      'tasks',
     ]),
   },
   methods: {
     ...mapActions('view', [
-      'searchStop',
       'setMainViewer',
     ]),
     onDebouncedPositionChanged(absolutePosition) {
-      if (this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
+      if (this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
         this.askForDocking = true;
       } else {
         this.askForDocking = false;
@@ -245,6 +225,7 @@ export default {
     checkWhereWasDragged() {
       this.dragging = false;
       if (this.askForDocking) {
+        this.askForDocking = false;
         this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
         return;
       }
@@ -255,21 +236,20 @@ export default {
         this.changeDraggablePosition({ top: Math.max(this.draggableElement.offsetTop, 0), left: 0 });
       }
       if (this.draggableElement.offsetLeft >= width(this.boundingElement)) {
-        this.changeDraggablePosition({ top: Math.max(this.draggableElement.offsetTop, 0), left: Math.max(width(this.boundingElement) - this.draggableElement.offsetWidth, 0) });
+        this.changeDraggablePosition({
+          top: Math.max(this.draggableElement.offsetTop, 0),
+          left: Math.max(width(this.boundingElement) - this.draggableElement.offsetWidth, 0),
+        });
       }
       if (this.draggableElement.offsetTop >= height(this.boundingElement)) {
-        this.changeDraggablePosition({ top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0), left: Math.max(this.draggableElement.offsetLeft, 0) });
+        this.changeDraggablePosition({
+          top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0),
+          left: Math.max(this.draggableElement.offsetLeft, 0),
+        });
       }
     },
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
-    },
-    isNeededMarquee(ref) {
-      const textDiv = this.$refs[ref];
-      if (typeof textDiv === 'undefined') {
-        return 0;
-      }
-      return textDiv.offsetWidth - textDiv.scrollWidth;
     },
   },
   watch: {
@@ -300,10 +280,14 @@ export default {
       this.hide();
     });
     this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, () => {
+    // eslint-disable-next-line no-underscore-dangle
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
       this.checkWhereWasDragged();
     });
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
   },
 };
 </script>
@@ -334,20 +318,6 @@ export default {
 
     .q-card-title
       position relative
-
-    .spinner-div
-      background-color white
-      -webkit-border-radius 40px
-      -moz-border-radius 40px
-      border-radius 40px
-      padding 3px
-      margin 0
-
-    #spinner-main
-      float left
-      border none
-      width 40px
-      height 40px
 
     #spinner-lonely-div
       position absolute
@@ -418,6 +388,7 @@ export default {
 
     .lot-of-flow
       transition top 0.05s ease 0s, left 0.05s ease 0s
+
     .mc-docking
       position fixed
       left 0
