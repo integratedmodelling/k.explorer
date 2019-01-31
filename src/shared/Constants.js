@@ -367,4 +367,5 @@ export const CUSTOM_EVENTS = {
   UPDATE_FOLDER: 'updatefolder',
   GRAPH_NODE_SELECTED: 'graphnodeselected',
   SPINNER_DOUBLE_CLICK: 'spinnerdoubleclick',
+  SHOW_NODE: 'shownode', // show a tree node, emitted from ObservationInfo
 };

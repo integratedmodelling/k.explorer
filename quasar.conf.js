@@ -131,6 +131,7 @@ module.exports = function (ctx) {
         'QContextMenu',
         'QResizeObservable',
         'QToggle',
+        'QCheckbox',
       ],
       directives: [
         'Ripple',

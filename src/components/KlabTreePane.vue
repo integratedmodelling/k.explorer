@@ -8,15 +8,6 @@
         </div>
       </div>
       <div slot="right-pane">
-        <!--
-        <transition
-          appear
-          enter-active-class="animated fadeIn"
-          leave-active-class="animated fadeOut"
-        >
-          <component :is="additionalContentType"></component>
-        </transition>
-         -->
         <observation-info v-if="hasObservationInfo"></observation-info>
       </div>
     </klab-splitter>

@@ -1,16 +1,27 @@
 <template>
   <div id="oi-container" class="relative-position klab-menu-component">
-    <!-- slider FIXED WIDTH -->
-    <div id="oi-slider" v-show="observationInfo.visible">
-      <q-slider
-        v-model="observationInfo.layerOpacity"
-        :min="0"
-        :max="1"
-        :step="0.1"
-        :decimals="1"
-        color="mc-yellow"
-        :label="false"
-      ></q-slider>
+    <div id="oi-controls">
+      <div id="oi-visualize" class="oi-control oi-text" >
+        <q-checkbox
+          v-model="layerShow"
+          :keep-color="true"
+          color="mc-yellow"
+          @click.native="showNode"
+        ></q-checkbox>
+      </div>
+      <div id="oi-name" class="oi-control oi-text"><span>{{ observationInfo.label }}</span></div>
+      <!-- slider FIXED WIDTH -->
+      <div id="oi-slider" class="oi-control" v-if="observationInfo.visible">
+        <q-slider
+          v-model="observationInfo.layerOpacity"
+          :min="0"
+          :max="1"
+          :step="0.1"
+          :decimals="1"
+          color="mc-yellow"
+          :label="false"
+        ></q-slider>
+      </div>
     </div>
     <!-- metadata and info map % WIDTH -->
     <div id="oi-metadata-map-wrapper" :class="getContainerClasses()">
@@ -18,7 +29,7 @@
       <div id="oi-scroll-container" :class="[ this.exploreMode ? 'with-mapinfo' : '']">
         <div id="oi-scroll-metadata-container">
           <div id="oi-metadata" v-for="(value, name) in observationInfo.metadata" :key="name">
-            <div class="oi-metadata-name">{{ name }}</div>
+            <div class="oi-metadata-name oi-text">{{ name }}</div>
             <div class="oi-metadata-value" @dblclick="copyToClipboard(value)">{{ value }}</div>
           </div>
         </div>
@@ -88,6 +99,7 @@ import TooltipIt from 'shared/TooltipItMixin';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Layers } from 'shared/MapConstants';
+import { CUSTOM_EVENTS } from 'shared/Constants';
 // import Group from 'ol/layer/Group';
 
 export default {
@@ -96,6 +108,7 @@ export default {
   data() {
     return {
       scrollBar: undefined,
+      layerShow: false,
       infoShowed: {
         index: -1,
         categories: [],
@@ -170,9 +183,6 @@ export default {
     },
     getContainerClasses() {
       const finalClasses = [];
-      if (this.observationInfo.visible) {
-        finalClasses.push('with-slider');
-      }
       if (this.observationInfo.dataSummary !== null) {
         finalClasses.push('with-histogram');
       }
@@ -184,6 +194,9 @@ export default {
         categories: [],
         values: [],
       };
+    },
+    showNode() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
     },
   },
   watch: {
@@ -222,13 +235,14 @@ export default {
       controls: [],
       interactions: [],
     });
+    this.layerShow = this.observationInfo.visible;
   },
 };
 </script>
 
 <style lang="stylus">
   @import '~variables'
-  $oi-slider-height = 30px
+  $oi-controls-height = 40px
   $oi-metadata-map-wrapper = 100% // only for reference
   $oi-metadata-min-height = 50% // metadata
   $oi-mapinfo-min-height = 50% // map with selected point and value
@@ -241,22 +255,21 @@ export default {
     height $main-control-height - $main-control-spc-height - $main-control-scrollbar
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     // min-height $oi-histogram-height + $main-control-spc-height
-    padding 10px 0 0 0
+    // padding 10px 0 0 0
 
   #oi-metadata-map-wrapper
     height 100%
-    &.with-slider
-      height "calc(100% - %s)" % $oi-slider-height
-      &.with-histogram
-        height "calc(100% - %s)" % ($oi-slider-height + $oi-histogram-height)
+    padding-top 10px
     &.with-histogram
-      height "calc(100% - %s)" % $oi-histogram-height
+      height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height)
 
-  .oi-metadata-name
+  .oi-text
     color $main-control-yellow
     text-shadow 0 0 1px #666
-    padding 0 0 2px 5px
+    padding 0 0 0 5px
 
+  .oi-metadata-name
+    padding-bottom 2px
   .oi-metadata-value
     color white
     margin 0 5px 5px 5px
@@ -269,11 +282,30 @@ export default {
     &.with-mapinfo
       height "calc(100% - %s)" % $oi-mapinfo-min-height
 
-  #oi-slider
-    height $oi-slider-height
-
-  #oi-slider .q-slider
-    padding 0 10px 0 5px
+  #oi-controls
+    height $oi-controls-height
+    width 100%
+    border-bottom 1px dotted #333;
+    .oi-control
+      float left
+    #oi-name
+      width 50%
+      display table
+      overflow hidden
+      height $oi-controls-height
+      span
+        display table-cell
+        vertical-align middle
+        padding-top 2px
+    #oi-visualize
+      text-align center
+      width 40px
+      line-height $oi-controls-height
+    #oi-slider
+      width calc(50% - 40px)
+      .q-slider
+        padding 0 10px 0 5px
+        height $oi-controls-height
 
   #oi-mapinfo-container
     height $oi-mapinfo-min-height

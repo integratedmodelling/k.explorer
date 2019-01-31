@@ -53,6 +53,7 @@ export default {
     drawCircle: 'Cerchio',
     optionShowAll: 'Vedere tutte',
     optionSaveLocation: 'Ricordare posizione',
+    loadShowData: 'Caricare e visualizzare dati',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

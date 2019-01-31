@@ -284,7 +284,7 @@ export default {
       } else {
         // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
-        this.selectNode(selectedId);
+        // this.selectNode(selectedId);
         const selectedNode = Helpers.findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
           const tickAll = () => {
@@ -355,12 +355,17 @@ export default {
         const folder = Helpers.findNodeById(this.tree, event.folderId);
         if (folder && folder !== null) {
           if (event.visible) {
-            this.ticked.push(...(folder.children.map(child => child.id)));
+            this.$refs.klabTree.setTicked(folder.children.map(child => child.id), true);
+            // this.ticked.push(...(folder.children.map(child => child.id)));
           } else {
-            this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
+            this.$refs.klabTree.setTicked(this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1), false);
+            // this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
           }
         }
       }
+    });
+    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, ({ nodeId, state }) => {
+      this.$refs.klabTree.setTicked([nodeId], state);
     });
     this.selected = this.treeSelected;
     this.ticked = this.treeTicked;

@@ -55,6 +55,7 @@ export default {
     optionShowAll: 'Show all',
     optionSaveLocation: 'Remember location',
     noNodes: 'No results: is waiting?',
+    loadShowData: 'Load and show data',
   },
   messages: {
     connectionClosed: 'Connection closed',
