@@ -35,7 +35,7 @@ export default {
         &.with-mapinfo
           height "calc(100% - %s)" % ($main-control-scrollbar + $docked-correction + $oi-mapinfo-min-height)
     #kt-container
-      height "calc(100% - %s)"
+      height "calc(100% - %s)" % $docked-padding
       max-height "calc(100% - %s)" % $docked-padding
       position relative
 
