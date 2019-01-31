@@ -242,14 +242,6 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  $oi-controls-height = 40px
-  $oi-metadata-map-wrapper = 100% // only for reference
-  $oi-metadata-min-height = 50% // metadata
-  $oi-mapinfo-min-height = 50% // map with selected point and value
-  $oi-histogram-height = 160px // histogram
-  $oi-colormap-height = 30px // colormap
-  $oi-data-details-height = 30px // info
-  $oi-histogram-minmax-width = 50px // min and max
 
   #oi-container
     height $main-control-height - $main-control-spc-height - $main-control-scrollbar

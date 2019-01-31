@@ -37,7 +37,7 @@
       :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE - LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }"
       class="full-height klab-lm-panel"
     >
-      <div id="lm-content-container">
+      <div id="lm-content-container" class="full-height">
         <keep-alive>
           <transition name="component-fade" mode="out-in">
             <component class="lm-component" :is="leftMenuContent"></component>

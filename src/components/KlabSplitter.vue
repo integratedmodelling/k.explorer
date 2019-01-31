@@ -1,5 +1,5 @@
 <template>
-  <div id="splitter-container">
+  <div id="splitter-container" class="full-height">
     <div class="splitter-controllers" v-if="!hidden && controllers">
       <template v-if="!onlyOpenClose">
         <q-btn

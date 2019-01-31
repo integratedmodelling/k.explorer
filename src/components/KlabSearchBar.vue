@@ -132,6 +132,7 @@ export default {
         position relative
         padding 16px 10px
         height $docked-search-height
+        transition background-color 0.8s
         .ksb-context-text
           width 90%
           position relative
