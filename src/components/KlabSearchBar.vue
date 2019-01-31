@@ -131,7 +131,7 @@ export default {
       #ksb-search-container
         position relative
         padding 16px 10px
-        height 52px
+        height $docked-search-height
         .ksb-context-text
           width 90%
           position relative
@@ -170,6 +170,7 @@ export default {
 
     #ksb-undock
       text-align right
+      height $docked-undock-height
       #ksb-undock-icon
         padding 6px 10px
         text-align center
