@@ -196,7 +196,7 @@ export default {
       };
     },
     showNode() {
-      this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
+      this.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
     },
   },
   watch: {

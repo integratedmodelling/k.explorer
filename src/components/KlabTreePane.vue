@@ -2,13 +2,13 @@
   <div id="klab-tree-pane">
     <klab-splitter :margin="0" :hidden="hasObservationInfo ? '' : 'right'" @close-info="onCloseInfo">
       <div slot="left-pane" id="ktp-left" class="full-height">
-        <klab-tree v-if="hasTree" :class="{ 'with-splitter': hasObservationInfo }"></klab-tree>
+        <klab-tree ref="klab-tree-component" v-if="hasTree" :class="{ 'with-splitter': hasObservationInfo }"></klab-tree>
         <div class="q-ma-md text-center text-white" v-else>
           {{ $t('label.noObservation') }}
         </div>
       </div>
       <div slot="right-pane" id="ktp-right" class="full-height">
-        <observation-info v-if="hasObservationInfo"></observation-info>
+        <observation-info v-if="hasObservationInfo" @shownode="informTree($event)"></observation-info>
       </div>
     </klab-splitter>
   </div>
@@ -43,6 +43,9 @@ export default {
     ]),
     onCloseInfo() {
       this.setObservationInfo(null);
+    },
+    informTree({ nodeId, state }) {
+      this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
     },
   },
   mounted() {

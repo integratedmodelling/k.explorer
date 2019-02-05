@@ -2,8 +2,7 @@
   <div id="kt-container" class="relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
     <div id="kt-tree-container" class="simplebar-vertical-only">
       <q-tree
-        id="kt-tree"
-        ref="klabTree"
+        ref="klab-tree"
         :nodes="visibleTree(filter)"
         node-key="id"
         :ticked.sync="ticked"
@@ -313,6 +312,12 @@ export default {
         }
       }
     },
+    changeNodeState({ nodeId, state }) {
+      console.warn('Im here');
+      if (typeof this.$refs['klab-tree'] !== 'undefined') {
+        this.$refs['klab-tree'].setTicked([nodeId], state);
+      }
+    },
   },
   mounted() {
     this.scrollElement = (new SimpleBar(document.getElementById('kt-tree-container'))).getScrollElement();
@@ -355,22 +360,32 @@ export default {
         const folder = Helpers.findNodeById(this.tree, event.folderId);
         if (folder && folder !== null) {
           if (event.visible) {
-            this.$refs.klabTree.setTicked(folder.children.map(child => child.id), true);
+            this.$refs['klab-tree'].setTicked(folder.children.map(child => child.id), true);
             // this.ticked.push(...(folder.children.map(child => child.id)));
           } else {
-            this.$refs.klabTree.setTicked(this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1), false);
+            this.$refs['klab-tree'].setTicked(this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1), false);
             // this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
           }
         }
       }
     });
+    /*
     this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, ({ nodeId, state }) => {
-      this.$refs.klabTree.setTicked([nodeId], state);
+      console.warn('Im here');
+      if (typeof this.$refs['klab-tree'] !== 'undefined') {
+        this.$refs['klab-tree'].setTicked([nodeId], state);
+      }
     });
+    */
     this.selected = this.treeSelected;
     this.ticked = this.treeTicked;
     this.expanded = this.treeExpanded;
   },
+  /*
+  destroyed() {
+    this.$eventBus.$off(CUSTOM_EVENTS.SHOW_NODE);
+  },
+  */
 };
 </script>
 <style lang="stylus">
