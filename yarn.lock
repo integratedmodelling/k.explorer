@@ -4457,9 +4457,8 @@ jsts@^2.0.2:
   resolved "https://registry.yarnpkg.com/jsts/-/jsts-2.0.3.tgz#30f421ae6d888ff5d3d855bee5c70d28b9cd25bc"
   integrity sha512-wlRQolftLo2x98Cjtq7VshICr9oVhOrOZx/qUXUssVKXgZLHv8qItSUwiYEpdm5R2+Ja4jHQHnCCZGX14aSjHw==
 
-"k.elksprottybridge@git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#develop":
+"k.elksprottybridge@file:../klab-elk-sprotty-bridge":
   version "0.4.2"
-  resolved "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#5ed208187034e9ab3e1def669676d1390e0c444c"
   dependencies:
     elkjs "^0.4.1"
     reflect-metadata "^0.1.12"

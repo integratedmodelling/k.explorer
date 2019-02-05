@@ -20,7 +20,7 @@
     "draggable-vue-directive": "^2.0.2",
     "elkjs": "^0.4.1",
     "jsts": "^2.0.2",
-    "k.elksprottybridge": "file:../k.elksprottybridge",
+    "k.elksprottybridge": "file:../klab-elk-sprotty-bridge",
     "moment": "^2.22.1",
     "ol": "^5.0.0",
     "ol-ext": "^3.0.1",
