@@ -73,3 +73,4 @@ Feature notification on Integrated Modelling Confluence
 ### Solved
 - Text when log is empty
 - Better style for report
+- href on report now work
