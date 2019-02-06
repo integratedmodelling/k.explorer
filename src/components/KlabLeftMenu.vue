@@ -116,8 +116,8 @@ export default {
       padding-top 10px
       padding-bottom 20px
     #spinner-leftmenu-div
-      width 42px
-      height 42px
+      width 44px
+      height 44px
       margin-top 10px
       margin-left auto
       margin-right auto
