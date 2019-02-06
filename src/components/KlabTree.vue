@@ -231,6 +231,11 @@ export default {
         },
       );
     },
+    changeNodeState({ nodeId, state }) {
+      if (typeof this.$refs['klab-tree'] !== 'undefined') {
+        this.$refs['klab-tree'].setTicked([nodeId], state);
+      }
+    },
   },
   watch: {
     treeSelected(value) {
@@ -310,12 +315,6 @@ export default {
         } else {
           this.showNode({ nodeId: selectedId, selectMainViewer: true });
         }
-      }
-    },
-    changeNodeState({ nodeId, state }) {
-      console.warn('Im here');
-      if (typeof this.$refs['klab-tree'] !== 'undefined') {
-        this.$refs['klab-tree'].setTicked([nodeId], state);
       }
     },
   },
