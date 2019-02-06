@@ -9,7 +9,7 @@
           <klab-spinner
             id="spinner-leftmenu"
             :store-controlled="true"
-            :size="50"
+            :size="40"
             :ball="22"
             wrapperId="spinner-leftmenu-div"
           ></klab-spinner>
@@ -37,7 +37,7 @@
       :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE - LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }"
       class="full-height klab-lm-panel"
     >
-      <div id="lm-content-container">
+      <div id="lm-content-container" class="full-height">
         <keep-alive>
           <transition name="component-fade" mode="out-in">
             <component class="lm-component" :is="leftMenuContent"></component>
@@ -54,6 +54,7 @@ import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
 import KlabLogPane from 'components/KlabLogPane.vue';
+import DockedMainControl from 'components/DockedMainControl.vue';
 
 export default {
   name: 'KlabLeftMenu',
@@ -64,6 +65,7 @@ export default {
     KlabSpinner,
     MainActionsButtons,
     KlabLogPane,
+    DockedMainControl,
   },
   computed: {
     ...mapGetters('stomp', [
@@ -114,8 +116,8 @@ export default {
       padding-top 10px
       padding-bottom 20px
     #spinner-leftmenu-div
-      width 52px
-      height 52px
+      width 42px
+      height 42px
       margin-top 10px
       margin-left auto
       margin-right auto

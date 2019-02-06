@@ -5,8 +5,6 @@
 </template>
 
 <script>
-/* eslint-disable no-underscore-dangle */
-
 import { axiosInstance } from 'plugins/axios';
 import { mapState, mapGetters, mapActions } from 'vuex';
 // import SimpleBar from 'simplebar';
@@ -49,6 +47,7 @@ export default {
   },
   watch: {
     reloadReport() {
+      // eslint-disable-next-line no-underscore-dangle
       if (!this._inactive) {
         this.loadReport();
       }

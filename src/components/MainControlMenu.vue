@@ -27,21 +27,21 @@
         <q-list-header style="padding: 0 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
         <q-item-separator></q-item-separator>
         <q-item v-if="hasContext">
-          <div class="mc-container">
-            <div class="mc-menuitem mc-clickable" @click="closeAndCall(null)">
-              <div class="mc-item mdi mdi-star-four-points-outline mc-icon"></div>
-              <div class="mc-item mc-text mc-only-text">{{ $t('label.newContext') }}</div>
+          <div class="mcm-container">
+            <div class="klab-menuitem klab-clickable" @click="closeAndCall(null)">
+              <div class="klab-item mdi mdi-star-four-points-outline klab-icon"></div>
+              <div class="klab-item klab-text klab-only-text">{{ $t('label.newContext') }}</div>
             </div>
           </div>
         </q-item>
         <q-item>
-          <div class="mc-container">
-            <div class="mc-menuitem mc-clickable"
-                 :class="{ 'mc-not-available': contextsHistory.length === 0 }"
+          <div class="mcm-container">
+            <div class="klab-menuitem klab-clickable"
+                 :class="{ 'klab-not-available': contextsHistory.length === 0 }"
                  @click="toggleContextsHistory"
             >
-              <div class="mc-item mdi mdi-history mc-icon"></div>
-              <div class="mc-item mc-text mc-only-text">{{ $t('label.previousContexts') }}</div>
+              <div class="klab-item mdi mdi-history klab-icon"></div>
+              <div class="klab-item klab-text klab-only-text">{{ $t('label.previousContexts') }}</div>
               <div>
                 <q-icon
                   name="mdi-chevron-right"
@@ -58,13 +58,13 @@
                   <q-list dense >
                     <q-item v-for="context in contextsHistory" :key="context.id">
                       <q-item-main>
-                        <div class="mc-container mcm-context-label">
-                          <div class="mc-menuitem"
+                        <div class="mcm-container mcm-context-label">
+                          <div class="klab-menuitem"
                                @click="closeAndCall(context.id)"
-                               :class="[ context.id === contextId ? 'mc-no-clickable' : 'mc-clickable']"
+                               :class="[ context.id === contextId ? 'klab-no-clickable' : 'klab-clickable']"
                           >
                             <div
-                              class="mc-item mc-large-text"
+                              class="klab-item klab-large-text"
                               :class="{ 'mcm-actual-context': context.id === contextId }"
                               :style="{ 'font-style': contextTaskIsAlive(context.id) ? 'italic' : 'normal' }"
                               @mouseover="tooltipIt($event, context.id)"
@@ -87,10 +87,10 @@
         <template v-if="!(searchIsActive || hasContext)">
           <q-item>
             <q-item-main>
-              <div class="mc-container">
-                <div class="mc-menuitem mc-clickable" :class="[ isDrawMode ? 'mc-select' : '']" @click="startDraw()">
-                  <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
-                  <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
+              <div class="mcm-container">
+                <div class="klab-menuitem klab-clickable" :class="[ isDrawMode ? 'klab-select' : '']" @click="startDraw()">
+                  <div class="klab-item mdi mdi-vector-polygon klab-icon"></div>
+                  <div class="klab-item klab-text klab-only-text">{{ $t('label.drawCustomContext') }}</div>
                 </div>
               </div>
             </q-item-main>
@@ -111,9 +111,9 @@
         <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuOption') }}</q-list-header>
         <q-item-separator></q-item-separator>
         <q-item v-if="hasContext && contextReloaded">
-          <div class="mc-container">
-            <div class="mc-menuitem">
-              <div class="mc-item">{{ $t('label.optionShowAll') }}</div>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.optionShowAll') }}</div>
             </div>
             <q-item-side right>
               <q-toggle v-model="showAll" color="mc-main" />
@@ -121,9 +121,9 @@
           </div>
         </q-item>
         <q-item v-if="!hasContext">
-          <div class="mc-container">
-            <div class="mc-menuitem">
-              <div class="mc-item">{{ $t('label.optionSaveLocation') }}</div>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.optionSaveLocation') }}</div>
             </div>
             <q-item-side right>
               <q-toggle v-model="saveLocationVar" color="mc-main" />
@@ -298,8 +298,13 @@ export default {
   .mcm-contextbutton
     right -5px
 
-  .mc-container.mcm-context-label
-    width 250px
+  .mcm-container
+    height 100%
+    display flex
+    align-items center
+    width 180px
+    &.mcm-context-label
+      width 250px
 
   #btn-reset-context
     width 15px

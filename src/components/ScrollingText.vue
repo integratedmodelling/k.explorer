@@ -4,7 +4,7 @@
       {{ text }}
     </div>
 
-    <div class="st-edges" :style="{ 'background-color': getBGColor(spinnerColor, edgeOpacity) }"></div>
+    <div class="st-edges" v-if="withEdge" :style="{ 'background-color': getBGColor(spinnerColor, edgeOpacity) }"></div>
 
   </div>
 </template>
@@ -35,6 +35,10 @@ export default {
     edgeOpacity: {
       type: Number,
       default: 1,
+    },
+    withEdge: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

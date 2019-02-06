@@ -55,6 +55,7 @@ export default {
     optionShowAll: 'Show all',
     optionSaveLocation: 'Remember location',
     noNodes: 'No results: is waiting?',
+    loadShowData: 'Load and show data',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -92,6 +93,7 @@ export default {
     noDataflow: 'Dataflow not availble',
     dataflowViewer: 'View data flow',
     provenanceViewer: 'View provenance (will be...)',
+    undock: 'Undock',
   },
   errors: {
     connectionError: 'Connection error',

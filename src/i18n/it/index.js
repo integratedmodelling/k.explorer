@@ -53,6 +53,7 @@ export default {
     drawCircle: 'Cerchio',
     optionShowAll: 'Vedere tutte',
     optionSaveLocation: 'Ricordare posizione',
+    loadShowData: 'Caricare e visualizzare dati',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
@@ -90,6 +91,7 @@ export default {
     noDataflow: 'Dataflow non disponible',
     dataflowViewer: 'Vedere data flow (will be...)',
     provenanceViewer: 'Vedere provenance (will be...)',
+    undock: 'Sganciare',
   },
   errors: {
     connectionError: 'Errore di connessione',
