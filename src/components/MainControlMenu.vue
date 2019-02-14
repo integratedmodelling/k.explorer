@@ -24,7 +24,20 @@
         round
       ></q-btn>
       <q-list dense>
-        <q-list-header style="padding: 0 16px 0 16px; min-height: 0">{{ $t('label.mcMenuContext') }}</q-list-header>
+        <q-list-header style="padding: 0 16px 0 16px; min-height: 0">
+          {{ $t('label.mcMenuContext') }}
+          <q-icon
+            v-if="hasContext"
+            name="mdi-content-copy"
+            color="grey-5"
+            class="mcm-copy-icon"
+            @click.native="copyContextES($event, contextEncodedShape)"
+          >
+            <q-tooltip :delay="1000" anchor="center right" self="center left" :offset="[10, 10]">
+              {{ $t('tooltips.copyEncodedShapeToClipboard') }}
+            </q-tooltip>
+          </q-icon>
+        </q-list-header>
         <q-item-separator></q-item-separator>
         <q-item v-if="hasContext">
           <div class="mcm-container">
@@ -75,6 +88,16 @@
                               </q-tooltip>
                             </div>
                           </div>
+                          <q-icon
+                            name="mdi-content-copy"
+                            color="grey-5"
+                            class="absolute-right mcm-copy-icon"
+                            @click.native="copyContextES($event, `${context.spatialProjection} ${context.encodedShape}`)"
+                          >
+                            <q-tooltip :delay="1000" anchor="center right" self="center left" :offset="[10, 10]">
+                              {{ $t('tooltips.copyEncodedShapeToClipboard') }}
+                            </q-tooltip>
+                          </q-icon>
                         </div>
                       </q-item-main>
                     </q-item>
@@ -143,6 +166,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
 import { Cookies } from 'quasar';
+import { copyToClipboard, capitalizeFirstLetter } from 'shared/Utils';
 
 export default {
   name: 'MainControlMenu',
@@ -156,6 +180,7 @@ export default {
       'hasContext',
       'contextId',
       'contextReloaded',
+      'contextEncodedShape',
     ]),
     ...mapState('stomp', [
       'subscriptions',
@@ -272,6 +297,15 @@ export default {
         path: '/',
       });
     },
+    copyContextES(event, ctxShape) {
+      event.stopPropagation();
+      copyToClipboard(ctxShape);
+      this.$q.notify({
+        message: capitalizeFirstLetter(this.$t('messages.customCopyToClipboard', { what: this.$t('label.context') })),
+        type: 'info',
+        timeout: 500,
+      });
+    },
   },
   watch: {
     hasContext() {
@@ -285,7 +319,7 @@ export default {
 </script>
 
 <style lang="stylus">
-
+  @import '~variables'
   .mcm-icon-close-popover
     position absolute
     right 4px
@@ -321,4 +355,12 @@ export default {
     top 7px
     right 5px
 
+  .mcm-context-label
+    .klab-menuitem
+      width calc(100% - 20px)
+  .mcm-copy-icon
+    padding 0 10px 0 5px
+    &:hover
+      cursor pointer
+      color $grey-7 !important
 </style>
