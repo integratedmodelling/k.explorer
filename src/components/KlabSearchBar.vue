@@ -116,7 +116,6 @@ export default {
     },
   },
   mounted() {
-    console.dir(this.spinnerColor);
   },
 };
 </script>
