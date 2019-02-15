@@ -48,7 +48,7 @@ module.exports = function (ctx) {
       distDir: '../klab/klab.engine/src/main/resources/static/ui',
       publicPath: '/modeler/ui/',
       scopeHoisting: true,
-      // vueRouterMode: 'history',
+      vueRouterMode: 'history',
       // vueRouterBase: 'modeler',
       // gzip: true,
       // analyze: true,
