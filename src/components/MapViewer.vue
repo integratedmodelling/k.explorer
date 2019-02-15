@@ -130,6 +130,15 @@ export default {
       }
       let message = null;
       const view = this.map.getView();
+      // try to "clean" center
+      const center = transform(view.getCenter(), MAP_CONSTANTS.PROJ_EPSG_3857, MAP_CONSTANTS.PROJ_EPSG_4326);
+      if (Math.abs(center[0]) > 180) {
+        center[0] %= 180;
+        view.animate({
+          center: transform(center, MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+          duration: 500,
+        });
+      }
       try {
         const extent = view.calculateExtent(this.map.getSize());
         message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
