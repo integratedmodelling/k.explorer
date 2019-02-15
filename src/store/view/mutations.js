@@ -67,6 +67,10 @@ export default {
     state.dataViewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
   },
 
+  SET_MAIN_CONTROL_DOCKED: (state, docked) => {
+    state.mainControlDocked = docked;
+  },
+
   /**
    * Add a viewer to Main Viewer
    * No observation added

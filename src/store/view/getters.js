@@ -34,7 +34,7 @@ export default {
   leftMenuContent: state => state.leftMenuContent,
   leftMenuState: state => state.leftMenuState,
   hasMainControl: state => state.mainViewer && state.mainViewer.mainControl,
-
+  isMainControlDocked: state => state.mainControlDocked,
   /**
    * Context layer
    */

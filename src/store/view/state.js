@@ -66,6 +66,8 @@ export default {
    */
   leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
 
+  mainControlDocked: false,
+
   /**
    * Layer with the context shape shared between dataViewers
    */

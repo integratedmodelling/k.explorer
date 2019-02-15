@@ -3,7 +3,7 @@
     <div class="klab-main-actions">
       <!-- MAP BUTTON -->
       <div class="klab-button klab-action"
-           @click="mainViewerName !== VIEWERS.DATA_VIEWER.name ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
+           @click="mainViewerName !== VIEWERS.DATA_VIEWER.name ? setMainViewer(isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DATA_VIEWER.name }]"
       ><q-icon name="mdi-eye-outline">
         <q-tooltip
@@ -113,6 +113,7 @@ export default {
       'mainViewerName',
       'statusTextsString',
       'statusTextsLength',
+      'isMainControlDocked',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',

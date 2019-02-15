@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { Helpers } from 'shared/Helpers';
-import Constants, { VIEWERS } from 'shared/Constants';
+import Constants, { VIEWERS, LEFTMENU_COMPONENTS } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
@@ -59,7 +59,14 @@ export default {
   }),
   */
 
-  setMainViewer: ({ commit, dispatch }, viewer) => {
+  setMainViewer: ({ state, commit, dispatch }, viewer) => {
+    if (viewer && typeof state.mainViewer !== 'undefined') {
+      if (state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT) {
+        commit('SET_MAIN_CONTROL_DOCKED', true);
+      } else if (state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT) {
+        commit('SET_MAIN_CONTROL_DOCKED', false);
+      }
+    }
     commit('SET_MAIN_VIEWER', viewer);
     if (viewer) {
       dispatch('setLeftMenuState', viewer.leftMenuState);
@@ -247,4 +254,5 @@ export default {
   setCustomContext: ({ commit }, customContext) => {
     commit('SET_CUSTOM_CONTEXT', customContext);
   },
+
 };
