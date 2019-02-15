@@ -29,7 +29,6 @@
           <q-icon
             v-if="hasContext"
             name="mdi-content-copy"
-            color="grey-5"
             class="mcm-copy-icon"
             @click.native="copyContextES($event, contextEncodedShape)"
           >
@@ -90,7 +89,6 @@
                           </div>
                           <q-icon
                             name="mdi-content-copy"
-                            color="grey-5"
                             class="absolute-right mcm-copy-icon"
                             @click.native="copyContextES($event, `${context.spatialProjection} ${context.encodedShape}`)"
                           >
@@ -360,7 +358,8 @@ export default {
       width calc(100% - 20px)
   .mcm-copy-icon
     padding 0 10px 0 5px
+    color $grey-3
     &:hover
       cursor pointer
-      color $grey-7 !important
+      color $grey-10
 </style>
