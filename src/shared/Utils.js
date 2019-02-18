@@ -1,4 +1,7 @@
 import { colors } from 'quasar';
+import { geom as jstsGeom, operation as jstsOperation } from 'jsts';
+import { transform } from 'ol/proj';
+import { MAP_CONSTANTS } from 'shared/MapConstants';
 
 /**
  * RegExp to detect a color string as rgba(...)
@@ -9,6 +12,34 @@ const reRGBA = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
  * Get color utility function from quasar
  */
 const { hexToRgb, getBrand, rgbToHex } = colors;
+
+/**
+ * The vertices must be om EPSG:3857 because open layer use it to draw
+ */
+const IDL = {
+  topLeft: transform([-180, 90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  bottomLeft: transform([-180, -90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  topRight: transform([180, 90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  bottomRight: transform([180, -90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+};
+const JSTS_FACTORY = new jstsGeom.GeometryFactory();
+/**
+ * The IDL, from east or west
+ * @type {{left: *, right: *}}
+ */
+const JSTS_IDLS = {
+  left: JSTS_FACTORY.createLineString([new jstsGeom.Coordinate(IDL.topLeft[0], IDL.topLeft[1]), new jstsGeom.Coordinate(IDL.bottomLeft[0], IDL.bottomLeft[1])]),
+  right: JSTS_FACTORY.createLineString([new jstsGeom.Coordinate(IDL.topRight[0], IDL.topRight[1]), new jstsGeom.Coordinate(IDL.bottomRight[0], IDL.bottomRight[1])]),
+};
+/**
+ * The entire worlk, is used to check if there are somy polygons that goes out
+ */
+const JSTS_ALL_WORLD = JSTS_FACTORY.createPolygon([
+  new jstsGeom.Coordinate(IDL.topLeft[0], IDL.topLeft[1]), new jstsGeom.Coordinate(IDL.topRight[0], IDL.topRight[1]),
+  new jstsGeom.Coordinate(IDL.bottomRight[0], IDL.bottomRight[1]), new jstsGeom.Coordinate(IDL.bottomLeft[0], IDL.bottomLeft[1]),
+  new jstsGeom.Coordinate(IDL.topLeft[0], IDL.topLeft[1]),
+]);
+
 /**
  * Utilities used in Helpers. Function with general application
  * @type {{capitalizeFirstLetter: (function(*): string), formatExtent: (function(*=))}}
@@ -186,6 +217,52 @@ export function copyToClipboard(str) {
     document.getSelection().addRange(selected);
   }
 }
+export function checkIDL(originalPolygon) {
+  let idl = null;
+  let side = null;
+  // check if polygon cross IDL and where
+  if (originalPolygon.crosses(JSTS_IDLS.left)) {
+    idl = JSTS_IDLS.left;
+    side = 'left';
+  } else if (originalPolygon.crosses(JSTS_IDLS.right)) {
+    idl = JSTS_IDLS.right;
+    side = 'right';
+  } else {
+    // luck! nothing to do
+    return originalPolygon;
+  }
+  // generate a multyline with the IDL...
+  const ring = originalPolygon.getExteriorRing();
+  const union = ring.union(idl);
+  // generate polygons
+  const polygonizer = new jstsOperation.polygonize.Polygonizer();
+  polygonizer.add(union);
+  const polygons = polygonizer.getPolygons();
+
+  let result = null;
+  for (let i = polygons.iterator(); i.hasNext();) {
+    let polygon = i.next();
+    // if the polygon is not contained, we need to change all its vertices
+    // all this is done thinking in open layer with a flat earth, TODO: check if it work!
+    if (!JSTS_ALL_WORLD.contains(polygon)) {
+      const newVertices = [];
+      const vertices = polygon.getCoordinates();
+      const vxl = vertices.length;
+      for (let j = 0; j < vxl; j++) {
+        const vx = vertices[j];
+        const x = vx.x + (side === 'left' ? IDL.topRight[0] : IDL.topLeft[0]) * 2;
+        newVertices.push(new jstsGeom.Coordinate(x, vx.y));
+      }
+      polygon = JSTS_FACTORY.createPolygon(newVertices);
+    }
+    if (result === null) {
+      result = polygon;
+    } else {
+      result = result.union(polygon);
+    }
+  }
+  return result;
+}
 
 export default {
   capitalizeFirstLetter,
@@ -197,4 +274,5 @@ export default {
   uniqueArray,
   getBrightnessColor,
   copyToClipboard,
+  checkIDL,
 };
