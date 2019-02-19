@@ -16,6 +16,15 @@
         </div>
       </div>
       <div class="lm-separator"></div>
+      <div id="lm-scales">
+        <!-- scale -->
+        <!-- SPACE -->
+        <scale-reference scale-type="space" :editable="false" orientation="vertical" width="100%"></scale-reference>
+        <div class="lm-separator"></div>
+        <!-- TIME -->
+        <scale-reference scale-type="time" :editable="false" orientation="vertical" width="100%"></scale-reference>
+      </div>
+      <div class="lm-separator"></div>
       <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
       <div class="lm-separator"></div>
       <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
@@ -55,6 +64,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import DockedMainControl from 'components/DockedMainControl.vue';
+import ScaleReference from 'components/ScaleReference.vue';
 
 export default {
   name: 'KlabLeftMenu',
@@ -63,6 +73,7 @@ export default {
     MainActionsButtons,
     DockedMainControl,
     KlabLogPane,
+    ScaleReference,
   },
   data() {
     return {};
@@ -136,7 +147,7 @@ export default {
       width 90%
       left 5%
       height 2px
-      border-top 1px solid #333
+      border-top 1px solid rgba(24,24,24,0.5)
       border-bottom 1px solid #444
       margin 0 auto
     .klab-button
@@ -156,6 +167,13 @@ export default {
       height 13px
       top 5px
       right 8px
+    #lm-scales
+      margin 20px 0
+      .lm-separator
+        width 60%
+        border-top-style dashed
+        border-bottom-style dashed
+
     #lm-bottom-menu
       width 100%
       position fixed

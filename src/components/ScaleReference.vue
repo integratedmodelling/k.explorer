@@ -1,5 +1,5 @@
 <template>
-  <div class="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
+  <div class="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark', orientation === 'vertical' ? 'sr-vertical' : '']" @click="scaleEditing = editable">
     <div class="sr-scalereference klab-menuitem" v-if="hasScale" :class="{ 'sr-full': full, 'klab-clickable': editable }">
       <div
         v-if="full"
@@ -62,6 +62,10 @@ export default {
     full: {
       type: Boolean,
       default: false,
+    },
+    orientation: {
+      type: String,
+      default: 'horizontal',
     },
   },
   computed: {
@@ -138,8 +142,11 @@ export default {
       .sr-spacescale
         background-color #ccc
         color #333
+
     .sr-editables
       display inline
+      .klab-item
+        text-align center
     .sr-scalereference
     .sr-no-scalereference
       .sr-scaletype
@@ -162,9 +169,19 @@ export default {
         border-radius 10px
         text-align center
         padding 5px 0 0 0
+        display inline-block
       &.sr-full
         .sr-description
           width "calc(100% - %s - 20px)" % ($sr-scaletype-width + $sr-lock-width)
+    &.sr-vertical
+      margin 5px 0
+      .klab-item
+        float left
+        width 100%
+        margin 5px 0
+      .sr-spacescale
+        width 20px
+        margin-left calc(50% - 10px)
   .modal-scroll
     overflow hidden
   /*
