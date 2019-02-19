@@ -8,13 +8,13 @@
       <div
         id="spinner-lonely-div"
         class="klab-spinner-div"
-        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'white' }"
+        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'rgba(0,0,0,0)' }"
         v-show="isHidden"
       >
         <klab-spinner
           id="spinner-lonely"
           :store-controlled="true"
-          :size="35"
+          :size="40"
           :ball="22"
           wrapperId="spinner-lonely-div"
           @dblclick.native="show"
@@ -324,6 +324,7 @@ export default {
       width 44px
       height 44px
       border 2px solid
+      border-radius 40px
 
     .q-card-title
       line-height inherit
