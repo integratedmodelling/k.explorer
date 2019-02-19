@@ -21,6 +21,7 @@ const IDL = {
   bottomLeft: transform([-180, -90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
   topRight: transform([180, 90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
   bottomRight: transform([180, -90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+
 };
 const JSTS_FACTORY = new jstsGeom.GeometryFactory();
 /**
@@ -218,25 +219,27 @@ export function copyToClipboard(str) {
   }
 }
 export function checkIDL(originalPolygon) {
-  let idl = null;
-  let side = null;
+  const idl = [];
   // check if polygon cross IDL and where
   if (originalPolygon.crosses(JSTS_IDLS.left)) {
-    idl = JSTS_IDLS.left;
-    side = 'left';
-  } else if (originalPolygon.crosses(JSTS_IDLS.right)) {
-    idl = JSTS_IDLS.right;
-    side = 'right';
-  } else {
+    idl.push(JSTS_IDLS.left);
+  }
+  if (originalPolygon.crosses(JSTS_IDLS.right)) {
+    idl.push(JSTS_IDLS.right);
+  }
+  if (idl.length === 0) {
     // luck! nothing to do
     return originalPolygon;
   }
   // generate a multyline with the IDL...
-  const ring = originalPolygon.getExteriorRing();
-  const union = ring.union(idl);
+  let united = originalPolygon.getExteriorRing();
+  idl.forEach((line) => {
+    united = united.union(line);
+  });
+
   // generate polygons
   const polygonizer = new jstsOperation.polygonize.Polygonizer();
-  polygonizer.add(union);
+  polygonizer.add(united);
   const polygons = polygonizer.getPolygons();
 
   let result = null;
@@ -250,7 +253,8 @@ export function checkIDL(originalPolygon) {
       const vxl = vertices.length;
       for (let j = 0; j < vxl; j++) {
         const vx = vertices[j];
-        const x = vx.x + (side === 'left' ? IDL.topRight[0] : IDL.topLeft[0]) * 2;
+        const factor = Math.round(Math.abs(vx.x / (IDL.topRight[0] * 2))) * 2;
+        const x = vx.x + (vx.x < 0 ? IDL.topRight[0] : IDL.topLeft[0]) * factor;
         newVertices.push(new jstsGeom.Coordinate(x, vx.y));
       }
       polygon = JSTS_FACTORY.createPolygon(newVertices);
