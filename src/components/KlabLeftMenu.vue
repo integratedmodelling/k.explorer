@@ -58,14 +58,14 @@ import DockedMainControl from 'components/DockedMainControl.vue';
 
 export default {
   name: 'KlabLeftMenu',
-  data() {
-    return {};
-  },
   components: {
     KlabSpinner,
     MainActionsButtons,
-    KlabLogPane,
     DockedMainControl,
+    KlabLogPane,
+  },
+  data() {
+    return {};
   },
   computed: {
     ...mapGetters('stomp', [

@@ -169,6 +169,9 @@ import { copyToClipboard, capitalizeFirstLetter } from 'shared/Utils';
 export default {
   name: 'MainControlMenu',
   mixins: [TooltipIt],
+  components: {
+    ScaleReference,
+  },
   data() {
     return {};
   },
@@ -309,9 +312,6 @@ export default {
     hasContext() {
       this.$refs['mcm-main-popover'].hide();
     },
-  },
-  components: {
-    ScaleReference,
   },
 };
 </script>

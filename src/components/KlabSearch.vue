@@ -71,6 +71,9 @@ import KlabAutocomplete from './KlabAutocomplete';
 
 export default {
   name: 'KlabSearch',
+  components: {
+    KlabAutocomplete,
+  },
   props: {
     maxResults: {
       type: Number,
@@ -560,9 +563,6 @@ export default {
       this.actualSearchString = '';
     }
     this.inputSearchColor = 'black';
-  },
-  components: {
-    KlabAutocomplete,
   },
 };
 </script>

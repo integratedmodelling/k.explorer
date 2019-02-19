@@ -22,6 +22,11 @@ import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'klabTreeContainer',
+  components: {
+    KlabSplitter,
+    KlabTree,
+    ObservationInfo,
+  },
   /*
   data() {
     return {
@@ -47,15 +52,6 @@ export default {
     informTree({ nodeId, state }) {
       this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
     },
-  },
-  mounted() {
-  },
-  watch: {
-  },
-  components: {
-    KlabTree,
-    KlabSplitter,
-    ObservationInfo,
   },
 };
 </script>

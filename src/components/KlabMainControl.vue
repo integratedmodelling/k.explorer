@@ -129,13 +129,13 @@ const { width, height } = dom;
 export default {
   name: 'klabMainControl',
   components: {
+    KlabSpinner,
+    KlabSearchBar,
+    KlabTreePane,
+    KlabLogPane,
     ScrollingText,
     ScaleReference,
     ScaleChangeDialog,
-    KlabTreePane,
-    KlabLogPane,
-    KlabSpinner,
-    KlabSearchBar,
     MainActionsButtons,
   },
   directives: {
@@ -397,8 +397,4 @@ export default {
       border 1px solid rgba(135, 135, 135, .5)
       animation-duration .2s
 
-    /*
-    #oi-metadata-map-wrapper
-      height "calc(100% - %s)" % $main-control-actions-height
-    */
 </style>

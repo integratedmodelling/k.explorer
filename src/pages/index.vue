@@ -56,6 +56,13 @@ import 'simplebar/dist/simplebar.css';
 export default {
   /* eslint-disable object-shorthand */
   name: 'IndexPage',
+  components: {
+    KlabMainControl,
+    DataViewer,
+    ReportViewer,
+    DataflowViewer,
+    KlabSpinner,
+  },
   computed: {
     ...mapGetters('stomp', [
       'connectionState',
@@ -120,13 +127,6 @@ export default {
       console.info(`Setted max siblings as ${minResults}`);
       this.$store.state.data.siblingsToAskFor = minResults;
     },
-  },
-  components: {
-    KlabMainControl,
-    DataViewer,
-    ReportViewer,
-    DataflowViewer,
-    KlabSpinner,
   },
   watch: {
   },

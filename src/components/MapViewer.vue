@@ -58,6 +58,9 @@ import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
   name: 'MapViewer',
+  components: {
+    MapDrawer,
+  },
   props: {
     idx: {
       type: Number,
@@ -388,9 +391,6 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
-  },
-  components: {
-    MapDrawer,
   },
 };
 </script>

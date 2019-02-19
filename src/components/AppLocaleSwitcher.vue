@@ -18,6 +18,9 @@ import Constants from 'shared/Constants';
 // console.log(`Locale from cookie = ${Vue.config.lang} : activeLocale = ${this.activeLocale}`);
 
 export default {
+  components: {
+    QSelect,
+  },
   data() {
     return {
       activeLocale: this.$i18n.locale,
@@ -45,9 +48,6 @@ export default {
       label: this.$t('langName', locale),
       value: locale,
     }));
-  },
-  components: {
-    QSelect,
   },
 };
 </script>
