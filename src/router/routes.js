@@ -3,11 +3,11 @@ export default [
     path: '/',
     component: () => import('layouts/default'),
     children: [
-      { path: '/explorer', component: () => import('pages/index') },
+      // { path: '/explorer', component: () => import('pages/index') },
       { path: '/viewer', component: () => import('pages/index') },
-      { path: '/', redirect: '/viewer' }, // , component: () => import('pages/index')
+      // { path: '/', redirect: '/viewer' }, // , component: () => import('pages/index')
       /* { name: 'test', path: 'test', component: () => import('pages/test') }, */
-      { name: 'icons', path: 'icons', component: () => import('pages/icons') },
+      // { name: 'icons', path: 'icons', component: () => import('pages/icons') },
     ],
   },
 

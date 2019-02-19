@@ -27,7 +27,7 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            // WS_BASE_URL: JSON.stringify('http://192.168.0.124:8283'), // Fer
+            // WS_BASE_URL: JSON.stringify('http://192.168.0.99:8283'), // Enrico
             WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
             STOMP_CLIENT_DEBUG: true,
           }
@@ -46,10 +46,10 @@ module.exports = function (ctx) {
       },
       // distDir: 'dist/ui',
       distDir: '../klab/klab.engine/src/main/resources/static/ui',
-      publicPath: '/modeler/ui/',
       scopeHoisting: true,
-      vueRouterMode: 'history',
-      // vueRouterBase: 'modeler',
+      // vue-route configuration is maded in route/index.js
+      // publicPath: '/',
+      // vueRouterMode: 'history',
       // gzip: true,
       // analyze: true,
       // extractCSS: false,

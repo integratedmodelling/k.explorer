@@ -15,11 +15,13 @@ const Router = new VueRouter({
    */
 
   // Leave as is and change from quasar.conf.js instead!
+  // Change here because it doesn't work from quasar.conf. We must investigate it
+  // Those changes are done to make report anchor work
   mode: 'history',
-  // base: process.env.VUE_ROUTER_BASE,
+  base: '/modeler/ui/',
   scrollBehavior: (to) => {
     if (to.hash) {
-      return { selector: to.hash };
+      return { selector: `[id='${to.hash.slice(1)}']` };
     }
     return { x: 0, y: 0 };
   },
