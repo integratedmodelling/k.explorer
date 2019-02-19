@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import KlabTree from 'components/KlabTree.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
+import KlabTree from 'components/KlabTree.vue';
 import ObservationInfo from 'components/ObservationInfo.vue';
 import { mapGetters, mapActions } from 'vuex';
 

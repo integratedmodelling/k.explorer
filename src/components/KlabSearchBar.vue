@@ -57,8 +57,8 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS } from 'shared/Constants';
-import KlabSearch from 'components/KlabSearch.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
+import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
 

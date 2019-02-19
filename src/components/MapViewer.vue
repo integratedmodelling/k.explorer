@@ -44,16 +44,16 @@ import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
+import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
-import { transform, transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
-import MapDrawer from 'components/MapDrawer';
 import WKT from 'ol/format/WKT';
+import MapDrawer from 'components/MapDrawer';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {

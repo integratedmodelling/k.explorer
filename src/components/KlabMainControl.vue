@@ -114,15 +114,15 @@
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
 import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
+import { dom, debounce } from 'quasar';
+import MainActionsButtons from 'components/MainActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
+import KlabSearchBar from 'components/KlabSearchBar.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
-import KlabSearchBar from 'components/KlabSearchBar.vue';
-import { dom, debounce } from 'quasar';
+import ScrollingText from 'components/ScrollingText.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
-import ScrollingText from 'components/ScrollingText.vue';
-import MainActionsButtons from 'components/MainActionsButtons';
 
 const { width, height } = dom;
 

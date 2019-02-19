@@ -60,10 +60,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS } from 'shared/Constants';
-import KlabSpinner from 'components/KlabSpinner.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
-import KlabLogPane from 'components/KlabLogPane.vue';
+import KlabSpinner from 'components/KlabSpinner.vue';
 import DockedMainControl from 'components/DockedMainControl.vue';
+import KlabLogPane from 'components/KlabLogPane.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 
 export default {
