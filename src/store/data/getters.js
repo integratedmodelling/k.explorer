@@ -50,7 +50,7 @@ export default {
 
   fullContext: state => state.context,
 
-  contextEncodedShape: state => `${state.context.spatialProjection} ${state.context.encodedShape}`,
+  contextEncodedShape: state => (state.context !== null ? `${state.context.spatialProjection} ${state.context.encodedShape}` : ''),
 
   contextsHistory: (state) => {
     if (state.contextsHistory.length > 0) {
