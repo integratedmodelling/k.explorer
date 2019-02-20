@@ -1,5 +1,7 @@
 <template>
-  <div id="ks-container" ref="ks-container">
+  <div id="ks-container"
+       ref="ks-container"
+  >
     <!-- <div id="left-shadow"></div>  TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
@@ -17,6 +19,7 @@
       @focus="onTokenFocus(token,$event)"
       @blur="onTokenFocus(token,$event)"
       @keydown="onKeyPressedOnToken"
+      @touchstart="doubleTouch($event, null, deleteLastToken)"
     >{{ token.value }}
       <q-tooltip
         :delay="500"
@@ -40,9 +43,10 @@
       @focus="onInputFocus(true)"
       @blur="onInputFocus(false)"
       @keydown="onKeyPressedOnSearchInput"
-      @keyup.esc="searchEnd"
+      @keyup.esc="searchEnd({})"
+      @touchstart.native="doubleTouch($event, askForSuggestion, searchInKLab)"
     >
-
+    <!-- :style="{ 'background-color': waitForDouble ? 'rgba(0, 0, 0, .1)' : 'transparent' }" TODO: implement way to know if we are waiting -->
       <klab-autocomplete
         @search="search"
         @selected="selected"
@@ -63,17 +67,19 @@
 <script>
 /* eslint-disable no-underscore-dangle */
 
+import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
-import Vue from 'vue';
-import KlabAutocomplete from './KlabAutocomplete';
+import KlabAutocomplete from 'components/KlabAutocomplete';
+import DoubleTouch from 'shared/DoubleTouchMixin';
 
 export default {
   name: 'KlabSearch',
   components: {
     KlabAutocomplete,
   },
+  mixins: [DoubleTouch],
   props: {
     maxResults: {
       type: Number,
@@ -221,15 +227,13 @@ export default {
           event.preventDefault();
           break;
         case 13: // ENTER
-          if (!this.suggestionShowed) {
-            this.searchInKLab(event);
-          }
+          this.searchInKLab(event);
           break;
         case 27: // ESCAPE
           if (this.suggestionShowed) {
             this.autocompleteEl.hide();
           } else {
-            this.searchEnd(true);
+            this.searchEnd({ noStore: true });
           }
           event.preventDefault();
           break;
@@ -325,6 +329,9 @@ export default {
     },
     // ask for token to keylab to obtain possibility
     searchInKLab() {
+      if (this.suggestionShowed) {
+        return;
+      }
       if (this.acceptedTokens.length > 0) {
         const urn = this.acceptedTokens.map(token => token.id).join(' ');
         this.sendStompMessage(MESSAGES_BUILDERS.OBSERVATION_REQUEST({
@@ -342,17 +349,22 @@ export default {
       } else {
         console.info('Nothing to search for');
       }
-      this.searchEnd();
+      this.searchEnd({});
     },
     // search reset
-    searchEnd(forced = false) {
+    searchEnd({ noStore = false, noDelete = false }) {
       if (!this.suggestionShowed) {
-        if (!forced && this.acceptedTokens.length > 0) {
-          this.storePreviousSearch({
-            acceptedTokens: this.acceptedTokens.slice(0),
-            searchContextId: this.searchContextId,
-            searchRequestId: this.searchRequestId,
-          });
+        if (this.acceptedTokens.length > 0) {
+          if (noDelete) {
+            return;
+          }
+          if (!noStore) {
+            this.storePreviousSearch({
+              acceptedTokens: this.acceptedTokens.slice(0),
+              searchContextId: this.searchContextId,
+              searchRequestId: this.searchRequestId,
+            });
+          }
         }
         this.searchContextId = null;
         this.searchRequestId = 0;
@@ -404,6 +416,12 @@ export default {
         return true;
       }
       return false;
+    },
+    deleteLastToken() {
+      if (this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
+        this.acceptedTokens.pop();
+        this.searchHistoryIndex = -1;
+      }
     },
   },
   watch: {

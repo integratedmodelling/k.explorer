@@ -15,6 +15,7 @@
         :ball="22"
         wrapperId="ksb-spinner"
         @dblclick.native="emitSpinnerDoubleclick"
+        @touchstart.native="doubleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
     </div>
     <div
@@ -42,7 +43,7 @@
           'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
           'border-right': '2px solid '+ spinnerColor.color
         }">
-      <klab-search v-if="searchIsActive"></klab-search>
+      <klab-search ref="klab-search" v-if="searchIsActive" ></klab-search>
       <div class="ksb-context-text text-white" v-else>
         <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
       </div>
@@ -61,6 +62,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
+import DoubleTouch from 'shared/DoubleTouchMixin';
 
 export default {
   name: 'KlabSearchBar',
@@ -70,8 +72,11 @@ export default {
     ScrollingText,
     MainControlMenu,
   },
+  mixins: [DoubleTouch],
   data() {
-    return {};
+    return {
+      doubleTouchTimeout: null,
+    };
   },
   computed: {
     ...mapGetters('data', [
@@ -93,9 +98,24 @@ export default {
   methods: {
     ...mapActions('view', [
       'setMainViewer',
+      'searchStart',
+      'searchFocus',
+      'searchStop',
     ]),
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
+    },
+    showSuggestions(event, noDelete = false) {
+      if (!this.searchIsActive) {
+        this.searchStart(' ');
+        event.stopPropagation();
+      } else if (!this.searchIsFocused) {
+        this.searchFocus({ char: ' ', focused: true });
+        event.stopPropagation();
+      } else {
+        this.$refs['klab-search'].searchEnd({ noDelete });
+        event.stopPropagation();
+      }
     },
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);

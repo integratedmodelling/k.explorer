@@ -34,7 +34,8 @@
       :flat="true"
       v-draggable="dragMCConfig"
       v-show="!isHidden"
-      @mousedown.native="preventDrag"
+      @mousedown.native.prevent
+      @contextmenu.native.prevent
     >
       <q-card-title
         id="mc-q-card-title"
@@ -44,7 +45,7 @@
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
       >
-        <klab-search-bar></klab-search-bar>
+        <klab-search-bar ref="klab-search-bar"></klab-search-bar>
       </q-card-title>
 
       <q-card-main
@@ -180,6 +181,13 @@ export default {
     ...mapActions('view', [
       'setMainViewer',
     ]),
+    callStartType(event) {
+      if (!this.searchIsFocused) {
+        this.$refs['klab-search-bar'].startType(event);
+      } else {
+        event.evt.stopPropagation();
+      }
+    },
     onDebouncedPositionChanged(absolutePosition) {
       if (this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
         this.askForDocking = true;
@@ -214,13 +222,6 @@ export default {
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
-    },
-    /**
-     * prevent native drag in chrome
-     * @param event
-     */
-    preventDrag(event) {
-      event.preventDefault();
     },
     checkWhereWasDragged() {
       this.dragging = false;
