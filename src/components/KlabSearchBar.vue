@@ -57,6 +57,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { debounce } from 'quasar';
 import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
@@ -120,7 +121,13 @@ export default {
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);
     },
-    undock() {
+    debouncedUndock() {
+      debounce(() => {
+        this.undock();
+      }, 200);
+    },
+    undock(event) {
+      console.dir(event);
       this.setMainViewer(VIEWERS.DATA_VIEWER);
     },
   },

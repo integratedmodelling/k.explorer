@@ -16,6 +16,7 @@
 <script>
 import KlabSearchBar from 'components/KlabSearchBar';
 import KlabTreePane from 'components/KlabTreePane.vue';
+import DoubleTouch from 'shared/DoubleTouchMixin';
 
 export default {
   name: 'DockedMainControl',
@@ -23,6 +24,7 @@ export default {
     KlabSearchBar,
     KlabTreePane,
   },
+  mixins: [DoubleTouch],
   methods: {
     callShowSuggestions(event) {
       this.$refs['klab-search-bar-docked'].showSuggestions(event, true);
