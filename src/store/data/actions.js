@@ -206,6 +206,7 @@ export default {
       observation.zIndex = 0;
       observation.layerOpacity = 1;
       observation.colormap = null;
+      observation.folderId = folderId;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === Constants.OBSTYP_INITIAL) {
@@ -217,6 +218,7 @@ export default {
         // if has siblings, create folder and ask for them
         // fake folder id is ff_[id of observation with siblings]
         folderId = `ff_${observation.id}`;
+        observation.folderId = folderId;
         commit('ADD_NODE', {
           node: {
             id: folderId,
@@ -234,7 +236,6 @@ export default {
         });
         needSiblings = true;
       }
-      observation.folderId = folderId;
       // ask for children
       if (observation.children.length > 0) {
         observation.disabled = false; // if is empty but has children, cannot be disabled
