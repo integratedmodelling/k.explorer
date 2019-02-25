@@ -113,7 +113,8 @@
 <script>
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
-import { Draggable } from 'draggable-vue-directive';
+// import { Draggable } from 'draggable-vue-directive';
+import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
 import MainActionsButtons from 'components/MainActionsButtons';
