@@ -15,27 +15,8 @@
         :ball="22"
         wrapperId="ksb-spinner"
         @dblclick.native="emitSpinnerDoubleclick"
-        @touchstart.native="doubleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
+        @touchstart.native="doubleTouch($event, showSuggestions, emitSpinnerDoubleclick, stopSearchForTouch)"
       ></klab-spinner>
-    </div>
-    <div
-      id="ksb-undock"
-      v-else
-    >
-      <div
-        id="ksb-undock-icon"
-        @click = "undock"
-      >
-        <q-icon
-          name="mdi-pin"
-          size="1.2em"
-        ></q-icon>
-        <q-tooltip
-          :offset="[5,0]"
-          self="top left"
-          anchor="top right"
-        >{{ $t('tooltips.undock') }}</q-tooltip>
-      </div>
     </div>
     <div
       id="ksb-search-container"
@@ -117,6 +98,9 @@ export default {
         this.$refs['klab-search'].searchEnd({ noDelete });
         event.stopPropagation();
       }
+    },
+    stopSearchForTouch(noDelete = false) {
+      this.$refs['klab-search'].searchEnd({ noDelete });
     },
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);

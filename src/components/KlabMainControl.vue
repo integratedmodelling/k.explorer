@@ -154,6 +154,7 @@ export default {
         }, 100),
         onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
+        fingers: 2,
       },
       dragging: false,
       askForDocking: false,

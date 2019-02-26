@@ -67,6 +67,8 @@ export const Draggable = {
         && binding.value.boundingElement.getBoundingClientRect();
     }
     function updateElementStyle() {
+      if (noMove())
+        return;
       var state = getState();
       if (!state.currentDragPosition) {
         return;
@@ -86,7 +88,7 @@ export const Draggable = {
           return;
         transformTouchEvent(event);
       }
-      setState({ intialPos: getInitialPosition(event) });
+      setState({ initialPos: getInitialPosition(event) });
       handlePositionChanged(event, ChangePositionType.Start);
       document.addEventListener("touchmove", eventMove, { passive: false });
       document.addEventListener("mousemove", eventMove);
@@ -103,12 +105,12 @@ export const Draggable = {
         return;
       }
       var state = getState();
-      if (!state.startDragPosition || !state.intialPos) {
+      if (!state.startDragPosition || !state.initialPos) {
         initializeState(event);
         state = getState();
       }
-      var dx = event.clientX - state.intialPos.left;
-      var dy = event.clientY - state.intialPos.top;
+      var dx = event.clientX - state.initialPos.left;
+      var dy = event.clientY - state.initialPos.top;
       var currentDragPosition = {
         left: state.startDragPosition.left + dx,
         top: state.startDragPosition.top + dy
@@ -126,7 +128,7 @@ export const Draggable = {
       event.preventDefault();
       var currentRectPosition = getRectPosition();
       setState({
-        intialPos: undefined,
+        initialPos: undefined,
         startDragPosition: currentRectPosition,
         currentDragPosition: currentRectPosition
       });
@@ -162,9 +164,12 @@ export const Draggable = {
         initialPosition: initialPosition,
         startDragPosition: initialPosition,
         currentDragPosition: initialPosition,
-        intialPos: getInitialPosition(event)
+        initialPos: getInitialPosition(event)
       });
       updateElementStyle();
+    }
+    function noMove() {
+      return binding && binding.value && binding.value.noMove
     }
     function setState(partialState) {
       var prevState = getState();

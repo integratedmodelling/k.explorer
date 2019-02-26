@@ -368,4 +368,5 @@ export const CUSTOM_EVENTS = {
   GRAPH_NODE_SELECTED: 'graphnodeselected',
   SPINNER_DOUBLE_CLICK: 'spinnerdoubleclick',
   SHOW_NODE: 'shownode', // show a tree node, emitted from ObservationInfo
+  ASK_FOR_UNDOCK: 'askforundock',
 };

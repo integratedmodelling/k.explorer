@@ -4,8 +4,9 @@
     class="full-height"
   >
     <klab-search-bar
+      v-draggable="dragMCConfig"
       ref="klab-search-bar-docked"
-      @touchstart.native="doubleTouch($event, callShowSuggestions, null)"
+      @touchstart.native="touchHandler"
     ></klab-search-bar>
     <div id="dmc-tree" class="q-card-main full-height">
       <klab-tree-pane :horizontal="true" class="full-height"></klab-tree-pane>
@@ -14,9 +15,15 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { debounce, dom } from 'quasar';
 import KlabSearchBar from 'components/KlabSearchBar';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import DoubleTouch from 'shared/DoubleTouchMixin';
+import { Draggable } from 'shared/VueDraggableTouchDirective';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
+
+const { width } = dom;
 
 export default {
   name: 'DockedMainControl',
@@ -25,13 +32,51 @@ export default {
     KlabTreePane,
   },
   mixins: [DoubleTouch],
+  directives: {
+    Draggable,
+  },
+  data() {
+    return {
+      dragMCConfig: {
+        onPositionChange: debounce((positionDiff, absolutePosition) => {
+          this.onDebouncedPositionChanged(absolutePosition);
+        }, 100),
+        onDragEnd: this.checkUndock,
+        fingers: 1,
+        noMove: true,
+      },
+      askForUndocking: false,
+      draggableElementWidth: 0,
+    };
+  },
   methods: {
+    ...mapActions('view', [
+      'setMainViewer',
+    ]),
     callShowSuggestions(event) {
       this.$refs['klab-search-bar-docked'].showSuggestions(event, true);
     },
+    onDebouncedPositionChanged(absolutePosition) {
+      if (absolutePosition && absolutePosition.left > this.undockLimit) {
+        this.askForUndocking = true;
+      } else {
+        this.askForUndocking = false;
+      }
+      this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
+    },
+    checkUndock() {
+      if (this.askForUndocking) {
+        this.askForUndocking = false;
+        this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
+        this.setMainViewer(VIEWERS.DATA_VIEWER);
+      }
+    },
+    touchHandler(event) {
+      this.doubleTouch(event, this.callShowSuggestions, null, null);
+    },
   },
-  data() {
-    return {};
+  mounted() {
+    this.undockLimit = width(document.getElementById('dmc-container')) / 3;
   },
 };
 </script>
@@ -52,5 +97,4 @@ export default {
       height "calc(100% - %s)" % $docked-padding
       max-height "calc(100% - %s)" % $docked-padding
       position relative
-
 </style>

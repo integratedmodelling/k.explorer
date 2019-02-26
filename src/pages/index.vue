@@ -14,6 +14,11 @@
     <transition name="component-fade" mode="out-in">
       <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
     </transition>
+    <transition appear
+                enter-active-class="animated zoomIn"
+                leave-active-class="animated zoomOut">
+      <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
+    </transition>
     <q-modal
         id="modal-connection-status"
         v-model="modalVisible"
@@ -41,7 +46,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -62,6 +67,11 @@ export default {
     ReportViewer,
     DataflowViewer,
     KlabSpinner,
+  },
+  data() {
+    return {
+      askForUndocking: false,
+    };
   },
   computed: {
     ...mapGetters('stomp', [
@@ -157,6 +167,9 @@ export default {
       }
     });
     this.setSiblingsToAskFor();
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
+      this.askForUndocking = ask;
+    });
   },
 };
 </script>
@@ -196,5 +209,13 @@ export default {
 
   #modal-connection-status .modal-content
     min-width 200px
+
+  #mc-undocking
+    position fixed
+    left 0
+    top 0
+    background-color rgba(35, 35, 35, .3)
+    border 4px solid rgba(135, 135, 135, .6)
+    animation-duration .2s
 
 </style>

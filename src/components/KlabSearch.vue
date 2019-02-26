@@ -44,7 +44,8 @@
       @blur="onInputFocus(false)"
       @keydown="onKeyPressedOnSearchInput"
       @keyup.esc="searchEnd({})"
-      @touchstart.native="doubleTouch($event, askForSuggestion, searchInKLab)"
+      @contextmenu.native.prevent
+      @touchstart.native="doubleTouch($event, askForSuggestion, searchInKLab, searchEnd({ noStore: true }))"
     >
     <!-- :style="{ 'background-color': waitForDouble ? 'rgba(0, 0, 0, .1)' : 'transparent' }" TODO: implement way to know if we are waiting -->
       <klab-autocomplete
