@@ -36,12 +36,51 @@
           </div>
       </div>
     </q-modal>
+    <q-modal
+      v-model="showHelp"
+      id="modal-show-help"
+      :content-classes="['gl-msg-content']"
+    >
+      <div class="bg-opaque-white">
+        <div class="q-pa-lg">
+          <h5>{{ $t('messages.needHelpTitle') }}</h5>
+          <p v-html="$t(`messages.needHelp${helpIndex}Text`)"></p>
+          <div class="gl-btn-container">
+            <q-btn
+              :label="$t('label.appPrevious')"
+              color="mc-main"
+              :disable="helpIndex === 0"
+              @click="helpIndex -= 1"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appNext')"
+              color="mc-main"
+              :disable="helpIndex === 3"
+              @click="helpIndex += 1"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appOK')"
+              color="mc-main"
+              @click="hideHelp"
+            ></q-btn>
+            <q-checkbox
+              v-model="remember"
+              :keep-color="true"
+              color="mc-main"
+              :label="$t('label.rememberDecision')"
+              class="rmd-checkbox"
+              :left-label="true"
+            ></q-checkbox>
+          </div>
+        </div>
+      </div>
+    </q-modal>
   </q-page>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS } from 'shared/Constants';
+import { mapState, mapGetters, mapActions } from 'vuex';
+import Constants, { VIEWERS } from 'shared/Constants';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -49,7 +88,7 @@ import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 
-import { colors } from 'quasar';
+import { colors, Cookies } from 'quasar';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
 
@@ -63,6 +102,13 @@ export default {
     DataflowViewer,
     KlabSpinner,
   },
+  data() {
+    return {
+      needHelp: !Cookies.has(Constants.COOKIE_HELP_ON_START),
+      helpIndex: 0,
+      remember: false,
+    };
+  },
   computed: {
     ...mapGetters('stomp', [
       'connectionState',
@@ -75,6 +121,9 @@ export default {
       'isScaleEditing',
       'isDrawMode',
     ]),
+    ...mapState('view', [
+      'waitingGeolocation',
+    ]),
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
     },
@@ -84,6 +133,14 @@ export default {
       },
       set(visible) {
         console.warn(`Try to set modalVisible as ${visible}`);
+      },
+    },
+    showHelp: {
+      get() {
+        return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
+      },
+      set(needHelp) {
+        this.needHelp = needHelp;
       },
     },
     modalText() {
@@ -127,6 +184,19 @@ export default {
       console.info(`Setted max siblings as ${minResults}`);
       this.$store.state.data.siblingsToAskFor = minResults;
     },
+    storeNoNeedHelp() {
+      this.needHelp = false;
+      Cookies.set(Constants.COOKIE_HELP_ON_START, false, {
+        expires: 30,
+        path: '/',
+      });
+    },
+    hideHelp() {
+      if (this.remember) {
+        this.storeNoNeedHelp();
+      }
+      this.needHelp = false;
+    },
   },
   watch: {
   },
@@ -169,7 +239,7 @@ export default {
     */
   }
   .bg-opaque-white {
-    background: rgba(255, 255, 255, 0.3)
+    background: rgba(255, 255, 255, 0.5)
   }
 </style>
 <style lang="stylus">
@@ -196,5 +266,22 @@ export default {
 
   #modal-connection-status .modal-content
     min-width 200px
+
+  #modal-show-help
+    .gl-msg-content
+      width 500px
+      padding 0
+      color rgba(0,0,0,0.7)
+      p
+        padding 20px 0
+    .rmd-checkbox
+      position absolute
+      right 25px
+      bottom 15px
+      font-size 10px
+
+    .gl-msg-content .gl-btn-container
+      margin-bottom 15px
+
 
 </style>

@@ -298,6 +298,7 @@ export default {
   COOKIE_NOTIFIED: 'klab_notified',
   COOKIE_MAPDEFAULT: 'klab_mapdefault',
   COOKIE_SAVELOCATION: 'klab_saveLocation',
+  COOKIE_HELP_ON_START: 'klab_helponstart',
 
   /**
    * Viewer components type

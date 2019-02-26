@@ -5,7 +5,7 @@
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
     <q-modal
-      v-model="geolocationWaiting"
+      v-model="waitingGeolocation"
       no-esc-dismiss
       no-backdrop-dismiss
       :content-classes="['gl-msg-content']"
@@ -79,7 +79,6 @@ export default {
       visibleBaseLayer: null,
       mapSelectionMarker: undefined,
       wktInstance: new WKT(),
-      geolocationWaiting: true,
       geolocationId: null,
       geolocationIncidence: null,
     };
@@ -102,6 +101,14 @@ export default {
     ...mapState('view', [
       'saveLocation',
     ]),
+    waitingGeolocation: {
+      get() {
+        return this.$store.state.view.waitingGeolocation;
+      },
+      set(waitingGeolocation) {
+        this.$store.state.view.waitingGeolocation = waitingGeolocation;
+      },
+    },
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
     },
@@ -128,7 +135,7 @@ export default {
       this.sendRegionOfInterest();
     },
     sendRegionOfInterest(geometry = null) {
-      if (this.geolocationWaiting) {
+      if (this.waitingGeolocation) {
         return;
       }
       let message = null;
@@ -279,7 +286,7 @@ export default {
     stopGeolocation(force = false) {
       navigator.geolocation.clearWatch(this.geolocationId);
       this.$nextTick(() => {
-        this.geolocationWaiting = false;
+        this.waitingGeolocation = false;
         if (force) {
           this.sendRegionOfInterest();
         }
@@ -316,7 +323,7 @@ export default {
     },
   },
   created() {
-    this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
+    this.waitingGeolocation = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
   },
   mounted() {
     // Set base layer
@@ -388,7 +395,7 @@ export default {
     this.map.addOverlay(this.mapSelectionMarker);
     this.drawContext();
     this.drawObservations();
-    if (this.geolocationWaiting) {
+    if (this.waitingGeolocation) {
       this.doGeolocation();
     }
   },
@@ -412,21 +419,5 @@ export default {
     font-size 28px
     color white
     mix-blend-mode exclusion
-  .gl-msg-content
-    border-radius 20px
-    padding 20px
-    background-color rgba(255, 255, 255, .7)
-    .gl-btn-container
-      text-align right
-      padding .2em
-      .q-btn
-        margin-left .5em
-    h5
-      margin 0.2em 0 0.5em 0
-      font-weight bold
-    em
-      color $main-control-main-color
-      font-style normal
-      font-weight bold
 
 </style>

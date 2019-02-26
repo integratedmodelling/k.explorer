@@ -143,4 +143,5 @@ export default {
   customContext: false,
   showNotified: null,
   saveLocation: true,
+  waitingGeolocation: true,
 };
