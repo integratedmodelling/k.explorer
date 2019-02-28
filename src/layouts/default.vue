@@ -20,7 +20,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { LEFTMENU_VISIBILITY } from 'shared/Constants';
+import { LEFTMENU_VISIBILITY, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
 export default {
@@ -50,6 +50,13 @@ export default {
     ...mapActions('view', [
       'setLeftMenuState',
     ]),
+  },
+  watch: {
+    leftMenuVisible() {
+      if (this.leftMenuVisible) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+      }
+    },
   },
   created() {
     this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;

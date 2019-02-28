@@ -376,4 +376,6 @@ export const CUSTOM_EVENTS = {
   // noStore = false : the search is not store in history
   // noDelete = false : actual search is not deleted
   ASK_FOR_SUGGESTIONS: 'askforsuggestions',
+  // If something need fit the map
+  NEED_FIT_MAP: 'needfitmap',
 };

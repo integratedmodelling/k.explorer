@@ -391,6 +391,11 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
+      if (this.contextGeometry && this.contextGeometry !== null) {
+        this.view.fit(this.contextGeometry, { constrainResolution: false });
+      }
+    });
   },
 };
 </script>
