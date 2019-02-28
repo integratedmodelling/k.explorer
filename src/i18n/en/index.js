@@ -63,7 +63,7 @@ export default {
     connectionClosed: 'Connection closed',
     connectionWorking: 'Trying to reconnect',
     connectionUnknown: 'Starting...',
-    noSpaceAllowedInSearch: 'It is not allowed to use spaces in search box',
+    noSpaceAllowedInSearch: 'Spaces cannot be used in the search box',
     noSearchResults: 'No search results',
     noActionForObservation: 'No actions available',
     noTime: 'no time',
