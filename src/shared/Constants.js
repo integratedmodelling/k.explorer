@@ -369,4 +369,11 @@ export const CUSTOM_EVENTS = {
   SPINNER_DOUBLE_CLICK: 'spinnerdoubleclick',
   SHOW_NODE: 'shownode', // show a tree node, emitted from ObservationInfo
   ASK_FOR_UNDOCK: 'askforundock',
+  // from any part of explorer, we can ask to show suggestions.
+  // if search is not started, it start with suggestion
+  // if search is not focused, it focus
+  // if search is started and focused, it stop. The event object can contains this attributes:
+  // noStore = false : the search is not store in history
+  // noDelete = false : actual search is not deleted
+  ASK_FOR_SUGGESTIONS: 'askforsuggestions',
 };

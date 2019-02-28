@@ -2,13 +2,17 @@
   <div
     id="dmc-container"
     class="full-height"
+    :class="{'dmc-dragging': dragging}"
+    v-draggable="dragMCConfig"
   >
     <klab-search-bar
-      v-draggable="dragMCConfig"
       ref="klab-search-bar-docked"
-      @touchstart.native="touchHandler"
     ></klab-search-bar>
-    <div id="dmc-tree" class="q-card-main full-height">
+    <div
+      id="dmc-tree"
+      class="q-card-main full-height"
+      :class="{'dmc-dragging': dragging}"
+    >
       <klab-tree-pane :horizontal="true" class="full-height"></klab-tree-pane>
     </div>
   </div>
@@ -19,19 +23,17 @@ import { mapActions } from 'vuex';
 import { debounce, dom } from 'quasar';
 import KlabSearchBar from 'components/KlabSearchBar';
 import KlabTreePane from 'components/KlabTreePane.vue';
-import DoubleTouch from 'shared/DoubleTouchMixin';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
 const { width } = dom;
 
 export default {
-  name: 'DockedMainControl',
+  name: 'KlabDockedMainControl',
   components: {
     KlabSearchBar,
     KlabTreePane,
   },
-  mixins: [DoubleTouch],
   directives: {
     Draggable,
   },
@@ -41,21 +43,20 @@ export default {
         onPositionChange: debounce((positionDiff, absolutePosition) => {
           this.onDebouncedPositionChanged(absolutePosition);
         }, 100),
+        onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkUndock,
-        fingers: 1,
+        fingers: 2,
         noMove: true,
       },
       askForUndocking: false,
       draggableElementWidth: 0,
+      dragging: false,
     };
   },
   methods: {
     ...mapActions('view', [
       'setMainViewer',
     ]),
-    callShowSuggestions(event) {
-      this.$refs['klab-search-bar-docked'].showSuggestions(event, true);
-    },
     onDebouncedPositionChanged(absolutePosition) {
       if (absolutePosition && absolutePosition.left > this.undockLimit) {
         this.askForUndocking = true;
@@ -70,9 +71,7 @@ export default {
         this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
         this.setMainViewer(VIEWERS.DATA_VIEWER);
       }
-    },
-    touchHandler(event) {
-      this.doubleTouch(event, this.callShowSuggestions, null, null);
+      this.dragging = false;
     },
   },
   mounted() {
@@ -97,4 +96,6 @@ export default {
       height "calc(100% - %s)" % $docked-padding
       max-height "calc(100% - %s)" % $docked-padding
       position relative
+  .dmc-dragging
+    cursor move
 </style>

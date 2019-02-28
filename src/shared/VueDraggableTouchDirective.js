@@ -1,6 +1,6 @@
 /**
  * Code from https://github.com/IsraelZablianov/draggable-vue-directive
- * Change the compiled typescript to ha
+ * Original project in Typescript, switched to javascript to handle touch drag
  */
 /* eslint-disable */
 var ChangePositionType;
@@ -34,7 +34,7 @@ function getPosWithBoundaries(elementRect, boundingRect, left, top, boundingRect
   }
   return adjustedPos;
 }
-// eslint-disable-next-line import/prefer-default-export
+
 export const Draggable = {
   bind: function (el, binding, vnode, oldVnode) {
     Draggable.update(el, binding, vnode, oldVnode);
@@ -157,7 +157,7 @@ export const Draggable = {
       var initialRectPositionFromState = state.initialPosition;
       var startingDragPosition = getRectPosition();
       var initialPosition = initialRectPositionFromBinding || initialRectPositionFromState || startingDragPosition;
-      if (!(binding && binding.value && binding.value.fingers)){
+      if (!(binding && binding.value && binding.value.fingers && binding.value.fingers > 1)){
         binding.value.fingers = 2
       }
       setState({

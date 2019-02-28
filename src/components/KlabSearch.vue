@@ -19,7 +19,7 @@
       @focus="onTokenFocus(token,$event)"
       @blur="onTokenFocus(token,$event)"
       @keydown="onKeyPressedOnToken"
-      @touchstart="doubleTouch($event, null, deleteLastToken)"
+      @touchstart="handleTouch($event, null, deleteLastToken)"
     >{{ token.value }}
       <q-tooltip
         :delay="500"
@@ -45,7 +45,7 @@
       @keydown="onKeyPressedOnSearchInput"
       @keyup.esc="searchEnd({})"
       @contextmenu.native.prevent
-      @touchstart.native="doubleTouch($event, askForSuggestion, searchInKLab, searchEnd({ noStore: true }))"
+      @touchstart.native="handleTouch($event, null, searchInKLab)"
     >
     <!-- :style="{ 'background-color': waitForDouble ? 'rgba(0, 0, 0, .1)' : 'transparent' }" TODO: implement way to know if we are waiting -->
       <klab-autocomplete
@@ -73,14 +73,14 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocomplete';
-import DoubleTouch from 'shared/DoubleTouchMixin';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 export default {
   name: 'KlabSearch',
   components: {
     KlabAutocomplete,
   },
-  mixins: [DoubleTouch],
+  mixins: [HandleTouch],
   props: {
     maxResults: {
       type: Number,
