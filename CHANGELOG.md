@@ -70,11 +70,14 @@ Feature notification on Integrated Modelling Confluence
 ## 0.6 ?
 ### Added
 - Left menu with main actions and log viewer
-- main control can be docked to the left menu
+- Main control can be docked to the left menu
+### Improvements
+- Better touch control
+- Double click on tree fit the context in the window
+- managed context out of -180º/180º longitude range
+- cannot set center out of -180º/180º longitude
 ### Solved
 - Text when log is empty
 - Better style for report
 - href on report now work
-- managed context out of -180º/180º longitude range
-- cannot set center out of -180º/180º longitude
 - more style problems solved
