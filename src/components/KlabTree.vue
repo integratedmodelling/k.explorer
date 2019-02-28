@@ -13,7 +13,7 @@
         control-color="white"
         color="white"
         :dark="true"
-        :double-click="fitMap"
+        :double-click-function="fitMap"
       >
         <div slot="header-default" slot-scope="prop">
           <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}

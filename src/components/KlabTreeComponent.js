@@ -9,9 +9,9 @@ export default {
       type: Number,
       default: 300,
     },
-    doubleClick: {
+    doubleClickFunction: {
       type: Function,
-      default: () => {},
+      default: null,
     },
   },
   data() {
@@ -27,27 +27,32 @@ export default {
       document.activeElement && document.activeElement.blur();
     },
     __onClick(node, meta) {
-      if (typeof this.timeouts[`id${node.id}`] === 'undefined' || this.timeouts[`id${node.id}`] === null) {
+      if (this.doubleClickFunction === null) {
+        this.__onClickDefault(node, meta);
+      } else if (typeof this.timeouts[`id${node.id}`] === 'undefined' || this.timeouts[`id${node.id}`] === null) {
         this.timeouts[`id${node.id}`] = setTimeout(() => {
           this.timeouts[`id${node.id}`] = null;
-          this.__blur();
-
-          if (this.hasSelection) {
-            if (meta.selectable) {
-              this.$emit('update:selected', meta.key !== this.selected ? meta.key : null);
-            }
-          } else {
-            this.__onExpandClick(node, meta);
-          }
-
-          if (typeof node.handler === 'function') {
-            node.handler(node);
-          }
+          this.__onClickDefault(node, meta);
         }, this.doubleClickTimeout);
       } else {
         clearTimeout(this.timeouts[`id${node.id}`]);
         this.timeouts[`id${node.id}`] = null;
-        this.doubleClick(node, meta);
+        this.doubleClickFunction(node, meta);
+      }
+    },
+    __onClickDefault(node, meta) {
+      this.__blur();
+
+      if (this.hasSelection) {
+        if (meta.selectable) {
+          this.$emit('update:selected', meta.key !== this.selected ? meta.key : null);
+        }
+      } else {
+        this.__onExpandClick(node, meta);
+      }
+
+      if (typeof node.handler === 'function') {
+        node.handler(node);
       }
     },
   },
