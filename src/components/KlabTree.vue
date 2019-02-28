@@ -1,7 +1,7 @@
 <template>
   <div id="kt-container" class="relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
     <div id="kt-tree-container" class="simplebar-vertical-only">
-      <q-tree
+      <klab-q-tree
         ref="klab-tree"
         :nodes="visibleTree(filter)"
         node-key="id"
@@ -13,6 +13,7 @@
         control-color="white"
         color="white"
         :dark="true"
+        :double-click="fitMap"
       >
         <div slot="header-default" slot-scope="prop">
           <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
@@ -48,7 +49,7 @@
           <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
         </div>
-      </q-tree>
+      </klab-q-tree>
     </div>
     <!-- TODO rightClickHandler
     REMEMBER: add @contextmenu to div#kt-tree-container
@@ -74,9 +75,13 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import SimpleBar from 'simplebar';
+import KlabQTree from 'components/KlabTreeComponent';
 
 export default {
   name: 'klabTree',
+  components: {
+    KlabQTree,
+  },
   data() {
     return {
       ticked: [],
@@ -235,6 +240,9 @@ export default {
       if (typeof this.$refs['klab-tree'] !== 'undefined') {
         this.$refs['klab-tree'].setTicked([nodeId], state);
       }
+    },
+    fitMap() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
     },
   },
   watch: {
