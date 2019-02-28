@@ -15,7 +15,7 @@
         :ball="22"
         wrapperId="ksb-spinner"
         @dblclick.native="emitSpinnerDoubleclick"
-        @touchstart.native="doubleTouch($event, showSuggestions, emitSpinnerDoubleclick, stopSearchForTouch)"
+        @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
     </div>
     <div
@@ -38,13 +38,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { debounce } from 'quasar';
 import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
-import DoubleTouch from 'shared/DoubleTouchMixin';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 export default {
   name: 'KlabSearchBar',
@@ -54,11 +53,9 @@ export default {
     ScrollingText,
     MainControlMenu,
   },
-  mixins: [DoubleTouch],
+  mixins: [HandleTouch],
   data() {
-    return {
-      doubleTouchTimeout: null,
-    };
+    return {};
   },
   computed: {
     ...mapGetters('data', [
@@ -87,28 +84,20 @@ export default {
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
-    showSuggestions(event, noDelete = false) {
-      if (!this.searchIsActive) {
-        this.searchStart(' ');
-        event.stopPropagation();
-      } else if (!this.searchIsFocused) {
-        this.searchFocus({ char: ' ', focused: true });
-        event.stopPropagation();
-      } else {
-        this.$refs['klab-search'].searchEnd({ noDelete });
-        event.stopPropagation();
+    showSuggestions(event) {
+      if (event.targetTouches.length === 1) {
+        event.preventDefault();
+        if (!this.searchIsActive) {
+          this.searchStart(' ');
+        } else if (!this.searchIsFocused) {
+          this.searchFocus({ char: ' ', focused: true });
+        } else {
+          this.$refs['klab-search'].searchEnd({ noDelete: false });
+        }
       }
-    },
-    stopSearchForTouch(noDelete = false) {
-      this.$refs['klab-search'].searchEnd({ noDelete });
     },
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);
-    },
-    debouncedUndock() {
-      debounce(() => {
-        this.undock();
-      }, 200);
     },
     undock(event) {
       console.dir(event);
@@ -127,6 +116,9 @@ export default {
     },
   },
   mounted() {
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, (event) => {
+      this.showSuggestions(event);
+    });
   },
 };
 </script>

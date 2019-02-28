@@ -18,6 +18,7 @@
           :ball="22"
           wrapperId="spinner-lonely-div"
           @dblclick.native="show"
+          @touchstart.native="handleTouch($event, null, show)"
         ></klab-spinner>
       </div>
     </transition>
@@ -34,7 +35,6 @@
       :flat="true"
       v-draggable="dragMCConfig"
       v-show="!isHidden"
-      @mousedown.native.prevent
       @contextmenu.native.prevent
     >
       <q-card-title
@@ -125,6 +125,7 @@ import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
 
@@ -143,6 +144,7 @@ export default {
   directives: {
     Draggable,
   },
+  mixins: [HandleTouch],
   data() {
     return {
       isHidden: false,

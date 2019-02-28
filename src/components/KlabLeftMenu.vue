@@ -12,6 +12,7 @@
             :size="40"
             :ball="22"
             wrapperId="spinner-leftmenu-div"
+            @touchstart.native="handleTouch($event, askForSuggestion)"
           ></klab-spinner>
         </div>
       </div>
@@ -59,10 +60,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS } from 'shared/Constants';
+import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS, CUSTOM_EVENTS } from 'shared/Constants';
+import HandleTouch from 'shared/HandleTouchMixin';
 import MainActionsButtons from 'components/MainActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import DockedMainControl from 'components/DockedMainControl.vue';
+import DockedMainControl from 'components/KlabDockedMainControl.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 
@@ -75,6 +77,7 @@ export default {
     KlabLogPane,
     ScaleReference,
   },
+  mixins: [HandleTouch],
   data() {
     return {};
   },
@@ -108,6 +111,9 @@ export default {
         this.setLeftMenuContent(LEFTMENU_COMPONENTS.LOG_COMPONENT);
         this.setLeftMenuState(LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED);
       }
+    },
+    askForSuggestion(event) {
+      this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, event);
     },
   },
   created() {

@@ -1,6 +1,7 @@
 /**
- * Used to intercept double touch as double click
- * Pass the event, the oneTouch function and the doubleTouch function
+ * Used to intercept touch events
+ * Pass the event and the function for one touch, double touch or double finger touch
+ *
  */
 export default {
   data() {
@@ -8,16 +9,11 @@ export default {
       doubleTouchTimeout: null,
     };
   },
-  computed: {
-    waitForDouble() {
-      return this.doubleTouchTimeout !== null;
-    },
-  },
   methods: {
-    doubleTouch(event, oneTouchCallback = null, doubleTouchCallback = null, doubleFingerCallback = null, timeout = 300) {
+    handleTouch(event, oneTouchCallback = null, doubleTouchCallback = null, doubleFingerCallback = null, timeout = 300) {
       if (event instanceof TouchEvent) {
+        // single touch
         if (event.targetTouches.length === 1) {
-          event.preventDefault();
           if (this.doubleTouchTimeout === null) {
             this.doubleTouchTimeout = setTimeout(() => {
               this.doubleTouchTimeout = null;
@@ -33,7 +29,7 @@ export default {
             }
           }
         } else if (doubleFingerCallback !== null) {
-          event.preventDefault();
+          // double touch
           doubleFingerCallback(event);
         }
       }
