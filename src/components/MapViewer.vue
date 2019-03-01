@@ -393,7 +393,7 @@ export default {
     }
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
       if (this.contextGeometry && this.contextGeometry !== null) {
-        this.view.fit(this.contextGeometry, { constrainResolution: false });
+        this.view.fit(this.contextGeometry, { duration: 200, padding: [10, 10, 10, 10], constrainResolution: false });
       }
     });
   },
