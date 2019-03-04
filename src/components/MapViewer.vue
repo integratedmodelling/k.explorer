@@ -1,7 +1,7 @@
 <template>
   <div class="fit no-padding map-viewer">
-    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit"></div>
-    <q-icon name="mdi-crosshairs" class="map-selection-marker" :id="`msm-${idx}`" />
+    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
+    <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
     <q-modal
@@ -31,6 +31,18 @@
         </div>
       </div>
     </q-modal>
+    <div id="mv-popup" ref="mv-popup" class="ol-popup">
+      <q-btn
+        icon="mdi-close"
+        class="ol-popup-closer"
+        @click="closePopup"
+        color="grey-8"
+        size="xs"
+        flat
+        round
+      ></q-btn>
+      <div id="mv-popup-content" class="ol-popup-content" v-html="popupContent"></div>
+    </div>
   </div>
 </template>
 
@@ -42,7 +54,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
@@ -82,6 +94,8 @@ export default {
       geolocationWaiting: true,
       geolocationId: null,
       geolocationIncidence: null,
+      popupContent: 'popupContent',
+      popupOverlay: undefined,
     };
   },
   computed: {
@@ -98,6 +112,7 @@ export default {
       'exploreMode',
       'mapSelection',
       'isDrawMode',
+      'topLayer',
     ]),
     ...mapState('view', [
       'saveLocation',
@@ -112,6 +127,7 @@ export default {
       'setSpinner',
       'setMapSelection',
       'setDrawMode',
+      'setTopLayer',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -226,6 +242,19 @@ export default {
               } else {
                 layer.setZIndex(observation.zIndex);
               }
+              if (
+                (observation.visible && observation.top)
+                && Helpers.isRaster(observation) // is RASTER...
+                && observation.dataSummary.histogram.length > 0 // and has values
+                && (this.topLayer === null || this.topLayer.id !== observation.id)
+              ) {
+                this.setTopLayer({ id: observation.id, desc: observation.label });
+                this.closePopup();
+              } else if ((!observation.visible || !observation.top)
+                && this.topLayer !== null && this.topLayer.id === observation.id) {
+                this.setTopLayer(null);
+                this.closePopup();
+              }
             }
           });
         });
@@ -285,6 +314,10 @@ export default {
         }
       });
     },
+    closePopup() {
+      this.setMapSelection(EMPTY_MAP_SELECTION);
+      this.popupOverlay.setPosition(undefined);
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -302,6 +335,12 @@ export default {
     mapSelection(newValue) {
       if (typeof newValue !== 'undefined' && newValue !== null && newValue.pixelSelected !== null) {
         this.mapSelectionMarker.setPosition(newValue.pixelSelected);
+        if (this.topLayer !== null) {
+          this.popupContent = `<h3>${this.topLayer.desc}</h3><p>${newValue.value}</p>`;
+          if (!this.exploreMode) {
+            this.popupOverlay.setPosition(newValue.pixelSelected);
+          }
+        }
       } else {
         this.mapSelectionMarker.setPosition(undefined);
       }
@@ -312,6 +351,16 @@ export default {
       } else {
         // to manage if user move map while a context exists
         this.sendRegionOfInterest();
+      }
+    },
+    topLayer(newValue) {
+      if (newValue === null) {
+        this.closePopup();
+      }
+    },
+    exploreMode(newValue) {
+      if (newValue) {
+        this.closePopup();
       }
     },
   },
@@ -353,6 +402,7 @@ export default {
     });
     // Main map listeners...
     this.map.on('moveend', this.onMoveEnd);
+    /*
     this.map.on('pointermove', (event) => {
       if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         this.map.getTargetElement().style.cursor = 'crosshair';
@@ -360,18 +410,23 @@ export default {
         this.map.getTargetElement().style.cursor = '';
       }
     });
+    */
     this.map.on('click', (event) => {
-      if (this.exploreMode && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-        const layerSelected = this.findExistingLayerById(this.observationInfo);
-        const clonedLayer = new ImageLayer({
-          id: `cl_${this.observationInfo.id}`,
-          source: layerSelected.getSource(),
-        });
-        this.setMapSelection({
-          pixelSelected: event.coordinate,
-          // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
-          layerSelected: clonedLayer,
-        });
+      if ((this.exploreMode || this.topLayer !== null) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
+        if (this.exploreMode) {
+          const layerSelected = this.findExistingLayerById(this.observationInfo);
+          const clonedLayer = new ImageLayer({
+            id: `cl_${this.observationInfo.id}`,
+            source: layerSelected.getSource(),
+          });
+          this.setMapSelection({
+            pixelSelected: event.coordinate,
+            // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
+            layerSelected: clonedLayer,
+          });
+        } else {
+          this.setMapSelection({ pixelSelected: event.coordinate, observationId: this.topLayer.id });
+        }
       }
     });
     // ...and set some attribute for rapid access
@@ -386,6 +441,15 @@ export default {
       positioning: 'center-center',
     });
     this.map.addOverlay(this.mapSelectionMarker);
+    // popup
+    this.popupOverlay = new Overlay({
+      element: document.getElementById('mv-popup'),
+      autoPan: true,
+      autoPanAnimation: {
+        duration: 250,
+      },
+    });
+    this.map.addOverlay(this.popupOverlay);
     this.drawContext();
     this.drawObservations();
     if (this.geolocationWaiting) {
@@ -436,5 +500,52 @@ export default {
       color $main-control-main-color
       font-style normal
       font-weight bold
+  .mv-exploring
+    cursor crosshair !important
+  .ol-popup
+    position absolute
+    background-color rgba(255, 255, 255, .9)
+    padding 20px 15px
+    border-radius 10px
+    bottom 25px
+    left -48px
+    min-width: 180px
+    min-height: 80px
+
+    &:after
+    &:before
+      top 100%
+      border solid transparent
+      content " "
+      height 0
+      width 0
+      position absolute
+      pointer-events none
+
+    &:after
+      border-top-color rgba(255, 255, 255, .9)
+      border-width 10px
+      left 48px
+      margin-left -10px
+
+    .ol-popup-closer
+      position absolute
+      top 2px
+      right 8px
+
+    .ol-popup-content
+      h3
+        margin 10px 0 .2em 0
+        line-height 1.1em
+        font-size 1.1em
+        color $main-control-main-color
+        white-space nowrap
+        font-weight 300
+      p
+        font-size 1.5em
+        margin 0
+        color rgba(50, 50, 50, .9)
+        white-space nowrap
+        font-weight 400
 
 </style>

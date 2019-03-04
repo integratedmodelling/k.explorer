@@ -99,4 +99,7 @@ export default {
 
   isDrawMode: state => state.drawMode,
   hasCustomContext: state => state.customContext,
+
+  topLayer: state => state.topLayer,
+  topLayerId: state => (state.topLayer !== null ? state.topLayer.id : null),
 };

@@ -201,6 +201,9 @@ export default {
   },
   watch: {
     mapSelection() {
+      if (this.mapSelection.layerSelected === null) {
+        return; // is a selection on map
+      }
       const layers = this.infoMap.getLayers().getArray();
       if (this.mapSelection.pixelSelected !== null) {
         if (layers.length > 1) {
