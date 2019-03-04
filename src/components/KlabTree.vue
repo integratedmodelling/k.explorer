@@ -16,7 +16,15 @@
         :double-click-function="fitMap"
       >
         <div slot="header-default" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+          <span
+            v-ripple="prop.node.main"
+            :class="[
+              'node-element', prop.node.main ? 'node-emphasized' : '',
+               hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
+               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : ''
+            ]"
+            :id="`node-${prop.node.id}`"
+          >{{ prop.node.label }}
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
@@ -110,6 +118,7 @@ export default {
     ...mapGetters('view', [
       'observationInfo',
       'hasObservationInfo',
+      'topLayerId',
     ]),
     ...mapState('view', [
       'treeSelected',
@@ -241,8 +250,11 @@ export default {
         this.$refs['klab-tree'].setTicked([nodeId], state);
       }
     },
-    fitMap() {
+    fitMap(node, meta) {
       this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+      if (node && meta && meta.ticked) {
+        this.showNode({ nodeId: node.id, selectMainViewer: true });
+      }
     },
   },
   watch: {
@@ -464,7 +476,8 @@ export default {
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
-
+      .node-on-top
+        text-decoration underline
       .kt-q-tooltip
         background-color #333
 

@@ -186,15 +186,19 @@ export default {
    */
   SET_MAP_SELECTION: (state, mapSelection) => {
     const { pixelSelected, layerSelected, value = null } = mapSelection;
-    if (mapSelection === null || pixelSelected === null || layerSelected === null) { // map selection reset or strange values
+    if (mapSelection === null || pixelSelected === null) { // map selection reset or strange values
       state.mapSelection = EMPTY_MAP_SELECTION;
-    } else if (state.observationInfo === null) {
-      console.warn('Try to set pixel and layer without observationInfo, will be skipped');
-    } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {
-      console.warn('Try to set pixel and layer with different observationInfo id, will be skipped');
     } else {
       state.mapSelection = { pixelSelected, layerSelected, value };
     }
+    /*
+    Now the selection can be made directly on map
+    else if (state.observationInfo === null) {
+      console.warn('Try to set pixel and layer without observationInfo, will be skipped');
+    } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {
+      console.warn('Try to set pixel and layer with different observationInfo id, will be skipped');
+    }
+    */
   },
 
   SET_SCALE_EDITING: (state, { active, type }) => {
@@ -218,5 +222,9 @@ export default {
 
   SET_SAVE_LOCATION: (state, saveLocation) => {
     state.saveLocation = saveLocation;
+  },
+
+  SET_TOP_LAYER: (state, topLayer) => {
+    state.topLayer = topLayer;
   },
 };
