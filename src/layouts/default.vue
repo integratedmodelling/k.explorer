@@ -53,9 +53,9 @@ export default {
   },
   watch: {
     leftMenuVisible() {
-      if (this.leftMenuVisible) {
+      this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
-      }
+      });
     },
   },
   created() {
