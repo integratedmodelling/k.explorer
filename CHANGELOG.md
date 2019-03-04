@@ -67,7 +67,7 @@ Feature notification on Integrated Modelling Confluence
 - Bug with context date fixed
 - Various bug fixes
 
-## 0.6 ?
+## 0.6 - 2019-03-04
 ### Added
 - Left menu with main actions and log viewer
 - Main control can be docked to the left menu
