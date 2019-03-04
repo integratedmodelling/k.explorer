@@ -71,6 +71,8 @@ Feature notification on Integrated Modelling Confluence
 ### Added
 - Left menu with main actions and log viewer
 - Main control can be docked to the left menu
+- When a layer is selected and visible, a click on map show info about the point
+- Double click on visible layer, fit map on windows and put on top the selected layer
 ### Improvements
 - Better touch control
 - Double click on tree fit the context in the window
