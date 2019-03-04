@@ -76,8 +76,8 @@ Feature notification on Integrated Modelling Confluence
 ### Improvements
 - Better touch control
 - Double click on tree fit the context in the window
-- managed context out of -180º/180º longitude range
-- cannot set center out of -180º/180º longitude
+- Managed context out of -180º/180º longitude range creating a splitted polygon
+- Is not possible to set the center out of -180º/180º longitude
 ### Solved
 - Text when log is empty
 - Better style for report
