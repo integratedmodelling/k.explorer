@@ -95,7 +95,7 @@ export default {
         this.resolutionError = false;
         this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
           scaleReference: this.scaleReference,
-          ...(this.scaleEditingType === 'space' && { spaceResolution: this.resolution }),
+          ...(this.scaleEditingType === 'space' && { spaceResolutionConverted: this.resolution }),
           ...(this.scaleEditingType === 'space' && { spaceUnit: this.unit }),
           ...(this.scaleEditingType === 'time' && { timeResolution: this.resolution }),
           ...(this.scaleEditingType === 'time' && { timeUnit: this.unit }),
@@ -111,7 +111,7 @@ export default {
     },
     initValues() {
       if (this.scaleReference !== null) {
-        this.resolution = this.scaleEditingType === 'space' ? this.scaleReference.spaceResolution : this.scaleReference.timeResolution;
+        this.resolution = this.scaleEditingType === 'space' ? this.scaleReference.spaceResolutionConverted : this.scaleReference.timeResolution;
         this.unit = this.scaleEditingType === 'space' ? this.scaleReference.spaceUnit : this.scaleReference.timeUnit;
       }
     },
