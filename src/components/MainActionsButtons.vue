@@ -81,8 +81,6 @@ export default {
       'hasContext',
       'hasObservations',
       'hasDataflow',
-      'contextLabel',
-      'contextId',
     ]),
     ...mapGetters('view', [
       'spinnerColor',

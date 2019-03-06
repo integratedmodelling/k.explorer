@@ -98,6 +98,7 @@
         </div>
         <div class="mc-separator" style="right: 160px"></div>
         <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
+        <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
     </q-card>
     </transition>
@@ -118,6 +119,7 @@ import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
 import MainActionsButtons from 'components/MainActionsButtons';
+import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearchBar from 'components/KlabSearchBar.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
@@ -140,6 +142,7 @@ export default {
     ScaleReference,
     ScaleChangeDialog,
     MainActionsButtons,
+    StopActionsButtons,
   },
   directives: {
     Draggable,

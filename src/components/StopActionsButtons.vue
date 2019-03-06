@@ -34,6 +34,9 @@ export default {
     return {};
   },
   computed: {
+    ...mapGetters('data', [
+      'contextId',
+    ]),
     ...mapGetters('stomp', [
       'hasTasks',
       'lastActiveTask',
