@@ -85,7 +85,7 @@ export default {
     },
     description() {
       // return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : moment().year();
-      return this.scaleType === 'space' ? `${this.resolution} ${this.unit}` : this.unit;
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : this.unit;
     },
     scale() {
       return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
