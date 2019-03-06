@@ -74,6 +74,9 @@ export default {
     "spaceResolutionDescription" : {
       "type" : "string"
     },
+    "spaceResolutionConverted" : {
+      "type" : "number"
+    },
     "spaceUnit" : {
       "type" : "string"
     },
