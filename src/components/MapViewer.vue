@@ -351,6 +351,7 @@ export default {
       } else {
         // to manage if user move map while a context exists
         this.sendRegionOfInterest();
+        this.popupOverlay.setPosition(undefined);
       }
     },
     topLayer(newValue) {
