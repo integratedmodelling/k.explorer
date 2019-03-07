@@ -1,15 +1,9 @@
 /**
  * State of view
  */
-import Constants from 'shared/Constants';
+import Constants, { LEFTMENU_VISIBILITY } from 'shared/Constants';
 
 export default {
-  mainWin: {
-    /**
-     * Indicate if palette is visible
-     */
-    paletteVisible: true,
-  },
   /**
    * Array with app logs
    * Using an array of MAX_LENGTH
@@ -22,6 +16,13 @@ export default {
    * }
    */
   kexplorerLog: [],
+
+  /**
+   * Status for main control bar
+   * Each entry will be an identifier and description
+   * {id: [ID], text: [TEXT]}
+   */
+  statusTexts: [],
 
   /**
    * Array with engine logs
@@ -46,8 +47,26 @@ export default {
 
   /**
    * In index, the main viewer can be a DataViewer, ReportViewer, DataflowViewer or ProvenanceViewer
+   * Each viewer has this structure:
+   * {
+   *   name: [name of component]
+   *   leftMenuState: [default show in left menu]
+   *   mainControl: [default show in main control]
+   * }
    */
   mainViewer: undefined,
+
+  /**
+   * The content of left menu. Is decided using the mainViewer leftMenuContent or punctual action (like open log)
+   * Will be a string with the component name
+   */
+  leftMenuContent: null,
+  /**
+   * The state of left menu. Will be one of LEFTMENU_VISIBILITY constants
+   */
+  leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
+
+  mainControlDocked: false,
 
   /**
    * Layer with the context shape shared between dataViewers
@@ -84,8 +103,16 @@ export default {
 
   /**
    * If true, when report button is clicked, we ask for report
+   * Need to notify that we have unview report too
    */
   reloadReport: false,
+
+  /**
+   * If true, when dataflow button is clicked, if dataflow not exists we ask for it.
+   * Need to notify that we have unview dataflow too
+   */
+  reloadDataflow: false,
+
 
   /**
    * More info content
@@ -104,6 +131,7 @@ export default {
   treeSelected: null,
   treeTicked: [],
   treeExpanded: [],
+  topLayer: null,
   /**
    * true if we are editing the scale. Need for no intercept events
    */
@@ -114,4 +142,6 @@ export default {
 
   drawMode: false,
   customContext: false,
+  showNotified: null,
+  saveLocation: true,
 };

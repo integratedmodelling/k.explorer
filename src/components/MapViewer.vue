@@ -1,9 +1,48 @@
 <template>
   <div class="fit no-padding map-viewer">
-    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit"></div>
-    <q-icon name="mdi-crosshairs" class="map-selection-marker" :id="`msm-${idx}`" />
+    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
+    <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
+    <q-modal
+      v-model="geolocationWaiting"
+      no-esc-dismiss
+      no-backdrop-dismiss
+      :content-classes="['gl-msg-content']"
+    >
+      <div class="bg-opaque-white">
+        <div class="q-pa-xs">
+          <h5>{{ $t('messages.geolocationWaitingTitle') }}</h5>
+          <p v-html="$t('messages.geolocationWaitingText')"></p>
+          <p v-show="geolocationIncidence !== null" class="gl-incidence">{{ geolocationIncidence }}</p>
+          <div class="gl-btn-container">
+          <q-btn
+            v-show="geolocationIncidence !== null"
+            :label="$t('label.appRetry')"
+            @click="retryGeolocation"
+            color="primary"
+          ></q-btn>
+          <q-btn
+            :label="$t('label.appCancel')"
+            @click="stopGeolocation(true)"
+            color="mc-main"
+          ></q-btn>
+          </div>
+        </div>
+      </div>
+    </q-modal>
+    <div id="mv-popup" ref="mv-popup" class="ol-popup">
+      <q-btn
+        icon="mdi-close"
+        class="ol-popup-closer"
+        @click="closePopup"
+        color="grey-8"
+        size="xs"
+        flat
+        round
+      ></q-btn>
+      <div id="mv-popup-content" class="ol-popup-content" v-html="popupContent"></div>
+    </div>
   </div>
 </template>
 
@@ -11,26 +50,29 @@
 <script>
 /* eslint-disable object-shorthand,space-before-function-paren,no-unused-vars */
 
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { Cookies } from 'quasar';
+import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Collection from 'ol/Collection';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
-import { transformExtent } from 'ol/proj';
 import LayerSwitcher from 'ol-layerswitcher';
-import MapDrawer from 'components/MapDrawer';
 import WKT from 'ol/format/WKT';
+import MapDrawer from 'components/MapDrawer';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
   name: 'MapViewer',
+  components: {
+    MapDrawer,
+  },
   props: {
     idx: {
       type: Number,
@@ -39,8 +81,8 @@ export default {
   },
   data() {
     return {
-      center: DEFAULT_OPTIONS.center,
-      zoom: DEFAULT_OPTIONS.zoom,
+      center: this.$mapDefaults.center,
+      zoom: this.$mapDefaults.zoom,
       map: null,
       view: null,
       layers: new Collection(),
@@ -49,11 +91,16 @@ export default {
       visibleBaseLayer: null,
       mapSelectionMarker: undefined,
       wktInstance: new WKT(),
+      geolocationWaiting: true,
+      geolocationId: null,
+      geolocationIncidence: null,
+      popupContent: 'popupContent',
+      popupOverlay: undefined,
     };
   },
   computed: {
     observations() {
-      return this.$store.getters['data/observations'](this.idx);
+      return this.$store.getters['data/observationsOfViewer'](this.idx);
     },
     ...mapGetters('data', [
       'hasContext',
@@ -65,6 +112,10 @@ export default {
       'exploreMode',
       'mapSelection',
       'isDrawMode',
+      'topLayer',
+    ]),
+    ...mapState('view', [
+      'saveLocation',
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
@@ -76,6 +127,7 @@ export default {
       'setSpinner',
       'setMapSelection',
       'setDrawMode',
+      'setTopLayer',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -92,9 +144,22 @@ export default {
       this.sendRegionOfInterest();
     },
     sendRegionOfInterest(geometry = null) {
+      if (this.geolocationWaiting) {
+        return;
+      }
       let message = null;
+      const view = this.map.getView();
+      // try to "clean" center
+      const center = transform(view.getCenter(), MAP_CONSTANTS.PROJ_EPSG_3857, MAP_CONSTANTS.PROJ_EPSG_4326);
+      if (Math.abs(center[0]) > 180) {
+        center[0] %= 180;
+        view.animate({
+          center: transform(center, MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+          duration: 500,
+        });
+      }
       try {
-        const extent = this.map.getView().calculateExtent(this.map.getSize());
+        const extent = view.calculateExtent(this.map.getSize());
         message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
       } catch (error) {
         console.error(error);
@@ -108,14 +173,12 @@ export default {
       }
       if (message && message.body) {
         this.sendStompMessage(message.body);
-        this.addToKexplorerLog({
-          // message.validated ? this.$constants.TYPE_INFO : this.$constants.TYPE_WARNING, // TODO need to be warning? I think no
-          type: this.$constants.TYPE_INFO,
-          payload: {
-            message: `Message ${message.validated ? '' : 'not '} validated`,
-            attach: message,
-          },
-        });
+        if (this.saveLocation) {
+          Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: view.getCenter(), zoom: view.getZoom() }, {
+            expires: 30,
+            path: '/',
+          });
+        }
       }
     },
 
@@ -134,7 +197,7 @@ export default {
       }
       // need to create new layer
       try {
-        console.log(`Creating layer: ${observation.label}`);
+        console.debug(`Creating layer: ${observation.label}`);
         const layer = await Helpers.getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
         this.zIndexCounter += 1;
         observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
@@ -159,7 +222,7 @@ export default {
         this.baseLayers.removeMask();
       }
       if (this.contextGeometry === null) {
-        console.log('No context, send region of interest');
+        console.debug('No context, send region of interest');
         this.sendRegionOfInterest();
         return;
       }
@@ -179,6 +242,19 @@ export default {
               } else {
                 layer.setZIndex(observation.zIndex);
               }
+              if (
+                (observation.visible && observation.top)
+                && Helpers.isRaster(observation) // is RASTER...
+                && observation.dataSummary.histogram.length > 0 // and has values
+                && (this.topLayer === null || this.topLayer.id !== observation.id)
+              ) {
+                this.setTopLayer({ id: observation.id, desc: observation.label });
+                this.closePopup();
+              } else if ((!observation.visible || !observation.top)
+                && this.topLayer !== null && this.topLayer.id === observation.id) {
+                this.setTopLayer(null);
+                this.closePopup();
+              }
             }
           });
         });
@@ -197,6 +273,51 @@ export default {
         */
       }
     },
+    doGeolocation() {
+      if (this.geolocationId !== null) {
+        navigator.geolocation.clearWatch(this.geolocationId);
+      }
+      this.geolocationId = navigator.geolocation.watchPosition((position) => {
+        this.center = transform([position.coords.longitude, position.coords.latitude], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857);
+        this.stopGeolocation();
+      }, (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+          case error.TIMEOUT:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+          default:
+            this.geolocationIncidence = this.$t('messages.geolocationErrorPermissionDenied');
+            break;
+        }
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 30000,
+        timeout: 60000,
+      });
+    },
+    retryGeolocation() {
+      this.geolocationIncidence = null;
+      this.doGeolocation();
+    },
+    stopGeolocation(force = false) {
+      navigator.geolocation.clearWatch(this.geolocationId);
+      this.$nextTick(() => {
+        this.geolocationWaiting = false;
+        if (force) {
+          this.sendRegionOfInterest();
+        }
+      });
+    },
+    closePopup() {
+      this.setMapSelection(EMPTY_MAP_SELECTION);
+      this.popupOverlay.setPosition(undefined);
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -205,7 +326,6 @@ export default {
     observations: {
       handler() {
         this.drawObservations(false);
-        // TODO if true, it try to resize extent but not work. Check before delete it
       },
       deep: true,
     },
@@ -215,6 +335,12 @@ export default {
     mapSelection(newValue) {
       if (typeof newValue !== 'undefined' && newValue !== null && newValue.pixelSelected !== null) {
         this.mapSelectionMarker.setPosition(newValue.pixelSelected);
+        if (this.topLayer !== null) {
+          this.popupContent = `<h3>${this.topLayer.desc}</h3><p>${newValue.value}</p>`;
+          if (!this.exploreMode) {
+            this.popupOverlay.setPosition(newValue.pixelSelected);
+          }
+        }
       } else {
         this.mapSelectionMarker.setPosition(undefined);
       }
@@ -222,11 +348,31 @@ export default {
     hasContext(newValue) {
       if (newValue) {
         this.setDrawMode(false);
+      } else {
+        // to manage if user move map while a context exists
+        this.sendRegionOfInterest();
+        this.popupOverlay.setPosition(undefined);
+      }
+    },
+    topLayer(newValue) {
+      if (newValue === null) {
+        this.closePopup();
+      }
+    },
+    exploreMode(newValue) {
+      if (newValue) {
+        this.closePopup();
       }
     },
   },
+  created() {
+    this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
+  },
   mounted() {
     // Set base layer
+    // this.center = this.$mapDefaults.center;
+    // this.zoom = this.$mapDefaults.zoom;
+
     this.baseLayers = BASE_LAYERS;
     this.baseLayers.layers.forEach((l) => {
       if (l.get('name') === this.$baseLayer) {
@@ -257,6 +403,7 @@ export default {
     });
     // Main map listeners...
     this.map.on('moveend', this.onMoveEnd);
+    /*
     this.map.on('pointermove', (event) => {
       if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         this.map.getTargetElement().style.cursor = 'crosshair';
@@ -264,18 +411,23 @@ export default {
         this.map.getTargetElement().style.cursor = '';
       }
     });
+    */
     this.map.on('click', (event) => {
-      if (this.exploreMode && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-        const layerSelected = this.findExistingLayerById(this.observationInfo);
-        const clonedLayer = new ImageLayer({
-          id: `cl_${this.observationInfo.id}`,
-          source: layerSelected.getSource(),
-        });
-        this.setMapSelection({
-          pixelSelected: event.coordinate,
-          // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
-          layerSelected: clonedLayer,
-        });
+      if ((this.exploreMode || this.topLayer !== null) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
+        if (this.exploreMode) {
+          const layerSelected = this.findExistingLayerById(this.observationInfo);
+          const clonedLayer = new ImageLayer({
+            id: `cl_${this.observationInfo.id}`,
+            source: layerSelected.getSource(),
+          });
+          this.setMapSelection({
+            pixelSelected: event.coordinate,
+            // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
+            layerSelected: clonedLayer,
+          });
+        } else {
+          this.setMapSelection({ pixelSelected: event.coordinate, observationId: this.topLayer.id });
+        }
       }
     });
     // ...and set some attribute for rapid access
@@ -290,16 +442,34 @@ export default {
       positioning: 'center-center',
     });
     this.map.addOverlay(this.mapSelectionMarker);
+    // popup
+    this.popupOverlay = new Overlay({
+      element: document.getElementById('mv-popup'),
+      autoPan: true,
+      autoPanAnimation: {
+        duration: 250,
+      },
+    });
+    this.map.addOverlay(this.popupOverlay);
     this.drawContext();
     this.drawObservations();
-  },
-  components: {
-    MapDrawer,
+    if (this.geolocationWaiting) {
+      this.doGeolocation();
+    }
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
+      if (this.contextGeometry && this.contextGeometry !== null) {
+        // we must wait for the end of drawer animation
+        setTimeout(() => {
+          this.view.fit(this.contextGeometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+        }, 200);
+      }
+    });
   },
 };
 </script>
 
 <style lang="stylus">
+  @import '~variables'
   .layer-switcher
     top 5em
     button
@@ -315,4 +485,68 @@ export default {
     font-size 28px
     color white
     mix-blend-mode exclusion
+  .gl-msg-content
+    border-radius 20px
+    padding 20px
+    background-color rgba(255, 255, 255, .7)
+    .gl-btn-container
+      text-align right
+      padding .2em
+      .q-btn
+        margin-left .5em
+    h5
+      margin 0.2em 0 0.5em 0
+      font-weight bold
+    em
+      color $main-control-main-color
+      font-style normal
+      font-weight bold
+  .mv-exploring
+    cursor crosshair !important
+  .ol-popup
+    position absolute
+    background-color rgba(255, 255, 255, .9)
+    padding 20px 15px
+    border-radius 10px
+    bottom 25px
+    left -48px
+    min-width: 180px
+    min-height: 80px
+
+    &:after
+    &:before
+      top 100%
+      border solid transparent
+      content " "
+      height 0
+      width 0
+      position absolute
+      pointer-events none
+
+    &:after
+      border-top-color rgba(255, 255, 255, .9)
+      border-width 10px
+      left 48px
+      margin-left -10px
+
+    .ol-popup-closer
+      position absolute
+      top 2px
+      right 8px
+
+    .ol-popup-content
+      h3
+        margin 10px 0 .2em 0
+        line-height 1.1em
+        font-size 1.1em
+        color $main-control-main-color
+        white-space nowrap
+        font-weight 300
+      p
+        font-size 1.5em
+        margin 0
+        color rgba(50, 50, 50, .9)
+        white-space nowrap
+        font-weight 400
+
 </style>

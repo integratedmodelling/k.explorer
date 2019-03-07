@@ -1,6 +1,6 @@
 import moment from 'moment';
-import { Helpers, Constants } from 'shared/Helpers';
-import { VIEWERS } from 'shared/Constants';
+import { Helpers } from 'shared/Helpers';
+import Constants, { VIEWERS, LEFTMENU_COMPONENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
@@ -24,6 +24,14 @@ export default {
     });
   },
 
+  addToStatusTexts: ({ commit }, { id, text }) => {
+    commit('ADD_TO_STATUS_TEXTS', { id, text });
+  },
+
+  removeFromStatusTexts: ({ commit }, id) => {
+    commit('REMOVE_FROM_STATUS_TEXTS', id);
+  },
+
   setContextLayer: ({ commit, dispatch }, contextData) => {
     // If context layer change, mutation reset everything
     Helpers.getContextGeometry(contextData).then((layer) => {
@@ -36,9 +44,14 @@ export default {
 
   resetContext: ({ commit }) => {
     commit('SET_CONTEXT_LAYER', null);
-    commit('SET_MAIN_VIEWER', VIEWERS.DATA_VIEWER);
     commit('RESET_SEARCH');
     commit('SET_OBSERVATION_INFO', null);
+    const viewer = VIEWERS.DATA_VIEWER;
+    //  (state.mainViewer && state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT)
+    //  ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER;
+    commit('SET_LEFTMENU_CONTENT', viewer.leftMenuContent);
+    commit('SET_LEFTMENU_STATE', viewer.leftMenuState);
+    commit('SET_MAIN_VIEWER', viewer);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
@@ -46,8 +59,27 @@ export default {
   }),
   */
 
-  setMainViewer: ({ commit }, viewer) => {
+  setMainViewer: ({ state, commit, dispatch }, viewer) => {
+    if (viewer && typeof state.mainViewer !== 'undefined') {
+      if (state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT) {
+        commit('SET_MAIN_CONTROL_DOCKED', true);
+      } else if (state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT) {
+        commit('SET_MAIN_CONTROL_DOCKED', false);
+      }
+    }
     commit('SET_MAIN_VIEWER', viewer);
+    if (viewer) {
+      dispatch('setLeftMenuState', viewer.leftMenuState);
+      dispatch('setLeftMenuContent', viewer.leftMenuContent);
+    }
+  },
+
+  setLeftMenuContent: ({ commit }, component) => {
+    commit('SET_LEFTMENU_CONTENT', component);
+  },
+
+  setLeftMenuState: ({ commit }, visibility) => {
+    commit('SET_LEFTMENU_STATE', visibility);
   },
 
   setMainDataViewer: ({ commit }, idx) => {
@@ -106,11 +138,11 @@ export default {
       }
     }
     if (viewerType !== null) {
-      console.log(`Need a viewer of type ${viewerType}`);
+      console.debug(`Need a viewer of type ${viewerType}`);
       const viewer = getters.dataViewers.find(v => v.type === viewerType);
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
-        console.log(`Create new viewer of type ${viewerType}`);
+        console.info(`Create new viewer of type ${viewerType}`);
         commit('ADD_VIEWER_ELEMENT', {
           main,
           type: viewerType,
@@ -191,11 +223,14 @@ export default {
     commit('SET_OBSERVATION_INFO', observation);
   },
 
-  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected }) => {
-    if (pixelSelected !== null && layerSelected !== null) {
-      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${state.observationInfo.id}`;
+  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected = null, observationId = null }) => {
+    if (pixelSelected !== null) {
+      if (observationId === null) {
+        observationId = state.observationInfo.id;
+      }
+      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
-      Helpers.getAxiosContent(`pv_${state.observationInfo.id}`, url, {
+      Helpers.getAxiosContent(`pv_${observationId}`, url, {
         params: {
           format: 'SCALAR',
           locator: `S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
@@ -208,6 +243,8 @@ export default {
         commit('SET_MAP_SELECTION', { pixelSelected, layerSelected, value });
         callback();
       });
+    } else {
+      commit('SET_MAP_SELECTION', EMPTY_MAP_SELECTION);
     }
   },
 
@@ -222,4 +259,9 @@ export default {
   setCustomContext: ({ commit }, customContext) => {
     commit('SET_CUSTOM_CONTEXT', customContext);
   },
+
+  setTopLayer: ({ commit }, topLayer) => {
+    commit('SET_TOP_LAYER', topLayer);
+  },
+
 };

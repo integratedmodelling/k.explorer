@@ -7,12 +7,72 @@ export const COLORS = {
   SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
   SPINNER_ERROR_COLOR: 'negative',
 };
+export const LEFTMENU_VISIBILITY = {
+  LEFTMENU_MAXSIZE: 512,
+  LEFTMENU_MINSIZE: 80,
+  LEFTMENU_MAXIMIZED: 'max',
+  LEFTMENU_MINIMIZED: 'min',
+  LEFTMENU_HIDDEN: 'hidden',
+};
 
+/**
+ * The viewers asociated component for left menu
+ * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
+ */
+export const LEFTMENU_COMPONENTS = {
+  DATA_VIEWER_COMPONENT: 'klab-main-control',
+  DOCKED_DATA_VIEWER_COMPONENT: 'docked-main-control',
+  REPORT_VIEWER_COMPONENT: 'reports-details',
+  DATAFLOW_VIEWER_COMPONENT: 'dataflow-details',
+  PROVENANCE_VIEWER_COMPONENT: 'provenance-details',
+  LOG_COMPONENT: 'klab-log-pane',
+};
+
+/**
+ * Viewers:
+ * DATA_VIEWER: container for maps, graph or everything that represent an observation
+ * REPORT_VIEWER: container for reports
+ * DATAFLOW_VIEWER: container for dataflow
+ * PROVENANCE_VIEWER: container for provenance (not implemented)
+ * @type {{VIEWER: {
+ *   name: string,
+ *   leftMenuState: string,
+ *   leftMenuContent: undefined,
+ *   mainControl: boolean
+ * }
+ * }}
+ */
 export const VIEWERS = {
-  DATA_VIEWER: 'DataViewer',
-  REPORT_VIEWER: 'ReportViewer',
-  DATAFLOW_VIEWER: 'DataflowViewer',
-  PROVENANCE_VIEWER: 'ProvenanceViewer',
+  DATA_VIEWER: {
+    name: 'DataViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
+    leftMenuContent: LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT,
+    mainControl: true,
+  },
+  DOCKED_DATA_VIEWER: {
+    name: 'DataViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT,
+    mainControl: false,
+  },
+  REPORT_VIEWER: {
+    name: 'ReportViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.REPORT_VIEWER_COMPONENT,
+    mainControl: false,
+  },
+  DATAFLOW_VIEWER: {
+    name: 'DataflowViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.DATAFLOW_VIEWER_COMPONENT,
+    mainControl: false,
+  },
+  PROVENANCE_VIEWER: {
+    name: 'ProvenanceViewer',
+    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_COMPONENTS.PROVENANCE_VIEWER_COMPONENT,
+    mainControl: false,
+  },
 };
 
 /**
@@ -34,8 +94,9 @@ export default {
 
   /**
    * Default siblings to ask for
+   * substituted by store.data.siblingsToAskFor
    */
-  SIBLINGS_TO_ASK_FOR: 25,
+  // SIBLINGS_TO_ASK_FOR: 25,
 
   /**
    * Connections states
@@ -222,6 +283,9 @@ export default {
   PARAMS_LOG: 'log',
   PARAMS_LOG_HIDDEN: 'hidden',
   PARAMS_LOG_VISIBLE: 'visible',
+  PARAMS_NOTIFIED: 'notified',
+  PARAMS_NOTIFIED_ONLY: 'only',
+  PARAMS_NOTIFIED_ALL: 'all',
 
   /**
    * Cookies name
@@ -231,6 +295,9 @@ export default {
   COOKIE_MODE: 'klab_mode',
   COOKIE_LOG: 'klab_log',
   COOKIE_BASELAYER: 'klab_baselayer',
+  COOKIE_NOTIFIED: 'klab_notified',
+  COOKIE_MAPDEFAULT: 'klab_mapdefault',
+  COOKIE_SAVELOCATION: 'klab_saveLocation',
 
   /**
    * Viewer components type
@@ -282,7 +349,10 @@ export default {
       animated: false,
     },
   },
+};
 
+export const FAKE_TEXTS = {
+  UNKNOWN_SEARCH_OBSERVATION: '$$UNKNOWN_SEARCH_OBSERVATION$$',
 };
 
 export const DATAFLOW_STATUS = {
@@ -296,4 +366,16 @@ export const CUSTOM_EVENTS = {
   MAP_SIZE_CHANGED: 'mapsizechanged',
   UPDATE_FOLDER: 'updatefolder',
   GRAPH_NODE_SELECTED: 'graphnodeselected',
+  SPINNER_DOUBLE_CLICK: 'spinnerdoubleclick',
+  SHOW_NODE: 'shownode', // show a tree node, emitted from ObservationInfo
+  ASK_FOR_UNDOCK: 'askforundock',
+  // from any part of explorer, we can ask to show suggestions.
+  // if search is not started, it start with suggestion
+  // if search is not focused, it focus
+  // if search is started and focused, it stop. The event object can contains this attributes:
+  // noStore = false : the search is not store in history
+  // noDelete = false : actual search is not deleted
+  ASK_FOR_SUGGESTIONS: 'askforsuggestions',
+  // If something need fit the map
+  NEED_FIT_MAP: 'needfitmap',
 };

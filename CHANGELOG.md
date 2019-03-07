@@ -36,3 +36,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - if there are too many results to show in small dimensions, scrollbar now is visualized, so
   in firefox there aren't big white space. 
   - mouse click on scrollbar now doesn't close popup 
+
+## 0.5.3 - 2019-01-09
+### Added
+- Added a status text that show the current running task
+### Solved
+- Solved partial sibling load in big screens 
+
+## 0.5.4 - 2019-01-18
+### Added
+- Possibility to load previous context
+- Possibility to switch to previous or new context while waiting for calculation
+### Solved
+- various improvements in logic and UI
+### Link
+Feature notification on Integrated Modelling Confluence
+[
+ Access to previous contexts and concurrent computations are implemented in k.Explorer](https://integratedmodelling.org/confluence/display/ATS/Feature+notification)
+
+## 0.5.5 - 2019-01-22
+### Added
+- Save location and geolocation if no location cookie is found
+
+## 0.5.6 - 2019-01-23
+### Solved
+- Changed some muddler text
+- Changed the way tasks are managed, now if page is reload, observation of previous context are linked to it
+- Better management of context changes
+- Bug with context without children and spinner fixed
+- Bug with context date fixed
+- Various bug fixes
+
+## 0.6 - 2019-03-04
+### Added
+- Left menu with main actions and log viewer
+- Main control can be docked to the left menu
+- When a layer is selected and visible, a click on map show info about the point
+- Double click on visible layer, fit map on windows and put on top the selected layer
+### Improvements
+- Better touch control
+- Double click on tree fit the context in the window
+- Managed context out of -180º/180º longitude range creating a splitted polygon
+- Is not possible to set the center out of -180º/180º longitude
+### Solved
+- Text when log is empty
+- Better style for report
+- href on report now work
+- more style problems solved

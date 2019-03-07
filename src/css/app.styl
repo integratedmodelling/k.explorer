@@ -137,3 +137,69 @@ body .ol-zoom
     overflow-y: hidden
   .simplebar-content
     margin-right: 0 !important;
+
+/* Default buttons style for main control and left menu */
+.klab-button
+  position relative
+  padding 5px 10px 7px 10px
+  cursor pointer
+  display inline-block
+  font-size 22px
+  color rgb(119,119,119) !important
+  text-shadow 0 1px 0 #333
+  &:hover
+    color white /* background #e0e0e0 */
+  &.active
+    color white !important
+    cursor auto
+.klab-button-notification
+  display block
+  position absolute
+  border-radius 30px
+  background-color $main-control-main-color
+.klab-action
+  padding 5px 6px 7px 6px
+  position relative
+  &:not(.disabled):hover
+    color $main-control-main-color
+  &.active
+    color $main-control-main-color !important
+
+/**
+ * Main menu items
+ */
+.klab-menuitem
+  width 100%
+  position relative
+  padding 2px 5px
+  &.klab-clickable
+    cursor pointer
+    &:hover:not(.klab-not-available)
+      background-color #ddd
+      border-radius 5px
+  &.klab-no-clickable
+    cursor default
+  &.klab-not-available
+    cursor not-allowed
+  &.klab-select
+    background-color $main-control-main-color
+    color #fff
+  .klab-item
+    padding 0 3px
+    display inline-block
+    vertical-align middle
+    font-size 13px
+    &.klab-only-text
+      width calc(100% - 30px)
+    &.klab-large-text
+      width 100%;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    &.klab-icon
+      font-size 20px
+      width 30px
+    &.klab-text
+      padding-left 10px
+

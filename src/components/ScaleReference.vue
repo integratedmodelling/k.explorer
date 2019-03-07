@@ -1,9 +1,9 @@
 <template>
-  <div class="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark']" @click="scaleEditing = editable">
-    <div class="sr-scalereference mc-menuitem" v-if="hasScale" :class="[ full ? 'sr-full' : '']">
+  <div class="sr-container" :style="{ width: width }" :class="[ light ? 'sr-light' : 'sr-dark', orientation === 'vertical' ? 'sr-vertical' : '']" @click="scaleEditing = editable">
+    <div class="sr-scalereference klab-menuitem" v-if="hasScale" :class="{ 'sr-full': full, 'klab-clickable': editable }">
       <div
         v-if="full"
-        class="sr-locked mc-item mdi sr-icon"
+        class="sr-locked klab-item mdi sr-icon"
         :class="[ isScaleLocked[scaleType] ? 'mdi-lock-outline' : 'mdi-lock-open-outline']"
         :style="{ cursor: isScaleLocked[scaleType] ? 'pointer' : 'default' }"
         @click.prevent="isScaleLocked ? unlockScale($event) : false"
@@ -16,9 +16,9 @@
         >{{ $t('label.clickToUnlock') }}</q-tooltip>
       </div>
       <div class="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-scaletype mc-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']">{{ scaleType === 'time' ? type : '' }}</div>
-        <div class="sr-description mc-item">{{ description }}</div>
-        <div class="sr-spacescale mc-item">{{ scale }}</div>
+        <div class="sr-scaletype klab-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']">{{ scaleType === 'time' ? type : '' }}</div>
+        <div class="sr-description klab-item">{{ description }}</div>
+        <div class="sr-spacescale klab-item">{{ scale }}</div>
         <q-tooltip
           v-if="editable"
           anchor="bottom middle"
@@ -63,6 +63,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    orientation: {
+      type: String,
+      default: 'horizontal',
+    },
   },
   computed: {
     ...mapGetters('data', [
@@ -71,7 +75,7 @@ export default {
       'isScaleLocked',
     ]),
     resolution() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceResolution : '';
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionConverted : '';
     },
     unit() {
       return this.scaleType === 'space' ? this.scaleReference.spaceUnit : moment().year();
@@ -80,8 +84,7 @@ export default {
       return this.scaleType === 'space' ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      // return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : moment().year();
-      return this.scaleType === 'space' ? `${this.resolution} ${this.unit}` : this.unit;
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : this.unit;
     },
     scale() {
       return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
@@ -138,8 +141,11 @@ export default {
       .sr-spacescale
         background-color #ccc
         color #333
+
     .sr-editables
       display inline
+      .klab-item
+        text-align center
     .sr-scalereference
     .sr-no-scalereference
       .sr-scaletype
@@ -162,9 +168,19 @@ export default {
         border-radius 10px
         text-align center
         padding 5px 0 0 0
+        display inline-block
       &.sr-full
         .sr-description
           width "calc(100% - %s - 20px)" % ($sr-scaletype-width + $sr-lock-width)
+    &.sr-vertical
+      margin 5px 0
+      .klab-item
+        float left
+        width 100%
+        margin 5px 0
+      .sr-spacescale
+        width 20px
+        margin-left calc(50% - 10px)
   .modal-scroll
     overflow hidden
   /*

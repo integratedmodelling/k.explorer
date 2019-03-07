@@ -1,36 +1,32 @@
 <template>
   <div id="klab-tree-pane">
     <klab-splitter :margin="0" :hidden="hasObservationInfo ? '' : 'right'" @close-info="onCloseInfo">
-      <div slot="left-pane">
-        <klab-tree v-if="hasTree"></klab-tree>
+      <div slot="left-pane" id="ktp-left" class="full-height">
+        <klab-tree ref="klab-tree-component" v-if="hasTree" :class="{ 'with-splitter': hasObservationInfo }"></klab-tree>
         <div class="q-ma-md text-center text-white" v-else>
           {{ $t('label.noObservation') }}
         </div>
       </div>
-      <div slot="right-pane">
-        <!--
-        <transition
-          appear
-          enter-active-class="animated fadeIn"
-          leave-active-class="animated fadeOut"
-        >
-          <component :is="additionalContentType"></component>
-        </transition>
-         -->
-        <observation-info v-if="hasObservationInfo"></observation-info>
+      <div slot="right-pane" id="ktp-right" class="full-height">
+        <observation-info v-if="hasObservationInfo" @shownode="informTree($event)"></observation-info>
       </div>
     </klab-splitter>
   </div>
 </template>
 
 <script>
-import KlabTree from 'components/KlabTree.vue';
 import KlabSplitter from 'components/KlabSplitter.vue';
+import KlabTree from 'components/KlabTree.vue';
 import ObservationInfo from 'components/ObservationInfo.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'klabTreeContainer',
+  components: {
+    KlabSplitter,
+    KlabTree,
+    ObservationInfo,
+  },
   /*
   data() {
     return {
@@ -53,15 +49,9 @@ export default {
     onCloseInfo() {
       this.setObservationInfo(null);
     },
-  },
-  mounted() {
-  },
-  watch: {
-  },
-  components: {
-    KlabTree,
-    KlabSplitter,
-    ObservationInfo,
+    informTree({ nodeId, state }) {
+      this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
+    },
   },
 };
 </script>

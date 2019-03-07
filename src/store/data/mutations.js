@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { Helpers } from 'shared/Helpers';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
@@ -11,21 +10,35 @@ export default {
    * @param context the new context
    */
   SET_CONTEXT: (state, context) => {
-    if (state.context !== null) {
-      // save context id in vuex store to future use
-      state.history.push({
-        time: moment(),
-        contextId: state.context.id,
-        contextLabel: state.context.label,
-      });
-    }
+    // the previous store is delegate to actions because a mutations cannot commit another mutation
     state.context = context;
     state.tree = [];
     state.lasts = [];
     state.observations = [];
-    state.tasks = [];
-    // state.dataflow = null;
+    state.dataflow = null;
+    state.dataflowStatuses = [];
     state.nodeSelected = null;
+    if (context === null) {
+      state.contextsHistory = [];
+    } else if (typeof state.context.restored === 'undefined') {
+      state.context.restored = false;
+    }
+  },
+
+
+  WAITING_FOR_RESET(state, contextId) {
+    // if null, no context will be load
+    state.waitingForReset = contextId;
+  },
+
+  STORE_CONTEXT: (state, context) => {
+    const exists = state.contextsHistory.find(ctxt => ctxt.id === context.id);
+    if (typeof exists === 'undefined') {
+      console.log(`Added new context in store with id ${context.id}`);
+      state.contextsHistory.push(context);
+    } else {
+      console.log(`Context with id ${context.id} yet exists in contextHistory`);
+    }
   },
 
   ADD_DATAFLOW: (state, dataflow) => {
@@ -45,17 +58,10 @@ export default {
     // }
   },
 
-  CLEAR_DATAFLOW_STATUSES: (state) => {
-    state.dataflowStatuses = [];
-  },
-
-  ADD_OBSERVATION: (state, observation) => {
+  ADD_OBSERVATION: (state, { observation }) => {
     state.observations.push(observation);
-    console.log(`Added observation: ${observation.label}`);
+    console.info(`Added observation: ${observation.label}`);
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
-    if (state.tasks[observation.taskId]) {
-      state.tasks[observation.taskId].push(observation);
-    }
   },
 
   /**
@@ -64,7 +70,8 @@ export default {
    */
   ADD_NODE: (state, { node, parentId }) => {
     if (state.context === null) {
-      console.log('Context is null, is it just resetted?');
+      console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
+      state.orphans.push(node);
       return;
     }
     if (state.context.id === node.id) {
@@ -74,7 +81,7 @@ export default {
     if (state.context.id === parentId) {
       // is a tree root node
       state.tree.push(node);
-    } else {
+    } else if (node.rootContextId === state.context.id) {
       const parent = Helpers.findNodeById(state.tree, parentId);
       if (parent !== null) {
         parent.children.push({
@@ -87,28 +94,24 @@ export default {
         console.warn(`Orphan founded with id ${node.id}`);
         state.orphans.push(node);
       }
+    } else {
+      console.warn(`Try to add to tree an observation of other context. Actual: ${state.context.id} / Node: ${node.rootContextId}`);
     }
   },
 
-
-  ADD_TASKID: (state, taskId) => {
-    if (typeof state.tasks[taskId] === 'undefined') {
-      state.tasks[taskId] = [];
-    }
-  },
-
-  RECALCULATE_TREE: (state, taskId) => {
-    const filtered = state.tasks[taskId]; // state.observations.filter(observation => observation.taskId === taskId);
-    if (typeof filtered === 'undefined') {
-      console.warn(`No observations for taskId ${taskId}`);
+  RECALCULATE_TREE: (state, { taskId, fromTask }) => {
+    if (state.context === null) {
+      // context was reset while processing
       return;
     }
+    const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
+    const restored = typeof state.context.restored !== 'undefined';
     if (filtered.length === 0) {
-      console.log('No recalculation needed, no observation for this task');
+      console.info('No recalculation needed, no observation for this task');
       return;
     }
     if (filtered.length === 1) {
-      console.log('No recalculation needed, only one observation');
+      console.info('No recalculation needed, only one observation');
       return;
     }
     const idsToDelete = []; // only ids
@@ -117,7 +120,7 @@ export default {
     const children = []; // no main, children of main observation
     filtered.forEach((observation, index) => {
       if (observation.main) {
-        if (index === filtered.length - 1) {
+        if ((fromTask && index === filtered.length - 1) || (restored && index === 0)) {
           main = Helpers.getNodeFromObservation(observation).node;
         } else {
           mains.push(Helpers.getNodeFromObservation(observation).node);
@@ -128,7 +131,11 @@ export default {
       idsToDelete.push(observation.id);
     });
     if (main === null) {
-      console.warn('No main observation found');
+      if (!restored) {
+        console.warn('No main observation found, stopped?'); // if restoring, is possible to haven't main
+      } else {
+        console.info('No main observation found'); // if restoring, is possible to haven't main
+      }
       return;
     }
     // main.header = 'main';
@@ -156,7 +163,7 @@ export default {
       main.children.push(...children);
       main.disabled = false; // if was empty and now has children, it cannot be disabled
     } else {
-      console.log('No children found');
+      console.info('No children found');
     }
     if (folder !== null && insertionIndex !== -1) {
       // remove all elements from tree
@@ -212,7 +219,8 @@ export default {
     callback = null,
   }) => {
     // set observation visible (for layer)
-    const observation = state.observations.find(o => o.id === id);
+    const observationIdx = state.observations.findIndex(o => o.id === id);
+    const observation = state.observations[observationIdx];
     if (typeof observation !== 'undefined') {
       // store the offset, we need to set top to false only for observations with same offset
       const offset = observation.zIndexOffset;
@@ -234,6 +242,7 @@ export default {
       if (node) {
         node.ticked = visible;
       }
+      state.observations.splice(observationIdx, 1, observation);
     } else {
       console.warn(`Try to change visibility to no existing observations with id ${id}`);
     }
@@ -254,15 +263,15 @@ export default {
       const last = state.lasts[lastIdx];
       if (last.offset + offsetToAdd + 1 >= last.total) {
         state.lasts.splice(lastIdx, 1);
-        console.log(`Delete folder ${folderId}`);
+        console.info(`Delete folder ${folderId}`);
       } else {
         last.observationId = observationId;
         last.offset += offsetToAdd;
-        console.log(`Change folder ${folderId}. Now offset is ${last.offset} `);
+        console.info(`Change folder ${folderId}. Now offset is ${last.offset} `);
       }
     } else {
       if (offsetToAdd + 1 === total) {
-        console.log(`Nothing to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
+        console.info(`Nothing to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
         return;
       }
       state.lasts.push({
@@ -271,7 +280,7 @@ export default {
         offset: offsetToAdd,
         total,
       });
-      console.log(`Added folder ${folderId}. Offset is ${offsetToAdd} `);
+      console.debug(`Added folder ${folderId}. Offset is ${offsetToAdd} `);
     }
   },
 
@@ -300,7 +309,7 @@ export default {
       state.scaleLocked.space = scaleLocked;
       state.scaleLocked.time = scaleLocked;
     } else if (Object.prototype.hasOwnProperty.call(state.scaleLocked, scaleType)) {
-      console.log(`Set ${scaleLocked} to ${scaleType} scale type`);
+      console.info(`Set ${scaleLocked} to ${scaleType} scale type`);
       state.scaleLocked[scaleType] = scaleLocked;
     } else {
       console.error(`Try to set locked to unknow scale type: ${scaleType}`);

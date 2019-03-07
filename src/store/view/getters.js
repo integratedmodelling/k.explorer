@@ -1,8 +1,7 @@
 import { Helpers } from 'shared/Helpers';
+import { getColorObject } from 'shared/Utils';
 
 export default {
-  hasPalette: state => state.mainWin.paletteVisible,
-
   /**
    * LOGS
    */
@@ -13,7 +12,7 @@ export default {
   lastKlabLog: state => type => Helpers.lastFilteredLogElement(state.klabLog, type),
   klabLogReversedAndFiltered: state => (type) => {
     if (state.klabLog.length === 0) {
-      return state.klabLog;
+      return [];
     }
     const reversed = [...state.klabLog].reverse();
     if (type === undefined) {
@@ -22,12 +21,20 @@ export default {
     return reversed.find(log => log.type === type);
   },
 
+  statusTexts: state => state.statusTexts,
+  statusTextsLength: state => state.statusTexts.length,
+  statusTextsString: state => (state.statusTexts.length > 0 ? state.statusTexts.map(st => st.text).join(' - ') : ''),
+
   /**
    * Return the main viewer
    * @param state
    */
   mainViewer: state => state.mainViewer,
-
+  mainViewerName: state => (state.mainViewer ? state.mainViewer.name : null),
+  leftMenuContent: state => state.leftMenuContent,
+  leftMenuState: state => state.leftMenuState,
+  hasMainControl: state => state.mainViewer && state.mainViewer.mainControl,
+  isMainControlDocked: state => state.mainControlDocked,
   /**
    * Context layer
    */
@@ -60,13 +67,12 @@ export default {
   spinnerIsAnimated: state => state.spinner.animated,
   spinner: state => state.spinner,
   spinnerOwners: state => state.spinnerOwners,
+  spinnerColor: state => (state.spinner !== 'undefined' && state.spinner !== null ? getColorObject(state.spinner.color) : null),
 
   searchIsActive: state => state.searchActive,
   searchIsFocused: state => state.searchFocus,
   searchLostChar: state => state.searchLostChar,
   searchHistory: state => state.searchHistory,
-
-  reloadReport: state => state.reloadReport,
 
   observationInfo: state => state.observationInfo,
   mapSelection: state => state.mapSelection,
@@ -93,4 +99,7 @@ export default {
 
   isDrawMode: state => state.drawMode,
   hasCustomContext: state => state.customContext,
+
+  topLayer: state => state.topLayer,
+  topLayerId: state => (state.topLayer !== null ? state.topLayer.id : null),
 };

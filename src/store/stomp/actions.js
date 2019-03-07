@@ -18,10 +18,11 @@ export default {
     commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_ERROR);
     commit('STOMP_ERROR', error);
   },
-  stomp_onmessage: ({ commit, dispatch /* rootState */}, message) => {
+  stomp_onmessage: (context, message) => {
     // save it
+    const { commit } = context;
     commit('STOMP_MESSAGE', message);
-    parseAndExecute(message, dispatch);
+    parseAndExecute(message, context);
     // processing
   },
   stomp_onsubscribe: ({ commit }, subscription) => {
@@ -49,7 +50,7 @@ export default {
   taskStart: ({ commit, dispatch }, task) => {
     dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: task.id }, { root: true });
     commit('TASK_START', task);
-    commit('data/ADD_TASKID', task.id, { root: true });
+    // commit('data/ADD_TASKID', task.id, { root: true }); this is managed by data/addObservation
   },
 
   taskAbort: ({ commit, dispatch }, task) => {
@@ -59,8 +60,6 @@ export default {
 
   taskEnd: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
-    dispatch('data/recalculateTree', task.id, { root: true }).then(() => {
-      dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
-    });
+    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
 };

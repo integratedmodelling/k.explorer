@@ -87,9 +87,10 @@ export default class {
   connect() {
     // Create object and connect must be atomic (don't know why, is a webstomp-client "problem"
     // https://github.com/JSteunou/webstomp-client/issues/6
-
-    const sockJs = SockJS(this.connectionUrl, this.sockJSOptions);
-    // sockJs.protocol = this.stompOptions.protocol || '';
+    const sockJs = SockJS(this.connectionUrl, {}, this.sockJSOptions);
+    // this is needed because SockJS library doesn't initialize protocol var
+    // and then it complains that it is not initialized
+    sockJs.protocol = this.stompOptions.protocol || '';
     this.StompClient = webstomp.over(sockJs, this.stompOptions);
     this.StompClient.connect(
       this.connectionHeaders,

@@ -68,8 +68,32 @@ export default {
     "timeScale" : {
       "type" : "integer"
     },
-    "resolution" : {
+    "spaceResolution" : {
       "type" : "number"
+    },
+    "spaceResolutionDescription" : {
+      "type" : "string"
+    },
+    "spaceResolutionConverted" : {
+      "type" : "number"
+    },
+    "spaceUnit" : {
+      "type" : "string"
+    },
+    "timeResolution" : {
+      "type" : "number"
+    },
+    "timeResolutionDescription" : {
+      "type" : "string"
+    },
+    "timeUnit" : {
+      "type" : "string"
+    },
+    "unlockSpace" : {
+      "type" : "boolean"
+    },
+    "unlockTime" : {
+      "type" : "boolean"
     },
     "resolutionDescription" : {
       "type" : "string"
@@ -110,17 +134,11 @@ export default {
   dataflowStatuses: [],
 
   /**
-   * Redundant array to find observation by task id. tasks.[taskId] = [observations]
-   * IMPORTANT: observations are stored as references, so if something change, everything change!
-   */
-  tasks: [],
-
-  /**
    * The session id given from url and used everywhere
    */
   session: null,
   /**
-   * Old observations for this session
+   * Contexts for this session
    * Will be an array of object like
    * {
    *  time: [timestamp of saved]
@@ -128,10 +146,17 @@ export default {
    *  contextLabel
    * }
    */
-  history: [],
+  contextsHistory: [],
+
 
   /**
-   * if an observation is received without parent,
+   * This variable store an eventual context id that will be loaded on previous reset
+   * Getter and Mutation are given to change it atomically
+   */
+  waitingForReset: null,
+
+  /**
+   * if an observation is received without parent but is an observation of actual context,
    * it is stored in this array for later use
    */
   orphans: [],
@@ -140,4 +165,10 @@ export default {
    * Search results
    */
   searchResult: null,
+
+  /**
+   * When we ask for siblings, we ask for a number that depends of view, but we store here for confort
+   * and with a default value given from history
+   */
+  siblingsToAskFor: 25,
 };

@@ -1,5 +1,5 @@
 <template>
-  <div id="klab-log-pane">
+  <div id="klab-log-pane" class="klab-menu-component">
     <q-list
       striped
       dense
@@ -7,18 +7,29 @@
       id="log-container"
       class="no-padding no-margin no-border"
     >
-      <q-item
-        v-for="log in klabLogReversedAndFiltered()"
-        :key="log.id"
-        class="log-item q-pa-xs"
-      >
-        <q-item-side>
-          <q-item-tile style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
-        </q-item-side>
-        <q-item-main>
-          <q-item-tile>{{ logText(log) }}</q-item-tile>
-        </q-item-main>
-      </q-item>
+      <template v-if="klabLogReversedAndFiltered().length !== 0">
+        <q-item
+          v-for="log in klabLogReversedAndFiltered()"
+          :key="log.id"
+          class="log-item q-pa-xs"
+        >
+          <q-item-side>
+            <q-item-tile style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
+          </q-item-side>
+          <q-item-main>
+            <q-item-tile>{{ logText(log) }}</q-item-tile>
+          </q-item-main>
+        </q-item>
+      </template>
+      <template v-else>
+        <q-item
+          class="log-no-items q-pa-xs"
+        >
+          <q-item-main>
+            <q-item-tile>{{ $t('messages.noLogItems') }}</q-item-tile>
+          </q-item-main>
+        </q-item>
+      </template>
     </q-list>
   </div>
 </template>
@@ -76,11 +87,16 @@ export default {
 <style lang="stylus">
   @import '~variables'
   #klab-log-pane
-    max-height: "calc(90vh - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
+    max-height: "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
     .q-item.log-item
       font-size 10px
     .log-item .q-item-side
       min-width auto
     .q-list-dense > .q-item
       padding-left 10px
+    .log-no-items
+      font-size 1em
+      margin 10px 0
+      color #ccc
+      text-shadow 1px 0 0 #777
 </style>

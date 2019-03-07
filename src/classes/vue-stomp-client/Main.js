@@ -65,6 +65,11 @@ export default {
             observer.reconnect();
           }
         },
+
+        disconnect() {
+          if (observer && observer.reconnection) { observer.reconnection = false; }
+          observer.close();
+        },
       },
       created() {
         if (this.$options.sockets) {
@@ -97,7 +102,7 @@ export default {
 
           if (sockets) {
             Object.keys(sockets).forEach((key) => {
-              console.log(`Remove listener ${key}`);
+              console.debug(`Remove listener ${key}`);
               Emitter.removeListener(key, this.$options.sockets[key], this);
               delete this.$options.sockets[key];
             });

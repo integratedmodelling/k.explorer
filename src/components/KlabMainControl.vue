@@ -7,18 +7,19 @@
     >
       <div
         id="spinner-lonely-div"
-        class="spinner-div"
-        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, border: `2px solid ${hasTasks ? spinnerColor.color : 'white'}` }"
+        class="klab-spinner-div"
+        :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'rgba(0,0,0,0)' }"
         v-show="isHidden"
       >
-      <klab-spinner
-        id="spinner-lonely"
-        :store-controlled="true"
-        :size="35"
-        :ball="22"
-        wrapperId="spinner-lonely-div"
-        @dblclick.native="show"
-      ></klab-spinner>
+        <klab-spinner
+          id="spinner-lonely"
+          :store-controlled="true"
+          :size="40"
+          :ball="22"
+          wrapperId="spinner-lonely-div"
+          @dblclick.native="show"
+          @touchstart.native="handleTouch($event, null, show)"
+        ></klab-spinner>
       </div>
     </transition>
     <transition
@@ -34,78 +35,17 @@
       :flat="true"
       v-draggable="dragMCConfig"
       v-show="!isHidden"
-      @mousedown.native="preventDrag"
+      @contextmenu.native.prevent
     >
       <q-card-title
         id="mc-q-card-title"
         class="q-pa-xs"
         ref="mc-draggable"
-
         :style="{
-          'background-color': `rgba(${spinnerColor.rgb.r},${spinnerColor.rgb.g},${spinnerColor.rgb.b},${hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'})`,
+          'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
       >
-        <div
-          id="spinner-main"
-          class="spinner-div"
-        >
-          <klab-spinner
-            :store-controlled="true"
-            :color="spinnerColor.hex"
-            :size="35"
-            :ball="22"
-            wrapperId="spinner-main"
-            @dblclick.native="hide"
-          ></klab-spinner>
-        </div>
-
-        <klab-search v-if="searchIsActive"></klab-search>
-        <div id="mc-text-div" class="text-white" v-else>
-          {{ contextLabel === null ? $t('label.noContext') : contextLabel }}
-        </div>
-        <q-btn
-          id="mc-menubutton"
-          icon="mdi-chevron-right"
-          color="black"
-          size="sm"
-          round
-          flat
-          class="absolute-top-right"
-          v-show="!hasContext && !isHidden && !searchIsActive"
-        >
-          <q-popover
-            v-if="!searchIsActive && !isDrawMode"
-            anchor="top right"
-            selr="top left"
-          >
-            <q-list dense>
-              <q-list-header style="padding: 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
-              <q-item-separator></q-item-separator>
-              <q-item>
-                <q-item-main>
-                  <scale-reference width="180px" :light="true" scaleType="space" :editable="true" :full="true"></scale-reference>
-                </q-item-main>
-              </q-item>
-              <q-item>
-                <q-item-main>
-                  <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
-                </q-item-main>
-              </q-item>
-              <q-list-header style="padding: 16px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuCustomContext') }}</q-list-header>
-              <q-item-separator></q-item-separator>
-              <q-item>
-                <q-item-main>
-                  <div class="mc-container">
-                    <div class="mc-menuitem mc-clickable" id="" :class="[ isDrawMode ? 'mc-select' : '']" @click="startDraw()">
-                      <div class="mc-item mdi mdi-vector-polygon mc-icon"></div>
-                      <div class="mc-item mc-text mc-only-text">{{ $t('label.drawCustomContext') }}</div>
-                    </div>
-                  </div>
-                </q-item-main>
-              </q-item>
-            </q-list>
-          </q-popover>
-        </q-btn>
+        <klab-search-bar ref="klab-search-bar"></klab-search-bar>
       </q-card-title>
 
       <q-card-main
@@ -125,7 +65,7 @@
       >
         <!-- TABS -->
         <div id="mc-tabs">
-          <div class="mc-button mc-tab"
+          <div class="klab-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
             @click="selectedTab = 'klab-log-pane'"
           ><q-icon name="mdi-console">
@@ -135,7 +75,7 @@
               anchor="bottom middle"
             >{{ $t('tooltips.logPane') }}</q-tooltip>
           </q-icon></div>
-          <div class="mc-button mc-tab"
+          <div class="klab-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
             @click="selectedTab = 'klab-tree-pane'"
           ><q-icon name="mdi-file-tree">
@@ -157,159 +97,109 @@
           <scale-reference width="110px" scale-type="time" :editable="false"></scale-reference>
         </div>
         <div class="mc-separator" style="right: 160px"></div>
-        <div id="mc-actions">
-          <!-- MAP BUTTON -->
-          <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.DATA_VIEWER ? setMainViewer(VIEWERS.DATA_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.DATA_VIEWER }]"
-          ><q-icon name="mdi-eye-outline">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ $t('tooltips.dataViewer') }}</q-tooltip>
-          </q-icon></div>
-          <!-- REPORT BUTTON -->
-          <div class="mc-button mc-action"
-               @click="mainViewer !== VIEWERS.REPORT_VIEWER && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
-               :class="[{ active: mainViewer === VIEWERS.REPORT_VIEWER, disabled: mainViewer !== VIEWERS.REPORT_VIEWER && !hasObservations }]"
-          ><q-icon name="mdi-file-document-box-outline">
-            <span class="mc-button-notification" v-if="mainViewer !== VIEWERS.REPORT_VIEWER && reloadReport"></span>
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ hasObservations ? $t('tooltips.reportViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
-          </q-icon></div>
-          <!-- DATAFLOW -->
-          <div
-            class="mc-button mc-action"
-            @click="mainViewer !== VIEWERS.DATAFLOW_VIEWER && hasDataflow ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
-            :class="[{ active: mainViewer === VIEWERS.DATAFLOW_VIEWER, disabled: mainViewer !== VIEWERS.DATAFLOW_VIEWER && !hasDataflow }]"
-          ><q-icon name="mdi-sitemap">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ hasDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
-          </q-icon></div>
-          <!-- PROVENANCE (disabled) -->
-          <!-- in the future
-          <div class="mc-button mc-action disabled"
-          ><q-icon name="mdi-brain">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ $t('tooltips.dataflowViewer') }}</q-tooltip>
-          </q-icon></div>
-          -->
-        </div>
-        <div class="mc-separator" style="right: 45px"></div>
-        <!-- RESET CONTEXT or INTERRUPT TASK-->
-        <div class="mc-button"
-             id="mc-reset-context"
-             @click="resetContext"
-             v-if="!hasTasks"
-        ><q-icon name="mdi-close-circle-outline">
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.resetContext') }}</q-tooltip>
-        </q-icon></div>
-        <div class="mc-button"
-             id="mc-interrupt-task"
-             @click="interruptTask"
-             v-if="hasTasks"
-        ><q-icon name="mdi-stop-circle-outline">
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTask === null ? '' : lastActiveTask.task.description }) }}</q-tooltip>
-        </q-icon></div>
-      </q-card-actions
-        >
+        <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
+        <stop-actions-buttons></stop-actions-buttons>
+      </q-card-actions>
     </q-card>
     </transition>
     <scale-change-dialog></scale-change-dialog>
+    <transition appear
+                enter-active-class="animated zoomIn"
+                leave-active-class="animated zoomOut">
+      <div class="mc-docking full-height" v-if="askForDocking" :style="{ width: leftMenuMaximized }"></div>
+    </transition>
   </div>
 </template>
 
 <script>
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
-import { Draggable } from 'draggable-vue-directive';
-import Utils from 'shared/Utils';
-import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
+// import { Draggable } from 'draggable-vue-directive';
+import { Draggable } from 'shared/VueDraggableTouchDirective';
+import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
+import { dom, debounce } from 'quasar';
+import MainActionsButtons from 'components/MainActionsButtons';
+import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
+import KlabSearchBar from 'components/KlabSearchBar.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
-import KlabSearch from 'components/KlabSearch.vue';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { dom } from 'quasar';
+import ScrollingText from 'components/ScrollingText.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
 
 export default {
   name: 'klabMainControl',
+  components: {
+    KlabSpinner,
+    KlabSearchBar,
+    KlabTreePane,
+    KlabLogPane,
+    ScrollingText,
+    ScaleReference,
+    ScaleChangeDialog,
+    MainActionsButtons,
+    StopActionsButtons,
+  },
+  directives: {
+    Draggable,
+  },
+  mixins: [HandleTouch],
   data() {
     return {
       isHidden: false,
       dragMCConfig: {
         handle: undefined,
         resetInitialPos: false,
+        onPositionChange: debounce((positionDiff, absolutePosition) => {
+          this.onDebouncedPositionChanged(absolutePosition);
+        }, 100),
+        onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
+        fingers: 2,
       },
+      dragging: false,
+      askForDocking: false,
+      leftMenuMaximized: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE}px`,
       boundingElement: undefined,
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
+      draggableElementWidth: 0,
       centeredLeft: this.defaultLeft,
     };
   },
   computed: {
     ...mapGetters('data', [
       'hasContext',
-      'hasObservations',
-      'hasDataflow',
-      'contextLabel',
-      'lasts',
-      'tree',
     ]),
     ...mapGetters('view', [
-      'spinner',
-      'searchIsActive',
+      'spinnerColor',
       'searchIsFocused',
-      'mainViewer',
-      'reloadReport',
       'isDrawMode',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
-      'lastActiveTask',
     ]),
-    spinnerColor() {
-      return Utils.getColorObject(this.spinner.color);
-    },
   },
   methods: {
     ...mapActions('view', [
-      'searchStop',
       'setMainViewer',
-      'setDrawMode',
     ]),
-    resetContext() {
-      this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+    callStartType(event) {
+      if (!this.searchIsFocused) {
+        this.$refs['klab-search-bar'].startType(event);
+      } else {
+        event.evt.stopPropagation();
+      }
     },
-    interruptTask() {
-      const task = this.lastActiveTask;
-      if (task !== null) {
-        this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
-          taskId: task.id,
-        }, this.$store.state.data.session).body);
+    onDebouncedPositionChanged(absolutePosition) {
+      if (this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
+        this.askForDocking = true;
+      } else {
+        this.askForDocking = false;
       }
     },
     hide() {
@@ -322,7 +212,7 @@ export default {
     },
     getCenteredLeft() {
       if (typeof this.draggableElement !== 'undefined' && !this.hasContext) {
-        const elWidth = width(this.draggableElement);
+        const elWidth = this.draggableElementWidth;
         const contWidth = width(this.boundingElement);
         return (contWidth - elWidth) / 2;
       }
@@ -340,14 +230,13 @@ export default {
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
     },
-    /**
-     * prevent native drag in chrome
-     * @param event
-     */
-    preventDrag(event) {
-      event.preventDefault();
-    },
     checkWhereWasDragged() {
+      this.dragging = false;
+      if (this.askForDocking) {
+        this.askForDocking = false;
+        this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
+        return;
+      }
       if (this.draggableElement.offsetTop < 0) { // upper than window
         this.changeDraggablePosition({ top: 0, left: Math.max(this.draggableElement.offsetLeft, 0) });
       }
@@ -355,21 +244,29 @@ export default {
         this.changeDraggablePosition({ top: Math.max(this.draggableElement.offsetTop, 0), left: 0 });
       }
       if (this.draggableElement.offsetLeft >= width(this.boundingElement)) {
-        this.changeDraggablePosition({ top: Math.max(this.draggableElement.offsetTop, 0), left: Math.max(width(this.boundingElement) - this.draggableElement.offsetWidth, 0) });
+        this.changeDraggablePosition({
+          top: Math.max(this.draggableElement.offsetTop, 0),
+          left: Math.max(width(this.boundingElement) - this.draggableElement.offsetWidth, 0),
+        });
       }
       if (this.draggableElement.offsetTop >= height(this.boundingElement)) {
-        this.changeDraggablePosition({ top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0), left: Math.max(this.draggableElement.offsetLeft, 0) });
+        this.changeDraggablePosition({
+          top: Math.max(height(this.boundingElement) - this.draggableElement.offsetHeight, 0),
+          left: Math.max(this.draggableElement.offsetLeft, 0),
+        });
       }
     },
-    startDraw() {
-      this.setDrawMode(!this.isDrawMode);
+    getBGColor(alpha) {
+      return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
   },
   watch: {
     hasContext() {
-      this.changeDraggablePosition({
-        top: this.defaultTop,
-        left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
+      this.$nextTick(() => {
+        this.changeDraggablePosition({
+          top: this.defaultTop,
+          left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
+        });
       });
       // this.draggableElement.classList.remove('vuela');
     },
@@ -381,28 +278,24 @@ export default {
   },
   mounted() {
     this.draggableElement = document.getElementById('mc-q-card');
+    this.draggableElementWidth = width(this.draggableElement);
     this.dragMCConfig.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
     // this.dragMCConfig.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
     this.boundingElement = document.getElementById('viewer-container');
     this.centeredLeft = this.getCenteredLeft();
     this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
-
+    this.$eventBus.$on(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK, () => {
+      this.hide();
+    });
     this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, () => {
+    // eslint-disable-next-line no-underscore-dangle
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
       this.checkWhereWasDragged();
     });
   },
-  directives: {
-    Draggable,
-  },
-  components: {
-    ScaleReference,
-    ScaleChangeDialog,
-    KlabTreePane,
-    KlabLogPane,
-    KlabSpinner,
-    KlabSearch,
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
   },
 };
 </script>
@@ -428,171 +321,89 @@ export default {
         background-color rgba(35, 35, 35 ,.8)
         border-radius 5px
         #mc-q-card-title
+          overflow hidden
           margin 15px
-        #mc-text-div
-          padding-left 5px
-          float left
-          margin-top 8px
-        #mc-search-div
-          left 62px
-          top 18px
 
-  .spinner-div
-    background-color white
-    -webkit-border-radius 40px
-    -moz-border-radius 40px
-    border-radius 40px
-    padding 3px
-    margin 0
+    .q-card-title
+      position relative
 
-  #spinner-main
-    float left
-    border none
-    width 40px
-    height 40px
+    #spinner-lonely-div
+      position absolute
+      width 44px
+      height 44px
+      border 2px solid
+      border-radius 40px
 
-  #spinner-lonely-div
-    position absolute
-    width 44px
-    height 44px
+    .q-card-title
+      line-height inherit
 
-  .q-card-title
-    line-height inherit
+    #mc-text-div
+      text-shadow 0 0 1px #555
 
-  #mc-search-div
-    width 85%
-    overflow-x hidden
-    overflow-y hidden
-    white-space nowrap
-    position absolute
-    left 50px
-    margin-top 8px
+    .q-card-main
+      overflow auto
+      line-height inherit
+      background-color alpha($faded, 85%)
+      padding 0 /* 0 0 10px 0*/
 
-  #mc-text-div
-    text-shadow 0 0 1px #555
+    .klab-main-actions
+      position absolute
+      right 55px
+    .klab-button-notification
+      top 6px
+      right 4px
+      width 10px
+      height 10px
+    .klab-destructive-actions .klab-button
+      position absolute
+      right 2px
 
-  .q-card-main
-    overflow auto
-    line-height inherit
-    background-color alpha($faded, 85%)
-    padding 0 /* 0 0 10px 0*/
+    #context-actions
+      border-bottom-left-radius 5px
+      border-bottom-right-radius 5px
+      padding 0
+      margin 0
+      position relative
 
-  #context-actions
-    border-bottom-left-radius 5px
-    border-bottom-right-radius 5px
-    padding 0
-    margin 0
-    position relative
+    .mc-separator
+      width 2px
+      height 60%
+      position absolute
+      top 20%
+      border-left 1px solid #444
+      border-right 1px solid #666
+      &.mab-separator
+        right 45px
+    .mc-scalereference
+      position absolute
+      height 37px
 
-  #mc-actions
-    position absolute
-    right 55px
+    #mc-spacereference
+      right 305px
 
-  .mc-scalereference
-    position absolute
-    height 37px
+    #mc-timereference
+      right 175px
 
-  #mc-spacereference
-    right 305px
+    .mc-tab.active
+      background-color alpha($faded, 85%)
 
-  #mc-timereference
-    right 175px
+    .component-fade-enter-active
+    .component-fade-leave-active
+      transition opacity .3s ease
 
-  .mc-separator
-    width 2px
-    height 60%
-    position absolute
-    top 20%
-    border-left 1px solid #444
-    border-right 1px solid #666
+    .component-fade-enter
+    .component-fade-leave-to
+      opacity 0
 
-  #mc-reset-context
-  #mc-interrupt-task
-    position absolute
-    right 2px
-    color $main-control-red
+    .lot-of-flow
+      transition top 0.05s ease 0s, left 0.05s ease 0s
 
-  .mc-button
-    padding 5px 10px 7px 10px
-    cursor pointer
-    display inline-block
-    font-size 22px
-    color rgb(119,119,119)
-    text-shadow 0 1px 0 #333
-    &:hover
-      color white /* background #e0e0e0 */
-    &.active
-      color white
-      cursor auto
+    .mc-docking
+      position fixed
+      left 0
+      top 0
+      background-color rgba(35, 35, 35, .1)
+      border 1px solid rgba(135, 135, 135, .5)
+      animation-duration .2s
 
-  .mc-action
-    padding 5px 6px 7px 6px
-    position relative
-    &:not(.disabled):hover
-      color $main-control-main-color
-    &.active
-      color $main-control-main-color
-
-  .mc-tab.active
-    background-color alpha($faded, 85%)
-
-  .mc-button-notification
-    display block
-    position absolute
-    top 6px
-    right 4px
-    width 10px
-    height 10px
-    border-radius 5px
-    background-color $main-control-main-color
-
-  #mc-menubutton
-    top 10px
-    right 10px
-
-  #btn-reset-context
-    width 15px
-    height 15px
-
-  .component-fade-enter-active
-  .component-fade-leave-active
-    transition opacity .3s ease
-
-  .component-fade-enter
-  .component-fade-leave-to
-    opacity 0
-
-  .lot-of-flow
-    transition top 0.05s ease 0s, left 0.05s ease 0s
-  .mc-menuitem
-    width 100%
-    position relative
-    padding 2px 5px
-    &.mc-clickable
-      cursor pointer
-    &.mc-select
-      background-color $main-control-main-color
-      color #fff
-    .mc-item
-      padding 0 3px
-      display inline-block
-      vertical-align middle
-      font-size 13px
-      &.mc-only-text
-        width calc(100% - 30px)
-      &.lighter
-        color #ccc
-        text-shadow 0 0 1px #333
-      &.mc-icon
-        font-size 20px
-        width 30px
-      &.mc-text
-        padding-left 10px
-  #mc-eraserforcontext
-    padding 0 0 0 3px
-  .mc-container
-    height 100%
-    display flex
-    align-items center
-    width 180px
 </style>

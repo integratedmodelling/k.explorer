@@ -1,105 +1,71 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-layout-header v-if="!isOnIde">
-      <q-toolbar
-        color="primary"
-        inverted
-      >
-        <q-btn v-if="hasPalette"
-          flat
-          dense
-          round
-          size="lg"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-          aria-label="Menu"
-        >
-          <img alt="Menu" src="~assets/palette_icon.svg" />
-          <!-- <q-icon name="menu"></q-icon> -->
-        </q-btn>
-
-        <q-toolbar-title>
-          {{$t('label.appTitle')}}
-          <div slot="subtitle">{{ $t('label.appRunning',{ version: $q.version}) }}</div>
-        </q-toolbar-title>
-        <app-locale-switcher></app-locale-switcher>
-      </q-toolbar>
-    </q-layout-header>
-
-    <q-layout-drawer v-if="hasPalette"
-      overlay
-      v-model="leftDrawerOpen"
-      :content-class="$q.theme === 'mat' ? 'bg-grey-2' : null"
+    <q-layout-drawer
+      side="left"
+      :overlay="false"
+      v-model="leftMenuVisible"
+      :breakpoint="0"
+      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
+      content-class="klab-left no-scroll"
+      class="print-hide"
     >
-      <q-list
-        no-border
-        link
-        inset-delimiter
-      >
-        <q-list-header>Palette content</q-list-header>
-        <q-item @click.native="openURL('http://quasar-framework.org')">
-          <q-item-side icon="school" />
-          <q-item-main label="Docs" sublabel="quasar-framework.org" />
-        </q-item>
-        <q-item @click.native="openURL('https://github.com/quasarframework/')">
-          <q-item-side icon="code" />
-          <q-item-main label="GitHub" sublabel="github.com/quasarframework" />
-        </q-item>
-        <q-item @click.native="openURL('https://discord.gg/5TDhbDg')">
-          <q-item-side icon="chat" />
-          <q-item-main label="Discord Chat Channel" sublabel="https://discord.gg/5TDhbDg" />
-        </q-item>
-        <q-item @click.native="openURL('http://forum.quasar-framework.org')">
-          <q-item-side icon="record_voice_over" />
-          <q-item-main label="Forum" sublabel="forum.quasar-framework.org" />
-        </q-item>
-        <q-item @click.native="openURL('https://twitter.com/quasarframework')">
-          <q-item-side icon="rss feed" />
-          <q-item-main label="Twitter" sublabel="@quasarframework" />
-        </q-item>
-      </q-list>
+      <klab-left-menu></klab-left-menu>
     </q-layout-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
-    <q-layout-footer v-if="!isOnIde">
-      <div class="text-right text-primary q-ma-sm">{{ $t('label.appFooter') }}</div>
-    </q-layout-footer>
   </q-layout>
 </template>
 
 <script>
-import { openURL } from 'quasar';
-import { mapGetters } from 'vuex';
-import AppLocaleSwitcher from 'components/AppLocaleSwitcher.vue';
+import { mapActions, mapGetters } from 'vuex';
+import { LEFTMENU_VISIBILITY, CUSTOM_EVENTS } from 'shared/Constants';
+import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
 export default {
   name: 'LayoutDefault',
+  components: {
+    KlabLeftMenu,
+  },
   data() {
-    return {
-      leftDrawerOpen: !this.$q.platform.is.desktop,
-    };
+    return {};
   },
   computed: {
     ...mapGetters('view', [
       'hasPalette',
+      'mainViewer',
+      'leftMenuState',
     ]),
-    isOnIde() {
-      return this.$mode === this.$constants.PARAMS_MODE_IDE;
+    leftMenuVisible: {
+      get() {
+        return this.leftMenuState !== LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN;
+      },
+      set(visibility) {
+        this.setLeftMenuState(visibility);
+      },
     },
   },
   methods: {
-    openURL,
+    ...mapActions('view', [
+      'setLeftMenuState',
+    ]),
   },
-  components: {
-    AppLocaleSwitcher,
+  watch: {
+    leftMenuVisible() {
+      this.$nextTick(() => {
+        this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+      });
+    },
   },
-  mounted() {
+  created() {
+    this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
   },
 };
 </script>
 
-<style scoped lang="stylus">
-.q-toolbar-title
-  height = 60px !important
+<style lang="stylus">
+  @import '~variables'
+  .klab-left
+    background-color rgba(35, 35, 35, 0)
 </style>

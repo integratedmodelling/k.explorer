@@ -1,36 +1,38 @@
 <template>
-  <div id="splitter-container">
+  <div id="splitter-container" class="full-height">
     <div class="splitter-controllers" v-if="!hidden && controllers">
-      <q-btn
-        flat
-        round
-        size="sm"
-        class="no-padding splitter-actions"
-        id="splitter-to-left"
-        icon="mdi-arrow-left"
-        :style="{ color: controlsColor}"
-        @click.native="percent = 0"
-      ></q-btn>
-      <q-btn
-        flat
-        round
-        size="sm"
-        class="no-padding splitter-actions rotate-90"
-        id="splitter-to-middle"
-        icon="mdi-format-align-middle"
-        :style="{ color: controlsColor}"
-        @click.native="percent = 50"
-      ></q-btn>
-      <q-btn
-        flat
-        round
-        size="sm"
-        class="no-padding splitter-actions"
-        id="splitter-to-right"
-        icon="mdi-arrow-right"
-        :style="{ color: controlsColor}"
-        @click.native="percent = 100"
-      ></q-btn>
+      <template v-if="!onlyOpenClose">
+        <q-btn
+          flat
+          round
+          size="sm"
+          class="no-padding splitter-actions"
+          id="splitter-to-left"
+          icon="mdi-arrow-left"
+          :style="{ color: controlsColor}"
+          @click.native="percent = 0"
+        ></q-btn>
+        <q-btn
+          flat
+          round
+          size="sm"
+          class="no-padding splitter-actions rotate-90"
+          id="splitter-to-middle"
+          icon="mdi-format-align-middle"
+          :style="{ color: controlsColor}"
+          @click.native="percent = 50"
+        ></q-btn>
+        <q-btn
+          flat
+          round
+          size="sm"
+          class="no-padding splitter-actions"
+          id="splitter-to-right"
+          icon="mdi-arrow-right"
+          :style="{ color: controlsColor}"
+          @click.native="percent = 100"
+        ></q-btn>
+      </template>
       <q-btn
         flat
         round
@@ -42,12 +44,12 @@
         @click.native="$emit('close-info')"
       ></q-btn>
     </div>
-    <div :style="{ cursor, flexDirection }" class="vue-splitter" @mouseup="onUp" @mousemove="onMouseMove" @touchmove="onMove" @touchend="onUp">
+    <div :style="{ cursor, flexDirection }" class="vue-splitter" v-on="!onlyOpenClose ? { mouseup: onUp, mousemove: onMouseMove, touchmove: onMove, touchend: onUp } : {}">
       <div :style="leftPaneStyle" class="left-pane splitter-pane">
         <slot name="left-pane"></slot>
       </div>
       <template v-if="!hidden">
-        <div class="splitter" :class="{active}" :style ="splitterStyle" @mousedown="onDown" @touchstart="onDown"></div>
+        <div v-if="!onlyOpenClose" class="splitter" :class="{active}" :style ="splitterStyle" v-on="!onlyOpenClose ? { mousedown: onDown, touchstart: onDown } : {}"></div>
         <div :style="rightPaneStyle" class="right-pane splitter-pane">
           <slot name="right-pane"></slot>
         </div>
@@ -56,7 +58,6 @@
   </div>
 </template>
 <script>
-/* eslint-disable no-nested-ternary */
 
 export default {
   props: {
@@ -88,11 +89,15 @@ export default {
       type: Boolean,
       default: true,
     },
+    onlyOpenClose: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
       active: false,
-      percent: this.hidden === 'left' ? 0 : this.hidden === 'right' ? 100 : 50,
+      percent: (this.hidden === 'left' ? 0 : this.hidden === 'right' ? 100 : (this.onlyOpenClose ? 0 : 50)),
       hasMoved: false,
     };
   },
@@ -115,12 +120,14 @@ export default {
     },
   },
   methods: {
+    /*
     onClick() {
       if (!this.hasMoved) {
         this.percent = 50;
         this.$emit('splitterresize');
       }
     },
+    */
     onDown() {
       this.active = true;
       this.hasMoved = false;
@@ -162,7 +169,7 @@ export default {
   },
   watch: {
     hidden() {
-      this.percent = this.hidden === 'left' ? 0 : this.hidden === 'right' ? 100 : 50;
+      this.percent = (this.hidden === 'left' ? 0 : this.hidden === 'right' ? 100 : (this.onlyOpenClose ? 0 : 50));
     },
   },
 };

@@ -54,20 +54,24 @@ export default {
     state.queuedMessage = null;
   },
 
-  TASK_START(state, task) {
-    state.tasks.push({ id: task.id, task });
+  TASK_START(state, { id, contextId, description }) {
+    state.tasks.push({
+      id,
+      contextId,
+      description,
+      alive: true,
+    });
   },
 
   TASK_END(state, { id }) {
-    const idx = state.tasks.findIndex(element => element.id === id);
-    if (typeof idx !== 'undefined') {
-      state.tasks.splice(idx, 1);
+    // we don't check if is yet not alive to stop strange cases
+    const taskIdx = state.tasks.findIndex(element => (element.id === id));
+    if (taskIdx !== -1) {
+      const task = state.tasks[taskIdx];
+      task.alive = false;
+      state.tasks.splice(taskIdx, 1, task);
     } else {
-      console.debug(`Task with id = ${id} not founded`);
+      console.debug(`Task with id = ${id} not founded or is not alive`);
     }
-  },
-
-  TASK_RESET_ALL(state) {
-    state.tasks = [];
   },
 };

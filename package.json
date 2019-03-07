@@ -1,6 +1,6 @@
 {
   "name": "klab.explorer",
-  "version": "0.5.2",
+  "version": "0.5.6",
   "description": "k.EXPLORER module of k.LAB",
   "productName": "k.EXPLORER",
   "license": "AGPL-3.0-only",
@@ -20,7 +20,7 @@
     "draggable-vue-directive": "^2.0.2",
     "elkjs": "^0.4.1",
     "jsts": "^2.0.2",
-    "k.elksprottybridge": "git+ssh://enrico_girotto@bitbucket.org/enrico_girotto/klab-elk-sprotty-bridge.git#develop",
+    "k.elksprottybridge": "git+ssh://git@bitbucket.org/integratedmodelling/klab-elk-sprotty-bridge.git",
     "moment": "^2.22.1",
     "ol": "^5.0.0",
     "ol-ext": "^3.0.1",

@@ -3,14 +3,22 @@
     <div class="col row full-height" id="viewer-container">
       <keep-alive>
         <!-- <transition name="component-fade" mode="out-in"> -->
-        <component :is="mainViewer"></component>
+        <component :is="mainViewer.name"></component>
         <!-- </transition> -->
       </keep-alive>
+      <q-resize-observable @resize="setSiblingsToAskFor" />
     </div>
     <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
     </div>
-    <klab-main-control></klab-main-control>
+    <transition name="component-fade" mode="out-in">
+      <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
+    </transition>
+    <transition appear
+                enter-active-class="animated zoomIn"
+                leave-active-class="animated zoomOut">
+      <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
+    </transition>
     <q-modal
         id="modal-connection-status"
         v-model="modalVisible"
@@ -19,7 +27,7 @@
         :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
         :content-classes="['modal-borders', 'no-padding', 'no-margin']"
     >
-      <div class="bg-opaque-white modal-borders no-padding no-margin">
+      <div class="bg-opaque-white modal-borders">
           <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
             <klab-spinner
               :color="modalColor"
@@ -29,14 +37,8 @@
               :animated="modalAnimated"
               wrapperId="modal-connection-status"
             ></klab-spinner>
-            <span>{{ modalText  }}</span>
+            <span class="text-white">{{ modalText }}</span>
           </div>
-          <q-btn
-            v-if="connectionState === $constants.CONNECTION_DOWN"
-            color="secondary"
-            @click="reconnect"
-          >{{ $t('label.reconnect') }}
-          </q-btn>
       </div>
     </q-modal>
   </q-page>
@@ -44,7 +46,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -59,6 +61,18 @@ import 'simplebar/dist/simplebar.css';
 export default {
   /* eslint-disable object-shorthand */
   name: 'IndexPage',
+  components: {
+    KlabMainControl,
+    DataViewer,
+    ReportViewer,
+    DataflowViewer,
+    KlabSpinner,
+  },
+  data() {
+    return {
+      askForUndocking: false,
+    };
+  },
   computed: {
     ...mapGetters('stomp', [
       'connectionState',
@@ -66,8 +80,10 @@ export default {
     ...mapGetters('view', [
       'searchIsActive',
       'searchIsFocused',
+      'mainViewerName',
       'mainViewer',
       'isScaleEditing',
+      'isDrawMode',
     ]),
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
@@ -77,7 +93,7 @@ export default {
         return this.connectionState !== this.$constants.CONNECTION_UP;
       },
       set(visible) {
-        console.warn(`try to set modalVisible as ${visible}`);
+        console.warn(`Try to set modalVisible as ${visible}`);
       },
     },
     modalText() {
@@ -112,13 +128,15 @@ export default {
       'searchFocus',
       'setMainViewer',
     ]),
-  },
-  components: {
-    KlabMainControl,
-    DataViewer,
-    ReportViewer,
-    DataflowViewer,
-    KlabSpinner,
+    setSiblingsToAskFor() {
+      // calculate and set min results for siblings
+      // we suppose that maxHeight is vh and childMinHeight are pixels
+      const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
+      const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
+      const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
+      console.info(`Setted max siblings as ${minResults}`);
+      this.$store.state.data.siblingsToAskFor = minResults;
+    },
   },
   watch: {
   },
@@ -130,7 +148,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isScaleEditing) {
+      if (this.modalVisible || this.isScaleEditing || this.isDrawMode) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {
@@ -147,6 +165,10 @@ export default {
           event.preventDefault();
         }
       }
+    });
+    this.setSiblingsToAskFor();
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
+      this.askForUndocking = ask;
     });
   },
 };
@@ -169,6 +191,13 @@ export default {
   .klab-spinner
     display inline
     vertical-align middle
+    background-color white
+    -webkit-border-radius 40px
+    -moz-border-radius 40px
+    border-radius 40px
+    padding 3px
+    margin 0
+
   #modal-spinner
     margin-right 10px
     margin-left 5px
@@ -176,8 +205,17 @@ export default {
     display inline-block
     line-height 100%
     vertical-align middle
+    margin-right 15px
 
   #modal-connection-status .modal-content
     min-width 200px
+
+  #mc-undocking
+    position fixed
+    left 0
+    top 0
+    background-color rgba(35, 35, 35, .3)
+    border 4px solid rgba(135, 135, 135, .6)
+    animation-duration .2s
 
 </style>

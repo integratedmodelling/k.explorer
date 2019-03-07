@@ -27,8 +27,8 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            // WS_BASE_URL: JSON.stringify('http://192.168.0.124:8283'), // Fer
-            WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
+            WS_BASE_URL: JSON.stringify('http://192.168.0.99:8283'), // Enrico
+            // WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
             STOMP_CLIENT_DEBUG: true,
           }
           : { // and on build (production):
@@ -40,16 +40,16 @@ module.exports = function (ctx) {
         WS_URL: JSON.stringify('/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
-        REST_STATUS: JSON.stringify('/modeler/engine/status/'),
+        REST_STATUS: JSON.stringify('/modeler/engine/status'),
         REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
       },
       // distDir: 'dist/ui',
-      distDir: '/home/klab/workspaces/klab-workspace/k.LAB/klab/klab.engine/src/main/resources/static/ui',
-      publicPath: '/modeler/ui/',
+      distDir: '../klab/klab.engine/src/main/resources/static/ui',
       scopeHoisting: true,
-      vueRouterMode: 'history',
-      // vueRouterBase: 'modeler',
+      // vue-route configuration is maded in route/index.js
+      // publicPath: '/',
+      // vueRouterMode: 'history',
       // gzip: true,
       // analyze: true,
       // extractCSS: false,
@@ -130,9 +130,12 @@ module.exports = function (ctx) {
         'QDialog',
         'QContextMenu',
         'QResizeObservable',
+        'QToggle',
+        'QCheckbox',
       ],
       directives: [
         'Ripple',
+        'TouchHold',
       ],
       // Quasar plugins
       plugins: [

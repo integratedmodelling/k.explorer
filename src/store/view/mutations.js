@@ -11,6 +11,17 @@ export default {
     Helpers.pushElementInFixedQueue(state.klabLog, log);
   },
 
+  ADD_TO_STATUS_TEXTS: (state, { id, text }) => {
+    state.statusTexts.push({ id, text });
+  },
+
+  REMOVE_FROM_STATUS_TEXTS: (state, id) => {
+    const index = state.statusTexts.findIndex(st => st.id === id);
+    if (index !== -1) {
+      state.statusTexts.splice(index, 1);
+    }
+  },
+
   SET_CONTEXT_LAYER: (state, contextGeometry) => {
     // when a new context exists, we must reset everything
     state.dataViewers.splice(0, state.dataViewers.length);
@@ -28,12 +39,36 @@ export default {
   SET_MAIN_VIEWER: (state, viewer) => {
     state.mainViewer = viewer;
   },
+
+  /**
+   * set the left menu content
+   * @param state
+   * @param visibility
+   * @constructor
+   */
+  SET_LEFTMENU_CONTENT: (state, content) => {
+    state.leftMenuContent = content;
+  },
+
+  /**
+   * set the left menu visibility
+   * @param state
+   * @param visibility
+   * @constructor
+   */
+  SET_LEFTMENU_STATE: (state, visibility) => {
+    state.leftMenuState = visibility;
+  },
   /**
    * Set the main data viewer by viewer index
    * @param idx the viewer idx
    */
   SET_MAIN_DATA_VIEWER: (state, idx) => {
     state.dataViewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
+  },
+
+  SET_MAIN_CONTROL_DOCKED: (state, docked) => {
+    state.mainControlDocked = docked;
   },
 
   /**
@@ -122,6 +157,10 @@ export default {
     state.reloadReport = reload;
   },
 
+  SET_RELOAD_DATAFLOW: (state, reload) => {
+    state.reloadDataflow = reload;
+  },
+
   SET_OBSERVATION_INFO: (state, observation) => {
     if (observation === null) {
       state.treeSelected = null;
@@ -147,15 +186,19 @@ export default {
    */
   SET_MAP_SELECTION: (state, mapSelection) => {
     const { pixelSelected, layerSelected, value = null } = mapSelection;
-    if (mapSelection === null || pixelSelected === null || layerSelected === null) { // map selection reset or strange values
+    if (mapSelection === null || pixelSelected === null) { // map selection reset or strange values
       state.mapSelection = EMPTY_MAP_SELECTION;
-    } else if (state.observationInfo === null) {
-      console.warn('Try to set pixel and layer without observationInfo, will be skipped');
-    } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {
-      console.warn('Try to set pixel and layer with different observationInfo id, will be skipped');
     } else {
       state.mapSelection = { pixelSelected, layerSelected, value };
     }
+    /*
+    Now the selection can be made directly on map
+    else if (state.observationInfo === null) {
+      console.warn('Try to set pixel and layer without observationInfo, will be skipped');
+    } else if (`cl_${state.observationInfo.id}` !== layerSelected.get('id')) {
+      console.warn('Try to set pixel and layer with different observationInfo id, will be skipped');
+    }
+    */
   },
 
   SET_SCALE_EDITING: (state, { active, type }) => {
@@ -171,5 +214,17 @@ export default {
 
   SET_CUSTOM_CONTEXT: (state, customContext) => {
     state.customContext = customContext;
+  },
+
+  SET_SHOW_NOTIFIED: (state, showNotified) => {
+    state.showNotified = showNotified;
+  },
+
+  SET_SAVE_LOCATION: (state, saveLocation) => {
+    state.saveLocation = saveLocation;
+  },
+
+  SET_TOP_LAYER: (state, topLayer) => {
+    state.topLayer = topLayer;
   },
 };

@@ -35,6 +35,7 @@ import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, 
 import LinearRing from 'ol/geom/LinearRing';
 import { fromCircle } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
+import { checkIDL } from 'shared/Utils';
 /**
  * Used to draw path and modify existing path
  */
@@ -102,7 +103,7 @@ export default {
         for (let i = 0; i < fl; i += 1) {
           const geometry = features[i].getGeometry();
           if (geometry instanceof Circle || geometry instanceof Polygon) {
-            const jstsGeomTemp = this.parseGeometry(features[i].getGeometry());
+            const jstsGeomTemp = checkIDL(this.parseGeometry(features[i].getGeometry()));
             if (jstsMultiPolygon === null) {
               jstsMultiPolygon = jstsGeomTemp;
             } else {

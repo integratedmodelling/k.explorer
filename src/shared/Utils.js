@@ -1,167 +1,282 @@
 import { colors } from 'quasar';
+import { geom as jstsGeom, operation as jstsOperation } from 'jsts';
+import { transform } from 'ol/proj';
+import { MAP_CONSTANTS } from 'shared/MapConstants';
 
+/**
+ * RegExp to detect a color string as rgba(...)
+ * @type {RegExp}
+ */
 const reRGBA = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
+/**
+ * Get color utility function from quasar
+ */
 const { hexToRgb, getBrand, rgbToHex } = colors;
+
+/**
+ * The vertices must be om EPSG:3857 because open layer use it to draw
+ */
+const IDL = {
+  topLeft: transform([-180, 90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  bottomLeft: transform([-180, -90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  topRight: transform([180, 90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+  bottomRight: transform([180, -90], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
+
+};
+const JSTS_FACTORY = new jstsGeom.GeometryFactory();
+/**
+ * The IDL, from east or west
+ * @type {{left: *, right: *}}
+ */
+const JSTS_IDLS = {
+  left: JSTS_FACTORY.createLineString([new jstsGeom.Coordinate(IDL.topLeft[0], IDL.topLeft[1]), new jstsGeom.Coordinate(IDL.bottomLeft[0], IDL.bottomLeft[1])]),
+  right: JSTS_FACTORY.createLineString([new jstsGeom.Coordinate(IDL.topRight[0], IDL.topRight[1]), new jstsGeom.Coordinate(IDL.bottomRight[0], IDL.bottomRight[1])]),
+};
+/**
+ * The entire worlk, is used to check if there are somy polygons that goes out
+ */
+const JSTS_ALL_WORLD = JSTS_FACTORY.createPolygon([
+  new jstsGeom.Coordinate(IDL.topLeft[0], IDL.topLeft[1]), new jstsGeom.Coordinate(IDL.topRight[0], IDL.topRight[1]),
+  new jstsGeom.Coordinate(IDL.bottomRight[0], IDL.bottomRight[1]), new jstsGeom.Coordinate(IDL.bottomLeft[0], IDL.bottomLeft[1]),
+  new jstsGeom.Coordinate(IDL.topLeft[0], IDL.topLeft[1]),
+]);
+
 /**
  * Utilities used in Helpers. Function with general application
  * @type {{capitalizeFirstLetter: (function(*): string), formatExtent: (function(*=))}}
  */
-export default {
 
-  /**
-   * Capitalize first letter of string
-   * @param str the string to capitalize
-   */
-  capitalizeFirstLetter: str => str.charAt(0).toUpperCase() + str.slice(1),
+/**
+ * Capitalize first letter of string
+ * @param str the string to capitalize
+ */
+export function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
-  /**
-   * Utility method to print coordinates with only 2 decimals
-   * TODO: probably not needed
-   * @param extent
-   * @returns {*}
-   */
-  // formatExtent: extent => extent, -> Used in case of test of no validating message
-  formatExtent: (localExtent) => {
-    if (localExtent) {
-      return [localExtent.south.toFixed(2), localExtent.west.toFixed(2),
-        localExtent.north.toFixed(2), localExtent.east.toFixed(2)];
-    }
-    return null;
-  },
+/**
+ * Utility method to print coordinates with only 2 decimals
+ * TODO: probably not needed
+ * @param extent
+ * @returns {*}
+ */
+export function formatExtent(localExtent) {
+  if (localExtent) {
+    return [localExtent.south.toFixed(2), localExtent.west.toFixed(2),
+      localExtent.north.toFixed(2), localExtent.east.toFixed(2)];
+  }
+  return null;
+}
 
-  textToRgb: (color) => {
-    if (typeof color !== 'string') {
-      throw new TypeError('Expected a string');
-    }
+/**
+ * Transform a color text that will be #(XX)XXXXXX or rgb(a)(xxx, xxx, xxx(, x.x))
+ * @param color
+ * @returns {r:xxx, g:xxx, b:xxx}
+ */
+export function textToRgb(color) {
+  if (typeof color !== 'string') {
+    throw new TypeError('Expected a string');
+  }
 
-    const m = reRGBA.exec(color);
-    if (m) {
-      const rgb = {
-        r: parseInt(m[1], 10),
-        g: parseInt(m[2], 10),
-        b: parseInt(m[3], 10),
-      };
-      if (m[4]) {
-        rgb.a = parseFloat(m[4]);
-      }
-      return rgb;
-    }
-    return hexToRgb(color);
-  },
-
-  /**
-   * Receive an hex value (#), rgb (rgb()) or brand ('primary')
-   * Return the correspondent rgb and hex value
-   * @param color an hex value (#), rgb (rgb()) or brand ('primary')
-   * @returns {{rgb: *, hex: *, color: *}}
-   */
-  getColorObject(color) {
-    let rgb;
-    let hex;
-    if (color.indexOf('#') === 0) {
-      hex = color;
-      rgb = hexToRgb(color);
-    } else if (color.indexOf(',') !== -1) {
-      rgb = this.textToRgb(color);
-      hex = rgbToHex(rgb);
-    } else {
-      hex = getBrand(color);
-      rgb = hexToRgb(hex);
-    }
-    return {
-      rgb,
-      hex,
-      color,
+  const m = reRGBA.exec(color);
+  if (m) {
+    const rgb = {
+      r: parseInt(m[1], 10),
+      g: parseInt(m[2], 10),
+      b: parseInt(m[3], 10),
     };
-  },
-
-  /**
-   * Return the gradient in rgb object from first color to last color in steps steps
-   * @param first
-   * @param last
-   * @param steps
-   * @see https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
-   * @returns {Array}
-   */
-  getGradient(first, last, steps) {
-    if (first === null || last === null || steps < 1) {
-      console.warn(`Bad colors: ${first}, ${last}`);
+    if (m[4]) {
+      rgb.a = parseFloat(m[4]);
     }
-    const c1 = this.getColorObject(first).rgb;
-    const c2 = this.getColorObject(last).rgb;
-    const stepFactor = 1 / (steps - 1);
-    const colorList = [];
-    let r;
-    let g;
-    let b;
-    for (let i = 0; i < steps; i++) {
-      r = c1.r + Math.round(stepFactor * i * (c2.r - c1.r));
-      g = c1.g + Math.round(stepFactor * i * (c2.g - c1.g));
-      b = c1.b + Math.round(stepFactor * i * (c2.b - c1.b));
-      colorList.push(`rgb(${r},${g},${b})`);
+    return rgb;
+  }
+  return hexToRgb(color);
+}
+
+/**
+ * Receive an hex value (#), rgb (rgb()) or brand ('primary')
+ * Return the correspondent rgb and hex value
+ * @param color an hex value (#), rgb (rgb()) or brand ('primary')
+ * @returns {{rgb: *, hex: *, color: *}}
+ */
+export function getColorObject(color) {
+  let rgb;
+  let hex;
+  if (color.indexOf('#') === 0) {
+    hex = color;
+    rgb = hexToRgb(color);
+  } else if (color.indexOf(',') !== -1) {
+    rgb = textToRgb(color);
+    hex = rgbToHex(rgb);
+  } else {
+    hex = getBrand(color);
+    rgb = hexToRgb(hex);
+  }
+  return {
+    rgb,
+    hex,
+    color,
+  };
+}
+
+/**
+ * Return the gradient in rgb object from first color to last color in steps steps
+ * @param first
+ * @param last
+ * @param steps
+ * @see https://graphicdesign.stackexchange.com/questions/83866/generating-a-series-of-colors-between-two-colors
+ * @returns {Array}
+ */
+export function getGradient(first, last, steps) {
+  if (first === null || last === null || steps < 1) {
+    console.warn(`Bad colors: ${first}, ${last}`);
+  }
+  const c1 = getColorObject(first).rgb;
+  const c2 = getColorObject(last).rgb;
+  const stepFactor = 1 / (steps - 1);
+  const colorList = [];
+  let r;
+  let g;
+  let b;
+  for (let i = 0; i < steps; i++) {
+    r = c1.r + Math.round(stepFactor * i * (c2.r - c1.r));
+    g = c1.g + Math.round(stepFactor * i * (c2.g - c1.g));
+    b = c1.b + Math.round(stepFactor * i * (c2.b - c1.b));
+    colorList.push(`rgb(${r},${g},${b})`);
+  }
+  return colorList;
+}
+
+/**
+ * Transform an array in other with finalDimension calculating the linear interpolation
+ * @param array
+ * @param finalDimension
+ * @param decimals
+ * @returns {Array}
+ */
+export function interpolateArray(array, finalDimension, decimals = null) {
+  const linearInterpolate = (before, after, atPoint) => before + (after - before) * atPoint;
+
+  const newData = [];
+  const springFactor = Number((array.length - 1) / (finalDimension - 1));
+  [newData[0]] = array; // for new allocation
+  for (let i = 1; i < finalDimension - 1; i++) {
+    const tmp = i * springFactor;
+    const before = Number(Math.floor(tmp)).toFixed();
+    const after = Number(Math.ceil(tmp)).toFixed();
+    const atPoint = tmp - before;
+    const interpolated = linearInterpolate(array[before], array[after], atPoint);
+    if (decimals !== null) {
+      newData[i] = interpolated.toFixed(decimals);
+    } else {
+      newData[i] = interpolated;
     }
-    return colorList;
-  },
+  }
+  newData[finalDimension - 1] = array[array.length - 1]; // for new allocation
+  return newData;
+}
 
-  interpolateArray(array, finalDimension, decimals = null) {
-    const linearInterpolate = (before, after, atPoint) => before + (after - before) * atPoint;
+/**
+ * Filter an array to remove duplicates
+ * @param array
+ */
+export function uniqueArray(array) {
+  return array.filter((elem, pos, arr) => arr.indexOf(elem) === pos);
+}
 
-    const newData = [];
-    const springFactor = Number((array.length - 1) / (finalDimension - 1));
-    [newData[0]] = array; // for new allocation
-    for (let i = 1; i < finalDimension - 1; i++) {
-      const tmp = i * springFactor;
-      const before = Number(Math.floor(tmp)).toFixed();
-      const after = Number(Math.ceil(tmp)).toFixed();
-      const atPoint = tmp - before;
-      const interpolated = linearInterpolate(array[before], array[after], atPoint);
-      if (decimals !== null) {
-        newData[i] = interpolated.toFixed(decimals);
-      } else {
-        newData[i] = interpolated;
+/**
+ * Return white or black if brightnes > 123 (Ref: https://trendct.org/2016/01/22/how-to-choose-a-label-color-to-contrast-with-background/)
+ * @param r
+ * @param g
+ * @param b
+ * @returns {string}
+ */
+export function getBrightnessColor(r, g, b) {
+  return ((r * 299 + g * 587 + b * 114) / 1000 >= 123 ? '#000' : '#fff');
+}
+
+/**
+ * Copy text to clipboard
+ * Code from Angelos Chalaris @see https://hackernoon.com/@chalarangelo
+ * @param str string to copy
+ */
+export function copyToClipboard(str) {
+  const el = document.createElement('textarea');
+  el.value = str;
+  el.setAttribute('readonly', '');
+  el.style.position = 'absolute';
+  el.style.left = '-9999px';
+  document.body.appendChild(el);
+  const selected = document.getSelection().rangeCount > 0
+    ? document.getSelection().getRangeAt(0)
+    : false;
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+  if (selected) {
+    document.getSelection().removeAllRanges();
+    document.getSelection().addRange(selected);
+  }
+}
+export function checkIDL(originalPolygon) {
+  const idl = [];
+  // check if polygon cross IDL and where
+  if (originalPolygon.crosses(JSTS_IDLS.left)) {
+    idl.push(JSTS_IDLS.left);
+  }
+  if (originalPolygon.crosses(JSTS_IDLS.right)) {
+    idl.push(JSTS_IDLS.right);
+  }
+  if (idl.length === 0) {
+    // luck! nothing to do
+    return originalPolygon;
+  }
+  // generate a multyline with the IDL...
+  let united = originalPolygon.getExteriorRing();
+  idl.forEach((line) => {
+    united = united.union(line);
+  });
+
+  // generate polygons
+  const polygonizer = new jstsOperation.polygonize.Polygonizer();
+  polygonizer.add(united);
+  const polygons = polygonizer.getPolygons();
+
+  let result = null;
+  for (let i = polygons.iterator(); i.hasNext();) {
+    let polygon = i.next();
+    // if the polygon is not contained, we need to change all its vertices
+    // all this is done thinking in open layer with a flat earth, TODO: check if it work!
+    if (!JSTS_ALL_WORLD.contains(polygon)) {
+      const newVertices = [];
+      const vertices = polygon.getCoordinates();
+      const vxl = vertices.length;
+      for (let j = 0; j < vxl; j++) {
+        const vx = vertices[j];
+        const factor = Math.round(Math.abs(vx.x / (IDL.topRight[0] * 2))) * 2;
+        const x = vx.x + (vx.x < 0 ? IDL.topRight[0] : IDL.topLeft[0]) * factor;
+        newVertices.push(new jstsGeom.Coordinate(x, vx.y));
       }
+      polygon = JSTS_FACTORY.createPolygon(newVertices);
     }
-    newData[finalDimension - 1] = array[array.length - 1]; // for new allocation
-    return newData;
-  },
-
-  uniqueArray: array => array.filter((elem, pos, arr) => arr.indexOf(elem) === pos),
-
-  * reverseKeys(arr) {
-    let key = arr.length - 1;
-
-    while (key >= 0) {
-      yield key;
-      key -= 1;
+    if (result === null) {
+      result = polygon;
+    } else {
+      result = result.union(polygon);
     }
-  },
+  }
+  return result;
+}
 
-  /**
-   * Return white or black if brightnes > 123 (Ref: https://trendct.org/2016/01/22/how-to-choose-a-label-color-to-contrast-with-background/)
-   */
-  getBrightnessColor: (r, g, b) => ((r * 299 + g * 587 + b * 114) / 1000 >= 123 ? '#000' : '#fff'),
-
-  /**
-   * Copy text to clipboard
-   * Code from Angelos Chalaris @see https://hackernoon.com/@chalarangelo
-   * @param str string to copy
-   */
-  copyToClipboard: (str) => {
-    const el = document.createElement('textarea');
-    el.value = str;
-    el.setAttribute('readonly', '');
-    el.style.position = 'absolute';
-    el.style.left = '-9999px';
-    document.body.appendChild(el);
-    const selected = document.getSelection().rangeCount > 0
-      ? document.getSelection().getRangeAt(0)
-      : false;
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    if (selected) {
-      document.getSelection().removeAllRanges();
-      document.getSelection().addRange(selected);
-    }
-  },
+export default {
+  capitalizeFirstLetter,
+  formatExtent,
+  textToRgb,
+  getColorObject,
+  getGradient,
+  interpolateArray,
+  uniqueArray,
+  getBrightnessColor,
+  copyToClipboard,
+  checkIDL,
 };

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
@@ -13,12 +13,10 @@ import Vue from 'vue';
 
 export default {
   name: 'App',
-  data() {
-    return {
-      subscriptions: [],
-    };
-  },
   computed: {
+    ...mapState('stomp', [
+      'subscriptions',
+    ]),
     ...mapGetters('data', [
       'session',
     ]),
@@ -30,18 +28,42 @@ export default {
       'kexplorerLog',
     ]),
   },
+  methods: {
+    sendQueue() {
+      if (this.queuedMessage) {
+        const { message, headers } = this.queuedMessage;
+        this.sendStompMessage(message, headers);
+      }
+    },
+    ...mapActions('data', [
+      'getSessionContexts',
+    ]),
+    ...mapActions('stomp', {
+      stompCleanQueue: 'stomp_cleanqueue',
+    }),
+  },
   sockets: {
     onconnect(frame) {
-      console.log(`Connect to websocket: ${JSON.stringify(frame, null, 4)}`);
+      console.info('Connected to websocket');
+      console.debug(`Connect frame:\n${JSON.stringify(frame, null, 4)}`);
       const sessionSubscriptionObject = this.subscriptions.find(ts => ts.id === this.session);
       if (typeof sessionSubscriptionObject !== 'undefined') {
-        console.warn(`Invalidate session ${this.session} this.session`); // very strange behaviour
+        console.warn(`Invalidate session ${this.session}`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
-      const subscription = this.subscribe(this.session);
-      this.subscriptions.push({ id: this.session, subscription });
-      console.log(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
-      this.sendQueue();
+      // before subscribe, we load contexts linked to this session
+      this.getSessionContexts()
+        .then((restored) => {
+          console.info(`Retrieved ${restored} previous contexts`);
+          const subscription = this.subscribe(this.session);
+          this.subscriptions.push({ id: this.session, subscription });
+          console.info(`Session ${this.session} subscribed with subscriptionid ${subscription.id}`);
+          this.sendQueue();
+        })
+        .catch((error) => {
+          console.warn(`Problems with session restauration: ${error}`);
+          this.disconnect();
+        });
     },
     // onsubscribe(subscription) {
     // const subscriptionObject = this.subscriptions.find(s => s.subscription.id === subscription.id);
@@ -54,7 +76,7 @@ export default {
       if (type === IN.TYPE_TASKSTARTED) {
         const subscription = this.subscribe(payload.id);
         this.subscriptions.push({ id: payload.id, subscription });
-        console.log(`Task ${payload.id} subscribed with subscriptionid ${subscription.id}`);
+        console.debug(`Task ${payload.id} subscribed with subscriptionid ${subscription.id}`);
       } else if (type === IN.TYPE_TASKABORTED || type === IN.TYPE_TASKFINISHED) {
         const subscriptionObject = this.subscriptions.find(ts => ts.id === payload.id);
         if (typeof subscriptionObject !== 'undefined') {
@@ -86,20 +108,9 @@ export default {
     onsend({ headers, message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
-        console.log(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
+        console.debug(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
       }
     },
-  },
-  methods: {
-    sendQueue() {
-      if (this.queuedMessage) {
-        const { message, headers } = this.queuedMessage;
-        this.sendStompMessage(message, headers);
-      }
-    },
-    ...mapActions('stomp', {
-      stompCleanQueue: 'stomp_cleanqueue',
-    }),
   },
   watch: {
     kexplorerLog() {
@@ -124,13 +135,13 @@ export default {
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
-        console.warn(`[Vue warn]: ${msg}${trace}`);
+        console.warn(`[Intercepted Vue warn]: ${msg}${trace}`);
       }
     };
   },
   beforeDestroy() {
     const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
-    if (typeof sessionSubscription !== 'undefined') {
+    if (typeof sessionSubscription !== 'undefined' && typeof sessionSubscription.unsubscribe === 'function') {
       sessionSubscription.unsubscribe();
     }
     this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);

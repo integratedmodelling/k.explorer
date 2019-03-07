@@ -1,5 +1,5 @@
 import { Helpers, Constants } from 'shared/Helpers';
-import { MAP_CONSTANTS } from 'shared/MapConstants';
+import { MAP_CONSTANTS, DEFAULT_OPTIONS } from 'shared/MapConstants';
 import { Cookies, colors } from 'quasar';
 import Vue from 'vue';
 
@@ -21,6 +21,10 @@ export default ({ store }) => {
   const log = urlParams.get(Constants.PARAMS_LOG)
     || Cookies.get(Constants.COOKIE_LOG) || Constants.PARAMS_LOG_HIDDEN;
   const baseLayer = Cookies.get(Constants.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;
+  const notified = urlParams.get(Constants.PARAMS_NOTIFIED)
+    || Cookies.get(Constants.COOKIE_NOTIFIED) || Constants.PARAMS_NOTIFIED_ONLY;
+  const mapDefaults = Cookies.get(Constants.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
+  const saveLocation = Cookies.has(Constants.COOKIE_SAVELOCATION) ? Cookies.get(Constants.COOKIE_SAVELOCATION) : true;
 
   Vue.mixin({
     methods: {
@@ -59,7 +63,18 @@ export default ({ store }) => {
     expires: 30,
     path: '/',
   });
-  console.log(`Session: ${session} / mode: ${mode}`);
+  store.state.view.showNotified = notified;
+  Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
+    expires: 30,
+    path: '/',
+  });
+  Vue.prototype.$mapDefaults = mapDefaults;
+  store.state.view.saveLocation = saveLocation;
+  Cookies.set(Constants.COOKIE_SAVELOCATION, saveLocation, {
+    expires: 30,
+    path: '/',
+  });
+  console.info(`Session: ${session} / mode: ${mode}`);
 
   /*
   Use color.getBrand(xxx)

@@ -1,5 +1,7 @@
 <template>
-  <div id="mc-search-div" ref="mc-search-div">
+  <div id="ks-container"
+       ref="ks-container"
+  >
     <!-- <div id="left-shadow"></div>  TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
@@ -17,6 +19,7 @@
       @focus="onTokenFocus(token,$event)"
       @blur="onTokenFocus(token,$event)"
       @keydown="onKeyPressedOnToken"
+      @touchstart="handleTouch($event, null, deleteLastToken)"
     >{{ token.value }}
       <q-tooltip
         :delay="500"
@@ -40,9 +43,11 @@
       @focus="onInputFocus(true)"
       @blur="onInputFocus(false)"
       @keydown="onKeyPressedOnSearchInput"
-      @keyup.esc="searchEnd"
+      @keyup.esc="searchEnd({})"
+      @contextmenu.native.prevent
+      @touchstart.native="handleTouch($event, null, searchInKLab)"
     >
-
+    <!-- :style="{ 'background-color': waitForDouble ? 'rgba(0, 0, 0, .1)' : 'transparent' }" TODO: implement way to know if we are waiting -->
       <klab-autocomplete
         @search="search"
         @selected="selected"
@@ -63,14 +68,19 @@
 <script>
 /* eslint-disable no-underscore-dangle */
 
+import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants from 'shared/Constants';
-import Vue from 'vue';
-import KlabAutocomplete from './KlabAutocomplete';
+import KlabAutocomplete from 'components/KlabAutocompleteComponent';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 export default {
   name: 'KlabSearch',
+  components: {
+    KlabAutocomplete,
+  },
+  mixins: [HandleTouch],
   props: {
     maxResults: {
       type: Number,
@@ -218,15 +228,13 @@ export default {
           event.preventDefault();
           break;
         case 13: // ENTER
-          if (!this.suggestionShowed) {
-            this.searchInKLab(event);
-          }
+          this.searchInKLab(event);
           break;
         case 27: // ESCAPE
           if (this.suggestionShowed) {
             this.autocompleteEl.hide();
           } else {
-            this.searchEnd(true);
+            this.searchEnd({ noStore: true });
           }
           event.preventDefault();
           break;
@@ -322,6 +330,9 @@ export default {
     },
     // ask for token to keylab to obtain possibility
     searchInKLab() {
+      if (this.suggestionShowed) {
+        return;
+      }
       if (this.acceptedTokens.length > 0) {
         const urn = this.acceptedTokens.map(token => token.id).join(' ');
         this.sendStompMessage(MESSAGES_BUILDERS.OBSERVATION_REQUEST({
@@ -329,26 +340,32 @@ export default {
           contextId: this.contextId,
           searchContextId: null, // this.searchContextId, -> we don't want delete it for search history
         }, this.$store.state.data.session).body);
+        const searchText = this.acceptedTokens.map(token => token.label).join(' ');
         this.$q.notify({
-          message: this.$t('label.askForObservation', { urn: this.acceptedTokens.map(token => token.label).join(' ') }),
+          message: this.$t('label.askForObservation', { urn: searchText }),
           type: 'info',
           // position: 'top',
           timeout: 2000,
         });
       } else {
-        console.log('Nothing to search for');
+        console.info('Nothing to search for');
       }
-      this.searchEnd();
+      this.searchEnd({});
     },
     // search reset
-    searchEnd(forced = false) {
+    searchEnd({ noStore = false, noDelete = false }) {
       if (!this.suggestionShowed) {
-        if (!forced && this.acceptedTokens.length > 0) {
-          this.storePreviousSearch({
-            acceptedTokens: this.acceptedTokens.slice(0),
-            searchContextId: this.searchContextId,
-            searchRequestId: this.searchRequestId,
-          });
+        if (this.acceptedTokens.length > 0) {
+          if (noDelete) {
+            return;
+          }
+          if (!noStore) {
+            this.storePreviousSearch({
+              acceptedTokens: this.acceptedTokens.slice(0),
+              searchContextId: this.searchContextId,
+              searchRequestId: this.searchRequestId,
+            });
+          }
         }
         this.searchContextId = null;
         this.searchRequestId = 0;
@@ -401,6 +418,12 @@ export default {
       }
       return false;
     },
+    deleteLastToken() {
+      if (this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
+        this.acceptedTokens.pop();
+        this.searchHistoryIndex = -1;
+      }
+    },
   },
   watch: {
     // sinchronize actualSearchString with actualToken
@@ -438,7 +461,7 @@ export default {
         }
         this.result = newResult;
       } else {
-        console.log(`Result discarded for bad request id:\n
+        console.warn(`Result discarded for bad request id:\n
         actual: ${this.searchRequestId} / received: ${requestId}\n`);
         this.setSpinner({
           ...Constants.SPINNER_ERROR,
@@ -542,7 +565,7 @@ export default {
     },
   },
   mounted() {
-    this.searchDiv = this.$refs['mc-search-div'];
+    this.searchDiv = this.$refs['ks-container'];
     this.searchInput = this.$refs['mc-search-input'];
     this.autocompleteEl = this.$refs['mc-autocomplete'];
     if (this.searchLostChar !== null) {
@@ -560,14 +583,16 @@ export default {
     }
     this.inputSearchColor = 'black';
   },
-  components: {
-    KlabAutocomplete,
-  },
 };
 </script>
 
 <style lang="stylus">
   @import '~variables'
+  #ks-container
+    overflow-x hidden
+    overflow-y hidden
+    white-space nowrap
+
   .tokens
     display inline-block
     margin-right 1px
