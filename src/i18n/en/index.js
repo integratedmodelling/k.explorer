@@ -83,6 +83,7 @@ export default {
     geolocationErrorUnknown: 'An unknown error occurred',
     unknownSearchObservation: 'Previous observations results',
     noLogItems: 'Empty log',
+    uploadComplete: 'Upload of file {fileName} complete',
   },
   tooltips: {
     treePane: 'View tree',
@@ -102,6 +103,7 @@ export default {
   errors: {
     connectionError: 'Connection error',
     searchTimeout: 'Search timeout',
+    uploadError: 'Upload error for the file {fileName}',
   },
   langName: 'English',
 };

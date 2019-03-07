@@ -1,5 +1,5 @@
 <template>
-  <div class="fit no-padding map-viewer">
+  <div class="fit no-padding map-viewer" v-upload-single-file="uploadConfig">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
     <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
@@ -55,6 +55,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import UploadSingleFile from 'shared/UploadSingleFileDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
@@ -79,6 +80,9 @@ export default {
       required: true,
     },
   },
+  directives: {
+    UploadSingleFile,
+  },
   data() {
     return {
       center: this.$mapDefaults.center,
@@ -96,6 +100,29 @@ export default {
       geolocationIncidence: null,
       popupContent: 'popupContent',
       popupOverlay: undefined,
+      uploadConfig: {
+        id: null,
+        onUploadProgress: (uploadProgress) => {
+          this.uploadProgress = uploadProgress;
+        },
+        onUploadEnd: (fileName) => {
+          this.$q.notify({
+            message: this.$t('messages.uploadComplete', { fileName }),
+            type: 'info',
+            timeout: 1000,
+          });
+          this.uploadProgress = null;
+        },
+        onUploadError: (error, fileName) => {
+          this.$q.notify({
+            message: `${this.$t('errors.uploadError', { fileName })}\n${error}`,
+            type: 'negative',
+            timeout: 1000,
+          });
+          this.uploadProgress = null;
+        },
+      },
+      uploadProgress: null,
     };
   },
   computed: {

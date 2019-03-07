@@ -56,6 +56,7 @@ export default {
     optionShowAll: 'Vedere tutte',
     optionSaveLocation: 'Ricordare posizione',
     loadShowData: 'Caricare e visualizzare dati',
+    uploadComplete: 'Upload del file {fileName} completo',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
@@ -99,6 +100,8 @@ export default {
   },
   errors: {
     connectionError: 'Errore di connessione',
+    searchTimeout: 'Tempo di ricerca terminato',
+    uploadError: 'Errore durante l\'upload del file {fileName}',
   },
   langName: 'Italiano',
 };
