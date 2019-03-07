@@ -7,6 +7,7 @@
           :keep-color="true"
           color="mc-yellow"
           @click.native="showNode"
+          :disabled="observationInfo.valueCount === 1"
         ></q-checkbox>
       </div>
       <div id="oi-name" class="oi-control oi-text"><span>{{ observationInfo.label }}</span></div>
@@ -196,6 +197,7 @@ export default {
       };
     },
     showNode() {
+      console.log(this.observationInfo.viewerIdx);
       this.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
     },
   },
