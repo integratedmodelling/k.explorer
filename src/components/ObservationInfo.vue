@@ -7,6 +7,7 @@
           :keep-color="true"
           color="mc-yellow"
           @click.native="showNode"
+          :disabled="observationInfo.valueCount === 1"
         ></q-checkbox>
       </div>
       <div id="oi-name" class="oi-control oi-text"><span>{{ observationInfo.label }}</span></div>
