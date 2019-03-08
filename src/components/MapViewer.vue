@@ -1,5 +1,5 @@
 <template>
-  <div class="fit no-padding map-viewer">
+  <div class="fit no-padding map-viewer" v-upload-single-file="uploadConfig">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
     <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
@@ -31,6 +31,20 @@
         </div>
       </div>
     </q-modal>
+    <q-modal
+      v-model="progressBarVisible"
+      :no-route-dismiss="true"
+      :no-esc-dismiss="true"
+      :no-backdrop-dismiss="true"
+    >
+      <q-progress
+        :percentage="uploadProgress"
+        color="mc-main"
+        :stripe="true"
+        :animate="true"
+        height="1em"
+      />
+    </q-modal>
     <div id="mv-popup" ref="mv-popup" class="ol-popup">
       <q-btn
         icon="mdi-close"
@@ -55,6 +69,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import UploadSingleFile from 'shared/UploadSingleFileDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
@@ -79,6 +94,9 @@ export default {
       required: true,
     },
   },
+  directives: {
+    UploadSingleFile,
+  },
   data() {
     return {
       center: this.$mapDefaults.center,
@@ -96,6 +114,29 @@ export default {
       geolocationIncidence: null,
       popupContent: '',
       popupOverlay: undefined,
+      uploadConfig: {
+        refId: null,
+        onUploadProgress: (uploadProgress) => {
+          this.uploadProgress = uploadProgress;
+        },
+        onUploadEnd: (fileName) => {
+          this.$q.notify({
+            message: this.$t('messages.uploadComplete', { fileName }),
+            type: 'info',
+            timeout: 1000,
+          });
+          this.uploadProgress = null;
+        },
+        onUploadError: (error, fileName) => {
+          this.$q.notify({
+            message: `${this.$t('errors.uploadError', { fileName })}\n${error}`,
+            type: 'negative',
+            timeout: 1000,
+          });
+          this.uploadProgress = null;
+        },
+      },
+      uploadProgress: null,
     };
   },
   computed: {
@@ -119,6 +160,9 @@ export default {
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
+    },
+    progressBarVisible() {
+      return this.uploadProgress !== null;
     },
   },
   methods: {

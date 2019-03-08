@@ -189,7 +189,6 @@ export default {
       this.enableContextMenu = false;
     },
     */
-
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
         return text.substring(1, text.length - 1);

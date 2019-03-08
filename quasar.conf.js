@@ -43,6 +43,8 @@ module.exports = function (ctx) {
         REST_STATUS: JSON.stringify('/modeler/engine/status'),
         REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
+        REST_UPLOAD: JSON.stringify('/modeler/resource/put'),
+        REST_UPLOAD_MAX_SIZE: JSON.stringify('1024MB'),
       },
       // distDir: 'dist/ui',
       distDir: '../klab/klab.engine/src/main/resources/static/ui',
@@ -132,6 +134,7 @@ module.exports = function (ctx) {
         'QResizeObservable',
         'QToggle',
         'QCheckbox',
+        'QProgress',
       ],
       directives: [
         'Ripple',
