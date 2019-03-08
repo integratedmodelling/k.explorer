@@ -145,6 +145,7 @@ export default {
     },
     ...mapGetters('data', [
       'hasContext',
+      'contextId',
       'session',
     ]),
     ...mapGetters('view', [
@@ -395,6 +396,7 @@ export default {
       }
     },
     hasContext(newValue) {
+      this.uploadConfig.refId = this.contextId;
       if (newValue) {
         this.setDrawMode(false);
       } else {

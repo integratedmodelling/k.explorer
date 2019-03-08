@@ -43,7 +43,6 @@ export default Vue.directive('upload', {
       const onUploadProgress = (binding.value && binding.value.onUploadProgress && typeof binding.value.onUploadProgress === 'function') ? binding.value.onUploadProgress : () => {};
       const onUploadEnd = (binding.value && binding.value.onUploadEnd && typeof binding.value.onUploadEnd === 'function') ? binding.value.onUploadEnd : () => { console.debug('Upload complete'); };
       const onUploadError = (binding.value && binding.value.onUploadError && typeof binding.value.onUploadError === 'function') ? binding.value.onUploadError : (error) => { console.error(JSON.stringify(error, null, 4)); };
-      const refId = binding.value.refId || null;
 
       /*
         Listen to all of the drag events and bind an event listener to each
@@ -87,7 +86,7 @@ export default Vue.directive('upload', {
           to the form data.
         */
         formData.append('file', file);
-        formData.append('refId', refId);
+        formData.append('refId', binding.value.refId || null);
 
         /*
           Make the request to the POST /file-drag-drop-instant URL
