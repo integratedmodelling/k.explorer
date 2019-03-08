@@ -30,6 +30,7 @@ export default {
     state.treeExpanded = [];
     state.treeTicked = [];
     state.treeSelected = null;
+    state.topLayer = null;
   },
 
   /**

@@ -94,7 +94,7 @@ export default {
       geolocationWaiting: true,
       geolocationId: null,
       geolocationIncidence: null,
-      popupContent: 'popupContent',
+      popupContent: '',
       popupOverlay: undefined,
     };
   },
@@ -336,7 +336,12 @@ export default {
       if (typeof newValue !== 'undefined' && newValue !== null && newValue.pixelSelected !== null) {
         this.mapSelectionMarker.setPosition(newValue.pixelSelected);
         if (this.topLayer !== null) {
-          this.popupContent = `<h3>${this.topLayer.desc}</h3><p>${newValue.value}</p>`;
+          const coordinates = transform(newValue.pixelSelected, 'EPSG:3857', 'EPSG:4326');
+          this.popupContent = `<h3>${this.topLayer.desc}</h3>
+              <div class="mv-popup-separator"></div>
+              <p class="mv-popup-value">${newValue.value}</p>
+              <div class="mv-popup-separator"></div>
+              <p class="mv-popup-coord">${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}</p>`;
           if (!this.exploreMode) {
             this.popupOverlay.setPosition(newValue.pixelSelected);
           }
@@ -510,7 +515,6 @@ export default {
     border-radius 10px
     bottom 25px
     left -48px
-    min-width: 180px
     min-height: 80px
 
     &:after
@@ -536,17 +540,27 @@ export default {
 
     .ol-popup-content
       h3
-        margin 10px 0 .2em 0
+        margin 0 0 .2em 0
         line-height 1.1em
         font-size 1.1em
         color $main-control-main-color
         white-space nowrap
         font-weight 300
       p
-        font-size 1.5em
         margin 0
         color rgba(50, 50, 50, .9)
         white-space nowrap
         font-weight 400
+      .mv-popup-value
+        font-size 1.6em
+        padding 10px 0
+      .mv-popup-coord
+        font-size 0.8em
+        padding-top 5px
+        color rgb(124,124,124)
+      .mv-popup-separator
+        height 1px
+        border-top 1px solid rgba(124,124,124,0.3)
+        margin 0 auto
 
 </style>
