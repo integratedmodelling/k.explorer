@@ -134,6 +134,7 @@ module.exports = function (ctx) {
         'QResizeObservable',
         'QToggle',
         'QCheckbox',
+        'QProgress',
       ],
       directives: [
         'Ripple',

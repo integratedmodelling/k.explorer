@@ -31,6 +31,20 @@
         </div>
       </div>
     </q-modal>
+    <q-modal
+      v-model="progressBarVisible"
+      :no-route-dismiss="true"
+      :no-esc-dismiss="true"
+      :no-backdrop-dismiss="true"
+    >
+      <q-progress
+        :percentage="uploadProgress"
+        color="mc-main"
+        :stripe="true"
+        :animate="true"
+        height="1em"
+      />
+    </q-modal>
     <div id="mv-popup" ref="mv-popup" class="ol-popup">
       <q-btn
         icon="mdi-close"
@@ -101,7 +115,7 @@ export default {
       popupContent: 'popupContent',
       popupOverlay: undefined,
       uploadConfig: {
-        id: null,
+        refId: null,
         onUploadProgress: (uploadProgress) => {
           this.uploadProgress = uploadProgress;
         },
@@ -146,6 +160,9 @@ export default {
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
+    },
+    progressBarVisible() {
+      return this.uploadProgress !== null;
     },
   },
   methods: {
