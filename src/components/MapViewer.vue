@@ -1,7 +1,7 @@
 <template>
-  <div class="fit no-padding map-viewer">
-    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit"></div>
-    <q-icon name="mdi-crosshairs" class="map-selection-marker" :id="`msm-${idx}`" />
+  <div class="fit no-padding map-viewer" v-upload-files="uploadConfig">
+    <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
+    <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
     <q-modal
@@ -42,7 +42,8 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
@@ -66,6 +67,9 @@ export default {
       type: Number,
       required: true,
     },
+  },
+  directives: {
+    UploadFiles,
   },
   data() {
     return {
