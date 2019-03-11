@@ -231,6 +231,8 @@ export default {
             main: observation.main,
             rootContextId: observation.rootContextId,
             notified: observation.notified || observation.previouslyNotified,
+            exportFormats: observation.empty ? undefined : observation.exportFormats,
+            firstChildId: observation.id,
           },
           parentId: observation.parentId,
         });
