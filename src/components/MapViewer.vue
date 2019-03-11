@@ -1,5 +1,5 @@
 <template>
-  <div class="fit no-padding map-viewer" v-upload-single-file="uploadConfig">
+  <div class="fit no-padding map-viewer"  v-upload-files="uploadConfig">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
     <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
@@ -69,7 +69,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
-import UploadSingleFile from 'shared/UploadSingleFileDirective';
+import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
 import Map from 'ol/Map';
@@ -95,7 +95,7 @@ export default {
     },
   },
   directives: {
-    UploadSingleFile,
+    UploadFiles,
   },
   data() {
     return {
@@ -129,7 +129,7 @@ export default {
         },
         onUploadError: (error, fileName) => {
           this.$q.notify({
-            message: `${this.$t('errors.uploadError', { fileName })}\n${error}`,
+            message: `${this.$t('errors.uploadError', { fileName })}\n${error.response.data.message}`,
             type: 'negative',
             timeout: 1000,
           });

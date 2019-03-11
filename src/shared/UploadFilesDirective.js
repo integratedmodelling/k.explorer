@@ -39,7 +39,6 @@ export default Vue.directive('upload', {
       If drag and drop capable, then we continue to bind events to our elements.
     */
     if (determineDragAndDropCapable()) {
-      let file = null;
       const onUploadProgress = (binding.value && binding.value.onUploadProgress && typeof binding.value.onUploadProgress === 'function') ? binding.value.onUploadProgress : () => {};
       const onUploadEnd = (binding.value && binding.value.onUploadEnd && typeof binding.value.onUploadEnd === 'function') ? binding.value.onUploadEnd : () => { console.debug('Upload complete'); };
       const onUploadError = (binding.value && binding.value.onUploadError && typeof binding.value.onUploadError === 'function') ? binding.value.onUploadError : (error) => { console.error(JSON.stringify(error, null, 4)); };
@@ -67,25 +66,30 @@ export default Vue.directive('upload', {
           Capture the files from the drop event and add them to our local files
           array.
         */
-        [file] = e.dataTransfer.files;
-        if (file === null) {
+        const { files } = e.dataTransfer;
+        if (files === null || files.length === 0) {
           return;
         }
-        if (file.size > maxUploadSize) {
-          onUploadError(`File is too large, max sixe is ${maxSize}`);
-          file = null;
-          return;
-        }
+
         /*
           Initialize the form data
         */
         const formData = new FormData();
 
         /*
-          Iterate over any file sent over appending the files
+          Iteate over any file sent over appending the files
           to the form data.
         */
-        formData.append('file', file);
+        const fileNames = [];
+        for (let i = 0; i < files.length; i++) {
+          if (files[i].size > maxUploadSize) {
+            onUploadError(`File is too large, max sixe is ${maxSize}`);
+          } else {
+            formData.append('files[]', files[i]);
+            fileNames.push(files[i].name);
+          }
+        }
+
         formData.append('refId', binding.value.refId || null);
 
         /*
@@ -101,11 +105,9 @@ export default Vue.directive('upload', {
               onUploadProgress(parseInt(Math.round((progressEvent.loaded * 100) / progressEvent.total), 10));
             },
           }).then(() => {
-          onUploadEnd(file !== null ? file.name : null);
-          file = null;
+          onUploadEnd(files !== null && fileNames.length > 0 ? fileNames.join(', ') : null);
         }).catch((error) => {
-          onUploadError(error, file !== null ? file.name : null);
-          file = null;
+          onUploadError(error, files !== null && fileNames.length > 0 ? fileNames.join(', ') : null);
         });
       });
     }
