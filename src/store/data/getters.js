@@ -67,7 +67,12 @@ export default {
    */
   session: state => state.session,
 
-  scaleReference: state => state.scaleReference,
+  scaleReference: (state) => {
+    if (state.context !== null) {
+      return state.context.scaleReference;
+    }
+    return state.scaleReference;
+  },
 
   isScaleLocked: state => state.scaleLocked,
 
