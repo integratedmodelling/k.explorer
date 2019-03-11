@@ -55,6 +55,17 @@
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <q-btn
+            round
+            flat
+            size="sm"
+            icon="mdi-arrow-down"
+            class="kt-download"
+            :style="{ right: `${35 + Math.trunc(prop.node.siblingCount.toString().length / 3) * 5}px` }"
+            v-if="prop.node.exportFormats"
+            @click.native="askForOutputFormat($event, prop.node.firstChildId, prop.node.exportFormats, true)"
+          >
+          </q-btn>
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
         </div>
       </klab-q-tree>
@@ -195,7 +206,7 @@ export default {
       }
       return text;
     },
-    askForOutputFormat(event, observationId, formats) {
+    askForOutputFormat(event, observationId, formats, folder = false) {
       if (formats !== null && formats.length > 0) {
         event.stopPropagation();
         this.$q.dialog({
@@ -210,7 +221,7 @@ export default {
           preventClose: false,
           color: 'info',
         }).then((data) => {
-          this.askDownload(observationId, data);
+          this.askDownload(observationId, data, formats, folder);
         }).catch(() => {
           // pressed cancel, the Quasar Framework manage it with catch, we don't need it
         });
@@ -222,7 +233,8 @@ export default {
         });
       }
     },
-    askDownload(observationId, outputFormat, label = observationId) {
+    askDownload(observationId, outputFormat, formats, folder = false, label = observationId) {
+      const selectedFormat = formats.find(f => f.value === outputFormat);
       Helpers.getAxiosContent(
         `dw_${observationId}`,
         `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
@@ -230,6 +242,8 @@ export default {
           params: {
             format: 'RAW', // TODO change when RAW call work as expected
             outputFormat,
+            adapter: selectedFormat.adapter,
+            folder,
           },
           responseType: 'blob',
         },
@@ -237,7 +251,7 @@ export default {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
           link.href = url;
-          link.setAttribute('download', `${label}.${outputFormat}`);
+          link.setAttribute('download', `${label}.${selectedFormat.extension}`);
           document.body.appendChild(link);
           link.click();
           callback();
