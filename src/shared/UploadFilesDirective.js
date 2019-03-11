@@ -89,8 +89,9 @@ export default Vue.directive('upload', {
             fileNames.push(files[i].name);
           }
         }
-
-        formData.append('refId', binding.value.refId || null);
+        if (typeof binding.value.refId !== 'undefined' && binding.value.refId !== null) {
+          formData.append('refId', binding.value.refId || null);
+        }
 
         /*
           Make the request to the POST /file-drag-drop-instant URL
