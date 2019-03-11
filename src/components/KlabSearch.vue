@@ -326,7 +326,7 @@ export default {
           },
         });
         this.doneFunc([]);
-      }, 2000);
+      }, process.env.SEARCH_TIMEOUT_MS);
     },
     // ask for token to keylab to obtain possibility
     searchInKLab() {
