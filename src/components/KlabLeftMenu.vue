@@ -12,32 +12,40 @@
             :size="40"
             :ball="22"
             wrapperId="spinner-leftmenu-div"
+            @touchstart.native="handleTouch($event, askForSuggestion)"
           ></klab-spinner>
         </div>
       </div>
       <div class="lm-separator"></div>
-      <div id="lm-scales">
-        <!-- scale -->
-        <!-- SPACE -->
-        <scale-reference scale-type="space" :editable="false" orientation="vertical" width="100%"></scale-reference>
-        <div class="lm-separator"></div>
-        <!-- TIME -->
-        <scale-reference scale-type="time" :editable="false" orientation="vertical" width="100%"></scale-reference>
-      </div>
-      <div class="lm-separator"></div>
       <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
       <div class="lm-separator"></div>
-      <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
-        <div class="klab-button klab-action"
-             :class="[{ active: logShowed }]"
-             @click="logAction"
-        ><q-icon name="mdi-console">
+      <div class="klab-button klab-action"
+           :class="[{ active: logShowed }]"
+           @click="logAction"
+      >
+        <q-icon name="mdi-console">
           <q-tooltip
             :offset="[0, 8]"
             self="top left"
             anchor="bottom left"
           >{{ $t('tooltips.logPane') }}</q-tooltip>
-        </q-icon></div>
+        </q-icon>
+      </div>
+      <div class="lm-separator"></div>
+      <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
+        <div class="lm-separator"></div>
+        <div id="lm-scales">
+          <!-- scale -->
+          <!-- SPACE -->
+          <scale-reference scale-type="space" :editable="false" orientation="vertical" width="100%"></scale-reference>
+          <div class="lm-separator"></div>
+          <!-- TIME -->
+          <scale-reference scale-type="time" :editable="false" orientation="vertical" width="100%"></scale-reference>
+        </div>
+        <div class="lm-separator"></div>
+        <div id="lm-bottom-buttons">
+          <stop-actions-buttons></stop-actions-buttons>
+        </div>
       </div>
     </div>
     <div
@@ -59,10 +67,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS } from 'shared/Constants';
+import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS, CUSTOM_EVENTS } from 'shared/Constants';
+import HandleTouch from 'shared/HandleTouchMixin';
 import MainActionsButtons from 'components/MainActionsButtons';
+import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import DockedMainControl from 'components/DockedMainControl.vue';
+import DockedMainControl from 'components/KlabDockedMainControl.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 
@@ -71,10 +81,12 @@ export default {
   components: {
     KlabSpinner,
     MainActionsButtons,
+    StopActionsButtons,
     DockedMainControl,
     KlabLogPane,
     ScaleReference,
   },
+  mixins: [HandleTouch],
   data() {
     return {};
   },
@@ -108,6 +120,9 @@ export default {
         this.setLeftMenuContent(LEFTMENU_COMPONENTS.LOG_COMPONENT);
         this.setLeftMenuState(LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED);
       }
+    },
+    askForSuggestion(event) {
+      this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, event);
     },
   },
   created() {
@@ -152,9 +167,9 @@ export default {
       margin 0 auto
     .klab-button
       display block
-      font-size 40px
-      width 52px
-      height 52px
+      font-size 30px
+      width 42px
+      height 42px
       padding 0 5px
       margin 15px auto
     .klab-main-actions .klab-button
@@ -163,8 +178,8 @@ export default {
       &:active
         color white
     .klab-button-notification
-      width 13px
-      height 13px
+      width 10px
+      height 10px
       top 5px
       right 8px
     #lm-scales

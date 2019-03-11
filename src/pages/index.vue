@@ -1,4 +1,4 @@
-<template>
+
   <q-page class="column">
     <div class="col row full-height" id="viewer-container">
       <keep-alive>
@@ -13,6 +13,11 @@
     </div>
     <transition name="component-fade" mode="out-in">
       <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
+    </transition>
+    <transition appear
+                enter-active-class="animated zoomIn"
+                leave-active-class="animated zoomOut">
+      <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
     </transition>
     <q-modal
         id="modal-connection-status"
@@ -79,8 +84,281 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
-import Constants, { VIEWERS } from 'shared/Constants';
+import { mapGetters, mapActions } from 'vuex';
+import { VIEWERS } from 'shared/Constants';
+
+import KlabMainControl from 'components/KlabMainControl.vue';
+import DataViewer from 'components/DataViewer.vue';
+import ReportViewer from 'components/ReportViewer.vue';
+import DataflowViewer from 'components/DataflowViewer.vue';
+import KlabSpinner from 'components/KlabSpinner.vue';
+
+import { colors, Cookies } from 'quasar';
+import 'ol/ol.css';
+import 'simplebar/dist/simplebar.css';
+
+export default {
+  /* eslint-disable object-shorthand */
+  name: 'IndexPage',
+  components: {
+    KlabMainControl,
+    DataViewer,
+    ReportViewer,
+    DataflowViewer,
+    KlabSpinner,
+  },
+  computed: {
+    ...mapGetters('stomp', [
+      'connectionState',
+    ]),
+    ...mapGetters('view', [
+      'searchIsActive',
+      'searchIsFocused',
+      'mainViewerName',
+      'mainViewer',
+      'isScaleEditing',
+      'isDrawMode',
+    ]),
+    ...mapState('view', [
+      'waitingGeolocation',
+    ]),
+    logVisible() {
+      return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
+    },
+    modalVisible: {
+      get() {
+        return this.connectionState !== this.$constants.CONNECTION_UP;
+      },
+      set(visible) {
+        console.warn(`Try to set modalVisible as ${visible}`);
+      },
+    },
+    showHelp: {
+      get() {
+        return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
+      },
+      set(needHelp) {
+        this.needHelp = needHelp;
+      },
+    },
+    modalText() {
+      return {
+        [this.$constants.CONNECTION_UNKNOWN]: this.$t('messages.connectionClosed'),
+        [this.$constants.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
+        [this.$constants.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
+        [this.$constants.CONNECTION_ERROR]: this.$t('errors.connectionError'),
+      }[this.connectionState];
+    },
+    modalColor() {
+      return {
+        [this.$constants.CONNECTION_UNKNOWN]: colors.getBrand('warning'),
+        [this.$constants.CONNECTION_DOWN]: colors.getBrand('warning'),
+        [this.$constants.CONNECTION_WORKING]: colors.getBrand('info'),
+        [this.$constants.CONNECTION_ERROR]: colors.getBrand('negative'),
+      }[this.connectionState];
+    },
+    modalAnimated() {
+      return {
+        [this.$constants.CONNECTION_UNKNOWN]: false,
+        [this.$constants.CONNECTION_DOWN]: false,
+        [this.$constants.CONNECTION_WORKING]: true,
+        [this.$constants.CONNECTION_ERROR]: false,
+      }[this.connectionState];
+    },
+  },
+  methods: {
+    ...mapActions('view', [
+      'searchStart',
+      'searchStop',
+      'searchFocus',
+      'setMainViewer',
+    ]),
+    setSiblingsToAskFor() {
+      // calculate and set min results for siblings
+      // we suppose that maxHeight is vh and childMinHeight are pixels
+      const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
+      const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
+      const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
+      console.info(`Setted max siblings as ${minResults}`);
+      this.$store.state.data.siblingsToAskFor = minResults;
+    },
+    storeNoNeedHelp() {
+      this.needHelp = false;
+      Cookies.set(Constants.COOKIE_HELP_ON_START, false, {
+        expires: 30,
+        path: '/',
+      });
+    },
+    hideHelp() {
+      if (this.remember) {
+        this.storeNoNeedHelp();
+      }
+      this.needHelp = false;
+    },
+  },
+  watch: {
+  },
+  created() {
+    if (typeof this.mainViewer === 'undefined') {
+      this.setMainViewer(VIEWERS.DATA_VIEWER);
+    }
+  },
+  mounted() {
+    // const self = this;
+    window.addEventListener('keydown', (event) => {
+      if (this.modalVisible || this.isScaleEditing || this.isDrawMode) {
+        return;
+      }
+      if (event.keyCode === 27 && this.searchIsActive) {
+        this.searchStop();
+        event.preventDefault();
+        return;
+      }
+      if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 32 || (event.keyCode >= 65 && event.keyCode <= 90)) {
+        if (!this.searchIsActive) {
+          this.searchStart(event.key);
+          event.preventDefault();
+        } else if (!this.searchIsFocused) {
+          this.searchFocus({ char: event.key, focused: true });
+          event.preventDefault();
+        }
+      }
+    });
+    this.setSiblingsToAskFor();
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
+      this.askForUndocking = ask;
+    });
+  },
+};
+</script>
+<style scoped>
+  .row > div {
+    /*
+    padding: 10px 15px;
+    background: rgba(86, 61, 124, .15);
+    border: 1px solid rgba(86, 61, 124, .2);
+    */
+  }
+  .bg-opaque-white {
+    background: rgba(255, 255, 255, 0.5)
+  }
+</style>
+<style lang="stylus">
+  .modal-borders
+    border-radius 40px
+  .klab-spinner
+    display inline
+    vertical-align middle
+    background-color white
+    -webkit-border-radius 40px
+    -moz-border-radius 40px
+    border-radius 40px
+    padding 3px
+    margin 0
+
+  #modal-spinner
+    margin-right 10px
+    margin-left 5px
+  .modal-klab-content > span
+    display inline-block
+    line-height 100%
+    vertical-align middle
+    margin-right 15px
+
+  #modal-connection-status .modal-content
+    min-width 200px
+
+</style>
+
+  <q-page class="column">
+    <div class="col row full-height" id="viewer-container">
+      <keep-alive>
+        <!-- <transition name="component-fade" mode="out-in"> -->
+        <component :is="mainViewer.name"></component>
+        <!-- </transition> -->
+      </keep-alive>
+      <q-resize-observable @resize="setSiblingsToAskFor" />
+    </div>
+    <div class="col-1 row">
+      <klab-log v-if="logVisible"></klab-log>
+    </div>
+    <transition name="component-fade" mode="out-in">
+      <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
+    </transition>
+    <transition appear
+                enter-active-class="animated zoomIn"
+                leave-active-class="animated zoomOut">
+      <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
+    </transition>
+    <q-modal
+        id="modal-connection-status"
+        v-model="modalVisible"
+        no-esc-dismiss
+        no-backdrop-dismiss
+        :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
+        :content-classes="['modal-borders', 'no-padding', 'no-margin']"
+    >
+      <div class="bg-opaque-white modal-borders">
+          <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
+            <klab-spinner
+              :color="modalColor"
+              :size="40"
+              :ball="18"
+              id="modal-spinner"
+              :animated="modalAnimated"
+              wrapperId="modal-connection-status"
+            ></klab-spinner>
+            <span class="text-white">{{ modalText }}</span>
+          </div>
+      </div>
+    </q-modal>
+    <q-modal
+      v-model="showHelp"
+      id="modal-show-help"
+      :content-classes="['gl-msg-content']"
+    >
+      <div class="bg-opaque-white">
+        <div class="q-pa-lg">
+          <h5>{{ $t('messages.needHelpTitle') }}</h5>
+          <p v-html="$t(`messages.needHelp${helpIndex}Text`)"></p>
+          <div class="gl-btn-container">
+            <q-btn
+              :label="$t('label.appPrevious')"
+              color="mc-main"
+              :disable="helpIndex === 0"
+              @click="helpIndex -= 1"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appNext')"
+              color="mc-main"
+              :disable="helpIndex === 3"
+              @click="helpIndex += 1"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appOK')"
+              color="mc-main"
+              @click="hideHelp"
+            ></q-btn>
+            <q-checkbox
+              v-model="remember"
+              :keep-color="true"
+              color="mc-main"
+              :label="$t('label.rememberDecision')"
+              class="rmd-checkbox"
+              :left-label="true"
+            ></q-checkbox>
+          </div>
+        </div>
+      </div>
+    </q-modal>
+  </q-page>
+</template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex';
+import { VIEWERS } from 'shared/Constants';
+import { mapGetters, mapActions } from 'vuex';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -104,9 +382,7 @@ export default {
   },
   data() {
     return {
-      needHelp: !Cookies.has(Constants.COOKIE_HELP_ON_START),
-      helpIndex: 0,
-      remember: false,
+      askForUndocking: false,
     };
   },
   computed: {
@@ -227,6 +503,9 @@ export default {
       }
     });
     this.setSiblingsToAskFor();
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
+      this.askForUndocking = ask;
+    });
   },
 };
 </script>
@@ -267,21 +546,12 @@ export default {
   #modal-connection-status .modal-content
     min-width 200px
 
-  #modal-show-help
-    .gl-msg-content
-      width 500px
-      padding 0
-      color rgba(0,0,0,0.7)
-      p
-        padding 20px 0
-    .rmd-checkbox
-      position absolute
-      right 25px
-      bottom 15px
-      font-size 10px
-
-    .gl-msg-content .gl-btn-container
-      margin-bottom 15px
-
+  #mc-undocking
+    position fixed
+    left 0
+    top 0
+    background-color rgba(35, 35, 35, .3)
+    border 4px solid rgba(135, 135, 135, .6)
+    animation-duration .2s
 
 </style>

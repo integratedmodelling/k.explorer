@@ -27,8 +27,8 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            // WS_BASE_URL: JSON.stringify('http://192.168.0.99:8283'), // Enrico
-            WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
+            WS_BASE_URL: JSON.stringify('http://192.168.0.99:8283'), // Enrico
+            // WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
             STOMP_CLIENT_DEBUG: true,
           }
           : { // and on build (production):
@@ -43,6 +43,9 @@ module.exports = function (ctx) {
         REST_STATUS: JSON.stringify('/modeler/engine/status'),
         REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
+        REST_UPLOAD: JSON.stringify('/modeler/resource/put'),
+        REST_UPLOAD_MAX_SIZE: JSON.stringify('1024MB'),
+        SEARCH_TIMEOUT_MS: JSON.stringify('4000'),
       },
       // distDir: 'dist/ui',
       distDir: '../klab/klab.engine/src/main/resources/static/ui',
@@ -132,9 +135,11 @@ module.exports = function (ctx) {
         'QResizeObservable',
         'QToggle',
         'QCheckbox',
+        'QProgress',
       ],
       directives: [
         'Ripple',
+        'TouchHold',
       ],
       // Quasar plugins
       plugins: [

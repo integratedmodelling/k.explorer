@@ -49,37 +49,13 @@
       </q-icon></div>
       -->
     </div>
-    <div :class="separatorClass" class="mab-separator"></div>
-    <!-- RESET CONTEXT or INTERRUPT TASK-->
-    <div class="klab-destructive-actions">
-      <div class="klab-button klab-reset-context"
-           @click="resetContext"
-           v-if="!hasTasks(contextId)"
-      ><q-icon name="mdi-close-circle-outline">
-        <q-tooltip
-          :offset="[0, 8]"
-          :self="tooltipAnchor('top')"
-          :anchor="tooltipAnchor('bottom')"
-        >{{ $t('tooltips.resetContext') }}</q-tooltip>
-      </q-icon></div>
-      <div class="klab-button klab-interrupt-task"
-           @click="interruptTask"
-           v-if="hasTasks(contextId)"
-      ><q-icon name="mdi-stop-circle-outline">
-        <q-tooltip
-          :offset="[0, 8]"
-          :self="tooltipAnchor('top')"
-          :anchor="tooltipAnchor('bottom')"
-        >{{ $t('tooltips.interruptTask',{ taskDescription: lastActiveTaskText }) }}</q-tooltip>
-      </q-icon></div>
-    </div>
+    <!-- <div :class="separatorClass" class="mab-separator"></div> -->
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { VIEWERS, FAKE_TEXTS } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { VIEWERS } from 'shared/Constants';
 
 export default {
   name: 'MainActionsButtons',
@@ -105,8 +81,6 @@ export default {
       'hasContext',
       'hasObservations',
       'hasDataflow',
-      'contextLabel',
-      'contextId',
     ]),
     ...mapGetters('view', [
       'spinnerColor',
@@ -115,18 +89,6 @@ export default {
       'statusTextsLength',
       'isMainControlDocked',
     ]),
-    ...mapGetters('stomp', [
-      'hasTasks',
-      'lastActiveTask',
-      'tasks',
-    ]),
-    lastActiveTaskText() {
-      const text = this.lastActiveTask(this.contextId) === null ? '' : this.lastActiveTask(this.contextId).description;
-      if (text === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
-        return this.$t('messages.unknownSearchObservation');
-      }
-      return text;
-    },
   },
   methods: {
     ...mapActions('view', [
@@ -134,17 +96,6 @@ export default {
     ]),
     tooltipAnchor(where) {
       return `${where} ${this.orientation === 'horizontal' ? 'middle' : 'left'}`;
-    },
-    resetContext() {
-      this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
-    },
-    interruptTask() {
-      const task = this.lastActiveTask(this.contextId);
-      if (task !== null && task.alive) {
-        this.sendStompMessage(MESSAGES_BUILDERS.TASK_INTERRUPTED({
-          taskId: task.id,
-        }, this.$store.state.data.session).body);
-      }
     },
   },
   created() {

@@ -75,7 +75,7 @@ export default {
       'isScaleLocked',
     ]),
     resolution() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceResolution : '';
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionConverted : '';
     },
     unit() {
       return this.scaleType === 'space' ? this.scaleReference.spaceUnit : moment().year();
@@ -84,8 +84,7 @@ export default {
       return this.scaleType === 'space' ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      // return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : moment().year();
-      return this.scaleType === 'space' ? `${this.resolution} ${this.unit}` : this.unit;
+      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : this.unit;
     },
     scale() {
       return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { Helpers } from 'shared/Helpers';
-import Constants, { VIEWERS, LEFTMENU_COMPONENTS } from 'shared/Constants';
+import Constants, { VIEWERS, LEFTMENU_COMPONENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
@@ -223,11 +223,14 @@ export default {
     commit('SET_OBSERVATION_INFO', observation);
   },
 
-  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected }) => {
-    if (pixelSelected !== null && layerSelected !== null) {
-      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${state.observationInfo.id}`;
+  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected = null, observationId = null }) => {
+    if (pixelSelected !== null) {
+      if (observationId === null) {
+        observationId = state.observationInfo.id;
+      }
+      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
-      Helpers.getAxiosContent(`pv_${state.observationInfo.id}`, url, {
+      Helpers.getAxiosContent(`pv_${observationId}`, url, {
         params: {
           format: 'SCALAR',
           locator: `S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
@@ -240,6 +243,8 @@ export default {
         commit('SET_MAP_SELECTION', { pixelSelected, layerSelected, value });
         callback();
       });
+    } else {
+      commit('SET_MAP_SELECTION', EMPTY_MAP_SELECTION);
     }
   },
 
@@ -253,6 +258,10 @@ export default {
 
   setCustomContext: ({ commit }, customContext) => {
     commit('SET_CUSTOM_CONTEXT', customContext);
+  },
+
+  setTopLayer: ({ commit }, topLayer) => {
+    commit('SET_TOP_LAYER', topLayer);
   },
 
 };

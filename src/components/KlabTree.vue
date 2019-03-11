@@ -1,7 +1,7 @@
 <template>
   <div id="kt-container" class="relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
     <div id="kt-tree-container" class="simplebar-vertical-only">
-      <q-tree
+      <klab-q-tree
         ref="klab-tree"
         :nodes="visibleTree(filter)"
         node-key="id"
@@ -13,9 +13,18 @@
         control-color="white"
         color="white"
         :dark="true"
+        :double-click-function="fitMap"
       >
         <div slot="header-default" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '', hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}
+          <span
+            v-ripple="prop.node.main"
+            :class="[
+              'node-element', prop.node.main ? 'node-emphasized' : '',
+               hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
+               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : ''
+            ]"
+            :id="`node-${prop.node.id}`"
+          >{{ prop.node.label }}
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
@@ -48,7 +57,7 @@
           <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
           <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
         </div>
-      </q-tree>
+      </klab-q-tree>
     </div>
     <!-- TODO rightClickHandler
     REMEMBER: add @contextmenu to div#kt-tree-container
@@ -74,9 +83,13 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import SimpleBar from 'simplebar';
+import KlabQTree from 'components/KlabTreeComponent';
 
 export default {
   name: 'klabTree',
+  components: {
+    KlabQTree,
+  },
   data() {
     return {
       ticked: [],
@@ -105,6 +118,7 @@ export default {
     ...mapGetters('view', [
       'observationInfo',
       'hasObservationInfo',
+      'topLayerId',
     ]),
     ...mapState('view', [
       'treeSelected',
@@ -175,7 +189,6 @@ export default {
       this.enableContextMenu = false;
     },
     */
-
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
         return text.substring(1, text.length - 1);
@@ -234,6 +247,12 @@ export default {
     changeNodeState({ nodeId, state }) {
       if (typeof this.$refs['klab-tree'] !== 'undefined') {
         this.$refs['klab-tree'].setTicked([nodeId], state);
+      }
+    },
+    fitMap(node, meta) {
+      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+      if (node && meta && meta.ticked) {
+        this.showNode({ nodeId: node.id, selectMainViewer: true });
       }
     },
   },
@@ -456,7 +475,8 @@ export default {
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
-
+      .node-on-top
+        text-decoration underline
       .kt-q-tooltip
         background-color #333
 

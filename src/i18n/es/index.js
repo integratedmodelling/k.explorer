@@ -89,6 +89,7 @@ export default {
     needHelp3Text: 'The last',
     unknownSearchObservation: 'Resultado de observaciones previas',
     noLogItems: 'No hay elementos en el log',
+    uploadComplete: 'Upload del file {fileName} completado',
   },
   tooltips: {
     treePane: 'Ver árbol',
@@ -107,6 +108,8 @@ export default {
   },
   errors: {
     connectionError: 'Error de conexión',
+    searchTimeout: 'Tiempo de busqueda terminado',
+    uploadError: 'Error durante el upload del file {fileName}',
   },
   langName: 'Español',
 };

@@ -66,7 +66,7 @@ export default {
     connectionClosed: 'Connection closed',
     connectionWorking: 'Trying to reconnect',
     connectionUnknown: 'Starting...',
-    noSpaceAllowedInSearch: 'It is not allowed to use spaces in search box',
+    noSpaceAllowedInSearch: 'Spaces cannot be used in the search box',
     noSearchResults: 'No search results',
     noActionForObservation: 'No actions available',
     noTime: 'no time',
@@ -91,6 +91,7 @@ export default {
     needHelp3Text: 'The last',
     unknownSearchObservation: 'Previous observations results',
     noLogItems: 'Empty log',
+    uploadComplete: 'Upload of file {fileName} complete',
   },
   tooltips: {
     treePane: 'View tree',
@@ -110,6 +111,7 @@ export default {
   errors: {
     connectionError: 'Connection error',
     searchTimeout: 'Search timeout',
+    uploadError: 'Upload error for the file {fileName}',
   },
   langName: 'English',
 };

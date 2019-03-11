@@ -17,7 +17,7 @@
       <q-btn
         icon="mdi-close"
         class="mcm-icon-close-popover"
-        @click="$refs['mcm-main-popover'].hide()"
+        @click="closePopups"
         color="grey-8"
         size="xs"
         flat
@@ -245,8 +245,7 @@ export default {
       if (this.contextId === contextId) {
         return;
       }
-      this.$refs['mcm-main-popover'].hide();
-      this.$refs['mcm-contexts-popover'].hide();
+      this.closePopups();
       this.clearTooltip();
       if (contextId !== null) {
         this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
@@ -265,7 +264,7 @@ export default {
         if (contextId !== null) {
           this.setWaitinForReset(contextId);
         } else {
-          this.$refs['mcm-main-popover'].hide();
+          this.closePopups();
         }
       } else {
         this.loadContext(contextId);
@@ -307,10 +306,19 @@ export default {
         timeout: 500,
       });
     },
+    closePopups() {
+      this.$refs['mcm-main-popover'].hide();
+      this.$refs['mcm-contexts-popover'].hide();
+    },
   },
   watch: {
     hasContext() {
-      this.$refs['mcm-main-popover'].hide();
+      this.closePopups();
+    },
+    searchIsActive(newValue) {
+      if (newValue) {
+        this.closePopups();
+      }
     },
   },
 };

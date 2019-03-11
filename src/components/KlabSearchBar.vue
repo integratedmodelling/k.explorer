@@ -15,26 +15,8 @@
         :ball="22"
         wrapperId="ksb-spinner"
         @dblclick.native="emitSpinnerDoubleclick"
+        @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
-    </div>
-    <div
-      id="ksb-undock"
-      v-else
-    >
-      <div
-        id="ksb-undock-icon"
-        @click = "undock"
-      >
-        <q-icon
-          name="mdi-pin"
-          size="1.2em"
-        ></q-icon>
-        <q-tooltip
-          :offset="[5,0]"
-          self="top left"
-          anchor="top right"
-        >{{ $t('tooltips.undock') }}</q-tooltip>
-      </div>
     </div>
     <div
       id="ksb-search-container"
@@ -42,7 +24,7 @@
           'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
           'border-right': '2px solid '+ spinnerColor.color
         }">
-      <klab-search v-if="searchIsActive"></klab-search>
+      <klab-search ref="klab-search" v-if="searchIsActive" ></klab-search>
       <div class="ksb-context-text text-white" v-else>
         <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
       </div>
@@ -61,6 +43,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 export default {
   name: 'KlabSearchBar',
@@ -70,6 +53,7 @@ export default {
     ScrollingText,
     MainControlMenu,
   },
+  mixins: [HandleTouch],
   data() {
     return {};
   },
@@ -93,14 +77,30 @@ export default {
   methods: {
     ...mapActions('view', [
       'setMainViewer',
+      'searchStart',
+      'searchFocus',
+      'searchStop',
     ]),
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
+    showSuggestions(event) {
+      if (event.targetTouches.length === 1) {
+        event.preventDefault();
+        if (!this.searchIsActive) {
+          this.searchStart(' ');
+        } else if (!this.searchIsFocused) {
+          this.searchFocus({ char: ' ', focused: true });
+        } else {
+          this.$refs['klab-search'].searchEnd({ noDelete: false });
+        }
+      }
+    },
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);
     },
-    undock() {
+    undock(event) {
+      console.dir(event);
       this.setMainViewer(VIEWERS.DATA_VIEWER);
     },
   },
@@ -116,6 +116,9 @@ export default {
     },
   },
   mounted() {
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, (event) => {
+      this.showSuggestions(event);
+    });
   },
 };
 </script>

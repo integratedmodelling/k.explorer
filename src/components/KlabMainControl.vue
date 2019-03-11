@@ -18,6 +18,7 @@
           :ball="22"
           wrapperId="spinner-lonely-div"
           @dblclick.native="show"
+          @touchstart.native="handleTouch($event, null, show)"
         ></klab-spinner>
       </div>
     </transition>
@@ -34,7 +35,7 @@
       :flat="true"
       v-draggable="dragMCConfig"
       v-show="!isHidden"
-      @mousedown.native="preventDrag"
+      @contextmenu.native.prevent
     >
       <q-card-title
         id="mc-q-card-title"
@@ -44,7 +45,7 @@
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
         }"
       >
-        <klab-search-bar></klab-search-bar>
+        <klab-search-bar ref="klab-search-bar"></klab-search-bar>
       </q-card-title>
 
       <q-card-main
@@ -97,6 +98,7 @@
         </div>
         <div class="mc-separator" style="right: 160px"></div>
         <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
+        <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
     </q-card>
     </transition>
@@ -112,10 +114,12 @@
 <script>
 // import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
-import { Draggable } from 'draggable-vue-directive';
+// import { Draggable } from 'draggable-vue-directive';
+import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
 import MainActionsButtons from 'components/MainActionsButtons';
+import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearchBar from 'components/KlabSearchBar.vue';
 import KlabTreePane from 'components/KlabTreePane.vue';
@@ -123,6 +127,7 @@ import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
+import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
 
@@ -137,10 +142,12 @@ export default {
     ScaleReference,
     ScaleChangeDialog,
     MainActionsButtons,
+    StopActionsButtons,
   },
   directives: {
     Draggable,
   },
+  mixins: [HandleTouch],
   data() {
     return {
       isHidden: false,
@@ -152,6 +159,7 @@ export default {
         }, 100),
         onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
+        fingers: 2,
       },
       dragging: false,
       askForDocking: false,
@@ -180,6 +188,13 @@ export default {
     ...mapActions('view', [
       'setMainViewer',
     ]),
+    callStartType(event) {
+      if (!this.searchIsFocused) {
+        this.$refs['klab-search-bar'].startType(event);
+      } else {
+        event.evt.stopPropagation();
+      }
+    },
     onDebouncedPositionChanged(absolutePosition) {
       if (this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
         this.askForDocking = true;
@@ -214,13 +229,6 @@ export default {
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
       document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
-    },
-    /**
-     * prevent native drag in chrome
-     * @param event
-     */
-    preventDrag(event) {
-      event.preventDefault();
     },
     checkWhereWasDragged() {
       this.dragging = false;

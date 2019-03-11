@@ -67,14 +67,19 @@ Feature notification on Integrated Modelling Confluence
 - Bug with context date fixed
 - Various bug fixes
 
-## 0.6 ?
+## 0.6 - 2019-03-04
 ### Added
 - Left menu with main actions and log viewer
-- main control can be docked to the left menu
+- Main control can be docked to the left menu
+- When a layer is selected and visible, a click on map show info about the point
+- Double click on visible layer, fit map on windows and put on top the selected layer
+### Improvements
+- Better touch control
+- Double click on tree fit the context in the window
+- Managed context out of -180º/180º longitude range creating a splitted polygon
+- Is not possible to set the center out of -180º/180º longitude
 ### Solved
 - Text when log is empty
 - Better style for report
 - href on report now work
-- managed context out of -180º/180º longitude range
-- cannot set center out of -180º/180º longitude
 - more style problems solved

@@ -68,8 +68,32 @@ export default {
     "timeScale" : {
       "type" : "integer"
     },
-    "resolution" : {
+    "spaceResolution" : {
       "type" : "number"
+    },
+    "spaceResolutionDescription" : {
+      "type" : "string"
+    },
+    "spaceResolutionConverted" : {
+      "type" : "number"
+    },
+    "spaceUnit" : {
+      "type" : "string"
+    },
+    "timeResolution" : {
+      "type" : "number"
+    },
+    "timeResolutionDescription" : {
+      "type" : "string"
+    },
+    "timeUnit" : {
+      "type" : "string"
+    },
+    "unlockSpace" : {
+      "type" : "boolean"
+    },
+    "unlockTime" : {
+      "type" : "boolean"
     },
     "resolutionDescription" : {
       "type" : "string"

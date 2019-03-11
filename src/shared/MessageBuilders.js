@@ -139,7 +139,7 @@ export const MESSAGES_BUILDERS = {
 
   SCALE_REFERENCE: ({
     scaleReference,
-    spaceResolution,
+    spaceResolutionConverted,
     spaceUnit,
     timeResolutionDescription = '',
     timeUnit = '',
@@ -151,7 +151,7 @@ export const MESSAGES_BUILDERS = {
     OUT.PAYLOAD_CLASS_SCALEREFERENCE,
     {
       ...scaleReference,
-      ...(typeof spaceResolution !== 'undefined' && { spaceResolution }),
+      ...(typeof spaceResolutionConverted !== 'undefined' && { spaceResolutionConverted }),
       ...(typeof spaceUnit !== 'undefined' && { spaceUnit }),
       ...(typeof timeResolutionDescription !== 'undefined' && { timeResolutionDescription }),
       ...(typeof timeUnit !== 'undefined' && { timeUnit }),
