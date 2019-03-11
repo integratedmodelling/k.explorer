@@ -83,3 +83,12 @@ Feature notification on Integrated Modelling Confluence
 - Better style for report
 - href on report now work
 - more style problems solved
+
+## 0.6.5 - ?
+### Added
+- Download folder as shape file
+- Upload file (no engine action is implemented today (2019/3/11))
+### Improvements
+- Info for a point directly clicking on map without need to open observation info
+### Solved
+- Search timeout enlarged to avoid problems if engine is calculating
