@@ -129,7 +129,7 @@ export default {
         },
         onUploadError: (error, fileName) => {
           this.$q.notify({
-            message: `${this.$t('errors.uploadError', { fileName })}\n${error}`,
+            message: `${this.$t('errors.uploadError', { fileName })}\n${error.response.data.message}`,
             type: 'negative',
             timeout: 1000,
           });
