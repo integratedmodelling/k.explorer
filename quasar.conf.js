@@ -27,7 +27,7 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            WS_BASE_URL: JSON.stringify('http://192.168.0.99:8283'), // Enrico
+            WS_BASE_URL: JSON.stringify('http://localhost:8283'), // Enrico
             // WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
             STOMP_CLIENT_DEBUG: true,
           }
