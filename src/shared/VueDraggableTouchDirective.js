@@ -83,7 +83,7 @@ export const Draggable = {
       return event;
     }
     function eventDown(event) {
-      if (event instanceof TouchEvent) {
+      if (window.TouchEvent && event instanceof TouchEvent) {
         if (event.targetTouches.length < binding.value.fingers)
           return;
         transformTouchEvent(event);
@@ -97,7 +97,7 @@ export const Draggable = {
     }
     function eventMove(event) {
       event.preventDefault();
-      if (event instanceof TouchEvent) {
+      if (window.TouchEvent && event instanceof TouchEvent) {
         transformTouchEvent(event);
       }
       var stopDragging = binding.value && binding.value.stopDragging;
