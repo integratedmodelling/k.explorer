@@ -108,7 +108,7 @@ export default {
             // i need WKT from parent
             if (observation.parentId === rootGetters['data/contextId']) {
               // parent is context
-              observation.encodedShape = rootGetters['data/fullContext'].encodedShape;
+              observation.encodedShape = rootGetters['data/context'].encodedShape;
             } else {
               // search for parent in tree
               const parent = Helpers.findNodeById(rootGetters['data/tree'], observation.parentId);

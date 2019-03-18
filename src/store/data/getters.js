@@ -39,18 +39,20 @@ export default {
 
   dataflowStatuses: state => state.dataflowStatuses,
 
+  context: state => state.contexts.peek(),
+  contextsCount: state => state.contexts.size(),
+  previousContext: state => state.contexts.previous(),
+
   /**
    * If no context, return null
    */
-  hasContext: state => state.context !== null,
+  hasContext: (state, getters) => getters.context !== null,
 
-  contextLabel: state => (state.context !== null ? state.context.label : null),
+  contextLabel: (state, getters) => (getters.context !== null ? getters.context.label : null),
 
-  contextId: state => (state.context !== null ? state.context.id : null),
+  contextId: (state, getters) => (getters.context !== null ? getters.context.id : null),
 
-  fullContext: state => state.context,
-
-  contextEncodedShape: state => (state.context !== null ? `${state.context.spatialProjection} ${state.context.encodedShape}` : ''),
+  contextEncodedShape: (state, getters) => (getters.context !== null ? `${getters.context.spatialProjection} ${getters.context.encodedShape}` : ''),
 
   contextsHistory: (state) => {
     if (state.contextsHistory.length > 0) {
@@ -59,7 +61,7 @@ export default {
     return state.contextsHistory;
   },
 
-  contextReloaded: state => state.context !== null && typeof state.context.restored !== 'undefined' && state.context.restored,
+  contextReloaded: (state, getters) => getters.context !== null && typeof getters.context.restored !== 'undefined' && getters.context.restored,
 
 
   /**
@@ -67,9 +69,9 @@ export default {
    */
   session: state => state.session,
 
-  scaleReference: (state) => {
-    if (state.context !== null) {
-      return state.context.scaleReference;
+  scaleReference: (state, getters) => {
+    if (getters.context !== null) {
+      return getters.context.scaleReference;
     }
     return state.scaleReference;
   },

@@ -9,18 +9,18 @@ export default {
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */
-  setContext: ({ commit, state, dispatch }, context) => {
+  setContext: ({ commit, getters, dispatch }, context) => {
     // If set context, everything is resetted
     // set new context
-    if (state.context !== null && state.context.id === context.id) {
+    if (getters.context !== null && getters.context.id === context.id) {
       return;
     }
     commit('SET_CONTEXT', context);
     dispatch('view/setContextLayer', context, { root: true });
   },
 
-  resetContext: ({ commit, dispatch, state }) => {
-    if (state.context !== null) {
+  resetContext: ({ commit, dispatch, state, getters }) => {
+    if (getters.context !== null) {
       commit('SET_CONTEXT', null);
       dispatch('getSessionContexts');
       dispatch('view/resetContext', null, { root: true });

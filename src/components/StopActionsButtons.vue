@@ -27,15 +27,20 @@
 import { mapGetters } from 'vuex';
 import { FAKE_TEXTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import LoadContext from 'shared/LoadContextMixin';
 
 export default {
   name: 'StopActionsButtons',
+  mixins: [
+    LoadContext,
+  ],
   data() {
     return {};
   },
   computed: {
     ...mapGetters('data', [
       'contextId',
+      'previousContext',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -54,7 +59,11 @@ export default {
       return `${where} ${this.orientation === 'horizontal' ? 'middle' : 'left'}`;
     },
     resetContext() {
-      this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+      if (this.previousContext !== null) {
+        this.loadOrReloadContext(this.previousContext.id);
+      } else {
+        this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+      }
     },
     interruptTask() {
       const task = this.lastActiveTask(this.contextId);

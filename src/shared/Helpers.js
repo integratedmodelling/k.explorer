@@ -115,6 +115,7 @@ const Helpers = {
       main: observation.main,
       exportFormats: observation.exportFormats,
       rootContextId: observation.rootContextId,
+      observationType: observation.observationType,
     },
     parentId: observation.folderId === null ? observation.parentId : observation.folderId,
   }),
@@ -247,8 +248,8 @@ const Helpers = {
     const isRaster = this.isRaster(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
     let spatialProjection;
     if (isRaster) {
-      if (observation.parentId === store.state.data.context.id) {
-        spatialProjection = store.state.data.context.spatialProjection;
+      if (observation.parentId === store.getters['data/context'].id) {
+        spatialProjection = store.getters['data/context'].spatialProjection;
       } else {
         const parent = this.findNodeById(store.state.data.tree, observation.parentId);
         if (parent !== null && parent.spatialProjection) {

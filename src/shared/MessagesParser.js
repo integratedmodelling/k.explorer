@@ -50,7 +50,7 @@ const PARSERS = {
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
   [IN.TYPE_NEWOBSERVATION]: (observation, vuexContext) => {
-    const { rootState, dispatch } = vuexContext;
+    const { rootState, rootGetters, dispatch } = vuexContext;
     if (rootState.stomp.tasks.findIndex(task => task.id === observation.taskId) === -1
       && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.rootContextId) !== -1) {
       // task not exists and context is one of possible, so I start a fake task
@@ -72,7 +72,7 @@ const PARSERS = {
     }
     // check if is context and is a new context
     if (observation.parentId === null) { // || observation.parentId === observation.id) {
-      if (rootState.data.context === null && !observation.previouslyNotified) {
+      if (rootGetters['data/context'] === null && !observation.previouslyNotified) {
         // new context
         addToKexplorerLog(
           dispatch,
@@ -84,7 +84,7 @@ const PARSERS = {
       } else if (!observation.previouslyNotified) {
         console.error(`Strange behaviour: new context with a setted one: ${observation.id} - ${observation.label}`);
       }// else is the second message, so nothing to do
-    } else if (rootState.data.context !== null && rootState.data.context.id === observation.rootContextId) {
+    } else if (rootGetters['data/context'] !== null && rootGetters['data/context'].id === observation.rootContextId) {
       // check if it is an observation linkable to actual context (checking rootContextId)
       addToKexplorerLog(
         dispatch,

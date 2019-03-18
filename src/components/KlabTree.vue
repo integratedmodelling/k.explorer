@@ -13,7 +13,7 @@
         control-color="white"
         color="white"
         :dark="true"
-        :double-click-function="fitMap"
+        :double-click-function="doubleClick"
       >
         <div slot="header-default" slot-scope="prop">
           <span
@@ -122,6 +122,7 @@ export default {
       'lasts',
       'contextReloaded',
       'contextId',
+      'observations',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -151,6 +152,7 @@ export default {
       'selectNode',
       'askForSiblings',
       'setFolderVisibility',
+      'setContext',
     ]),
     ...mapActions('view', [
       'setSpinner',
@@ -261,6 +263,16 @@ export default {
     changeNodeState({ nodeId, state }) {
       if (typeof this.$refs['klab-tree'] !== 'undefined') {
         this.$refs['klab-tree'].setTicked([nodeId], state);
+      }
+    },
+    doubleClick(node, meta) {
+      if (node.observationType === 'STATE') {
+        this.fitMap(node, meta);
+      } else {
+        const observation = this.observations.find(o => o.id === node.id);
+        if (observation && observation !== null) {
+          this.setContext(observation);
+        }
       }
     },
     fitMap(node, meta) {
