@@ -416,4 +416,8 @@ export default {
   setScaleLocked: ({ commit }, { scaleType, scaleLocked }) => {
     commit('SET_SCALE_LOCKED', { scaleType, scaleLocked });
   },
+
+  setInteractiveMode: ({ commit }, value) => {
+    commit('SET_INTERACTIVE_MODE', value);
+  },
 };

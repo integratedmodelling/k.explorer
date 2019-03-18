@@ -56,6 +56,7 @@ export default {
     optionShowAll: 'Ver todas',
     optionSaveLocation: 'Recordar posición',
     loadShowData: 'Cargar y visualizar datos',
+    interactiveMode: 'Modo interactivo',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',

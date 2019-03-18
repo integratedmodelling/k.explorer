@@ -58,6 +58,7 @@ export default {
     optionSaveLocation: 'Remember location',
     noNodes: 'No results: is waiting?',
     loadShowData: 'Load and show data',
+    interactiveMode: 'Interactive mode',
   },
   messages: {
     connectionClosed: 'Connection closed',

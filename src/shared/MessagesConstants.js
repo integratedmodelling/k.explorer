@@ -22,6 +22,7 @@ export const OUT = Object.freeze({
   CLASS_OBSERVATIONLIFECYCLE: 'ObservationLifecycle',
   CLASS_TASKLIFECYCLE: 'TaskLifecycle',
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
+  CLASS_USERINTERFACE: 'UserInterface',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_FEATUREADDED: 'FeatureAdded',
@@ -33,6 +34,7 @@ export const OUT = Object.freeze({
   TYPE_TASKINTERRUPTED: 'TaskInterrupted',
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_DATAFLOWNODEDETAIL: 'DataflowNodeDetail',
+  TYPE_CHANGESETTING: 'ChangeSetting',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -43,6 +45,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_INTERRUPTTASK: 'InterruptTask',
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
   PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
+  PAYLOAD_CLASS_SETTINGCHANGEREQUEST: 'SettingChangeRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
 });
 

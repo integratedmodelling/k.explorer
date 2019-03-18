@@ -57,6 +57,7 @@ export default {
     optionSaveLocation: 'Ricordare posizione',
     loadShowData: 'Caricare e visualizzare dati',
     uploadComplete: 'Upload del file {fileName} completo',
+    interactiveMode: 'Modo interattivo',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',

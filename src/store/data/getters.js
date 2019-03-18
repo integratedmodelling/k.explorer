@@ -80,4 +80,9 @@ export default {
    * The search results
    */
   searchResult: state => state.searchResult,
+
+  /**
+   * Interactive mode
+   */
+  interactiveMode: state => state.interactiveMode,
 };

@@ -315,4 +315,8 @@ export default {
       console.error(`Try to set locked to unknow scale type: ${scaleType}`);
     }
   },
+
+  SET_INTERACTIVE_MODE: (state, value) => {
+    state.interactiveMode = value;
+  },
 };

@@ -151,6 +151,16 @@
             </q-item-side>
           </div>
         </q-item>
+        <q-item>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.interactiveMode') }}</div>
+            </div>
+            <q-item-side right>
+              <q-toggle v-model="interactiveModeModel" color="mc-main" />
+            </q-item-side>
+          </div>
+        </q-item>
       </q-list>
     </q-popover>
   </q-btn>
@@ -182,6 +192,8 @@ export default {
       'contextId',
       'contextReloaded',
       'contextEncodedShape',
+      'interactiveMode',
+      'session',
     ]),
     ...mapState('stomp', [
       'subscriptions',
@@ -214,6 +226,14 @@ export default {
         this.changeSaveLocation(saveLocation);
       },
     },
+    interactiveModeModel: {
+      get() {
+        return this.interactiveMode;
+      },
+      set(value) {
+        this.setInteractiveMode(value);
+      },
+    },
     /*
     cleanContextsHistory() {
       return this.contextsHistory.filter(ch => ch.id !== this.contextId);
@@ -228,6 +248,7 @@ export default {
     ...mapActions('data', [
       'loadContext',
       'setWaitinForReset',
+      'setInteractiveMode',
     ]),
     ...mapActions('view', [
       'setDrawMode',
@@ -319,6 +340,9 @@ export default {
       if (newValue) {
         this.closePopups();
       }
+    },
+    interactiveModeModel(newValue) {
+      this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: newValue }, this.session).body);
     },
   },
 };

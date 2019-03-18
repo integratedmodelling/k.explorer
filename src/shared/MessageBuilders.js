@@ -185,4 +185,16 @@ export const MESSAGES_BUILDERS = {
     },
     session,
   ),
+
+  INTERACTIVE_MODE: ({ value }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_CHANGESETTING,
+    OUT.PAYLOAD_CLASS_SETTINGCHANGEREQUEST,
+    {
+      setting: 'InteractiveMode',
+      previousValue: (!value).toString(),
+      newValue: value.toString(),
+    },
+    session,
+  ),
 };

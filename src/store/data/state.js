@@ -171,4 +171,9 @@ export default {
    * and with a default value given from history
    */
   siblingsToAskFor: 25,
+
+  /**
+   * Interactive mode on / off
+   */
+  interactiveMode: false,
 };
