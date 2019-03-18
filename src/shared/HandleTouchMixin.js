@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     handleTouch(event, oneTouchCallback = null, doubleTouchCallback = null, doubleFingerCallback = null, timeout = 300) {
-      if (event instanceof TouchEvent) {
+      if (window.TouchEvent && event instanceof TouchEvent) {
         // single touch
         if (event.targetTouches.length === 1) {
           if (this.doubleTouchTimeout === null) {
