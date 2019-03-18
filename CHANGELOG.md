@@ -87,7 +87,8 @@ Feature notification on Integrated Modelling Confluence
 ## 0.6.5 - ?
 ### Added
 - Download folder as shape file
-- Upload file (no engine action is implemented today (2019/3/11))
+- Upload file
+- Interactive mode
 ### Improvements
 - Info for a point directly clicking on map without need to open observation info
 ### Solved
