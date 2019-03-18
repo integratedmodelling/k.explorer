@@ -34,6 +34,7 @@ export default {
       'dataflow',
       'dataflowStatuses',
       'contextId',
+      'session',
     ]),
     reloadDataflow: {
       get() {
