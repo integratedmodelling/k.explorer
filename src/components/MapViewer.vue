@@ -540,9 +540,9 @@ export default {
         // we must wait for the end of drawer animation
         setTimeout(() => {
           if (this.contextGeometry instanceof Array) {
-            this.view.centerOn(this.contextGeometry.feature.getGeometry.getCoordinates(), this.map.size, [570, 500]);
+            this.view.setCenter(this.contextGeometry);
           } else {
-            this.view.fit(this.contextGeometry.geometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+            this.view.fit(this.contextGeometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
           }
         }, 200);
       }
