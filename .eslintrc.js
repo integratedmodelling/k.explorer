@@ -41,6 +41,6 @@ module.exports = {
     'no-unused-expressions': [1, { "allowTernary": true }],
     'no-plusplus': 0,
     'no-nested-ternary': 0,
-    'object-curly-newline': ['error', { 'multiline': true, 'minProperties': 5, consistent: true }],
+    'object-curly-newline': ['error', { 'ObjectExpression': { 'multiline': true, 'minProperties': 5, consistent: true }}],
   }
 };

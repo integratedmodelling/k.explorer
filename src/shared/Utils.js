@@ -1,7 +1,8 @@
 import { colors } from 'quasar';
 import { geom as jstsGeom, operation as jstsOperation } from 'jsts';
 import { transform } from 'ol/proj';
-import { MAP_CONSTANTS } from 'shared/MapConstants';
+import Style from 'ol/style/Style';
+import { MAP_CONSTANTS, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
 
 /**
  * RegExp to detect a color string as rgba(...)
@@ -268,6 +269,17 @@ export function checkIDL(originalPolygon) {
   return result;
 }
 
+export function createMarker(svgParam, label) {
+  const { fill, stroke, strokeWidth, scale, offsetY, bold, size } = svgParam;
+  const image = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_SVG_ICON({ fill, stroke, strokeWidth }, scale).clone();
+  const text = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_TEXT({ offsetY, bold, size }).clone();
+  text.setText(label);
+  return new Style({
+    image,
+    text,
+  });
+}
+
 export default {
   capitalizeFirstLetter,
   formatExtent,
@@ -279,4 +291,5 @@ export default {
   getBrightnessColor,
   copyToClipboard,
   checkIDL,
+  createMarker,
 };
