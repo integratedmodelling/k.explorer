@@ -271,8 +271,13 @@ export default {
         this.sendRegionOfInterest();
         return;
       }
-      this.baseLayers.setMask(this.contextGeometry);
-      this.view.fit(this.contextGeometry, { padding: [10, 10, 10, 10], constrainResolution: false });
+      if (this.contextGeometry instanceof Array) {
+        this.view.setCenter(this.contextGeometry);
+        // TODO
+      } else {
+        this.baseLayers.setMask(this.contextGeometry);
+        this.view.fit(this.contextGeometry, { padding: [10, 10, 10, 10], constrainResolution: false });
+      }
     },
 
     drawObservations() {
@@ -464,7 +469,7 @@ export default {
     });
     */
     this.map.on('click', (event) => {
-      if ((this.exploreMode || this.topLayer !== null) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
+      if ((this.exploreMode || this.topLayer !== null) && !(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         if (this.exploreMode) {
           const layerSelected = this.findExistingLayerById(this.observationInfo);
           const clonedLayer = new ImageLayer({
@@ -511,7 +516,11 @@ export default {
       if (this.contextGeometry && this.contextGeometry !== null) {
         // we must wait for the end of drawer animation
         setTimeout(() => {
-          this.view.fit(this.contextGeometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+          if (this.contextGeometry instanceof Array) {
+            this.view.centerOn(this.contextGeometry.feature.getGeometry.getCoordinates(), this.map.size, [570, 500]);
+          } else {
+            this.view.fit(this.contextGeometry.geometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+          }
         }, 200);
       }
     });
