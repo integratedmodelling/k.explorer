@@ -66,9 +66,10 @@
 
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
+import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import { createMarker } from 'shared/Utils';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -81,6 +82,10 @@ import Overlay from 'ol/Overlay';
 import LayerSwitcher from 'ol-layerswitcher';
 import WKT from 'ol/format/WKT';
 import MapDrawer from 'components/MapDrawer';
+import SourceVector from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -114,6 +119,7 @@ export default {
       geolocationIncidence: null,
       popupContent: '',
       popupOverlay: undefined,
+      contextLayer: null,
       uploadConfig: {
         refId: null,
         onUploadProgress: (uploadProgress) => {
@@ -146,6 +152,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'contextId',
+      'contextLabel',
       'session',
     ]),
     ...mapGetters('view', [
@@ -264,7 +271,12 @@ export default {
       if (oldContext !== null) {
         // if context is changed, everything disappear
         this.layers.clear();
-        this.baseLayers.removeMask();
+        if (this.contextLayer !== null) {
+          this.map.removeLayer(this.contextLayer);
+          this.contextLayer = null;
+        } else {
+          this.baseLayers.removeMask();
+        }
       }
       if (this.contextGeometry === null) {
         console.debug('No context, send region of interest');
@@ -272,8 +284,19 @@ export default {
         return;
       }
       if (this.contextGeometry instanceof Array) {
+        this.contextLayer = new VectorLayer({
+          id: this.contextId,
+          source: new SourceVector({
+            features: [new Feature({
+              geometry: new Point(this.contextGeometry),
+              name: this.contextLabel,
+              id: this.contextId,
+            })],
+          }),
+          style: createMarker(MAP_STYLES.POINT_CONTEXT_SVG_PARAM, this.contextLabel),
+        });
+        this.map.addLayer(this.contextLayer);
         this.view.setCenter(this.contextGeometry);
-        // TODO
       } else {
         this.baseLayers.setMask(this.contextGeometry);
         this.view.fit(this.contextGeometry, { padding: [10, 10, 10, 10], constrainResolution: false });
