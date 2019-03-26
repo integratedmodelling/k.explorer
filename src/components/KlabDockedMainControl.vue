@@ -85,24 +85,26 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  #dmc-tree
-    background-color: rgba(119,119,119,0.65);
-    #oi-container
-      height "calc(100% -  %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
-      max-height "calc(100% - %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
-      #oi-metadata-map-wrapper
-        height "calc(100% - %s)" % ($docked-padding + $docked-correction)
-        &.with-histogram
-          height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
+  #dmc-container
+    #dmc-tree
+      background-color: rgba(119,119,119,0.65);
+      #oi-container
+        height "calc(100% -  %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
+        max-height "calc(100% - %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
+        #oi-metadata-map-wrapper
+          height "calc(100% - %s)" % ($docked-padding + $docked-correction)
+          &.with-histogram
+            height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
 
-    #kt-container
-      height "calc(100% - %s)" % $docked-padding
-      max-height "calc(100% - %s)" % $docked-padding
-      position relative
-  .dmc-dragging
-    cursor move
-  .kbc-container
-    margin 2px
-    padding 0
-    height 10px
+      #kt-container
+        height "calc(100% - %s)" % $docked-padding
+        max-height "calc(100% - %s)" % $docked-padding
+        position relative
+    .dmc-dragging
+      cursor move
+    .kbc-container
+      margin 2px
+      padding 0
+      height 10px
+
 </style>
