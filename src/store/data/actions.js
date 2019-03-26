@@ -206,6 +206,13 @@ export default {
       observation.zIndex = 0;
       observation.layerOpacity = 1;
       observation.colormap = null;
+
+      let needSiblings = false;
+      if (observation.siblingCount > 1 && folderId === null) {
+        folderId = `ff_${observation.id}`;
+        needSiblings = true;
+      }
+
       observation.folderId = folderId;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
@@ -213,12 +220,10 @@ export default {
         // is default observation, nothing needed
         return resolve();
       }
-      let needSiblings = false;
-      if (observation.siblingCount > 1 && folderId === null) {
+
+      if (needSiblings) {
         // if has siblings, create folder and ask for them
         // fake folder id is ff_[id of observation with siblings]
-        folderId = `ff_${observation.id}`;
-        observation.folderId = folderId;
         commit('ADD_NODE', {
           node: {
             id: folderId,
@@ -238,6 +243,7 @@ export default {
         });
         needSiblings = true;
       }
+
       // ask for children
       if (observation.children.length > 0) {
         observation.disabled = false; // if is empty but has children, cannot be disabled
