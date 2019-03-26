@@ -5,6 +5,7 @@
     :class="{'dmc-dragging': dragging}"
     v-draggable="dragMCConfig"
   >
+    <klab-breadcrumbs></klab-breadcrumbs>
     <klab-search-bar
       ref="klab-search-bar-docked"
     ></klab-search-bar>
@@ -22,6 +23,7 @@
 import { mapActions } from 'vuex';
 import { debounce, dom } from 'quasar';
 import KlabSearchBar from 'components/KlabSearchBar';
+import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
@@ -33,6 +35,7 @@ export default {
   components: {
     KlabSearchBar,
     KlabTreePane,
+    KlabBreadcrumbs,
   },
   directives: {
     Draggable,
@@ -98,4 +101,8 @@ export default {
       position relative
   .dmc-dragging
     cursor move
+  .kbc-container
+    margin 2px
+    padding 0
+    height 10px
 </style>

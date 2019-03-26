@@ -8,7 +8,19 @@ export default class Stack {
     this.items.push(item);
   }
 
-  pop() {
+  /**
+   * Pop the last element or all element until the element with index [unitlIndex]
+   * @param untilIndex the element that we want to reach
+   * @returns {*}
+   */
+  pop(untilIndex) {
+    if (typeof untilIndex !== 'undefined' && untilIndex > 0) {
+      if (untilIndex > this.size() - 1) {
+        throw Error('Stack overflow');
+      }
+      this.items.splice(untilIndex + 1);
+      return this.items.peek();
+    }
     return this.items.pop();
   }
 
@@ -28,6 +40,18 @@ export default class Stack {
 
   size() {
     return this.items.length;
+  }
+
+  findIndex(what) {
+    return this.items.findIndex(what);
+  }
+
+  map(how) {
+    return this.items.map(how);
+  }
+
+  empty() {
+    this.items.splice(0);
   }
 
   isEmpty() {

@@ -11,7 +11,16 @@ export default {
    */
   SET_CONTEXT: (state, context) => {
     // the previous store is delegate to actions because a mutations cannot commit another mutation
-    state.contexts.push(context);
+    if (context === null) {
+      state.contexts.empty();
+    } else {
+      const exists = state.contexts.findIndex(ctxt => ctxt.id === context.id);
+      if (exists === -1) {
+        state.contexts.push(context);
+      } else {
+        state.contexts.pop(exists);
+      }
+    }
     state.tree = [];
     state.lasts = [];
     state.observations = [];
