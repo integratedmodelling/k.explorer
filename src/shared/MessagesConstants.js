@@ -31,6 +31,7 @@ export const OUT = Object.freeze({
   TYPE_MATCHACTION: 'MatchAction',
   TYPE_REQUESTOBSERVATION: 'RequestObservation',
   TYPE_RESETCONTEXT: 'ResetContext',
+  TYPE_RECONTEXTUALIZE: 'Recontextualize',
   TYPE_TASKINTERRUPTED: 'TaskInterrupted',
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_DATAFLOWNODEDETAIL: 'DataflowNodeDetail',
@@ -45,6 +46,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_INTERRUPTTASK: 'InterruptTask',
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
   PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
+  PAYLOAD_CLASS_CONTEXTUALIZATIONREQUEST: 'ContextualizationRequest',
   PAYLOAD_CLASS_SETTINGCHANGEREQUEST: 'SettingChangeRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
 });

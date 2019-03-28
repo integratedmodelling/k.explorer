@@ -93,6 +93,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { Helpers, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
 
@@ -271,6 +272,10 @@ export default {
       } else {
         const observation = this.observations.find(o => o.id === node.id);
         if (observation && observation !== null) {
+          this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
+            { contextId: observation.id, parentContext: this.contextId },
+            this.$store.state.data.session,
+          ).body);
           this.setContext(observation);
         }
       }
