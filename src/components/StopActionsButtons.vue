@@ -59,15 +59,7 @@ export default {
       return `${where} ${this.orientation === 'horizontal' ? 'middle' : 'left'}`;
     },
     resetContext() {
-      /*
-      TODO: if context is reset, we doesn't load the previous in stack, we reset everything
-      this is useful for context navigation!
-      if (this.previousContext !== null) {
-        this.loadOrReloadContext(this.previousContext.id);
-      } else {
-      */
       this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
-      // }
     },
     interruptTask() {
       const task = this.lastActiveTask(this.contextId);

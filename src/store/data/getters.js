@@ -39,9 +39,11 @@ export default {
 
   dataflowStatuses: state => state.dataflowStatuses,
 
+  contextsId: state => state.contexts.map(ctxt => ctxt.id),
   context: state => state.contexts.peek(),
   contextsCount: state => state.contexts.size(),
   previousContext: state => state.contexts.previous(),
+  contextById: state => id => state.contexts.find(ctxt => ctxt.id === id),
 
   /**
    * If no context, return null
