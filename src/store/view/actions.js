@@ -237,7 +237,7 @@ export default {
         },
       }, (response, callback) => {
         let value = 'No value';
-        if (response && response.data) {
+        if (response && typeof response.data !== 'undefined') {
           value = response.data;
         }
         commit('SET_MAP_SELECTION', { pixelSelected, layerSelected, value });
