@@ -104,4 +104,6 @@ export default {
 
   topLayer: state => state.topLayer,
   topLayerId: state => (state.topLayer !== null ? state.topLayer.id : null),
+
+  isInModalMode: state => state.modalMode,
 };

@@ -145,5 +145,7 @@ export default {
   showNotified: null,
   saveLocation: true,
 
+  modalMode: false,
+
   inputRequests: [],
 };

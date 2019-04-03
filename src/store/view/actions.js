@@ -250,10 +250,12 @@ export default {
 
   setScaleEditing: ({ commit }, { active, type }) => {
     commit('SET_SCALE_EDITING', { active, type });
+    commit('SET_MODAL_MODE', active);
   },
 
   setDrawMode: ({ commit }, drawMode) => {
     commit('SET_DRAW_MODE', drawMode);
+    commit('SET_MODAL_MODE', drawMode);
   },
 
   setCustomContext: ({ commit }, customContext) => {
@@ -266,5 +268,8 @@ export default {
 
   inputRequest: ({ commit }, inputRequest) => {
     commit('SET_INPUT_REQUEST', inputRequest);
+  },
+  setModalMode: ({ commit }, modalMode) => {
+    commit('SET_MODAL_MODE', modalMode);
   },
 };
