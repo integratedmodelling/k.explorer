@@ -264,4 +264,7 @@ export default {
     commit('SET_TOP_LAYER', topLayer);
   },
 
+  inputRequest: ({ commit }, inputRequest) => {
+    commit('SET_INPUT_REQUEST', inputRequest);
+  },
 };

@@ -228,4 +228,13 @@ export default {
   SET_TOP_LAYER: (state, topLayer) => {
     state.topLayer = topLayer;
   },
+
+  SET_MODAL_OPEN: (state, modalOpen) => {
+    state.modalOpen = modalOpen;
+  },
+
+  SET_INPUT_REQUEST: (state, inputRequest) => {
+    state.inputRequests.push(inputRequest);
+    console.log(JSON.stringify(inputRequest, null, 4));
+  },
 };
