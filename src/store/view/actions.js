@@ -250,10 +250,12 @@ export default {
 
   setScaleEditing: ({ commit }, { active, type }) => {
     commit('SET_SCALE_EDITING', { active, type });
+    commit('SET_MODAL_MODE', active);
   },
 
   setDrawMode: ({ commit }, drawMode) => {
     commit('SET_DRAW_MODE', drawMode);
+    commit('SET_MODAL_MODE', drawMode);
   },
 
   setCustomContext: ({ commit }, customContext) => {
@@ -264,4 +266,7 @@ export default {
     commit('SET_TOP_LAYER', topLayer);
   },
 
+  setModalMode: ({ commit }, modalMode) => {
+    commit('SET_MODAL_MODE', modalMode);
+  },
 };

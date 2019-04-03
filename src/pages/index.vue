@@ -82,8 +82,7 @@ export default {
       'searchIsFocused',
       'mainViewerName',
       'mainViewer',
-      'isScaleEditing',
-      'isDrawMode',
+      'isInModalMode',
     ]),
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
@@ -148,7 +147,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isScaleEditing || this.isDrawMode) {
+      if (this.modalVisible || this.isInModalMode) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {
