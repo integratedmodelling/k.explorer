@@ -144,4 +144,6 @@ export default {
   customContext: false,
   showNotified: null,
   saveLocation: true,
+
+  modalMode: false,
 };
