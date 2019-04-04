@@ -228,4 +228,8 @@ export default {
   SET_TOP_LAYER: (state, topLayer) => {
     state.topLayer = topLayer;
   },
+
+  SET_MODAL_MODE: (state, modalMode) => {
+    state.modalMode = modalMode;
+  },
 };
