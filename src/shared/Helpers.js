@@ -288,7 +288,7 @@ const Helpers = {
     }
     const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,
-      featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
+      featureProjection: dataProjection, // MAP_CONSTANTS.PROJ_EPSG_3857,
     });
 
     // check if the layer is a raster
@@ -305,8 +305,8 @@ const Helpers = {
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
       // const url = 'http://localhost:8080/statics/klab-logo.png';
       const source = new Static({
-        projection: MAP_CONSTANTS.PROJ_EPSG_3857,
-        // projection: dataProjection,
+        // projection: MAP_CONSTANTS.PROJ_EPSG_3857,
+        projection: dataProjection,
         imageExtent: layerExtent,
         // imageSize: [800, 800], // extent.getSize(layerExtent),
         url,
