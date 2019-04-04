@@ -288,7 +288,7 @@ const Helpers = {
     }
     const geometry = new WKT().readGeometry(encodedShape, {
       dataProjection,
-      featureProjection: dataProjection, // MAP_CONSTANTS.PROJ_EPSG_3857,
+      featureProjection: isRaster ? dataProjection : MAP_CONSTANTS.PROJ_EPSG_3857,
     });
 
     // check if the layer is a raster
