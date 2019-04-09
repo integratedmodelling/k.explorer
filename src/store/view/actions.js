@@ -268,7 +268,16 @@ export default {
 
   inputRequest: ({ commit }, inputRequest) => {
     commit('SET_INPUT_REQUEST', inputRequest);
+    commit('SET_MODAL_MODE', true);
   },
+
+  removeInputRequest: ({ commit, getters }, requestId) => {
+    commit('REMOVE_INPUT_REQUEST', requestId);
+    if (!getters.hasInputRequests) {
+      commit('SET_MODAL_MODE', false);
+    }
+  },
+
   setModalMode: ({ commit }, modalMode) => {
     commit('SET_MODAL_MODE', modalMode);
   },

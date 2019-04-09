@@ -35,6 +35,7 @@ export const OUT = Object.freeze({
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_DATAFLOWNODEDETAIL: 'DataflowNodeDetail',
   TYPE_CHANGESETTING: 'ChangeSetting',
+  TYPE_USERINPUTREQUESTED: 'UserInputRequested',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -46,6 +47,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
   PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
   PAYLOAD_CLASS_SETTINGCHANGEREQUEST: 'SettingChangeRequest',
+  PAYLOAD_CLASS_USERINPUTRESPONSE: 'UserInputResponse',
   PAYLOAD_CLASS_EMPTY: 'String',
 });
 

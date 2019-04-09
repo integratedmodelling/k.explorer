@@ -232,9 +232,22 @@ export default {
   SET_MODAL_MODE: (state, modalMode) => {
     state.modalMode = modalMode;
   },
+
   SET_INPUT_REQUEST: (state, inputRequest) => {
     state.inputRequests.push(inputRequest);
-    console.log(JSON.stringify(inputRequest, null, 4));
+    console.debug(JSON.stringify(inputRequest, null, 4));
   },
 
+  REMOVE_INPUT_REQUEST: (state, requestId) => {
+    if (state.inputRequests.length > 0) {
+      if (requestId === null) {
+        state.inputRequests.splice(0, state.inputRequests.length);
+      } else {
+        const index = state.inputRequests.findIndex(ir => ir.requestId === requestId);
+        if (index !== -1) {
+          state.inputRequests.splice(index, 1);
+        }
+      }
+    }
+  },
 };

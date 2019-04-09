@@ -74,8 +74,6 @@ export default {
   searchLostChar: state => state.searchLostChar,
   searchHistory: state => state.searchHistory,
 
-  inputRequests: state => state.inputRequests,
-
   observationInfo: state => state.observationInfo,
   mapSelection: state => state.mapSelection,
 
@@ -105,5 +103,7 @@ export default {
   topLayer: state => state.topLayer,
   topLayerId: state => (state.topLayer !== null ? state.topLayer.id : null),
 
+  inputRequests: state => state.inputRequests,
+  hasInputRequests: state => state.inputRequests.length !== 0,
   isInModalMode: state => state.modalMode,
 };
