@@ -67,7 +67,7 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
-import { Helpers, Constants } from 'shared/Helpers';
+import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -243,7 +243,7 @@ export default {
       // need to create new layer
       try {
         console.debug(`Creating layer: ${observation.label}`);
-        const layer = await Helpers.getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
+        const layer = await getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
         this.zIndexCounter += 1;
         observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
         layer.setZIndex(observation.zIndex);
@@ -289,7 +289,7 @@ export default {
               }
               if (
                 (observation.visible && observation.top)
-                && Helpers.isRaster(observation) // is RASTER...
+                && isRasterObservation(observation) // is RASTER...
                 && observation.dataSummary.histogram.length > 0 // and has values
                 && (this.topLayer === null || this.topLayer.id !== observation.id)
               ) {

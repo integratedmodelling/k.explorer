@@ -1,4 +1,4 @@
-import { Helpers } from 'shared/Helpers';
+import { lastFilteredLogElement, isRasterObservation } from 'shared/Helpers';
 import { getColorObject } from 'shared/Utils';
 
 export default {
@@ -6,10 +6,10 @@ export default {
    * LOGS
    */
   kexplorerLog: state => state.kexplorerLog,
-  lastKexplorerLog: state => type => Helpers.lastFilteredLogElement(state.kexplorerLog, type),
+  lastKexplorerLog: state => type => lastFilteredLogElement(state.kexplorerLog, type),
   // reverseLogActions: state => state.kexplorerLog.slice().reverse(),
   klabLog: state => state.klabLog,
-  lastKlabLog: state => type => Helpers.lastFilteredLogElement(state.klabLog, type),
+  lastKlabLog: state => type => lastFilteredLogElement(state.klabLog, type),
   klabLogReversedAndFiltered: state => (type) => {
     if (state.klabLog.length === 0) {
       return [];
@@ -85,7 +85,7 @@ export default {
    */
   exploreMode: (state) => {
     if (state.observationInfo !== null // an observation info is present
-      && Helpers.isRaster(state.observationInfo) // is RASTER: TODO need to ampliate this
+      && isRasterObservation(state.observationInfo) // is RASTER: TODO need to ampliate this
       && state.observationInfo.dataSummary.histogram.length > 0 // has histogram with values
       && state.observationInfo.visible // is visible
       && state.observationInfo.top) { // is on top

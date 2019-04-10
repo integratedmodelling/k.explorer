@@ -1,5 +1,5 @@
 /* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
-import { Helpers } from 'shared/Helpers';
+import { findNodeById } from 'shared/Helpers';
 
 export default {
   /**
@@ -19,7 +19,7 @@ export default {
     return state.tree;
   },
 
-  treeNode: state => id => Helpers.findNodeById(state.tree, id),
+  treeNode: state => id => findNodeById(state.tree, id),
 
   lasts: state => state.lasts,
 

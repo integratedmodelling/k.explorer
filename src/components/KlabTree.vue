@@ -91,7 +91,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { Helpers, Constants } from 'shared/Helpers';
+import { getAxiosContent, findNodeById, Constants } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
@@ -235,7 +235,7 @@ export default {
     },
     askDownload(observationId, outputFormat, formats, folder = false, label = observationId) {
       const selectedFormat = formats.find(f => f.value === outputFormat);
-      Helpers.getAxiosContent(
+      getAxiosContent(
         `dw_${observationId}`,
         `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
         {
@@ -303,7 +303,7 @@ export default {
       if (oldValues.length > newValues.length) {
         // some node was deselected
         const unselectedId = oldValues.filter(n => newValues.indexOf(n) < 0)[0];
-        const unselectedNode = Helpers.findNodeById(this.tree, unselectedId);
+        const unselectedNode = findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
           if (unselectedNode.type === Constants.GEOMTYP_FOLDER) {
             this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
@@ -322,7 +322,7 @@ export default {
         // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
         // this.selectNode(selectedId);
-        const selectedNode = Helpers.findNodeById(this.tree, selectedId);
+        const selectedNode = findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
           const tickAll = () => {
             this.setFolderVisibility({ folderId: selectedNode.id, visible: true });
@@ -371,7 +371,7 @@ export default {
           const ltcBoundingClinetRect = ltc.getBoundingClientRect();
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
             this.askingForSiblings = true;
-            const folder = Helpers.findNodeById(this.tree, last.folderId);
+            const folder = findNodeById(this.tree, last.folderId);
             this.askForSiblings({
               nodeId: last.observationId,
               folderId: last.folderId,
@@ -389,7 +389,7 @@ export default {
     });
     this.$eventBus.$on(CUSTOM_EVENTS.UPDATE_FOLDER, (event) => {
       if (event && event.folderId) {
-        const folder = Helpers.findNodeById(this.tree, event.folderId);
+        const folder = findNodeById(this.tree, event.folderId);
         if (folder && folder !== null) {
           if (event.visible) {
             this.$refs['klab-tree'].setTicked(folder.children.map(child => child.id), true);

@@ -71,7 +71,7 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import Constants from 'shared/Constants';
+import Constants, { MATCH_TYPES, SEMANTIC_TYPES } from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -474,14 +474,14 @@ export default {
       const results = [];
       // const totMatches = matches.length;
       matches.forEach((match/* ,index */) => {
-        const matchType = Constants.MATCH_TYPES[match.matchType];
+        const matchType = MATCH_TYPES[match.matchType];
         if (typeof matchType === 'undefined') {
           console.warn(`Unknown type: ${match.matchType}`);
           return;
         }
         let desc = matchType;
         if (match.mainSemanticType !== null) {
-          const mainSemanticType = Constants.SEMANTIC_TYPES[match.mainSemanticType];
+          const mainSemanticType = SEMANTIC_TYPES[match.mainSemanticType];
           if (typeof mainSemanticType !== 'undefined') {
             desc = mainSemanticType;
           }

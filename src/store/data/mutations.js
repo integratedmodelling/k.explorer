@@ -1,4 +1,4 @@
-import { Helpers } from 'shared/Helpers';
+import { getNodeFromObservation, findNodeById } from 'shared/Helpers';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -82,7 +82,7 @@ export default {
       // is a tree root node
       state.tree.push(node);
     } else if (node.rootContextId === state.context.id) {
-      const parent = Helpers.findNodeById(state.tree, parentId);
+      const parent = findNodeById(state.tree, parentId);
       if (parent !== null) {
         parent.children.push({
           ...node,
@@ -121,12 +121,12 @@ export default {
     filtered.forEach((observation, index) => {
       if (observation.main) {
         if ((fromTask && index === filtered.length - 1) || (restored && index === 0)) {
-          main = Helpers.getNodeFromObservation(observation).node;
+          main = getNodeFromObservation(observation).node;
         } else {
-          mains.push(Helpers.getNodeFromObservation(observation).node);
+          mains.push(getNodeFromObservation(observation).node);
         }
       } else {
-        children.push(Helpers.getNodeFromObservation(observation).node);
+        children.push(getNodeFromObservation(observation).node);
       }
       idsToDelete.push(observation.id);
     });
@@ -147,7 +147,7 @@ export default {
       folder = state.tree;
       insertionIndex = state.tree.findIndex(c => c.id === firstOccurence.id);
     } else {
-      const parentFolder = Helpers.findNodeById(state.tree, firstOccurence.folderId || firstOccurence.parentId);
+      const parentFolder = findNodeById(state.tree, firstOccurence.folderId || firstOccurence.parentId);
       if (parentFolder === null) {
         throw new Error(`Element is not first level but cannot find parent: folderId: ${firstOccurence.folderId}, parentId: ${firstOccurence.parentId}`);
       }
@@ -204,7 +204,7 @@ export default {
       console.warn(`Folder with id ${folderId} has no elements`);
     }
     // set node ticked (for tree view)
-    const node = Helpers.findNodeById(state.tree, folderId);
+    const node = findNodeById(state.tree, folderId);
     if (typeof node !== 'undefined' && node !== null && node.children.length > 0) {
       node.children.forEach((n) => {
         n.ticked = visible;
@@ -238,7 +238,7 @@ export default {
         });
       }
       // set node ticked (for tree view)
-      const node = Helpers.findNodeById(state.tree, id);
+      const node = findNodeById(state.tree, id);
       if (node) {
         node.ticked = visible;
       }
