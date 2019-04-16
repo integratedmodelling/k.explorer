@@ -42,6 +42,7 @@ export const isRasterObservation = (observation = null) => {
   return geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
 };
 
+
 /**
  * Push an element in a queue with a max length (all history queue)
  * @param array array to push element
@@ -214,8 +215,7 @@ export async function getContextGeometry(contextObservation) {
   }
   contextObservation.zIndexOffset = 0; // is context, remaind it
   return geometry;
-};
-
+}
 
 
 /**
@@ -334,7 +334,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
                 image.src = reader.result;
                 store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: src }, { root: true });
                 // load colormap if necesary
-                Helpers.getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
+                getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
                     const colormap = colormapResponse.data;
                     if (colormap.type === 'RAMP' && colormap.colors.length > 1 && colormap.colors.length < 256) {
@@ -414,7 +414,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
   });
 
   return vectorLayer;
-};
+}
 
 /**
  * DEFAULT Viewer on start
