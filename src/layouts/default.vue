@@ -33,7 +33,6 @@ export default {
   },
   computed: {
     ...mapGetters('view', [
-      'hasPalette',
       'mainViewer',
       'leftMenuState',
     ]),

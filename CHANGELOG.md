@@ -93,3 +93,4 @@ Feature notification on Integrated Modelling Confluence
 - Info for a point directly clicking on map without need to open observation info
 ### Solved
 - Search timeout enlarged to avoid problems if engine is calculating
+- Raster layer now fit better in base map
