@@ -1,7 +1,7 @@
 <template>
   <q-input
     color="mc-main"
-    type="text"
+    type="number"
     v-model="value"
     :placeholder="initialValue"
     :name="name"
@@ -13,7 +13,7 @@
 </template>
 <script>
 export default {
-  name: 'TextField',
+  name: 'NumberField',
   props: {
     initialValue: {
       type: String,
@@ -23,6 +23,13 @@ export default {
       type: String,
       required: true,
     },
+    numericPrecision: {
+      type: Number,
+      default: 5,
+    },
+    range: {
+      type: String,
+    },
   },
   data() {
     return {
@@ -31,7 +38,7 @@ export default {
   },
   computed: {
     hasError() {
-      if (this.value !== '') {
+      if (this.range !== '') {
         // check range
         return false;
       }
@@ -40,7 +47,15 @@ export default {
   },
   methods: {
     emitInput(event) {
-      this.$emit('change', event);
+      this.fitValue();
+      this.$nextTick(() => {
+        this.$emit('change', event);
+      });
+    },
+    fitValue() {
+      if (this.numericPrecision !== 0) {
+        this.value = this.value.toFixed(this.numericPrecision);
+      }
     },
   },
 };

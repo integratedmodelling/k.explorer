@@ -58,6 +58,10 @@ export default {
     loadShowData: 'Caricare e visualizzare dati',
     uploadComplete: 'Upload del file {fileName} completo',
     interactiveMode: 'Modo interattivo',
+    inputRequest: 'Selezionare valori',
+    resetInputRequest: 'Valori di default',
+    sendInputRequest: 'Inviare valori',
+    noInputSectionTitle: 'Sezione senza titolo',
   },
   messages: {
     connectionClosed: 'Connessione chiusa',
