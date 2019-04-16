@@ -20,7 +20,7 @@
             :initialValue="field.initialValue"
             :values="field.values"
             :range="field.range"
-            :numericPrecision="5"
+            :numericPrecision="field.numericPrecision"
             :regexp="field.regexp"
             @change="updateForm(`${request.requestId}-${field.id}`, $event)"
           ></component>
@@ -91,6 +91,7 @@ export default {
           return map;
         }, {});
         this.sendStompMessage(MESSAGES_BUILDERS.USER_INPUT_RESPONSE({
+          messageId: request.messageId,
           requestId: request.requestId,
           values,
         }, this.session).body);
