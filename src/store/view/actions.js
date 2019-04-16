@@ -122,6 +122,7 @@ export default {
           break;
         case Constants.OBSTYP_INITIAL:
         case Constants.OBSTYP_SUBJECT:
+        case Constants.OBSTYP_RELATIONSHIP:
           viewerType = Constants.VIEW_MAP;
           break;
         case Constants.OBSTYP_CONFIGURATION:
@@ -129,7 +130,6 @@ export default {
           break;
         case Constants.OBSTYP_EVENT:
         case Constants.OBSTYP_PROCESS:
-        case Constants.OBSTYP_RELATIONSHIP:
           viewerType = Constants.VIEW_UNKNOWN;
           break;
         default:
