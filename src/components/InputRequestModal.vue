@@ -58,6 +58,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'session',
+    ]),
     ...mapGetters('view', [
       'hasInputRequests',
       'inputRequests',
