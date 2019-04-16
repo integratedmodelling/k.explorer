@@ -199,6 +199,17 @@ export const Layers = {
     }),
     visible: false,
   }),
+  MAPBOX_GOT: new Tile({
+    name: 'mapbox_got',
+    title: 'k.LAB Mapbox GOT',
+    type: 'base',
+    source: new XYZ({
+      crossOrigin: 'anonymous',
+      url: `https://api.mapbox.com/styles/v1/k-lab/cjuihteg13toh1fmovvd6r80y/tiles/256/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`,
+      attribution: MAPBOX_ATTRIBUTIONS,
+    }),
+    visible: false,
+  }),
 
   EMPTY_LAYER: new Tile({
     name: 'empty_layer',
@@ -266,6 +277,7 @@ export const BASE_LAYERS = {
     Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_MINIMO,
     Layers.MAPBOX_CALI_TERRAIN,
+    // Layers.MAPBOX_GOT, // Game of throne joke
   ],
   mask: null,
   hasMask() {
