@@ -188,7 +188,7 @@ export async function getContextGeometry(contextObservation) {
   if (spatialProjection !== null) {
     dataProjection = getProjection(spatialProjection);
     if (dataProjection === null) { // unknows projection, need ask for it
-      dataProjection = await this.registerProjection(spatialProjection);
+      dataProjection = await registerProjection(spatialProjection);
     }
   } else {
     dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
@@ -254,7 +254,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
     if (observation.parentId === store.state.data.context.id) {
       spatialProjection = store.state.data.context.spatialProjection;
     } else {
-      const parent = this.findNodeById(store.state.data.tree, observation.parentId);
+      const parent = findNodeById(store.state.data.tree, observation.parentId);
       if (parent !== null && parent.spatialProjection) {
         spatialProjection = parent.spatialProjection;
       } else {
@@ -269,7 +269,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
   if (spatialProjection !== null) {
     dataProjection = getProjection(spatialProjection);
     if (dataProjection === null) { // unknows projection, need ask for it
-      dataProjection = await this.registerProjection(spatialProjection);
+      dataProjection = await registerProjection(spatialProjection);
     }
   } else {
     dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
