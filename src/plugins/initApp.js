@@ -88,14 +88,7 @@ export default ({ store }) => {
     info: '#31CCEC',
     warning: '#F2C037',
   };
-  /*
-  // init viewer
-  Helpers.VIEWER_DEFAULT.forEach((viewer) => {
-    store.dispatch('data/addViewerElement', viewer);
-  });
   */
-  // store.state.data.viewersLayout = Helpers.VIEWER_DEFAULT;
-  // console.log(`Init viewersLayout ${Helpers.VIEWER_DEFAULT}`);
 };
 
 export { eventBus };

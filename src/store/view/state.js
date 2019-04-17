@@ -146,4 +146,6 @@ export default {
   saveLocation: true,
 
   modalMode: false,
+
+  inputRequests: [],
 };

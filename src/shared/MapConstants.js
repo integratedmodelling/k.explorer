@@ -102,7 +102,12 @@ export const MAP_STYLES = {
     }),
   }),
   // { fill, stroke, strokeWidth, scale = 0.3 }
-  POINT_OBSERVATION_SVG_PARAM: { fill: 'rgb(238,238,238)', stroke: 'rgb(51,51,51)', strokeWidth: '4', scale: 0.3 },
+  POINT_OBSERVATION_SVG_PARAM: {
+    fill: 'rgb(238,238,238)',
+    stroke: 'rgb(51,51,51)',
+    strokeWidth: '4',
+    scale: 0.3,
+  },
   POINT_CONTEXT_SVG_PARAM: {
     fill: 'rgb(17, 170, 187)',
     stroke: 'rgb(51,51,51)',
@@ -211,6 +216,17 @@ export const Layers = {
     }),
     visible: false,
   }),
+  MAPBOX_GOT: new Tile({
+    name: 'mapbox_got',
+    title: 'k.LAB Mapbox GOT',
+    type: 'base',
+    source: new XYZ({
+      crossOrigin: 'anonymous',
+      url: `https://api.mapbox.com/styles/v1/k-lab/cjuihteg13toh1fmovvd6r80y/tiles/256/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`,
+      attribution: MAPBOX_ATTRIBUTIONS,
+    }),
+    visible: false,
+  }),
 
   EMPTY_LAYER: new Tile({
     name: 'empty_layer',
@@ -278,6 +294,7 @@ export const BASE_LAYERS = {
     Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_MINIMO,
     Layers.MAPBOX_CALI_TERRAIN,
+    // Layers.MAPBOX_GOT, // Game of throne joke
   ],
   mask: null,
   hasMask() {

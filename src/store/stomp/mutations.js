@@ -1,4 +1,4 @@
-import { Helpers, Constants } from 'shared/Helpers';
+import { pushElementInFixedQueue, Constants } from 'shared/Helpers';
 import moment from 'moment';
 
 export default {
@@ -9,7 +9,7 @@ export default {
 
   STOMP_ERROR(state, error) {
     // state.receivedMessages.push({
-    Helpers.pushElementInFixedQueue(state.receivedMessages, {
+    pushElementInFixedQueue(state.receivedMessages, {
       date: moment().format('HH:mm:ss'),
       type: Constants.TYPE_ERROR,
       message: error,
@@ -19,7 +19,7 @@ export default {
   // default handler called for all methods
   STOMP_MESSAGE(state, message) {
     // console.log('STOMP MESSAGE');
-    Helpers.pushElementInFixedQueue(state.receivedMessages, {
+    pushElementInFixedQueue(state.receivedMessages, {
       date: moment().format('HH:mm:ss'),
       type: Constants.TYPE_MESSAGE,
       message,
@@ -27,7 +27,7 @@ export default {
   },
 
   STOMP_SEND_MESSAGE(state, message) {
-    Helpers.pushElementInFixedQueue(state.sentMessages, {
+    pushElementInFixedQueue(state.sentMessages, {
       date: moment().format('HH:mm:ss'),
       ...message,
     });

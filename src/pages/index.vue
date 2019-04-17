@@ -41,6 +41,7 @@
           </div>
       </div>
     </q-modal>
+    <input-request-modal></input-request-modal>
   </q-page>
 </template>
 
@@ -53,6 +54,7 @@ import DataViewer from 'components/DataViewer.vue';
 import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
+import InputRequestModal from 'components/InputRequestModal.vue';
 
 import { colors } from 'quasar';
 import 'ol/ol.css';
@@ -67,6 +69,7 @@ export default {
     ReportViewer,
     DataflowViewer,
     KlabSpinner,
+    InputRequestModal,
   },
   data() {
     return {

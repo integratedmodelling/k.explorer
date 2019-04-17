@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { Helpers } from 'shared/Helpers';
+import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import Constants, { VIEWERS, LEFTMENU_COMPONENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
@@ -34,7 +34,7 @@ export default {
 
   setContextLayer: ({ commit, dispatch }, contextData) => {
     // If context layer change, mutation reset everything
-    Helpers.getContextGeometry(contextData).then((layer) => {
+    getContextGeometry(contextData).then((layer) => {
       commit('SET_CONTEXT_LAYER', layer);
       commit('RESET_SEARCH'); // stop any search, if new context, previous search has no sense
       // context need a viewer (if no observation, I need to see the context)
@@ -111,7 +111,7 @@ export default {
               observation.encodedShape = rootGetters['data/context'].encodedShape;
             } else {
               // search for parent in tree
-              const parent = Helpers.findNodeById(rootGetters['data/tree'], observation.parentId);
+              const parent = findNodeById(rootGetters['data/tree'], observation.parentId);
               if (parent !== null) {
                 observation.encodedShape = parent.encodedShape;
               } else {
@@ -122,6 +122,7 @@ export default {
           break;
         case Constants.OBSTYP_INITIAL:
         case Constants.OBSTYP_SUBJECT:
+        case Constants.OBSTYP_RELATIONSHIP:
           viewerType = Constants.VIEW_MAP;
           break;
         case Constants.OBSTYP_CONFIGURATION:
@@ -129,7 +130,6 @@ export default {
           break;
         case Constants.OBSTYP_EVENT:
         case Constants.OBSTYP_PROCESS:
-        case Constants.OBSTYP_RELATIONSHIP:
           viewerType = Constants.VIEW_UNKNOWN;
           break;
         default:
@@ -230,7 +230,7 @@ export default {
       }
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
-      Helpers.getAxiosContent(`pv_${observationId}`, url, {
+      getAxiosContent(`pv_${observationId}`, url, {
         params: {
           format: 'SCALAR',
           locator: `S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
@@ -264,6 +264,18 @@ export default {
 
   setTopLayer: ({ commit }, topLayer) => {
     commit('SET_TOP_LAYER', topLayer);
+  },
+
+  inputRequest: ({ commit }, inputRequest) => {
+    commit('SET_INPUT_REQUEST', inputRequest);
+    commit('SET_MODAL_MODE', true);
+  },
+
+  removeInputRequest: ({ commit, getters }, requestId) => {
+    commit('REMOVE_INPUT_REQUEST', requestId);
+    if (!getters.hasInputRequests) {
+      commit('SET_MODAL_MODE', false);
+    }
   },
 
   setModalMode: ({ commit }, modalMode) => {

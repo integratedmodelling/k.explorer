@@ -1,5 +1,5 @@
 import { axiosInstance } from 'plugins/axios';
-import { Constants, Helpers } from 'shared/Helpers';
+import { Constants, findNodeById, getAxiosContent, getNodeFromObservation, OBSERVATION_DEFAULT } from 'shared/Helpers';
 
 export default {
   /**
@@ -29,7 +29,7 @@ export default {
         state.waitingForReset = null;
       } else {
         dispatch('addObservation', {
-          observation: Helpers.OBSERVATION_DEFAULT,
+          observation: OBSERVATION_DEFAULT,
           main: true,
         });
       }
@@ -91,7 +91,7 @@ export default {
       return;
     }
     const url = `${process.env.WS_BASE_URL}${process.env.REST_STATUS}`;
-    Helpers.getAxiosContent(getters.session, url, {
+    getAxiosContent(getters.session, url, {
       transformRequest: [
         (data, headers) => {
           // we need to delete because we inherited it
@@ -139,11 +139,11 @@ export default {
           /*
           if (state.orphans.length > 0) {
             for (let i = state.orphans.length - 1; i >= 0; i--) {
-              if (Helpers.findNodeById(state.tree, state.orphans[i].id) !== null) {
+              if (findNodeById(state.tree, state.orphans[i].id) !== null) {
                 state.orphans.splice(i, 1);
               }
               if (state.orphans[i].parentId === context.id
-                  || Helpers.findNodeById(state.tree, state.orphans[i].parentId) !== null) {
+                  || findNodeById(state.tree, state.orphans[i].parentId) !== null) {
                 dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
               }
             }
@@ -184,18 +184,18 @@ export default {
       existingObservation.notified = existingObservation.notified || observation.previouslyNotified;
       if (existingObservation.main && existingObservation.folderId !== null && existingObservation.folderId.indexOf('ff_') === 0) {
         // is a main observations in a fake folder, so if main is true we need to translate value to folder
-        const folder = Helpers.findNodeById(state.tree, existingObservation.folderId);
+        const folder = findNodeById(state.tree, existingObservation.folderId);
         folder.main = true;
         existingObservation.main = false;
       }
       // check if observation is in tree or is a lazy tree node
-      const self = Helpers.findNodeById(state.tree, observation.id);
+      const self = findNodeById(state.tree, observation.id);
       if (self !== null) {
         // if is in tree, I update main attribute
         self.main = existingObservation.main;
       } else {
         // create a new node using existingObservation (observation gain a lot of attribute in her first time)
-        commit('ADD_NODE', Helpers.getNodeFromObservation(existingObservation));
+        commit('ADD_NODE', getNodeFromObservation(existingObservation));
       }
       return resolve();
     }
@@ -262,7 +262,7 @@ export default {
         });
       }
       if (toTree) {
-        commit('ADD_NODE', Helpers.getNodeFromObservation(observation));
+        commit('ADD_NODE', getNodeFromObservation(observation));
       }
       dispatch('view/setReloadReport', true, { root: true });
       return resolve();
@@ -328,7 +328,7 @@ export default {
                   }
                 });
               });
-              const folder = Helpers.findNodeById(state.tree, folderId);
+              const folder = findNodeById(state.tree, folderId);
               if (folder !== null) {
                 folder.siblingsLoaded += data.siblings.length;
               }

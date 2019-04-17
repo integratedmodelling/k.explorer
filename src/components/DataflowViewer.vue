@@ -7,7 +7,7 @@
 <script>
 import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
-import { Helpers } from 'shared/Helpers';
+import { findNodeById } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
@@ -103,7 +103,7 @@ export default {
       const { length } = this.dataflowStatuses;
       for (let i = 0; i < length; i++) {
         const { id, status } = this.dataflowStatuses[i];
-        const node = Helpers.findNodeById(this.graph, id);
+        const node = findNodeById(this.graph, id);
         if (node !== null) {
           node.status = status;
           this.modelSource.updateModel();

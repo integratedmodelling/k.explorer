@@ -59,6 +59,10 @@ export default {
     noNodes: 'No results: is waiting?',
     loadShowData: 'Load and show data',
     interactiveMode: 'Interactive mode',
+    inputRequest: 'Set value of input request',
+    sendDefaultInputRequest: 'Send defaults',
+    sendInputRequest: 'Send values',
+    noInputSectionTitle: 'No section title',
   },
   messages: {
     connectionClosed: 'Connection closed',

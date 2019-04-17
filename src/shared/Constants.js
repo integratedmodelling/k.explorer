@@ -85,6 +85,136 @@ export const EMPTY_MAP_SELECTION = {
   value: null,
 };
 
+export const MATCH_TYPES = {
+  CONCEPT: {
+    label: 'Concept',
+    symbol: 'C',
+    color: 'sem-types',
+    rgb: 'rgb(38, 50, 56)',
+  },
+  PREFIX_OPERATOR: {
+    label: 'Prefix operator',
+    symbol: 'Po',
+    color: 'sem-types',
+    rgb: 'rgb(38, 50, 56)',
+  },
+  INFIX_OPERATOR: {
+    label: 'Infix operator',
+    symbol: 'Io',
+    color: 'sem-types',
+    rgb: 'rgb(38, 50, 56)',
+  },
+  OBSERVATION: {
+    label: 'Observation',
+    symbol: 'O',
+    color: 'sem-types',
+    rgb: 'rgb(38, 50, 56)',
+  },
+  MODEL: {
+    label: 'Model',
+    symbol: 'Ml',
+    color: 'sem-types',
+    rgb: 'rgb(38, 50, 56)',
+  },
+  MODIFIER: {
+    label: 'Modifier',
+    symbol: 'Mf',
+    color: 'sem-types',
+    rgb: 'rgb(38, 50, 56)',
+  },
+  PRESET_OBSERVABLE: { // subject returned when using default results
+    label: 'Preset observable',
+    symbol: 'Po',
+    color: 'sem-preset-observable',
+    rgb: 'rgb(240, 240, 240)',
+  },
+  SEPARATOR: {
+    label: 'Separator',
+    symbol: 'S',
+    color: 'sem-separator',
+    rgb: 'rgb(10, 10, 10)',
+  },
+};
+
+/**
+ * Semantic Types
+ */
+
+export const SEMANTIC_TYPES = {
+  QUALITY: {
+    label: 'Quality',
+    symbol: 'Q',
+    color: 'sem-quality',
+    rgb: 'rgb(0, 153, 0)',
+  },
+  SUBJECT: {
+    label: 'Subject',
+    symbol: 'S',
+    color: 'sem-subject',
+    rgb: 'rgb(153, 76, 0)',
+  },
+  IDENTITY: {
+    label: 'identity',
+    symbol: 'Id',
+    color: 'sem-identity',
+    rgb: 'rgb(0, 102, 204)',
+  },
+  ATTRIBUTE: {
+    label: 'Attribute',
+    symbol: 'A',
+    color: 'sem-attribute',
+    rgb: 'rgb(0, 102, 204)',
+  },
+  REALM: {
+    label: 'Realm',
+    symbol: 'R',
+    color: 'sem-realm',
+    rgb: 'rgb(0, 102, 204)',
+  },
+  TRAIT: {
+    label: 'Trait',
+    symbol: 'T',
+    color: 'sem-trait',
+    rgb: 'rgb(0, 102, 204)',
+  },
+  EVENT: {
+    label: 'Event',
+    symbol: 'E',
+    color: 'sem-event',
+    rgb: 'rgb(53, 153, 0)',
+  },
+  RELATIONSHIP: {
+    label: 'Relationship',
+    symbol: 'R',
+    color: 'sem-relationship',
+    rgb: 'rgb(210, 170, 0)',
+  },
+  PROCESS: {
+    label: 'Process',
+    symbol: 'P',
+    color: 'sem-process',
+    rgb: 'rgb(204, 0, 0)',
+  },
+  ROLE: {
+    label: 'Role',
+    symbol: 'R',
+    color: 'sem-role',
+    rgb: 'rgb(0, 86, 163)',
+  },
+  CONFIGURATION: {
+    label: 'Configuration',
+    symbol: 'C',
+    color: 'sem-configuration',
+    rgb: 'rgb(98, 98, 98)',
+  },
+  DOMAIN: {
+    label: 'Domain',
+    symbol: 'D',
+    color: 'sem-domain',
+    rgb: 'rgb(240, 240, 240)',
+  },
+};
+
 export default {
   EMPTY_MAP_SELECTION,
   /**
@@ -146,133 +276,9 @@ export default {
   GEOMTYP_PROPORTIONS: 'PROPORTIONS',
   GEOMTYP_FOLDER: 'FOLDER', // used only in frontend
 
-  /**
-   * Semantic Types
-   */
-  MATCH_TYPES: {
-    CONCEPT: {
-      label: 'Concept',
-      symbol: 'C',
-      color: 'sem-types',
-      rgb: 'rgb(38, 50, 56)',
-    },
-    PREFIX_OPERATOR: {
-      label: 'Prefix operator',
-      symbol: 'Po',
-      color: 'sem-types',
-      rgb: 'rgb(38, 50, 56)',
-    },
-    INFIX_OPERATOR: {
-      label: 'Infix operator',
-      symbol: 'Io',
-      color: 'sem-types',
-      rgb: 'rgb(38, 50, 56)',
-    },
-    OBSERVATION: {
-      label: 'Observation',
-      symbol: 'O',
-      color: 'sem-types',
-      rgb: 'rgb(38, 50, 56)',
-    },
-    MODEL: {
-      label: 'Model',
-      symbol: 'Ml',
-      color: 'sem-types',
-      rgb: 'rgb(38, 50, 56)',
-    },
-    MODIFIER: {
-      label: 'Modifier',
-      symbol: 'Mf',
-      color: 'sem-types',
-      rgb: 'rgb(38, 50, 56)',
-    },
-    PRESET_OBSERVABLE: { // subject returned when using default results
-      label: 'Preset observable',
-      symbol: 'Po',
-      color: 'sem-preset-observable',
-      rgb: 'rgb(240, 240, 240)',
-    },
-    SEPARATOR: {
-      label: 'Separator',
-      symbol: 'S',
-      color: 'sem-separator',
-      rgb: 'rgb(10, 10, 10)',
-    },
-  },
-  SEMANTIC_TYPES: {
-    QUALITY: {
-      label: 'Quality',
-      symbol: 'Q',
-      color: 'sem-quality',
-      rgb: 'rgb(0, 153, 0)',
-    },
-    SUBJECT: {
-      label: 'Subject',
-      symbol: 'S',
-      color: 'sem-subject',
-      rgb: 'rgb(153, 76, 0)',
-    },
-    IDENTITY: {
-      label: 'identity',
-      symbol: 'Id',
-      color: 'sem-identity',
-      rgb: 'rgb(0, 102, 204)',
-    },
-    ATTRIBUTE: {
-      label: 'Attribute',
-      symbol: 'A',
-      color: 'sem-attribute',
-      rgb: 'rgb(0, 102, 204)',
-    },
-    REALM: {
-      label: 'Realm',
-      symbol: 'R',
-      color: 'sem-realm',
-      rgb: 'rgb(0, 102, 204)',
-    },
-    TRAIT: {
-      label: 'Trait',
-      symbol: 'T',
-      color: 'sem-trait',
-      rgb: 'rgb(0, 102, 204)',
-    },
-    EVENT: {
-      label: 'Event',
-      symbol: 'E',
-      color: 'sem-event',
-      rgb: 'rgb(53, 153, 0)',
-    },
-    RELATIONSHIP: {
-      label: 'Relationship',
-      symbol: 'R',
-      color: 'sem-relationship',
-      rgb: 'rgb(210, 170, 0)',
-    },
-    PROCESS: {
-      label: 'Process',
-      symbol: 'P',
-      color: 'sem-process',
-      rgb: 'rgb(204, 0, 0)',
-    },
-    ROLE: {
-      label: 'Role',
-      symbol: 'R',
-      color: 'sem-role',
-      rgb: 'rgb(0, 86, 163)',
-    },
-    CONFIGURATION: {
-      label: 'Configuration',
-      symbol: 'C',
-      color: 'sem-configuration',
-      rgb: 'rgb(98, 98, 98)',
-    },
-    DOMAIN: {
-      label: 'Domain',
-      symbol: 'D',
-      color: 'sem-domain',
-      rgb: 'rgb(240, 240, 240)',
-    },
-  },
+  MATCH_TYPES,
+  SEMANTIC_TYPES,
+
   /**
    * URL params
    */

@@ -115,6 +115,10 @@ const PARSERS = {
     addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
     dispatch('data/setScaleReference', scaleReference, { root: true });
   },
+  [IN.TYPE_USERINPUTREQUESTED]: (inputRequest, { dispatch }) => {
+    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received input request', JSON.stringify(inputRequest));
+    dispatch('view/inputRequest', inputRequest, { root: true });
+  },
   // k.LAB log messages
   [IN.TYPE_DEBUG]: (message, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, message);

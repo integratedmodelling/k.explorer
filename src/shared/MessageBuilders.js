@@ -210,4 +210,15 @@ export const MESSAGES_BUILDERS = {
     },
     session,
   ),
+
+  USER_INPUT_RESPONSE: ({ requestId, values = {} }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_USERINPUTREQUESTED,
+    OUT.PAYLOAD_CLASS_USERINPUTRESPONSE,
+    {
+      requestId,
+      values,
+    },
+    session,
+  ),
 };

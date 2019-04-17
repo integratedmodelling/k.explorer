@@ -6,7 +6,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { Helpers, Constants } from 'shared/Helpers';
+import { OBSERVATION_DEFAULT, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
@@ -127,7 +127,7 @@ export default {
   },
   beforeMount() {
     this.$store.dispatch('data/addObservation', {
-      observation: Helpers.OBSERVATION_DEFAULT,
+      observation: OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
   },

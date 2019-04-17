@@ -1,14 +1,14 @@
-import { Helpers } from 'shared/Helpers';
+import { pushElementInFixedQueue } from 'shared/Helpers';
 import { EMPTY_MAP_SELECTION } from 'shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
-    Helpers.pushElementInFixedQueue(state.kexplorerLog, log);
+    pushElementInFixedQueue(state.kexplorerLog, log);
     console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
   },
 
   ADD_TO_KLAB_LOG: (state, log) => {
-    Helpers.pushElementInFixedQueue(state.klabLog, log);
+    pushElementInFixedQueue(state.klabLog, log);
   },
 
   ADD_TO_STATUS_TEXTS: (state, { id, text }) => {
@@ -231,5 +231,23 @@ export default {
 
   SET_MODAL_MODE: (state, modalMode) => {
     state.modalMode = modalMode;
+  },
+
+  SET_INPUT_REQUEST: (state, inputRequest) => {
+    state.inputRequests.push(inputRequest);
+    console.debug(JSON.stringify(inputRequest, null, 4));
+  },
+
+  REMOVE_INPUT_REQUEST: (state, requestId) => {
+    if (state.inputRequests.length > 0) {
+      if (requestId === null) {
+        state.inputRequests.splice(0, state.inputRequests.length);
+      } else {
+        const index = state.inputRequests.findIndex(ir => ir.requestId === requestId);
+        if (index !== -1) {
+          state.inputRequests.splice(index, 1);
+        }
+      }
+    }
   },
 };

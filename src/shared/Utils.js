@@ -52,7 +52,7 @@ const JSTS_ALL_WORLD = JSTS_FACTORY.createPolygon([
  * @param str the string to capitalize
  */
 export function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 /**
