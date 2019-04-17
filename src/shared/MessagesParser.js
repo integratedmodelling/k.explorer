@@ -7,23 +7,23 @@ function addToKexplorerLog(dispatch, type, message, attach, important = false) {
 }
 
 const PARSERS = {
-  [IN.TYPE_TASKSTARTED]: (task, { dispatch }) => {
+  [IN.TYPE_TASKSTARTED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskStart', task, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Started task with id ${task.id}`);
     dispatch('view/addToStatusTexts', { id: task.id, text: task.description }, { root: true });
   },
-  [IN.TYPE_TASKABORTED]: (task, { dispatch }) => {
+  [IN.TYPE_TASKABORTED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskAbort', task, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Aborted task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
-  [IN.TYPE_TASKFINISHED]: (task, { dispatch }) => {
+  [IN.TYPE_TASKFINISHED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskEnd', task, { root: true });
     dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
-  [IN.TYPE_DATAFLOWCOMPILED]: (payload, { dispatch }) => {
+  [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch }) => {
     if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
       try {
         const jsonEklLayout = JSON.parse(payload.jsonElkLayout);
@@ -36,7 +36,7 @@ const PARSERS = {
       addToKexplorerLog(dispatch, Constants.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
     }
   },
-  [IN.TYPE_DATAFLOWSTATECHANGED]: (payload, { dispatch }) => {
+  [IN.TYPE_DATAFLOWSTATECHANGED]: ({ payload }, { dispatch }) => {
     let status;
     if (payload.status === 'STARTED') {
       status = DATAFLOW_STATUS.PROCESSING;
@@ -49,7 +49,7 @@ const PARSERS = {
     }
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
-  [IN.TYPE_NEWOBSERVATION]: (observation, vuexContext) => {
+  [IN.TYPE_NEWOBSERVATION]: ({ payload: observation }, vuexContext) => {
     const { rootState, dispatch } = vuexContext;
     if (rootState.stomp.tasks.findIndex(task => task.id === observation.taskId) === -1
       && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.rootContextId) !== -1) {
@@ -103,7 +103,7 @@ const PARSERS = {
       );
     }
   },
-  [IN.TYPE_QUERYRESULT]: (results, { dispatch }) => {
+  [IN.TYPE_QUERYRESULT]: ({ payload: results }, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received search results', JSON.stringify(results));
     dispatch('data/storeSearchResult', results, { root: true });
   },
@@ -111,25 +111,25 @@ const PARSERS = {
     addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received context reset');
     dispatch('data/resetContext', null, { root: true });
   },
-  [IN.TYPE_SCALEDEFINED]: (scaleReference, { dispatch }) => {
+  [IN.TYPE_SCALEDEFINED]: ({ payload: scaleReference }, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
     dispatch('data/setScaleReference', scaleReference, { root: true });
   },
-  [IN.TYPE_USERINPUTREQUESTED]: (inputRequest, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received input request', JSON.stringify(inputRequest));
-    dispatch('view/inputRequest', inputRequest, { root: true });
+  [IN.TYPE_USERINPUTREQUESTED]: (message, { dispatch }) => {
+    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received input request', message.payload);
+    dispatch('view/inputRequest', message, { root: true });
   },
   // k.LAB log messages
-  [IN.TYPE_DEBUG]: (message, { dispatch }) => {
+  [IN.TYPE_DEBUG]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, message);
   },
-  [IN.TYPE_INFO]: (message, { dispatch }) => {
+  [IN.TYPE_INFO]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_INFO, message);
   },
-  [IN.TYPE_WARNING]: (message, { dispatch }) => {
+  [IN.TYPE_WARNING]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_WARNING, message);
   },
-  [IN.TYPE_ERROR]: (message, { dispatch }) => {
+  [IN.TYPE_ERROR]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, Constants.TYPE_ERROR, message);
   },
 };
@@ -150,7 +150,7 @@ export const parseAndExecute = ({ body }, context = null) => {
     console.log(`Unknown parser ${parsedBody.type}`); // : return payload`);
     return false; // parsedBody.payload;
   }
-  return PARSERS[parsedBody.type](parsedBody.payload, context);
+  return PARSERS[parsedBody.type](parsedBody, context);
 };
 
 /*

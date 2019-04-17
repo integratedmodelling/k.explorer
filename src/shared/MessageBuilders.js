@@ -13,7 +13,7 @@ import { OUT } from './MessagesConstants';
  * @returns {{messageClass: *, type: *, payloadClass: *, payload: *,
  *          identity: *, timestamp: number, inResponseTo: null}}
  */
-function buildMessage(messageClass, type, payloadClass, toCheckPayload, session) {
+function buildMessage(messageClass, type, payloadClass, toCheckPayload, session, inResponseTo = null) {
   const valid = payloadClass !== OUT.PAYLOAD_CLASS_EMPTY ? djvValidator.validateJsonSchema(toCheckPayload, payloadClass) : toCheckPayload;
   return {
     validated: valid,
@@ -24,7 +24,7 @@ function buildMessage(messageClass, type, payloadClass, toCheckPayload, session)
       payload: toCheckPayload,
       identity: session,
       timestamp: moment().valueOf(),
-      inResponseTo: null,
+      inResponseTo,
     },
   };
 }
@@ -198,14 +198,15 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  USER_INPUT_RESPONSE: ({ requestId, values = {} }, session) => buildMessage(
+  USER_INPUT_RESPONSE: ({ messageId, requestId, values = {} }, session) => buildMessage(
     OUT.CLASS_USERINTERFACE,
-    OUT.TYPE_USERINPUTREQUESTED,
+    OUT.TYPE_USERINPUTPROVIDED,
     OUT.PAYLOAD_CLASS_USERINPUTRESPONSE,
     {
       requestId,
       values,
     },
     session,
+    messageId,
   ),
 };

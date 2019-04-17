@@ -233,9 +233,12 @@ export default {
     state.modalMode = modalMode;
   },
 
-  SET_INPUT_REQUEST: (state, inputRequest) => {
-    state.inputRequests.push(inputRequest);
-    console.debug(JSON.stringify(inputRequest, null, 4));
+  SET_INPUT_REQUEST: (state, { payload, id }) => {
+    state.inputRequests.push({
+      messageId: id,
+      ...payload,
+    });
+    console.debug(JSON.stringify(payload, null, 4));
   },
 
   REMOVE_INPUT_REQUEST: (state, requestId) => {
