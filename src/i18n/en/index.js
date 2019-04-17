@@ -60,7 +60,7 @@ export default {
     loadShowData: 'Load and show data',
     interactiveMode: 'Interactive mode',
     inputRequest: 'Set value of input request',
-    sendDefaultInputRequest: 'Send defaults',
+    resetInputRequest: 'Reset value',
     sendInputRequest: 'Send values',
     noInputSectionTitle: 'No section title',
   },

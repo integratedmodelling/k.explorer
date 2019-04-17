@@ -57,6 +57,10 @@ export default {
     optionSaveLocation: 'Recordar posición',
     loadShowData: 'Cargar y visualizar datos',
     interactiveMode: 'Modo interactivo',
+    inputRequest: 'Selecionar valores',
+    resetInputRequest: 'Valores por defecto',
+    sendInputRequest: 'Enviar valores',
+    noInputSectionTitle: 'Sección sin título',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',

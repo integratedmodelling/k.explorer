@@ -136,6 +136,7 @@ module.exports = function (ctx) {
         'QToggle',
         'QCheckbox',
         'QProgress',
+        'QField',
       ],
       directives: [
         'Ripple',
