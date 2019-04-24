@@ -11,18 +11,18 @@
       <p>{{ request.description }}</p>
       <div v-for="field in request.fields" :key="field.id" class="irm-field">
         <q-field
-          :label="field.id"
+          :label="field.label"
           :helper="field.description"
         >
           <component
-            :name="`${request.requestId}-${field.id}`"
+            :name="`${request.requestId}-${field.functionId}/${field.id}`"
             :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
             :initialValue="field.initialValue"
             :values="field.values"
             :range="field.range"
             :numericPrecision="field.numericPrecision"
             :regexp="field.regexp"
-            @change="updateForm(`${request.requestId}-${field.id}`, $event)"
+            @change="updateForm(`${request.requestId}-${field.functionId}/${field.id}`, $event)"
           ></component>
         </q-field>
       </div>
@@ -82,14 +82,14 @@ export default {
       this.inputRequests.forEach((request) => {
         const values = request.fields.reduce((map, obj) => {
           if (!onlyDefault) {
-            const value = this.formData[`${request.requestId}-${obj.id}`];
+            const value = this.formData[`${request.requestId}-${obj.functionId}/${obj.id}`];
             if (typeof value === 'undefined' || value === null || value === '') {
-              map[obj.id] = obj.initialValue;
+              map[`${obj.functionId}/${obj.id}`] = obj.initialValue;
             } else {
-              map[obj.id] = value.toString();
+              map[`${obj.functionId}/${obj.id}`] = value.toString();
             }
           } else {
-            map[obj.id] = obj.initialValue;
+            map[`${obj.functionId}/${obj.id}`] = obj.initialValue;
           }
           return map;
         }, {});
@@ -111,17 +111,6 @@ export default {
       this.formData = {};
     },
   },
-  /*
-  watch: {
-    inputRequests() {
-      this.inputRequests.forEach((request) => {
-        request.fields.forEach((f) => {
-          this.updateForm(`${request.requestId}-${f.id}`, f.initialValue);
-        });
-      });
-    },
-  },
-  */
 };
 </script>
 
