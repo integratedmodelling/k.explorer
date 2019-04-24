@@ -11,7 +11,7 @@
       <p>{{ request.description }}</p>
       <div v-for="field in request.fields" :key="field.id" class="irm-field">
         <q-field
-          :label="field.label"
+          :label="field.label !== null ? field.label : field.id"
           :helper="field.description"
         >
           <component
