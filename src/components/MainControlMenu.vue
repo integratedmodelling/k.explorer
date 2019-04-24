@@ -12,7 +12,7 @@
       anchor="top right"
       self="top left"
       ref="mcm-main-popover"
-      :persistent="true"
+      :persistent="false"
     >
       <q-btn
         icon="mdi-close"
@@ -169,7 +169,7 @@
 <script>
 import moment from 'moment';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import Constants from 'shared/Constants';
+import Constants, { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
@@ -344,6 +344,11 @@ export default {
     interactiveModeModel(newValue) {
       this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: newValue }, this.session).body);
     },
+  },
+  mounted() {
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
+      this.closePopups();
+    });
   },
 };
 </script>
