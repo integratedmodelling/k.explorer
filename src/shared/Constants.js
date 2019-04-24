@@ -384,4 +384,6 @@ export const CUSTOM_EVENTS = {
   ASK_FOR_SUGGESTIONS: 'askforsuggestions',
   // If something need fit the map
   NEED_FIT_MAP: 'needfitmap',
+  // send a map click to inform. For now used by mainControlMenu to close itself
+  MAP_CLICK: 'mapclick',
 };
