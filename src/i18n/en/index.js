@@ -60,8 +60,9 @@ export default {
     loadShowData: 'Load and show data',
     interactiveMode: 'Interactive mode',
     inputRequest: 'Set value of input request',
-    resetInputRequest: 'Reset value',
-    sendInputRequest: 'Send values',
+    cancelInputRequest: 'Cancel',
+    resetInputRequest: 'Reset',
+    submitInputRequest: 'Submit',
     noInputSectionTitle: 'No section title',
   },
   messages: {
@@ -104,6 +105,8 @@ export default {
     provenanceViewer: 'View provenance (will be...)',
     undock: 'Undock',
     copyEncodedShapeToClipboard: 'Copy context shape to clipboard',
+    cancelInputRequest: 'Submit default values',
+    submitInputRequest: 'Submit values',
   },
   errors: {
     connectionError: 'Connection error',

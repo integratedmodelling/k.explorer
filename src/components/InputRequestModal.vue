@@ -5,34 +5,46 @@
     :no-backdrop-dismiss="true"
     :content-classes="['irm-container']"
   >
-    <h3>{{ $t('label.inputRequest') }}</h3>
-    <div v-for="(request) in inputRequests" :key="request.requestId" class="irm-group">
-      <h4>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h4>
-      <p>{{ request.description }}</p>
-      <div v-for="field in request.fields" :key="field.id" class="irm-field">
+    <div v-for="(request, index) in inputRequests" :key="request.requestId" class="irm-group">
+      <h3 v-if="index === 0">{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h3>
+      <div v-for="field in request.fields" :key="getFieldId(field, request.requestId)" class="irm-field">
+        <h4 v-if="checkSectionTitle(field.sectionTitle)">{{ field.sectionTitle }}</h4>
         <q-field
           :label="field.label !== null ? field.label : field.id"
           :helper="field.description"
         >
           <component
-            :name="`${request.requestId}-${field.functionId}/${field.id}`"
+            :name="getFieldId(field, request.requestId)"
             :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
             :initialValue="field.initialValue"
             :values="field.values"
             :range="field.range"
             :numericPrecision="field.numericPrecision"
             :regexp="field.regexp"
-            @change="updateForm(`${request.requestId}-${field.functionId}/${field.id}`, $event)"
+            @change="updateForm(getFieldId(field, request.requestId), $event)"
           ></component>
         </q-field>
       </div>
     </div>
     <div class="irm-buttons">
       <q-btn
+        color="primary"
+        @click="send(true)"
+        :label="$t('label.cancelInputRequest')"
+      >
+        <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+          {{ $t('tooltips.cancelInputRequest') }}
+        </q-tooltip>
+      </q-btn>
+      <q-btn
         color="mc-main"
         @click="send(false)"
-        :label="$t('label.sendInputRequest')"
-      ></q-btn>
+        :label="$t('label.submitInputRequest')"
+      >
+        <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+          {{ $t('tooltips.submitInputRequest') }}
+        </q-tooltip>
+      </q-btn>
     </div>
   </q-modal>
 </template>
@@ -52,6 +64,7 @@ export default {
     NumberInputRequest,
     BooleanInputRequest,
   },
+  sectionTitle: null,
   data() {
     return {
       formData: {},
@@ -82,14 +95,14 @@ export default {
       this.inputRequests.forEach((request) => {
         const values = request.fields.reduce((map, obj) => {
           if (!onlyDefault) {
-            const value = this.formData[`${request.requestId}-${obj.functionId}/${obj.id}`];
+            const value = this.formData[this.getFieldId(obj, request.requestId)];
             if (typeof value === 'undefined' || value === null || value === '') {
-              map[`${obj.functionId}/${obj.id}`] = obj.initialValue;
+              map[this.getFieldId(obj)] = obj.initialValue;
             } else {
-              map[`${obj.functionId}/${obj.id}`] = value.toString();
+              map[this.getFieldId(obj)] = value.toString();
             }
           } else {
-            map[`${obj.functionId}/${obj.id}`] = obj.initialValue;
+            map[this.getFieldId(obj)] = obj.initialValue;
           }
           return map;
         }, {});
@@ -109,6 +122,19 @@ export default {
     },
     resetFields() {
       this.formData = {};
+    },
+    getFieldId(field, requestId = null) {
+      if (requestId === null) {
+        return `${field.functionId}/${field.id}`;
+      }
+      return `${requestId}-${field.functionId}/${field.id}`;
+    },
+    checkSectionTitle(sectionTitle) {
+      if (this.$options.sectionTitle !== sectionTitle) {
+        this.$options.sectionTitle = sectionTitle;
+        return true;
+      }
+      return false;
     },
   },
 };
