@@ -385,5 +385,5 @@ export const CUSTOM_EVENTS = {
   // If something need fit the map
   NEED_FIT_MAP: 'needfitmap',
   // send a map click to inform. For now used by mainControlMenu to close itself
-  MAP_CLICK: 'mapclick',
+  VIEWER_CLICK: 'viewerclick',
 };

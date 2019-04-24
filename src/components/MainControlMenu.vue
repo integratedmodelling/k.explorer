@@ -346,7 +346,7 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.MAP_CLICK, () => {
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
       this.closePopups();
     });
   },

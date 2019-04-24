@@ -480,7 +480,7 @@ export default {
           this.setMapSelection({ pixelSelected: event.coordinate, observationId: this.topLayer.id });
         }
       }
-      this.$eventBus.$emit(CUSTOM_EVENTS.MAP_CLICK, event);
+      this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_CLICK, event);
     });
     // ...and set some attribute for rapid access
     this.view = this.map.getView();
