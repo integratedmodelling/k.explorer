@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { axiosInstance } from 'plugins/axios';
 import { mapState, mapGetters, mapActions } from 'vuex';
 // import SimpleBar from 'simplebar';
 
@@ -33,7 +32,7 @@ export default {
     ]),
     loadReport() {
       if (this.reloadReport && this.hasContext && this.hasObservations) {
-        axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}report/${this.contextId}`, {})
+        this.$axios.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}report/${this.contextId}`, {})
           .then(({ data }) => {
             if (data === '') {
               console.warn('Empty report');

@@ -10,7 +10,7 @@
       cx="0"
       cy="-90"
       :r="ball"
-      :style="{fill: ballColor}"
+      :style="{ fill: ballColor }"
       :class="{moving}"
     ></circle>
   </svg>
@@ -36,7 +36,7 @@ export default {
     },
     ballColor: {
       type: String,
-      default: 'primary',
+      default: colors.getBrand('primary'),
     },
     stroke: {
       type: String,
@@ -66,7 +66,7 @@ export default {
       return this.storeControlled ? this.spinner.animated : this.animated;
     },
     realColor() {
-      return this.storeControlled ? this.spinner.color : this.color;
+      return this.storeControlled ? this.spinner.color : this.getBrand(this.color);
     },
     errorMessage() {
       return this.spinner.errorMessage;
@@ -81,6 +81,11 @@ export default {
         return false;
       }
       return false;
+    },
+  },
+  methods: {
+    getBrand(color) {
+      return colors.getBrand(color);
     },
   },
   watch: {
