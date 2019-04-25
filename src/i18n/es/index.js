@@ -58,8 +58,9 @@ export default {
     loadShowData: 'Cargar y visualizar datos',
     interactiveMode: 'Modo interactivo',
     inputRequest: 'Selecionar valores',
-    resetInputRequest: 'Valores por defecto',
-    sendInputRequest: 'Enviar valores',
+    cancelInputRequest: 'Cancelar',
+    resetInputRequest: 'Reset',
+    submitInputRequest: 'Enviar',
     noInputSectionTitle: 'Sección sin título',
   },
   messages: {
@@ -102,6 +103,8 @@ export default {
     provenanceViewer: 'Ver provenance (will be...)',
     undock: 'Desacoplar',
     copyEncodedShapeToClipboard: 'Copiar el contexto en el portapapeles',
+    cancelInputRequest: 'Submit default values',
+    submitInputRequest: 'Submit values',
   },
   errors: {
     connectionError: 'Error de conexión',

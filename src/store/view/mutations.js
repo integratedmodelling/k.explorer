@@ -238,15 +238,14 @@ export default {
       messageId: id,
       ...payload,
     });
-    console.debug(JSON.stringify(payload, null, 4));
   },
 
-  REMOVE_INPUT_REQUEST: (state, requestId) => {
+  REMOVE_INPUT_REQUEST: (state, messageId) => {
     if (state.inputRequests.length > 0) {
-      if (requestId === null) {
+      if (messageId === null) {
         state.inputRequests.splice(0, state.inputRequests.length);
       } else {
-        const index = state.inputRequests.findIndex(ir => ir.requestId === requestId);
+        const index = state.inputRequests.findIndex(ir => ir.messageId === messageId);
         if (index !== -1) {
           state.inputRequests.splice(index, 1);
         }

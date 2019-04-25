@@ -59,8 +59,9 @@ export default {
     uploadComplete: 'Upload del file {fileName} completo',
     interactiveMode: 'Modo interattivo',
     inputRequest: 'Selezionare valori',
-    resetInputRequest: 'Valori di default',
-    sendInputRequest: 'Inviare valori',
+    cancelInputRequest: 'Cancellare',
+    resetInputRequest: 'Reset',
+    submitInputRequest: 'Inviare',
     noInputSectionTitle: 'Sezione senza titolo',
   },
   messages: {
@@ -102,6 +103,8 @@ export default {
     provenanceViewer: 'Vedere provenance (will be...)',
     undock: 'Sganciare',
     copyEncodedShapeToClipboard: 'Copia il contesto negli appunti',
+    cancelInputRequest: 'Utilizzare valori di default',
+    submitInputRequest: 'Submit values',
   },
   errors: {
     connectionError: 'Errore di connessione',

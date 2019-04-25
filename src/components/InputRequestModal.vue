@@ -1,39 +1,84 @@
 <template>
   <q-modal
-    v-model="hasInputRequests"
+    v-model="opened"
     :no-esc-dismiss="true"
     :no-backdrop-dismiss="true"
     :content-classes="['irm-container']"
+    ref="irm-modal-container"
+    @escape-key="cancelAll"
   >
-    <h3>{{ $t('label.inputRequest') }}</h3>
-    <div v-for="(request) in inputRequests" :key="request.requestId" class="irm-group">
-      <h4>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h4>
-      <p>{{ request.description }}</p>
-      <div v-for="field in request.fields" :key="field.id" class="irm-field">
-        <q-field
-          :label="field.label !== null ? field.label : field.id"
-          :helper="field.description"
-        >
-          <component
-            :name="`${request.requestId}-${field.functionId}/${field.id}`"
-            :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
-            :initialValue="field.initialValue"
-            :values="field.values"
-            :range="field.range"
-            :numericPrecision="field.numericPrecision"
-            :regexp="field.regexp"
-            @change="updateForm(`${request.requestId}-${field.functionId}/${field.id}`, $event)"
-          ></component>
-        </q-field>
-      </div>
-    </div>
-    <div class="irm-buttons">
-      <q-btn
-        color="mc-main"
-        @click="send(false)"
-        :label="$t('label.sendInputRequest')"
-      ></q-btn>
-    </div>
+    <q-tabs
+      v-model="selectedRequest"
+      swipeable
+      animated
+      color="white"
+      :class="{ 'irm-tabs-hidden': inputRequests.length <= 1 }"
+    >
+      <q-tab
+        v-for="request in inputRequests"
+        :key="request.messageId"
+        :name="`request-${request.messageId}`"
+        :class="{ 'irm-tabs-hidden': inputRequests.length <= 1 }"
+        slot="title">
+      </q-tab>
+      <q-tab-pane
+        v-for="request in inputRequests"
+        :key="request.messageId"
+        :name="`request-${request.messageId}`"
+      >
+        <div class="irm-group">
+          <div class="irm-global-description">
+            <h5>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h5>
+            <p>{{ request.description }}</p>
+          </div>
+          <div class="irm-fields-container" data-simplebar>
+            <div class="irm-fields-wrapper">
+              <div v-for="field in request.fields" :key="getFieldId(field, request.messageId)" class="irm-field">
+                <div class="irm-section-description" v-if="checkSectionTitle(field.sectionTitle)">
+                  <h4>{{ field.sectionTitle }}</h4>
+                  <p>{{ field.sectionDescription }}</p>
+                </div>
+                <q-field
+                  :label="field.label !== null ? field.label : field.id"
+                  :helper="field.description"
+                >
+                  <component
+                    :name="getFieldId(field, request.messageId)"
+                    :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
+                    :initialValue="field.initialValue"
+                    :values="field.values"
+                    :range="field.range"
+                    :numericPrecision="field.numericPrecision"
+                    :regexp="field.regexp"
+                    @change="updateForm(getFieldId(field, request.messageId), $event)"
+                  ></component>
+                </q-field>
+              </div>
+            </div>
+          </div>
+          <div class="irm-buttons">
+            <q-btn
+              color="primary"
+              @click="send(request.messageId, true)"
+              :label="$t('label.cancelInputRequest')"
+            >
+              <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('tooltips.cancelInputRequest') }}
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              color="mc-main"
+              @click="send(request.messageId, false)"
+              :label="$t('label.submitInputRequest')"
+            >
+              <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('tooltips.submitInputRequest') }}
+              </q-tooltip>
+            </q-btn>
+          </div>
+        </div>
+      </q-tab-pane>
+    </q-tabs>
   </q-modal>
 </template>
 
@@ -44,6 +89,7 @@ import NumberInputRequest from 'components/form/NumberField.vue';
 import BooleanInputRequest from 'components/form/BooleanField.vue';
 import { capitalizeFirstLetter } from 'shared/Utils';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import 'simplebar';
 
 export default {
   name: 'InputRequestModal',
@@ -52,9 +98,12 @@ export default {
     NumberInputRequest,
     BooleanInputRequest,
   },
+  sectionTitle: null,
   data() {
     return {
       formData: {},
+      simpleBars: [],
+      selectedRequest: null,
     };
   },
   computed: {
@@ -78,18 +127,19 @@ export default {
     ...mapActions('view', [
       'removeInputRequest',
     ]),
-    send(onlyDefault = false) {
-      this.inputRequests.forEach((request) => {
+    send(messageId, onlyDefault = false) {
+      const request = this.inputRequests.find(r => r.messageId === messageId);
+      if (typeof request !== 'undefined') {
         const values = request.fields.reduce((map, obj) => {
           if (!onlyDefault) {
-            const value = this.formData[`${request.requestId}-${obj.functionId}/${obj.id}`];
+            const value = this.formData[this.getFieldId(obj, request.messageId)];
             if (typeof value === 'undefined' || value === null || value === '') {
-              map[`${obj.functionId}/${obj.id}`] = obj.initialValue;
+              map[this.getFieldId(obj)] = obj.initialValue;
             } else {
-              map[`${obj.functionId}/${obj.id}`] = value.toString();
+              map[this.getFieldId(obj)] = value.toString();
             }
           } else {
-            map[`${obj.functionId}/${obj.id}`] = obj.initialValue;
+            map[this.getFieldId(obj)] = obj.initialValue;
           }
           return map;
         }, {});
@@ -98,8 +148,8 @@ export default {
           requestId: request.requestId,
           values,
         }, this.session).body);
-        this.removeInputRequest(request.requestId);
-      });
+        this.removeInputRequest(request.messageId);
+      }
     },
     updateForm(fieldName, value) {
       this.$set(this.formData, fieldName, value);
@@ -107,8 +157,31 @@ export default {
     capitalizeFirstLetter(string) {
       return capitalizeFirstLetter(string);
     },
-    resetFields() {
-      this.formData = {};
+    getFieldId(field, requestId = null) {
+      if (requestId === null) {
+        return `${field.functionId}/${field.id}`;
+      }
+      return `${requestId}-${field.functionId}/${field.id}`;
+    },
+    checkSectionTitle(sectionTitle) {
+      if (this.$options.sectionTitle !== sectionTitle) {
+        this.$options.sectionTitle = sectionTitle;
+        return true;
+      }
+      return false;
+    },
+    cancelAll() {
+      const irl = this.inputRequests.length;
+      for (let i = irl - 1; i >= 0; i--) {
+        this.send(this.inputRequests[i]);
+      }
+    },
+  },
+  watch: {
+    inputRequests() {
+      if (this.inputRequests.length > 0) {
+        this.selectedRequest = `request-${this.inputRequests[0].messageId}`;
+      }
     },
   },
 };
@@ -120,23 +193,55 @@ export default {
   .irm-container
     padding 20px
     width 80vh
-    h3, h4
-      margin 0 0 10px 0
+    overflow hidden
+    h3, h4, h5, p
+      margin 0 0 0 0
       padding 0
       color $main-control-main-color
+    h3, p
+      margin-bottom 10px
     h3
       line-height 1.4em
       font-size 1.4em
     h4
+      line-height 1em
+      font-size 1em
+    h5
       line-height 1.2em
       font-size 1.2em
-    .irm-group
+
+    h5
+    h4
+      & + p
+        color #333
+        font-size .8em
+        font-style italic
+    h4 + p
+      border-bottom 1px solid $main-control-main-color
+      padding-bottom 10px
+    .q-tabs:not(.irm-tabs-hidden) .q-tabs-head
+      border-bottom 1px solid $main-control-main-color
+    .q-tab:not(.irm-tabs-hidden)
+      border-top-left-radius 5px
+      border-top-right-radius 5px
+      background-color $main-control-main-color
+    .q-tabs-position-top > .q-tabs-head .q-tabs-bar
+      border-bottom-width 10px
+      color rgba(255, 255, 255, .3)
+    .irm-fields-container
+      max-height 60vh
+      overflow hidden
+      border 1px dotted $main-control-main-color
       margin 10px 0
-    label
-      font-style italic
+      .irm-fields-wrapper
+        padding 10px
+      .irm-group
+        margin 10px 0
+      label
+        font-style italic
     .irm-buttons
       width 100%
       text-align right
       .q-btn
-        margin-right 10px
+        margin-left 10px
 </style>
