@@ -1,7 +1,7 @@
 <template>
   <q-btn
-    icon="mdi-chevron-right"
-    color="black"
+    :icon="interactiveMode ? 'mdi-play' : 'mdi-chevron-right'"
+    :color="interactiveMode ? 'mc-main-light' : 'black'"
     size="sm"
     round
     flat
