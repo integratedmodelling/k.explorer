@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
 import { findNodeById } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
@@ -56,7 +55,7 @@ export default {
       }
       */
       console.info('Ask for dataflow');
-      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
+      this.$axios.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
         .then(({ data }) => {
           if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
             try {
