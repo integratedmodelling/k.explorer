@@ -6,24 +6,34 @@
     :content-classes="['irm-container']"
   >
     <div v-for="(request, index) in inputRequests" :key="request.requestId" class="irm-group">
-      <h3 v-if="index === 0">{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h3>
-      <div v-for="field in request.fields" :key="getFieldId(field, request.requestId)" class="irm-field">
-        <h4 v-if="checkSectionTitle(field.sectionTitle)">{{ field.sectionTitle }}</h4>
-        <q-field
-          :label="field.label !== null ? field.label : field.id"
-          :helper="field.description"
-        >
-          <component
-            :name="getFieldId(field, request.requestId)"
-            :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
-            :initialValue="field.initialValue"
-            :values="field.values"
-            :range="field.range"
-            :numericPrecision="field.numericPrecision"
-            :regexp="field.regexp"
-            @change="updateForm(getFieldId(field, request.requestId), $event)"
-          ></component>
-        </q-field>
+      <div class="irm-global-description" v-if="index === 0">
+        <h5>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h5>
+        <p>{{ request.description }}</p>
+      </div>
+      <div class="irm-fields-container" data-simplebar>
+        <div class="irm-fields-wrapper">
+          <div v-for="field in request.fields" :key="getFieldId(field, request.requestId)" class="irm-field">
+            <div class="irm-section-description" v-if="checkSectionTitle(field.sectionTitle)">
+              <h4>{{ field.sectionTitle }}</h4>
+              <p>{{ field.sectionDescription }}</p>
+            </div>
+            <q-field
+              :label="field.label !== null ? field.label : field.id"
+              :helper="field.description"
+            >
+              <component
+                :name="getFieldId(field, request.requestId)"
+                :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
+                :initialValue="field.initialValue"
+                :values="field.values"
+                :range="field.range"
+                :numericPrecision="field.numericPrecision"
+                :regexp="field.regexp"
+                @change="updateForm(getFieldId(field, request.requestId), $event)"
+              ></component>
+            </q-field>
+          </div>
+        </div>
       </div>
     </div>
     <div class="irm-buttons">
@@ -56,6 +66,7 @@ import NumberInputRequest from 'components/form/NumberField.vue';
 import BooleanInputRequest from 'components/form/BooleanField.vue';
 import { capitalizeFirstLetter } from 'shared/Utils';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import 'simplebar';
 
 export default {
   name: 'InputRequestModal',
@@ -68,6 +79,7 @@ export default {
   data() {
     return {
       formData: {},
+      simpleBars: [],
     };
   },
   computed: {
@@ -137,6 +149,16 @@ export default {
       return false;
     },
   },
+  watch: {
+    /*
+    inputRequests() {
+      for (let i = 0; i < this.inputRequests.length; i++) {
+        // eslint-disable-next-line no-new
+        this.simpleBars.push(new SimpleBar(document.getElementById(`irm-fields-container-${i}`)));
+      }
+    },
+    */
+  },
 };
 </script>
 
@@ -146,23 +168,46 @@ export default {
   .irm-container
     padding 20px
     width 80vh
-    h3, h4
-      margin 0 0 10px 0
+    overflow hidden
+    h3, h4, h5, p
+      margin 0 0 0 0
       padding 0
       color $main-control-main-color
+    h3, p
+      margin-bottom 10px
     h3
       line-height 1.4em
       font-size 1.4em
     h4
+      line-height 1em
+      font-size 1em
+    h5
       line-height 1.2em
       font-size 1.2em
-    .irm-group
+
+    h5
+    h4
+      & + p
+        color #333
+        font-size .8em
+        font-style italic
+    h4 + p
+      border-bottom 1px solid $main-control-main-color
+      padding-bottom 10px
+    .irm-fields-container
+      height 60vh
+      overflow hidden
+      border 1px dotted $main-control-main-color
       margin 10px 0
-    label
-      font-style italic
+      .irm-fields-wrapper
+        padding 10px
+      .irm-group
+        margin 10px 0
+      label
+        font-style italic
     .irm-buttons
       width 100%
       text-align right
       .q-btn
-        margin-right 10px
+        margin-left 10px
 </style>
