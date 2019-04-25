@@ -271,8 +271,8 @@ export default {
     commit('SET_MODAL_MODE', true);
   },
 
-  removeInputRequest: ({ commit, getters }, requestId) => {
-    commit('REMOVE_INPUT_REQUEST', requestId);
+  removeInputRequest: ({ commit, getters }, messageId) => {
+    commit('REMOVE_INPUT_REQUEST', messageId);
     if (!getters.hasInputRequests) {
       commit('SET_MODAL_MODE', false);
     }

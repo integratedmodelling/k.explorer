@@ -1,61 +1,84 @@
 <template>
   <q-modal
-    v-model="hasInputRequests"
+    v-model="opened"
     :no-esc-dismiss="true"
     :no-backdrop-dismiss="true"
     :content-classes="['irm-container']"
+    ref="irm-modal-container"
+    @escape-key="cancelAll"
   >
-    <div v-for="(request, index) in inputRequests" :key="request.requestId" class="irm-group">
-      <div class="irm-global-description" v-if="index === 0">
-        <h5>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h5>
-        <p>{{ request.description }}</p>
-      </div>
-      <div class="irm-fields-container" data-simplebar>
-        <div class="irm-fields-wrapper">
-          <div v-for="field in request.fields" :key="getFieldId(field, request.requestId)" class="irm-field">
-            <div class="irm-section-description" v-if="checkSectionTitle(field.sectionTitle)">
-              <h4>{{ field.sectionTitle }}</h4>
-              <p>{{ field.sectionDescription }}</p>
+    <q-tabs
+      v-model="selectedRequest"
+      swipeable
+      animated
+      color="white"
+      :class="{ 'irm-tabs-hidden': inputRequests.length <= 1 }"
+    >
+      <q-tab
+        v-for="request in inputRequests"
+        :key="request.messageId"
+        :name="`request-${request.messageId}`"
+        :class="{ 'irm-tabs-hidden': inputRequests.length <= 1 }"
+        slot="title">
+      </q-tab>
+      <q-tab-pane
+        v-for="request in inputRequests"
+        :key="request.messageId"
+        :name="`request-${request.messageId}`"
+      >
+        <div class="irm-group">
+          <div class="irm-global-description">
+            <h5>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h5>
+            <p>{{ request.description }}</p>
+          </div>
+          <div class="irm-fields-container" data-simplebar>
+            <div class="irm-fields-wrapper">
+              <div v-for="field in request.fields" :key="getFieldId(field, request.messageId)" class="irm-field">
+                <div class="irm-section-description" v-if="checkSectionTitle(field.sectionTitle)">
+                  <h4>{{ field.sectionTitle }}</h4>
+                  <p>{{ field.sectionDescription }}</p>
+                </div>
+                <q-field
+                  :label="field.label !== null ? field.label : field.id"
+                  :helper="field.description"
+                >
+                  <component
+                    :name="getFieldId(field, request.messageId)"
+                    :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
+                    :initialValue="field.initialValue"
+                    :values="field.values"
+                    :range="field.range"
+                    :numericPrecision="field.numericPrecision"
+                    :regexp="field.regexp"
+                    @change="updateForm(getFieldId(field, request.messageId), $event)"
+                  ></component>
+                </q-field>
+              </div>
             </div>
-            <q-field
-              :label="field.label !== null ? field.label : field.id"
-              :helper="field.description"
+          </div>
+          <div class="irm-buttons">
+            <q-btn
+              color="primary"
+              @click="send(request.messageId, true)"
+              :label="$t('label.cancelInputRequest')"
             >
-              <component
-                :name="getFieldId(field, request.requestId)"
-                :is="`${capitalizeFirstLetter(field.type)}InputRequest`"
-                :initialValue="field.initialValue"
-                :values="field.values"
-                :range="field.range"
-                :numericPrecision="field.numericPrecision"
-                :regexp="field.regexp"
-                @change="updateForm(getFieldId(field, request.requestId), $event)"
-              ></component>
-            </q-field>
+              <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('tooltips.cancelInputRequest') }}
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              color="mc-main"
+              @click="send(request.messageId, false)"
+              :label="$t('label.submitInputRequest')"
+            >
+              <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('tooltips.submitInputRequest') }}
+              </q-tooltip>
+            </q-btn>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="irm-buttons">
-      <q-btn
-        color="primary"
-        @click="send(true)"
-        :label="$t('label.cancelInputRequest')"
-      >
-        <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-          {{ $t('tooltips.cancelInputRequest') }}
-        </q-tooltip>
-      </q-btn>
-      <q-btn
-        color="mc-main"
-        @click="send(false)"
-        :label="$t('label.submitInputRequest')"
-      >
-        <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
-          {{ $t('tooltips.submitInputRequest') }}
-        </q-tooltip>
-      </q-btn>
-    </div>
+      </q-tab-pane>
+    </q-tabs>
   </q-modal>
 </template>
 
@@ -80,6 +103,7 @@ export default {
     return {
       formData: {},
       simpleBars: [],
+      selectedRequest: null,
     };
   },
   computed: {
@@ -103,11 +127,12 @@ export default {
     ...mapActions('view', [
       'removeInputRequest',
     ]),
-    send(onlyDefault = false) {
-      this.inputRequests.forEach((request) => {
+    send(messageId, onlyDefault = false) {
+      const request = this.inputRequests.find(r => r.messageId === messageId);
+      if (typeof request !== 'undefined') {
         const values = request.fields.reduce((map, obj) => {
           if (!onlyDefault) {
-            const value = this.formData[this.getFieldId(obj, request.requestId)];
+            const value = this.formData[this.getFieldId(obj, request.messageId)];
             if (typeof value === 'undefined' || value === null || value === '') {
               map[this.getFieldId(obj)] = obj.initialValue;
             } else {
@@ -123,17 +148,14 @@ export default {
           requestId: request.requestId,
           values,
         }, this.session).body);
-        this.removeInputRequest(request.requestId);
-      });
+        this.removeInputRequest(request.messageId);
+      }
     },
     updateForm(fieldName, value) {
       this.$set(this.formData, fieldName, value);
     },
     capitalizeFirstLetter(string) {
       return capitalizeFirstLetter(string);
-    },
-    resetFields() {
-      this.formData = {};
     },
     getFieldId(field, requestId = null) {
       if (requestId === null) {
@@ -148,16 +170,19 @@ export default {
       }
       return false;
     },
-  },
-  watch: {
-    /*
-    inputRequests() {
-      for (let i = 0; i < this.inputRequests.length; i++) {
-        // eslint-disable-next-line no-new
-        this.simpleBars.push(new SimpleBar(document.getElementById(`irm-fields-container-${i}`)));
+    cancelAll() {
+      const irl = this.inputRequests.length;
+      for (let i = irl - 1; i >= 0; i--) {
+        this.send(this.inputRequests[i]);
       }
     },
-    */
+  },
+  watch: {
+    inputRequests() {
+      if (this.inputRequests.length > 0) {
+        this.selectedRequest = `request-${this.inputRequests[0].messageId}`;
+      }
+    },
   },
 };
 </script>
@@ -194,8 +219,17 @@ export default {
     h4 + p
       border-bottom 1px solid $main-control-main-color
       padding-bottom 10px
+    .q-tabs:not(.irm-tabs-hidden) .q-tabs-head
+      border-bottom 1px solid $main-control-main-color
+    .q-tab:not(.irm-tabs-hidden)
+      border-top-left-radius 5px
+      border-top-right-radius 5px
+      background-color $main-control-main-color
+    .q-tabs-position-top > .q-tabs-head .q-tabs-bar
+      border-bottom-width 10px
+      color rgba(255, 255, 255, .3)
     .irm-fields-container
-      height 60vh
+      max-height 60vh
       overflow hidden
       border 1px dotted $main-control-main-color
       margin 10px 0
