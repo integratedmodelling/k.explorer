@@ -331,6 +331,9 @@ export default {
       this.$refs['mcm-main-popover'].hide();
       this.$refs['mcm-contexts-popover'].hide();
     },
+    sendInteractiveModeState(state) {
+      this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: state }, this.session).body);
+    },
   },
   watch: {
     hasContext() {
@@ -342,8 +345,11 @@ export default {
       }
     },
     interactiveModeModel(newValue) {
-      this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: newValue }, this.session).body);
+      this.sendInteractiveModeState(newValue);
     },
+  },
+  created() {
+    this.sendInteractiveModeState(false);
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
