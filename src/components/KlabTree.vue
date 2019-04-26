@@ -14,6 +14,7 @@
         color="white"
         :dark="true"
         :double-click-function="fitMap"
+        :noNodesLabel="$t('label.noObservation')"
       >
         <div slot="header-default" slot-scope="prop">
           <span
@@ -436,6 +437,10 @@ export default {
     [data-simplebar]
       padding-bottom 10px
     #kt-tree-container
+      // special class to solve the noNode
+      .klab-no-nodes
+        padding 10px 0 0 0
+        text-align center
       .q-tree > .q-tree-node
           padding 0
       .q-tree-node-collapsible

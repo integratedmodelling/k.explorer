@@ -56,4 +56,24 @@ export default {
       }
     },
   },
+
+  render(h) {
+    const children = this.__getChildren(h, this.nodes);
+    if (children.length === 0) {
+      this.classes.push('klab-no-nodes');
+    }
+    return h(
+      'div', {
+        staticClass: 'q-tree',
+        class: this.classes,
+      },
+      children.length === 0
+        ? (
+          this.filter
+            ? this.noResultsLabel || this.$q.lang.tree.noResults
+            : this.noNodesLabel || this.$q.lang.tree.noNodes
+        )
+        : children,
+    );
+  },
 };
