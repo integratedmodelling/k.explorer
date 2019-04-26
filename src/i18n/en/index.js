@@ -61,8 +61,8 @@ export default {
     interactiveMode: 'Interactive mode',
     noInputSectionTitle: 'No section title',
     cancelInputRequest: 'Cancel run',
-    resetInputRequest: 'Use default',
-    submitInputRequest: 'Submit value',
+    resetInputRequest: 'Use defaults',
+    submitInputRequest: 'Submit',
   },
   messages: {
     connectionClosed: 'Connection closed',

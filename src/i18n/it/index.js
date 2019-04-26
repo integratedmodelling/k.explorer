@@ -61,7 +61,7 @@ export default {
     interactiveMode: 'Modo interattivo',
     noInputSectionTitle: 'Sezione senza titolo',
     cancelInputRequest: 'Cancellare esecuzion',
-    resetInputRequest: 'Utilizzare default',
+    resetInputRequest: 'Utilizzare defaults',
     submitInputRequest: 'Inviare',
   },
   messages: {
