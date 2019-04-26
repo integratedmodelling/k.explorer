@@ -5,7 +5,8 @@
     :no-backdrop-dismiss="true"
     :content-classes="['irm-container']"
     ref="irm-modal-container"
-    @escape-key="cancelAll"
+    @hide="cleanInputRequest"
+    @show="initData"
   >
     <q-tabs
       v-model="selectedRequest"
@@ -28,14 +29,14 @@
       >
         <div class="irm-group">
           <div class="irm-global-description">
-            <h5>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h5>
+            <h4>{{ request.sectionTitle !== null ? request.sectionTitle: $t('label.noInputSectionTitle') }}</h4>
             <p>{{ request.description }}</p>
           </div>
           <div class="irm-fields-container" data-simplebar>
             <div class="irm-fields-wrapper">
               <div v-for="field in request.fields" :key="getFieldId(field, request.messageId)" class="irm-field">
                 <div class="irm-section-description" v-if="checkSectionTitle(field.sectionTitle)">
-                  <h4>{{ field.sectionTitle }}</h4>
+                  <h5>{{ field.sectionTitle }}</h5>
                   <p>{{ field.sectionDescription }}</p>
                 </div>
                 <q-field
@@ -59,21 +60,37 @@
           <div class="irm-buttons">
             <q-btn
               color="primary"
-              @click="send(request.messageId, true)"
+              @click="cancelRequest(request)"
               :label="$t('label.cancelInputRequest')"
             >
+              <!--
               <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                 {{ $t('tooltips.cancelInputRequest') }}
               </q-tooltip>
+              -->
+            </q-btn>
+            <q-btn
+              color="mc-main"
+              :disable="formDataIsEmpty"
+              @click="send(request.messageId, true)"
+              :label="$t('label.resetInputRequest')"
+            >
+              <!--
+              <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                {{ $t('tooltips.resetInputRequest') }}
+              </q-tooltip>
+              -->
             </q-btn>
             <q-btn
               color="mc-main"
               @click="send(request.messageId, false)"
               :label="$t('label.submitInputRequest')"
             >
+              <!--
               <q-tooltip :delay="200" anchor="top middle" self="bottom middle" :offset="[10, 10]">
                 {{ $t('tooltips.submitInputRequest') }}
               </q-tooltip>
+              -->
             </q-btn>
           </div>
         </div>
@@ -122,6 +139,9 @@ export default {
         return this.hasInputRequests;
       },
     },
+    formDataIsEmpty() {
+      return Object.keys(this.formData).length === 0;
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -151,8 +171,21 @@ export default {
         this.removeInputRequest(request.messageId);
       }
     },
+    cancelRequest(request) {
+      this.sendStompMessage(MESSAGES_BUILDERS.USER_INPUT_RESPONSE({
+        messageId: request.messageId,
+        requestId: request.requestId,
+        cancelRun: true,
+        values: {},
+      }, this.session).body);
+      this.removeInputRequest(request.messageId);
+    },
     updateForm(fieldName, value) {
-      this.$set(this.formData, fieldName, value);
+      if (value === null) {
+        this.$delete(this.formData, fieldName);
+      } else {
+        this.$set(this.formData, fieldName, value);
+      }
     },
     capitalizeFirstLetter(string) {
       return capitalizeFirstLetter(string);
@@ -170,11 +203,13 @@ export default {
       }
       return false;
     },
-    cancelAll() {
-      const irl = this.inputRequests.length;
-      for (let i = irl - 1; i >= 0; i--) {
-        this.send(this.inputRequests[i]);
-      }
+    cleanInputRequest() {
+      // this is call if the window is close
+      // something was wrong if inputRequest still have values
+      this.removeInputRequest(null);
+    },
+    initData() {
+      this.formData = {};
     },
   },
   watch: {
@@ -198,25 +233,27 @@ export default {
       margin 0 0 0 0
       padding 0
       color $main-control-main-color
-    h3, p
+    h3
+    p
       margin-bottom 10px
     h3
+    h4
+    h5
       line-height 1.4em
+    h3
       font-size 1.4em
     h4
-      line-height 1em
-      font-size 1em
-    h5
-      line-height 1.2em
       font-size 1.2em
-
     h5
+      font-size 1em
+
     h4
+    h5
       & + p
         color #333
         font-size .8em
         font-style italic
-    h4 + p
+    h5 + p
       border-bottom 1px solid $main-control-main-color
       padding-bottom 10px
     .q-tabs:not(.irm-tabs-hidden) .q-tabs-head
@@ -235,6 +272,7 @@ export default {
       margin 10px 0
       .irm-fields-wrapper
         padding 10px
+        overflow-x hidden
       .irm-group
         margin 10px 0
       label

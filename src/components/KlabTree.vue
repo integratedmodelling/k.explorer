@@ -13,6 +13,7 @@
         control-color="white"
         color="white"
         :dark="true"
+        :noNodesLabel="$t('label.noNodes')"
         :double-click-function="doubleClick"
       >
         <div slot="header-default" slot-scope="prop">
@@ -453,6 +454,11 @@ export default {
     [data-simplebar]
       padding-bottom 10px
     #kt-tree-container
+      // special class to solve the noNode
+      .klab-no-nodes
+        padding 5px 0 0 0
+        margin 0
+        text-align center
       .q-tree > .q-tree-node
           padding 0
       .q-tree-node-collapsible

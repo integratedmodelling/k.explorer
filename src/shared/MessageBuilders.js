@@ -211,12 +211,13 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  USER_INPUT_RESPONSE: ({ messageId, requestId, values = {} }, session) => buildMessage(
+  USER_INPUT_RESPONSE: ({ messageId, requestId, cancelRun = false, values = {} }, session) => buildMessage(
     OUT.CLASS_USERINTERFACE,
     OUT.TYPE_USERINPUTPROVIDED,
     OUT.PAYLOAD_CLASS_USERINPUTRESPONSE,
     {
       requestId,
+      cancelRun,
       values,
     },
     session,

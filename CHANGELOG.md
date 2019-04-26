@@ -89,8 +89,10 @@ Feature notification on Integrated Modelling Confluence
 - Download folder as shape file
 - Upload file
 - Interactive mode
+- Input request management 
 ### Improvements
 - Info for a point directly clicking on map without need to open observation info
+- Various tree-shakes
 ### Solved
 - Search timeout enlarged to avoid problems if engine is calculating
 - Raster layer now fit better in base map
