@@ -14,7 +14,7 @@
         color="white"
         :dark="true"
         :double-click-function="fitMap"
-        :noNodesLabel="$t('label.noObservation')"
+        :noNodesLabel="$t('label.noNodes')"
       >
         <div slot="header-default" slot-scope="prop">
           <span
@@ -439,7 +439,8 @@ export default {
     #kt-tree-container
       // special class to solve the noNode
       .klab-no-nodes
-        padding 10px 0 0 0
+        padding 5px 0 0 0
+        margin 0
         text-align center
       .q-tree > .q-tree-node
           padding 0

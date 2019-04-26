@@ -56,7 +56,7 @@ export default {
     drawCircle: 'Circle',
     optionShowAll: 'Show all',
     optionSaveLocation: 'Remember location',
-    noNodes: 'No results: is waiting?',
+    noNodes: 'No observations',
     loadShowData: 'Load and show data',
     interactiveMode: 'Interactive mode',
     inputRequest: 'Set value of input request',
