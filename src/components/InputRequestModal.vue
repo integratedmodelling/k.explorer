@@ -6,7 +6,6 @@
     :content-classes="['irm-container']"
     ref="irm-modal-container"
     @hide="cleanInputRequest"
-    @show="initData"
   >
     <q-tabs
       v-model="selectedRequest"
@@ -205,11 +204,9 @@ export default {
     },
     cleanInputRequest() {
       // this is call if the window is close
+      this.formData = {};
       // something was wrong if inputRequest still have values
       this.removeInputRequest(null);
-    },
-    initData() {
-      this.formData = {};
     },
   },
   watch: {
