@@ -9,19 +9,19 @@ export default {
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */
-  setContext: ({ commit, getters, dispatch }, context) => {
+  setContext: ({ commit, getters, dispatch }, { context, isRecontext }) => {
     // If set context, everything is resetted
     // set new context
     if (getters.context !== null && getters.context.id === context.id) {
       return;
     }
-    commit('SET_CONTEXT', context);
+    commit('SET_CONTEXT', { context, isRecontext });
     dispatch('view/setContextLayer', context, { root: true });
   },
 
   resetContext: ({ commit, dispatch, state, getters }) => {
     if (getters.context !== null) {
-      commit('SET_CONTEXT', null);
+      commit('SET_CONTEXT', {});
       dispatch('getSessionContexts');
       dispatch('view/resetContext', null, { root: true });
       if (state.waitingForReset !== null) {
@@ -51,7 +51,7 @@ export default {
     }).then(async ({ data: context }) => {
       context.restored = true;
       // remove children so no reactive observations are loaded
-      await dispatch('setContext', { ...context, children: [] });
+      await dispatch('setContext', { context: { ...context, children: [] } });
       commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
       console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
       // console.dir(context);

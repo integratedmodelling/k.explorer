@@ -92,9 +92,9 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { getAxiosContent, findNodeById, Constants } from 'shared/Helpers';
+import { getAxiosContent, findNodeById, Constants, getContextGeometry } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+// import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
 
@@ -267,22 +267,26 @@ export default {
         this.$refs['klab-tree'].setTicked([nodeId], state);
       }
     },
-    doubleClick(node, meta) {
+    async doubleClick(node, meta) {
       if (node.observationType === 'STATE') {
         this.fitMap(node, meta);
       } else {
         const observation = this.observations.find(o => o.id === node.id);
         if (observation && observation !== null) {
+          const geometry = await getContextGeometry(observation);
+          this.fitMap(node, meta, geometry);
+          /*
           this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
             { contextId: observation.id, parentContext: this.contextId },
             this.$store.state.data.session,
           ).body);
-          this.setContext(observation);
+          this.setContext({ context: observation, isRecontext: true });
+          */
         }
       }
     },
-    fitMap(node, meta) {
-      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+    fitMap(node, meta, geometry = null) {
+      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, geometry);
       if (node && meta && meta.ticked) {
         this.showNode({ nodeId: node.id, selectMainViewer: true });
       }

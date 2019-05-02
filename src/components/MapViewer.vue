@@ -536,14 +536,17 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
-      if (this.contextGeometry && this.contextGeometry !== null) {
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, (geometry = null) => {
+      if (geometry === null && this.contextGeometry && this.contextGeometry !== null) {
+        geometry = this.contextGeometry;
+      }
+      if (geometry !== null) {
         // we must wait for the end of drawer animation
         setTimeout(() => {
-          if (this.contextGeometry instanceof Array) {
-            this.view.setCenter(this.contextGeometry);
+          if (geometry instanceof Array) {
+            this.view.setCenter(geometry);
           } else {
-            this.view.fit(this.contextGeometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+            this.view.fit(geometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
           }
         }, 200);
       }

@@ -80,7 +80,7 @@ const PARSERS = {
           `New context received with id ${observation.id}`,
           JSON.stringify(observation, null, 4),
         );
-        dispatch('data/setContext', observation, { root: true });
+        dispatch('data/setContext', { context: observation }, { root: true });
         if (typeof observation.scaleReference !== 'undefined' || observation.scaleReference !== null) {
           dispatch('data/setScaleReference', observation.scaleReference, { root: true });
         }

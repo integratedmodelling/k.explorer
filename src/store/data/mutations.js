@@ -9,10 +9,12 @@ export default {
    * first store existing context and then reset everything
    * @param context the new context
    */
-  SET_CONTEXT: (state, context) => {
+  SET_CONTEXT: (state, { context = null, isRecontext = false }) => {
     // the previous store is delegate to actions because a mutations cannot commit another mutation
     if (context === null) {
       state.contexts.empty();
+    } else if (isRecontext) {
+      state.contexts.push(context);
     } else {
       const exists = state.contexts.findIndex(ctxt => ctxt.id === context.id);
       if (exists === -1) {
