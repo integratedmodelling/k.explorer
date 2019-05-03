@@ -1,6 +1,6 @@
 <template>
   <div id="kt-container" class="relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
-    <div id="kt-tree-container" class="simplebar-vertical-only">
+    <div id="kt-tree-container" class="simplebar-vertical-only" @contextmenu="rightClickHandler">
       <klab-q-tree
         ref="klab-tree"
         :nodes="visibleTree(filter)"
@@ -15,6 +15,7 @@
         :dark="true"
         :noNodesLabel="$t('label.noNodes')"
         :double-click-function="doubleClick"
+        @click="$refs['observations-context'].close()"
       >
         <div slot="header-default" slot-scope="prop">
           <span
@@ -29,8 +30,8 @@
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
-              self="top left"
-              anchor="bottom middle"
+              :self="`${enableContextMenu ? 'bottom' : 'top'} left`"
+              :anchor="`${enableContextMenu ? 'top' : 'bottom'} middle`"
               class="kt-q-tooltip"
             >{{ clearObservable(prop.node.observable) }}</q-tooltip>
           </span>
@@ -71,10 +72,9 @@
         </div>
       </klab-q-tree>
     </div>
-    <!-- TODO rightClickHandler
-    REMEMBER: add @contextmenu to div#kt-tree-container
-    <q-context-menu v-show="enableContextMenu" ref="observations-context">
-      <q-list dense no-border style="min-width: 150px" @click="$refs.context.close()">
+
+    <q-context-menu ref="observations-context" v-show="enableContextMenu" @hide="enableContextMenu = false">
+      <q-list dense no-border style="min-width: 150px">
         <template v-for="(action, index) in itemActions">
           <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
           <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
@@ -86,7 +86,7 @@
         </template>
       </q-list>
     </q-context-menu>
-    -->
+
   </div>
 </template>
 
@@ -94,7 +94,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { getAxiosContent, findNodeById, Constants, getContextGeometry } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
-// import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
 
@@ -162,11 +162,10 @@ export default {
     filterMethod(node) {
       return !this.contextReloaded || node.notified;
     },
-    /* TODO context menu better implementation
     rightClickHandler(e) {
       e.preventDefault();
       let spanNode = null;
-      if (e.target.className === 'node-element') {
+      if (e.target.className.includes('node-element')) {
         spanNode = e.target;
       } else {
         const spanNodeArray = e.target.getElementsByClassName('node-element');
@@ -177,11 +176,11 @@ export default {
       if (spanNode !== null) {
         const observationId = spanNode.id.substring(5);
         const node = this.treeNode(observationId);
-        if (node && node !== null) {
-          if (node.actions && node.actions.length > 0) {
-            this.itemActions = node.actions.slice(0);
-            this.itemObservationId = observationId;
-          } else {
+        if (node && node !== null && node.actions && node.actions.length > 1) {
+          this.itemActions = node.actions.slice(1);
+          this.itemObservationId = observationId;
+          /*
+          else {
             this.itemActions = [{
               actionId: null,
               actionLabel: this.$t('messages.noActionForObservation'),
@@ -190,20 +189,41 @@ export default {
             }];
             this.itemObservationId = null;
           }
+          */
         } else {
           this.itemActions = [];
           this.itemObservationId = null;
         }
-        this.enableContextMenu = (this.itemActions && this.itemActions.length > 0);
-      } else {
-        this.enableContextMenu = false;
+        if (node.observationType !== 'STATE') {
+          this.itemActions = [{
+            actionId: 0,
+            actionLabel: this.$t('label.recontextualization'),
+            enabled: true,
+            separator: false,
+          }];
+          this.itemObservationId = observationId;
+        }
+        if (this.itemActions && this.itemActions.length > 0) {
+          this.enableContextMenu = (this.itemActions && this.itemActions.length > 0);
+        } else {
+          this.enableContextMenu = false;
+        }
       }
     },
     askForAction(observationId, actionId) {
       console.log(`Will ask for ${actionId} of observation ${observationId}`);
+      if (actionId === 0) { // is ricontextualization
+        const observation = this.observations.find(o => o.id === observationId);
+        if (observation && observation !== null) {
+          this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
+            { contextId: observationId, parentContext: this.contextId },
+            this.$store.state.data.session,
+          ).body);
+          this.setContext({ context: observation, isRecontext: true });
+        }
+      }
       this.enableContextMenu = false;
     },
-    */
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
         return text.substring(1, text.length - 1);
@@ -275,13 +295,6 @@ export default {
         if (observation && observation !== null) {
           const geometry = await getContextGeometry(observation);
           this.fitMap(node, meta, geometry);
-          /*
-          this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
-            { contextId: observation.id, parentContext: this.contextId },
-            this.$store.state.data.session,
-          ).body);
-          this.setContext({ context: observation, isRecontext: true });
-          */
         }
       }
     },

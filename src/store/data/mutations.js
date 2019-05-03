@@ -14,6 +14,8 @@ export default {
     if (context === null) {
       state.contexts.empty();
     } else if (isRecontext) {
+      const actualContext = state.contexts.peek();
+      context.scaleReference = actualContext.scaleReference;
       state.contexts.push(context);
     } else {
       const exists = state.contexts.findIndex(ctxt => ctxt.id === context.id);
