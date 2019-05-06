@@ -146,6 +146,7 @@ export default {
         commit('ADD_VIEWER_ELEMENT', {
           main,
           type: viewerType,
+          observationType: observation.observationType,
           callback: (idx) => {
             resolve(idx);
           },

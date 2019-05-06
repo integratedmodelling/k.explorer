@@ -10,7 +10,7 @@
         <div class="relative-position">
         <div class="thumb-viewer-label float-left q-ma-sm">
           <!--  viewer.observations[0].label || $t('label.unknownLabel')  -->
-          {{ viewer.idx }}
+          {{ capitalize(viewer.observationType) }}
         </div>
         <div class="float-right q-ma-sm">
           <q-btn
@@ -33,6 +33,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import MapViewer from 'components/MapViewer.vue';
 import GraphViewer from 'components/GraphViewer.vue';
+import { capitalizeFirstLetter } from 'shared/Utils';
 
 let thumbnails = [];
 
@@ -60,6 +61,9 @@ export default {
         return 'left: 0';
       }
       return `left: ${((thumbnails.length - 1) * 200) + ((thumbnails.length - 1) * 10)}px`;
+    },
+    capitalize(text) {
+      return capitalizeFirstLetter(text);
     },
   },
   watch: {
@@ -93,7 +97,7 @@ export default {
 
   .thumb-viewer-title
     opacity 0
-    background-color alpha($main-control-main-color, 75%)
+    background-color alpha($main-control-main-color, 85%)
     color $grey-4
     font-weight bold
     text-shadow $shadow-2

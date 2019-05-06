@@ -79,7 +79,7 @@ export default {
    * @param type one of contstants.VIEWER_[TYPE]
    * @param data content of viewer
    */
-  ADD_VIEWER_ELEMENT: (state, { main, type, callback }) => {
+  ADD_VIEWER_ELEMENT: (state, { main, type, observationType, callback }) => {
     // if first, than main
     if (state.lastViewerId === 0) {
       main = true;
@@ -93,6 +93,7 @@ export default {
       idx: state.lastViewerId,
       main,
       type,
+      observationType,
       observations: [],
     });
     if (typeof callback === 'function') {

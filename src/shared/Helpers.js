@@ -22,12 +22,6 @@ const WKTInstance = new WKT();
  * Helpers functions shared between components.
  * A plugin (helper.js) is called to link function to Vue instance ($helpers)
  * Same js file is used to expose Constants
- * @type {{
- * validateJsonSchema: (function(*=, *=): *),
- * capitalizeFirstLetter: (function(*): string),
- * pushElementInFixedQueue: (function(*, *=)),
- * formatExtent: (function(*=)),
- * }}
  */
 
 /**
