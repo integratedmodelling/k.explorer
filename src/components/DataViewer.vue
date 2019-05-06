@@ -16,7 +16,7 @@
           <q-btn
             class="shadow-1"
             round
-            color="red-6"
+            color="mc-main"
             size="xs"
             @click="setMainDataViewer(viewer.idx)"
             icon="mdi-chevron-up"
@@ -32,12 +32,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import MapViewer from 'components/MapViewer.vue';
+import GraphViewer from 'components/GraphViewer.vue';
 
 let thumbnails = [];
 
 export default {
   components: {
     MapViewer,
+    GraphViewer,
   },
   computed: {
     ...mapGetters('view', [
@@ -91,7 +93,7 @@ export default {
 
   .thumb-viewer-title
     opacity 0
-    background-color alpha($primary, 75%)
+    background-color alpha($main-control-main-color, 75%)
     color $grey-4
     font-weight bold
     text-shadow $shadow-2
