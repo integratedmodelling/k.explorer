@@ -255,6 +255,8 @@ export default {
           link.setAttribute('download', `${label}.${selectedFormat.extension}`);
           document.body.appendChild(link);
           link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
           callback();
         },
       );
