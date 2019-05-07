@@ -84,7 +84,7 @@ Feature notification on Integrated Modelling Confluence
 - href on report now work
 - more style problems solved
 
-## 0.6.5 - ?
+## 0.6.5 - 2019-05-03
 ### Added
 - Download folder as shape file
 - Upload file
