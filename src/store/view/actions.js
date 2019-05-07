@@ -94,6 +94,7 @@ export default {
   }, { observation, main = false }) => new Promise((resolve, reject) => {
     // check what we need to do with observation based on his type
     let viewerType = null;
+    let forceNew = false;
     // set the viewer type.
     // TODO now using observation type, better way will be need
     if (observation.observationType) {
@@ -127,6 +128,7 @@ export default {
           break;
         case Constants.OBSTYP_CONFIGURATION:
           viewerType = Constants.VIEW_GRAPH;
+          forceNew = true;
           break;
         case Constants.OBSTYP_EVENT:
         case Constants.OBSTYP_PROCESS:
@@ -139,7 +141,10 @@ export default {
     }
     if (viewerType !== null) {
       console.debug(`Need a viewer of type ${viewerType}`);
-      const viewer = getters.dataViewers.find(v => v.type === viewerType);
+      let viewer;
+      if (!forceNew) {
+        viewer = getters.dataViewers.find(v => v.type === viewerType);
+      }
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
         console.info(`Create new viewer of type ${viewerType}`);

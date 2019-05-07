@@ -5,6 +5,7 @@
            viewer.main ? 'absolute-top full-height full-width' : 'absolute thumb-view']"
        :key="viewer.idx"
        :style="viewerStyle(viewer)"
+       :id="`dv-viewer-${viewer.idx}`"
     >
       <div class="thumb-viewer-title absolute-top" v-if="!viewer.main">
         <div class="relative-position">
@@ -18,13 +19,13 @@
             round
             color="mc-main"
             size="xs"
-            @click="setMainDataViewer(viewer.idx)"
+            @click="setMain(viewer.idx)"
             icon="mdi-chevron-up"
           ></q-btn>
         </div>
         </div>
       </div>
-      <component :is="viewer.type" :idx="viewer.idx"></component>
+      <component :is="viewer.type" :idx="viewer.idx" :viewer="viewer"></component>
     </div>
   </div>
 </template>
@@ -34,6 +35,7 @@ import { mapGetters, mapActions } from 'vuex';
 import MapViewer from 'components/MapViewer.vue';
 import GraphViewer from 'components/GraphViewer.vue';
 import { capitalizeFirstLetter } from 'shared/Utils';
+import { CUSTOM_EVENTS } from 'shared/Constants';
 
 let thumbnails = [];
 
@@ -52,6 +54,10 @@ export default {
     ...mapActions('view', [
       'setMainDataViewer',
     ]),
+    setMain(idx) {
+      this.setMainDataViewer(idx);
+      this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_SELECTED, { idx });
+    },
     viewerStyle(viewer) {
       if (viewer.main) {
         return '';
@@ -91,6 +97,7 @@ export default {
     box-shadow #5c6bc0
     bottom 0
     z-index 9998
+    overflow hidden
 
   .thumb-view:hover > .thumb-viewer-title
     opacity 1
