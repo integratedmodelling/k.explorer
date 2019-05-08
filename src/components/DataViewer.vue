@@ -9,20 +9,19 @@
     >
       <div class="thumb-viewer-title absolute-top" v-if="!viewer.main">
         <div class="relative-position">
-        <div class="thumb-viewer-label float-left q-ma-sm">
-          <!--  viewer.observations[0].label || $t('label.unknownLabel')  -->
-          {{ capitalize(viewer.label) }}
-        </div>
-        <div class="float-right q-ma-sm">
-          <q-btn
-            class="shadow-1"
-            round
-            color="mc-main"
-            size="xs"
-            @click="setMain(viewer.idx)"
-            icon="mdi-chevron-up"
-          ></q-btn>
-        </div>
+          <div class="thumb-viewer-label float-left q-ma-sm">
+            {{ capitalize(viewer.label) }}
+          </div>
+          <div class="float-right q-ma-xs thumb-viewer-button">
+            <q-btn
+              class="shadow-1"
+              round
+              color="mc-main"
+              size="xs"
+              @click="setMain(viewer.idx)"
+              icon="mdi-chevron-up"
+            ></q-btn>
+          </div>
         </div>
       </div>
       <component :is="viewer.type" :idx="viewer.idx" :viewer="viewer"></component>
@@ -62,7 +61,7 @@ export default {
       if (viewer.main) {
         return '';
       }
-      if (viewer.hiddenable && !viewer.visible) {
+      if (viewer.hideable && !viewer.visible) {
         return 'display: none';
       }
       thumbnails.push(viewer);
@@ -95,7 +94,7 @@ export default {
   .thumb-view
     width 200px
     height 200px
-    margin 10px
+    margin 5px
     border 1px solid #333
     box-shadow #5c6bc0
     bottom 0
@@ -109,9 +108,24 @@ export default {
     opacity 0
     background-color alpha($main-control-main-color, 85%)
     color $grey-4
-    font-weight bold
     text-shadow $shadow-2
-    padding 2px 5px
+    font-size 0.9em
+    padding 0
     transition opacity 1s
     z-index 9999
+
+  .thumb-viewer-label
+    width 140px
+    display inline-block
+    overflow hidden
+    white-space nowrap
+    vertical-align: middle;
+    text-overflow: ellipsis;
+
+  .thumb-viewer-button
+    margin-top 5px
+    margin-left 0
+    margin-right 4px
+    > button
+      font-size 6px
 </style>
