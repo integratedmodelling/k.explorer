@@ -67,7 +67,7 @@ export default {
   SET_MAIN_DATA_VIEWER: (state, idx) => {
     state.dataViewers.forEach((viewer) => {
       viewer.main = viewer.idx === idx;
-      viewer.visible = !viewer.hideable || viewer.idx === idx;
+      viewer.visible = !viewer.hideable || viewer.idx === idx || viewer.visible;
     });
   },
 

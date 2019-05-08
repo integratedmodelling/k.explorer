@@ -95,7 +95,7 @@ export default {
     // check what we need to do with observation based on his type
     let viewerType = null;
     let forceNew = false;
-    let hiddenable = false;
+    let hideable = false;
     const visible = false; // for future implementation
     let label = null;
     // set the viewer type.
@@ -149,7 +149,7 @@ export default {
         case Constants.OBSTYP_CONFIGURATION:
           viewerType = VIEWER_COMPONENTS.VIEW_GRAPH;
           forceNew = true;
-          hiddenable = true;
+          hideable = true;
           ({ label } = observation);
           break;
         case Constants.OBSTYP_EVENT:
@@ -174,7 +174,7 @@ export default {
           main,
           type: viewerType.component,
           label: label && label !== null ? label : viewerType.label,
-          hiddenable,
+          hideable,
           visible,
           callback: (idx) => {
             resolve(idx);
