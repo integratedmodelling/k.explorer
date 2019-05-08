@@ -11,7 +11,7 @@
         <div class="relative-position">
         <div class="thumb-viewer-label float-left q-ma-sm">
           <!--  viewer.observations[0].label || $t('label.unknownLabel')  -->
-          {{ capitalize(viewer.observationType) }}
+          {{ capitalize(viewer.label) }}
         </div>
         <div class="float-right q-ma-sm">
           <q-btn
@@ -61,6 +61,9 @@ export default {
     viewerStyle(viewer) {
       if (viewer.main) {
         return '';
+      }
+      if (viewer.hiddenable && !viewer.visible) {
+        return 'display: none';
       }
       thumbnails.push(viewer);
       if (thumbnails.length === 0) {

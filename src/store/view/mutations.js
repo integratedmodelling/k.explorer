@@ -65,7 +65,10 @@ export default {
    * @param idx the viewer idx
    */
   SET_MAIN_DATA_VIEWER: (state, idx) => {
-    state.dataViewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
+    state.dataViewers.forEach((viewer) => {
+      viewer.main = viewer.idx === idx;
+      viewer.visible = !viewer.hideable || viewer.idx === idx;
+    });
   },
 
   SET_MAIN_CONTROL_DOCKED: (state, docked) => {
@@ -79,7 +82,7 @@ export default {
    * @param type one of contstants.VIEWER_[TYPE]
    * @param data content of viewer
    */
-  ADD_VIEWER_ELEMENT: (state, { main, type, observationType, callback }) => {
+  ADD_VIEWER_ELEMENT: (state, { main, type, label, hideable, visible, callback }) => {
     // if first, than main
     if (state.lastViewerId === 0) {
       main = true;
@@ -93,7 +96,9 @@ export default {
       idx: state.lastViewerId,
       main,
       type,
-      observationType,
+      label,
+      hideable,
+      visible,
       observations: [],
     });
     if (typeof callback === 'function') {

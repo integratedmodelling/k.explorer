@@ -76,6 +76,32 @@ export const VIEWERS = {
 };
 
 /**
+ * Viewer components type
+ */
+export const VIEWER_COMPONENTS = {
+  VIEW_MAP: {
+    component: 'MapViewer',
+    label: 'Maps',
+  },
+  VIEW_CHART: {
+    component: 'ChartViewer',
+    label: 'Chart',
+  },
+  VIEW_GRAPH: {
+    component: 'GraphViewer',
+    label: 'Graph',
+  },
+  VIEW_BLOB: {
+    component: 'BlobViewer',
+    label: 'Blob',
+  },
+  VIEW_UNKNOWN: {
+    component: 'UnknownViewer',
+    label: 'Unknown',
+  },
+};
+
+/**
  * Used to centralize the default empty map selection
  * @type {{pixelSelected: null, layerSelected: null, value: null}}
  */
@@ -215,6 +241,32 @@ export const SEMANTIC_TYPES = {
   },
 };
 
+export const graphDefaultData = {
+  nodes: [],
+  links: [],
+  showMenu: false,
+  selected: {},
+  showSelection: false,
+  linksSelected: {},
+  options: {
+    canvas: false,
+    size: {
+      w: 500,
+      h: 500,
+    },
+    force: 350,
+    offset: {
+      x: 0,
+      y: 0,
+    },
+    nodeSize: 20,
+    linkWidth: 1,
+    nodeLabels: true,
+    linkLabels: false,
+    strLinks: true,
+  },
+};
+
 export default {
   EMPTY_MAP_SELECTION,
   /**
@@ -304,16 +356,6 @@ export default {
   COOKIE_NOTIFIED: 'klab_notified',
   COOKIE_MAPDEFAULT: 'klab_mapdefault',
   COOKIE_SAVELOCATION: 'klab_saveLocation',
-
-  /**
-   * Viewer components type
-   */
-  VIEW_MAP: 'MapViewer',
-  VIEW_CHART: 'ChartViewer',
-  VIEW_GRAPH: 'GraphViewer',
-  VIEW_BLOB: 'BlobViewer',
-  VIEW_UNKNOWN: 'UnknownViewer',
-  VIEW_INITIAL: 'MapViewer',
 
   /**
    * Shapes types
