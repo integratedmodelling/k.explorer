@@ -52,6 +52,7 @@ export default {
     commit('SET_LEFTMENU_CONTENT', viewer.leftMenuContent);
     commit('SET_LEFTMENU_STATE', viewer.leftMenuState);
     commit('SET_MAIN_VIEWER', viewer);
+    commit('RESET_MAIN_DATA_VIEWER', null);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {

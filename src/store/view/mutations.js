@@ -92,6 +92,11 @@ export default {
     }
   },
 
+  RESET_MAIN_DATA_VIEWER: (state) => {
+    state.dataViewer = [];
+    state.mainDataViewerIdx = 0;
+  },
+
   SET_MAIN_CONTROL_DOCKED: (state, docked) => {
     state.mainControlDocked = docked;
   },

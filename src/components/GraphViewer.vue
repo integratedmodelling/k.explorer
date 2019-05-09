@@ -91,11 +91,20 @@ export default {
     updateOptions(name, value) {
       this.options = { ...this.options, [name]: value };
     },
+    reset() {
+      this.selected = {};
+      this.linksSelected = {};
+      this.nodes = [];
+      this.links = [];
+      this.$set(this.$data, 'options', graphDefaultData.options);
+    },
   },
   watch: {
     observation(newValue) {
       if (newValue !== null && this.nodes.length === 0) {
         this.loadGraph();
+      } else if (newValue === null) {
+        this.reset();
       }
     },
   },
