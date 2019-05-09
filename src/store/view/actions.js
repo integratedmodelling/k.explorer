@@ -82,8 +82,10 @@ export default {
     commit('SET_LEFTMENU_STATE', visibility);
   },
 
-  setMainDataViewer: ({ commit }, idx) => {
-    commit('SET_MAIN_DATA_VIEWER', idx);
+  setMainDataViewer: ({ commit, getters }, { viewerIdx, viewerType = null, visible = true }) => {
+    if ((visible && viewerIdx !== getters.mainDataViewerIdx) || (!visible && viewerType.hideable)) {
+      commit('SET_MAIN_DATA_VIEWER', { viewerIdx, viewerType, visible });
+    }
   },
 
   assignViewer: ({
@@ -94,9 +96,6 @@ export default {
   }, { observation, main = false }) => new Promise((resolve, reject) => {
     // check what we need to do with observation based on his type
     let viewerType = null;
-    let forceNew = false;
-    let hideable = false;
-    const visible = false; // for future implementation
     let label = null;
     // set the viewer type.
     // TODO now using observation type, better way will be need
@@ -148,8 +147,6 @@ export default {
         }
         case Constants.OBSTYP_CONFIGURATION:
           viewerType = VIEWER_COMPONENTS.VIEW_GRAPH;
-          forceNew = true;
-          hideable = true;
           ({ label } = observation);
           break;
         case Constants.OBSTYP_EVENT:
@@ -164,25 +161,24 @@ export default {
     if (viewerType !== null) {
       console.debug(`Need a viewer of type ${viewerType.component}`);
       let viewer;
-      if (!forceNew) {
-        viewer = getters.dataViewers.find(v => v.type === viewerType.component);
+      if (!viewerType.forceNew) {
+        viewer = getters.dataViewers.find(v => v.type.component === viewerType.component);
       }
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
         console.info(`Create new viewer of type ${viewerType.component}`);
         commit('ADD_VIEWER_ELEMENT', {
           main,
-          type: viewerType.component,
+          type: viewerType,
           label: label && label !== null ? label : viewerType.label,
-          hideable,
-          visible,
+          visible: !viewerType.hideable,
           callback: (idx) => {
             resolve(idx);
           },
         });
       } else {
         if (main) {
-          dispatch('setMainDataViewer', viewer.idx);
+          dispatch('setMainDataViewer', { viewerIdx: viewer.idx });
         }
         resolve(viewer.idx);
       }

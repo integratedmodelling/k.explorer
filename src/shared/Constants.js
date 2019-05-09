@@ -82,22 +82,32 @@ export const VIEWER_COMPONENTS = {
   VIEW_MAP: {
     component: 'MapViewer',
     label: 'Maps',
+    hideable: false,
+    forceNew: false,
   },
   VIEW_CHART: {
     component: 'ChartViewer',
     label: 'Chart',
+    hideable: true,
+    forceNew: true,
   },
   VIEW_GRAPH: {
     component: 'GraphViewer',
     label: 'Graph',
+    hideable: true,
+    forceNew: true,
   },
   VIEW_BLOB: {
     component: 'BlobViewer',
     label: 'Blob',
+    hideable: false,
+    forceNew: false,
   },
   VIEW_UNKNOWN: {
     component: 'UnknownViewer',
     label: 'Unknown',
+    hideable: false,
+    forceNew: false,
   },
 };
 

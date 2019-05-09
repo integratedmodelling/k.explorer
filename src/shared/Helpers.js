@@ -111,6 +111,7 @@ export const getNodeFromObservation = observation => ({
     observable: observation.observable,
     type: observation.shapeType,
     viewerIdx: observation.viewerIdx,
+    viewerType: store.getters['view/viewer'](observation.viewerIdx).type,
     children: [],
     tickable: observation.viewerIdx !== null && !observation.empty,
     disabled: observation.empty,

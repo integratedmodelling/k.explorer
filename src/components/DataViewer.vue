@@ -24,7 +24,7 @@
           </div>
         </div>
       </div>
-      <component :is="viewer.type" :idx="viewer.idx" :viewer="viewer"></component>
+      <component :is="viewer.type.component" :idx="viewer.idx" :viewer="viewer"></component>
     </div>
   </div>
 </template>
@@ -46,7 +46,8 @@ export default {
   computed: {
     ...mapGetters('view', [
       'dataViewers',
-      'mainDataViewer',
+      'mainDataViewerIdx',
+      'dataViewers',
     ]),
   },
   methods: {
@@ -54,14 +55,14 @@ export default {
       'setMainDataViewer',
     ]),
     setMain(idx) {
-      this.setMainDataViewer(idx);
+      this.setMainDataViewer({ viewerIdx: idx });
       this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_SELECTED, { idx });
     },
     viewerStyle(viewer) {
       if (viewer.main) {
         return '';
       }
-      if (viewer.hideable && !viewer.visible) {
+      if (viewer.type.hideable && !viewer.visible) {
         return 'display: none';
       }
       thumbnails.push(viewer);
@@ -75,8 +76,16 @@ export default {
     },
   },
   watch: {
-    mainDataViewer() {
+    mainDataViewerIdx() {
       thumbnails = [];
+    },
+    dataViewers: {
+      handler() {
+        this.$nextTick(() => {
+          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+        });
+      },
+      deep: true,
     },
   },
   beforeUpdate() {

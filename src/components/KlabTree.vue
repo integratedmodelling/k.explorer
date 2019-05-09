@@ -147,11 +147,9 @@ export default {
   },
   methods: {
     ...mapActions('data', [
-      'hideNode',
-      'showNode',
+      'setVisibility',
       'selectNode',
       'askForSiblings',
-      'setFolderVisibility',
     ]),
     ...mapActions('view', [
       'setSpinner',
@@ -269,7 +267,7 @@ export default {
     fitMap(node, meta) {
       this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
       if (node && meta && meta.ticked) {
-        this.showNode({ nodeId: node.id, selectMainViewer: true });
+        this.setVisibility({ node, visible: true });
       }
     },
   },
@@ -309,7 +307,11 @@ export default {
         const unselectedNode = findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
           if (unselectedNode.type === Constants.GEOMTYP_FOLDER) {
-            this.setFolderVisibility({ folderId: unselectedNode.id, visible: false });
+            this.setVisibility({
+              isFolder: true,
+              node: unselectedNode,
+              visible: false,
+            });
             this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
           } else {
             /* TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If we need to check this, is expensive (need to find node to check if is a fake or real folder
@@ -318,7 +320,7 @@ export default {
               this.ticked.splice(this.ticked.indexOf(unselectedNode.folderId), 1);
             }
             */
-            this.hideNode(unselectedId);
+            this.setVisibility({ node: unselectedNode, visible: false });
           }
         }
       } else {
@@ -328,7 +330,11 @@ export default {
         const selectedNode = findNodeById(this.tree, selectedId);
         if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
           const tickAll = () => {
-            this.setFolderVisibility({ folderId: selectedNode.id, visible: true });
+            this.setVisibility({
+              isFolder: true,
+              node: selectedNode,
+              visible: true,
+            });
             this.ticked.push(...(selectedNode.children.map(child => child.id)));
           };
           if (selectedNode.siblingsLoaded < selectedNode.siblingCount && !this.askingForSiblings) {
@@ -349,7 +355,7 @@ export default {
             tickAll();
           }
         } else {
-          this.showNode({ nodeId: selectedId, selectMainViewer: true });
+          this.setVisibility({ node: selectedNode, visible: true });
         }
       }
     },
