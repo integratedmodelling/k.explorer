@@ -9,7 +9,7 @@
     >
       <div class="thumb-viewer-title absolute-top" v-if="!viewer.main">
         <div class="relative-position">
-          <div class="thumb-viewer-label float-left q-ma-sm">
+          <div class="thumb-viewer-label float-left q-ma-sm" :class="[viewer.type.hideable ? 'thumb-closable' : '']">
             {{ capitalize(viewer.label) }}
           </div>
           <div class="float-right q-ma-xs thumb-viewer-button">
@@ -20,6 +20,15 @@
               size="xs"
               @click="setMain(viewer.idx)"
               icon="mdi-chevron-up"
+            ></q-btn>
+            <q-btn
+              v-if="viewer.type.hideable"
+              class="shadow-1 thumb-close"
+              round
+              color="black"
+              size="xs"
+              @click="closeViewer(viewer)"
+              icon="mdi-close"
             ></q-btn>
           </div>
         </div>
@@ -57,6 +66,10 @@ export default {
     setMain(idx) {
       this.setMainDataViewer({ viewerIdx: idx });
       this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_SELECTED, { idx });
+    },
+    closeViewer(viewer) {
+      this.setMainDataViewer({ viewerIdx: viewer.idx, viewerType: viewer.type, visible: false });
+      this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_CLOSED, { idx: viewer.idx });
     },
     viewerStyle(viewer) {
       if (viewer.main) {
@@ -130,6 +143,8 @@ export default {
     white-space nowrap
     vertical-align: middle;
     text-overflow: ellipsis;
+    &.thumb-closable
+      width 100px
 
   .thumb-viewer-button
     margin-top 5px
@@ -137,4 +152,8 @@ export default {
     margin-right 4px
     > button
       font-size 6px
+
+  .thumb-close
+    margin-left 5px
+
 </style>

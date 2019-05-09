@@ -43,7 +43,7 @@
         :stripe="true"
         :animate="true"
         height="1em"
-      />
+      ></q-progress>
     </q-modal>
     <div id="mv-popup" ref="mv-popup" class="ol-popup">
       <q-btn

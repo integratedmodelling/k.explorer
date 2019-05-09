@@ -439,4 +439,5 @@ export const CUSTOM_EVENTS = {
   // send a map click to inform. For now used by mainControlMenu to close itself
   VIEWER_CLICK: 'viewerclick',
   VIEWER_SELECTED: 'viewerselected', // fired when a minimize viewer is maximize
+  VIEWER_CLOSED: 'viewerclosed',
 };

@@ -14,7 +14,7 @@
 <script>
 import D3Network from 'vue-d3-network';
 import { getAxiosContent } from 'shared/Helpers';
-import { graphDefaultData } from 'shared/Constants';
+import { graphDefaultData, CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'GraphViewer',
@@ -102,6 +102,11 @@ export default {
   mounted() {
     this.options.size.w = this.$el.clientWidth;
     this.options.size.h = this.$el.clientHeight;
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, ({ idx }) => {
+      if (idx === this.idx) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observation.id, state: false });
+      }
+    });
   },
 };
 </script>

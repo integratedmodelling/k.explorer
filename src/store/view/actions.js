@@ -83,8 +83,8 @@ export default {
   },
 
   setMainDataViewer: ({ commit, getters }, { viewerIdx, viewerType = null, visible = true }) => {
-    if ((visible && viewerIdx !== getters.mainDataViewerIdx) || (!visible && viewerType.hideable)) {
-      commit('SET_MAIN_DATA_VIEWER', { viewerIdx, viewerType, visible });
+    if ((visible && viewerIdx !== getters.mainDataViewerIdx) || (!visible && viewerIdx !== null) || (!visible && viewerType !== null && viewerType.hideable)) {
+      commit('SET_MAIN_DATA_VIEWER', { viewerIdx, visible });
     }
   },
 
@@ -107,7 +107,7 @@ export default {
             viewerType = null;
           } else {
             // is a map but...
-            viewerType = Constants.VIEW_MAP;
+            viewerType = VIEWER_COMPONENTS.VIEW_MAP;
             // i need WKT from parent
             let parent = null;
             if (observation.parentId === rootGetters['data/contextId']) {
