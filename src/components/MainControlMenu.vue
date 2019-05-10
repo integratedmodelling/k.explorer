@@ -328,8 +328,12 @@ export default {
       });
     },
     closePopups() {
-      this.$refs['mcm-main-popover'].hide();
-      this.$refs['mcm-contexts-popover'].hide();
+      if (this.$refs['mcm-main-popover']) {
+        this.$refs['mcm-main-popover'].hide();
+      }
+      if (this.$refs['mcm-contexts-popover']) {
+        this.$refs['mcm-contexts-popover'].hide();
+      }
     },
     sendInteractiveModeState(state) {
       this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: state }, this.session).body);
@@ -353,7 +357,9 @@ export default {
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
-      this.closePopups();
+      if (!this.isDrawMode) {
+        this.closePopups();
+      }
     });
   },
 };
