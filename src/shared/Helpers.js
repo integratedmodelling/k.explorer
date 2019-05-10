@@ -14,10 +14,15 @@ import Utils from 'shared/Utils';
 import Constants from 'shared/Constants';
 import store from 'store/index';
 import Style from 'ol/style/Style';
-import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from './MapConstants';
+import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
+import { io as jstsIo } from 'jsts';
+import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
+import LinearRing from 'ol/geom/LinearRing';
+import { fromCircle } from 'ol/geom/Polygon';
 
 
 const WKTInstance = new WKT();
+
 /**
  * Helpers functions shared between components.
  * A plugin (helper.js) is called to link function to Vue instance ($helpers)
@@ -413,6 +418,21 @@ export async function getLayerObject(observation, { viewport = null /* , project
 }
 
 /**
+ * JSTS centralized method to use only one instance for all app
+ */
+const jstsParser = new jstsIo.OL3Parser();
+jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
+
+export { jstsParser };
+
+export const jstsParseGeometry = (geometry) => {
+  if (geometry instanceof Circle) {
+    geometry = fromCircle(geometry);
+  }
+  return jstsParser.read(geometry);
+};
+
+/**
  * DEFAULT Viewer on start
  */
 export const OBSERVATION_DEFAULT = {
@@ -436,6 +456,8 @@ const Helpers = {
   getContextGeometry,
   getAxiosContent,
   getLayerObject,
+  jstsParseGeometry,
+  jstsParser,
 };
 
 

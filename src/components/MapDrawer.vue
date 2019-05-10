@@ -26,16 +26,14 @@
 /* eslint-disable object-curly-newline */
 import { mapActions } from 'vuex';
 import { Draggable } from 'draggable-vue-directive';
-import { io as jstsIo } from 'jsts';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style.js';
 import { Draw, Modify } from 'ol/interaction.js';
-import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
-import LinearRing from 'ol/geom/LinearRing';
-import { fromCircle } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import { checkIDL } from 'shared/Utils';
+import { Polygon, Circle } from 'ol/geom';
+import { jstsParser, jstsParseGeometry } from 'shared/Helpers';
 /**
  * Used to draw path and modify existing path
  */
@@ -78,7 +76,6 @@ export default {
       drawer: undefined,
       drawerModify: undefined,
       dragDCConfig: { resetInitialPos: true },
-      jstsParser: undefined,
       drawType: 'Polygon',
     };
   },
@@ -103,7 +100,7 @@ export default {
         for (let i = 0; i < fl; i += 1) {
           const geometry = features[i].getGeometry();
           if (geometry instanceof Circle || geometry instanceof Polygon) {
-            const jstsGeomTemp = checkIDL(this.parseGeometry(features[i].getGeometry()));
+            const jstsGeomTemp = checkIDL(jstsParseGeometry(geometry));
             if (jstsMultiPolygon === null) {
               jstsMultiPolygon = jstsGeomTemp;
             } else {
@@ -114,7 +111,7 @@ export default {
           }
         }
         if (jstsMultiPolygon !== null) {
-          finalFeatures.push(new Feature({ geometry: this.jstsParser.write(jstsMultiPolygon) }));
+          finalFeatures.push(new Feature({ geometry: jstsParser.write(jstsMultiPolygon) }));
         }
 
         this.$emit('drawend', finalFeatures);
@@ -144,7 +141,7 @@ export default {
         type: this.drawType,
       });
       this.drawer.on('drawend', (event) => {
-        const jstsGeomTemp = this.parseGeometry(event.feature.getGeometry());
+        const jstsGeomTemp = jstsParseGeometry(event.feature.getGeometry());
         if (!jstsGeomTemp.isValid()) {
           this.$q.notify({
             message: this.$t('messages.invalidGeometry'),
@@ -155,12 +152,6 @@ export default {
         }
       });
       this.map.addInteraction(this.drawer);
-    },
-    parseGeometry(geometry) {
-      if (geometry instanceof Circle) {
-        geometry = fromCircle(geometry);
-      }
-      return this.jstsParser.read(geometry);
     },
   },
   watch: {
@@ -173,8 +164,6 @@ export default {
     Draggable,
   },
   mounted() {
-    this.jstsParser = new jstsIo.OL3Parser();
-    this.jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
     // Configuring the drawer
     const source = new VectorSource();
     this.drawerModify = new Modify({ source });
