@@ -93,9 +93,11 @@ export default {
       thumbnails = [];
     },
     dataViewers: {
-      handler() {
+      handler(newValue) {
+        const newMain = newValue.find(v => v.main);
+        console.warn(`New main: ${newMain.idx}`);
         this.$nextTick(() => {
-          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP);
+          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, { mainIdx: newMain.idx });
         });
       },
       deep: true,
