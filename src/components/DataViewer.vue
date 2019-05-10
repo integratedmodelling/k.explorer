@@ -94,10 +94,9 @@ export default {
     },
     dataViewers: {
       handler(newValue) {
-        const newMain = newValue.find(v => v.main);
-        console.warn(`New main: ${newMain.idx}`);
+        const newMain = newValue.length > 0 ? newValue.find(v => v.main) : null;
         this.$nextTick(() => {
-          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, { mainIdx: newMain.idx });
+          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, { ...(newMain !== null && { idx: newMain.idx }) });
         });
       },
       deep: true,
