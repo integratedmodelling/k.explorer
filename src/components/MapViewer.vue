@@ -67,7 +67,8 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
-import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
+import { getLayerObject, isRasterObservation, jstsParseGeometry, jstsParser, Constants } from 'shared/Helpers';
+import { checkIDL } from 'shared/Utils';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -81,6 +82,8 @@ import Overlay from 'ol/Overlay';
 import LayerSwitcher from 'ol-layerswitcher';
 import WKT from 'ol/format/WKT';
 import MapDrawer from 'components/MapDrawer';
+import { fromExtent as polygonFromExtent } from 'ol/geom/Polygon';
+import Feature from 'ol/Feature';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -205,7 +208,15 @@ export default {
       }
       try {
         const extent = view.calculateExtent(this.map.getSize());
-        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
+        // check extent
+        const polygon = polygonFromExtent(extent);
+        const idl = checkIDL(jstsParseGeometry(polygon));
+        if (idl !== null && idl.length === 0) {
+          message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
+        } else {
+          // TODO dialog to inform user
+          return;
+        }
       } catch (error) {
         console.error(error);
         this.addToKexplorerLog({

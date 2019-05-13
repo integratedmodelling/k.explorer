@@ -218,15 +218,31 @@ export function copyToClipboard(str) {
     document.getSelection().addRange(selected);
   }
 }
-export function checkIDL(originalPolygon) {
+
+/**
+ * Check if a polygon cross IDL
+ * @param polygon polygon
+ * @returns {Array} an array with which IDL the polygon cross. If empty, no IDL crossing
+ */
+export function checkIDL(polygon) {
   const idl = [];
   // check if polygon cross IDL and where
-  if (originalPolygon.crosses(JSTS_IDLS.left)) {
+  if (polygon.crosses(JSTS_IDLS.left)) {
     idl.push(JSTS_IDLS.left);
   }
-  if (originalPolygon.crosses(JSTS_IDLS.right)) {
+  if (polygon.crosses(JSTS_IDLS.right)) {
     idl.push(JSTS_IDLS.right);
   }
+  return idl;
+}
+
+/**
+ * Return a polygon with IDL crossing issue solved if necessary
+ * @param originalPolygon the original polygon
+ * @returns {*} if the IDL is not crossed, it return the original polygon, else it return
+ */
+export function createIDLPolygon(originalPolygon) {
+  const idl = checkIDL(originalPolygon);
   if (idl.length === 0) {
     // luck! nothing to do
     return originalPolygon;

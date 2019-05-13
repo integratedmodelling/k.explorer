@@ -426,6 +426,7 @@ jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineS
 export { jstsParser };
 
 export const jstsParseGeometry = (geometry) => {
+  console.log(geometry instanceof Polygon);
   if (geometry instanceof Circle) {
     geometry = fromCircle(geometry);
   }

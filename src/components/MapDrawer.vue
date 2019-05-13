@@ -31,7 +31,7 @@ import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style.js';
 import { Draw, Modify } from 'ol/interaction.js';
 import Feature from 'ol/Feature';
-import { checkIDL } from 'shared/Utils';
+import { createIDLPolygon } from 'shared/Utils';
 import { Polygon, Circle } from 'ol/geom';
 import { jstsParser, jstsParseGeometry } from 'shared/Helpers';
 /**
@@ -100,7 +100,7 @@ export default {
         for (let i = 0; i < fl; i += 1) {
           const geometry = features[i].getGeometry();
           if (geometry instanceof Circle || geometry instanceof Polygon) {
-            const jstsGeomTemp = checkIDL(jstsParseGeometry(geometry));
+            const jstsGeomTemp = createIDLPolygon(jstsParseGeometry(geometry));
             if (jstsMultiPolygon === null) {
               jstsMultiPolygon = jstsGeomTemp;
             } else {
