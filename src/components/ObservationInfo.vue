@@ -12,7 +12,7 @@
       </div>
       <div id="oi-name" class="oi-control oi-text"><span>{{ observationInfo.label }}</span></div>
       <!-- slider FIXED WIDTH -->
-      <div id="oi-slider" class="oi-control" v-if="observationInfo.visible">
+      <div id="oi-slider" class="oi-control" v-if="hasSlider">
         <q-slider
           v-model="observationInfo.layerOpacity"
           :min="0"
@@ -100,7 +100,7 @@ import TooltipIt from 'shared/TooltipItMixin';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { Layers } from 'shared/MapConstants';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, VIEWER_COMPONENTS } from 'shared/Constants';
 // import Group from 'ol/layer/Group';
 
 export default {
@@ -123,7 +123,12 @@ export default {
       'observationInfo',
       'mapSelection',
       'exploreMode',
+      'viewer',
     ]),
+    hasSlider() {
+      return this.observationInfo.visible
+        && this.viewer(this.observationInfo.viewerIdx).type.component === VIEWER_COMPONENTS.VIEW_MAP.component;
+    },
     hasHistogram() {
       return this.observationInfo.dataSummary.histogram.length > 0;
     },
@@ -240,6 +245,11 @@ export default {
       interactions: [],
     });
     this.layerShow = this.observationInfo.visible;
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, ({ idx }) => {
+      if (idx === this.observationInfo.viewerIdx) {
+        this.layerShow = false;
+      }
+    });
   },
 };
 </script>

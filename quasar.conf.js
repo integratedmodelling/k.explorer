@@ -140,6 +140,7 @@ module.exports = function (ctx) {
         'QTabs',
         'QTab',
         'QTabPane',
+        'QSpinner',
       ],
       directives: [
         'Ripple',

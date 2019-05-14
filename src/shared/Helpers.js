@@ -26,12 +26,6 @@ const WKTInstance = new WKT();
  * Helpers functions shared between components.
  * A plugin (helper.js) is called to link function to Vue instance ($helpers)
  * Same js file is used to expose Constants
- * @type {{
- * validateJsonSchema: (function(*=, *=): *),
- * capitalizeFirstLetter: (function(*): string),
- * pushElementInFixedQueue: (function(*, *=)),
- * formatExtent: (function(*=)),
- * }}
  */
 
 /**
@@ -121,6 +115,7 @@ export const getNodeFromObservation = observation => ({
     observable: observation.observable,
     type: observation.shapeType,
     viewerIdx: observation.viewerIdx,
+    viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
     children: [],
     tickable: observation.viewerIdx !== null && !observation.empty,
     disabled: observation.empty,
@@ -430,7 +425,6 @@ jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineS
 export { jstsParser };
 
 export const jstsParseGeometry = (geometry) => {
-  console.log(geometry instanceof Polygon);
   if (geometry instanceof Circle) {
     geometry = fromCircle(geometry);
   }

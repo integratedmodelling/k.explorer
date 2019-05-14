@@ -96,3 +96,9 @@ Feature notification on Integrated Modelling Confluence
 ### Solved
 - Search timeout enlarged to avoid problems if engine is calculating
 - Raster layer now fit better in base map
+
+## 0.7.0 - Soon
+### Added
+- Graph viewer for configurations 
+### Improvements
+### Solved
