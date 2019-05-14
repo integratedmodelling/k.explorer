@@ -113,7 +113,7 @@ export default {
             let parent = null;
             if (observation.parentId === rootGetters['data/contextId']) {
               // parent is context
-              observation.encodedShape = rootGetters['data/context'].encodedShape;
+              parent = rootGetters['data/context'];
             } else {
               // search for parent in tree
               parent = findNodeById(rootGetters['data/tree'], observation.parentId);
