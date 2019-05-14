@@ -64,6 +64,7 @@ export default {
     resetInputRequest: 'Use defaults',
     submitInputRequest: 'Submit',
     IDLAlertTitle: 'Warning!',
+    recontextualization: 'Set as context',
   },
   messages: {
     connectionClosed: 'Connection closed',

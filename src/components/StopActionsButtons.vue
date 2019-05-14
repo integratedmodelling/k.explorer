@@ -27,15 +27,20 @@
 import { mapGetters } from 'vuex';
 import { FAKE_TEXTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import LoadContext from 'shared/LoadContextMixin';
 
 export default {
   name: 'StopActionsButtons',
+  mixins: [
+    LoadContext,
+  ],
   data() {
     return {};
   },
   computed: {
     ...mapGetters('data', [
       'contextId',
+      'previousContext',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',

@@ -95,7 +95,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
-import Utils from 'shared/Utils';
+import { copyToClipboard } from 'shared/Utils';
 import TooltipIt from 'shared/TooltipItMixin';
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -175,7 +175,7 @@ export default {
       return value * 100 / this.maxHistogramValue;
     },
     copyToClipboard(value) {
-      Utils.copyToClipboard(value);
+      copyToClipboard(value);
       this.$q.notify({
         message: this.$t('messages.copiedToClipboard'),
         type: 'info',

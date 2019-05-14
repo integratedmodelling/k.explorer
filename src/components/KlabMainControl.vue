@@ -46,8 +46,8 @@
         }"
       >
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>
+        <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
       </q-card-title>
-
       <q-card-main
         v-show="hasContext && !isHidden"
         class="no-margin relative-position"
@@ -122,6 +122,7 @@ import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearchBar from 'components/KlabSearchBar.vue';
+import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -136,6 +137,7 @@ export default {
   components: {
     KlabSpinner,
     KlabSearchBar,
+    KlabBreadcrumbs,
     KlabTreePane,
     KlabLogPane,
     ScrollingText,
@@ -406,4 +408,10 @@ export default {
       border 1px solid rgba(135, 135, 135, .5)
       animation-duration .2s
 
+    .kbc-container
+      position absolute;
+      top 63px
+      left 0
+      width 100%
+      text-align center
 </style>

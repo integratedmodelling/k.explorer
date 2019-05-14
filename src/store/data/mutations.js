@@ -9,9 +9,22 @@ export default {
    * first store existing context and then reset everything
    * @param context the new context
    */
-  SET_CONTEXT: (state, context) => {
+  SET_CONTEXT: (state, { context = null, isRecontext = false }) => {
     // the previous store is delegate to actions because a mutations cannot commit another mutation
-    state.context = context;
+    if (context === null) {
+      state.contexts.empty();
+    } else if (isRecontext) {
+      const actualContext = state.contexts.peek();
+      context.scaleReference = actualContext.scaleReference;
+      state.contexts.push(context);
+    } else {
+      const exists = state.contexts.findIndex(ctxt => ctxt.id === context.id);
+      if (exists === -1) {
+        state.contexts.push(context);
+      } else {
+        state.contexts.pop(exists);
+      }
+    }
     state.tree = [];
     state.lasts = [];
     state.observations = [];
@@ -20,8 +33,8 @@ export default {
     state.nodeSelected = null;
     if (context === null) {
       state.contextsHistory = [];
-    } else if (typeof state.context.restored === 'undefined') {
-      state.context.restored = false;
+    } else if (typeof context.restored === 'undefined') {
+      context.restored = false;
     }
   },
 
@@ -69,19 +82,19 @@ export default {
    * @param node
    */
   ADD_NODE: (state, { node, parentId }) => {
-    if (state.context === null) {
+    if (state.contexts.peek() === null) {
       console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
       state.orphans.push(node);
       return;
     }
-    if (state.context.id === node.id) {
+    if (state.contexts.peek().id === node.id) {
       console.error('Try to add context to tree, check it!');
       return;
     }
-    if (state.context.id === parentId) {
+    if (state.contexts.peek().id === parentId) {
       // is a tree root node
       state.tree.push(node);
-    } else if (node.rootContextId === state.context.id) {
+    } else if (node.rootContextId === state.contexts.peek().id) {
       const parent = findNodeById(state.tree, parentId);
       if (parent !== null) {
         parent.children.push({
@@ -95,17 +108,17 @@ export default {
         state.orphans.push(node);
       }
     } else {
-      console.warn(`Try to add to tree an observation of other context. Actual: ${state.context.id} / Node: ${node.rootContextId}`);
+      console.warn(`Try to add to tree an observation of other context. Actual: ${state.contexts.peek().id} / Node: ${node.rootContextId}`);
     }
   },
 
   RECALCULATE_TREE: (state, { taskId, fromTask }) => {
-    if (state.context === null) {
+    if (state.contexts.peek() === null) {
       // context was reset while processing
       return;
     }
     const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
-    const restored = typeof state.context.restored !== 'undefined';
+    const restored = typeof state.contexts.peek().restored !== 'undefined';
     if (filtered.length === 0) {
       console.info('No recalculation needed, no observation for this task');
       return;
@@ -143,7 +156,7 @@ export default {
     const firstOccurence = filtered[0];
     let folder = null;
     let insertionIndex = -1;
-    if (firstOccurence.parentId === state.context.id) {
+    if (firstOccurence.parentId === state.contexts.peek().id) {
       folder = state.tree;
       insertionIndex = state.tree.findIndex(c => c.id === firstOccurence.id);
     } else {

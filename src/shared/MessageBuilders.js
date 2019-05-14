@@ -126,6 +126,19 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
+  CONTEXTUALIZATION_REQUEST: ({ contextUrn, contextId, parentContext, contextQuery }, session) => buildMessage(
+    OUT.CLASS_OBSERVATIONLIFECYCLE,
+    OUT.TYPE_RECONTEXTUALIZE,
+    OUT.PAYLOAD_CLASS_CONTEXTUALIZATIONREQUEST,
+    {
+      ...(typeof contextUrn !== 'undefined' && { contextUrn }),
+      ...(typeof contextId !== 'undefined' && { contextId }),
+      ...(typeof parentContext !== 'undefined' && { parentContext }),
+      ...(typeof contextQuery !== 'undefined' && { contextQuery }),
+    },
+    session,
+  ),
+
   TASK_INTERRUPTED: ({ taskId, forceInterruption = true }, session) => buildMessage(
     OUT.CLASS_TASKLIFECYCLE,
     OUT.TYPE_TASKINTERRUPTED,

@@ -66,10 +66,13 @@
 
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
+import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { getLayerObject, isRasterObservation, jstsParseGeometry, jstsParser, Constants } from 'shared/Helpers';
 import { checkIDL } from 'shared/Utils';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import { createMarker } from 'shared/Utils';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -84,6 +87,10 @@ import WKT from 'ol/format/WKT';
 import MapDrawer from 'components/MapDrawer';
 import { fromExtent as polygonFromExtent } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
+import SourceVector from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -117,6 +124,7 @@ export default {
       geolocationIncidence: null,
       popupContent: '',
       popupOverlay: undefined,
+      contextLayer: null,
       uploadConfig: {
         refId: null,
         onUploadProgress: (uploadProgress) => {
@@ -149,6 +157,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'contextId',
+      'contextLabel',
       'session',
     ]),
     ...mapGetters('view', [
@@ -279,15 +288,36 @@ export default {
       if (oldContext !== null) {
         // if context is changed, everything disappear
         this.layers.clear();
-        this.baseLayers.removeMask();
+        if (this.contextLayer !== null) {
+          this.map.removeLayer(this.contextLayer);
+          this.contextLayer = null;
+        } else {
+          this.baseLayers.removeMask();
+        }
       }
       if (this.contextGeometry === null) {
         console.debug('No context, send region of interest');
         this.sendRegionOfInterest();
         return;
       }
-      this.baseLayers.setMask(this.contextGeometry);
-      this.view.fit(this.contextGeometry, { padding: [10, 10, 10, 10], constrainResolution: false });
+      if (this.contextGeometry instanceof Array) {
+        this.contextLayer = new VectorLayer({
+          id: this.contextId,
+          source: new SourceVector({
+            features: [new Feature({
+              geometry: new Point(this.contextGeometry),
+              name: this.contextLabel,
+              id: this.contextId,
+            })],
+          }),
+          style: createMarker(MAP_STYLES.POINT_CONTEXT_SVG_PARAM, this.contextLabel),
+        });
+        this.map.addLayer(this.contextLayer);
+        this.view.setCenter(this.contextGeometry);
+      } else {
+        this.baseLayers.setMask(this.contextGeometry);
+        this.view.fit(this.contextGeometry, { padding: [10, 10, 10, 10], constrainResolution: false });
+      }
     },
 
     drawObservations() {
@@ -479,7 +509,7 @@ export default {
     });
     */
     this.map.on('click', (event) => {
-      if ((this.exploreMode || this.topLayer !== null) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
+      if ((this.exploreMode || this.topLayer !== null) && !(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         if (this.exploreMode) {
           const layerSelected = this.findExistingLayerById(this.observationInfo);
           const clonedLayer = new ImageLayer({
@@ -523,11 +553,18 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
-      if (this.contextGeometry && this.contextGeometry !== null) {
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, (geometry = null) => {
+      if (geometry === null && this.contextGeometry && this.contextGeometry !== null) {
+        geometry = this.contextGeometry;
+      }
+      if (geometry !== null) {
         // we must wait for the end of drawer animation
         setTimeout(() => {
-          this.view.fit(this.contextGeometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+          if (geometry instanceof Array) {
+            this.view.setCenter(geometry);
+          } else {
+            this.view.fit(geometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+          }
         }, 200);
       }
     });
