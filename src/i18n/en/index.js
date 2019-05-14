@@ -63,6 +63,7 @@ export default {
     cancelInputRequest: 'Cancel run',
     resetInputRequest: 'Use defaults',
     submitInputRequest: 'Submit',
+    IDLAlertTitle: 'Warning!',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -89,6 +90,7 @@ export default {
     unknownSearchObservation: 'Previous observations results',
     noLogItems: 'Empty log',
     uploadComplete: 'Upload of file {fileName} complete',
+    IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
   },
   tooltips: {
     treePane: 'View tree',

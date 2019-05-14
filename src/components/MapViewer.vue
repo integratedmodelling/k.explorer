@@ -214,7 +214,11 @@ export default {
         if (idl !== null && idl.length === 0) {
           message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
         } else {
-          // TODO dialog to inform user
+          this.$q.dialog({
+            title: this.$t('label.IDLAlertTitle'),
+            message: this.$t('messages.IDLAlertText'),
+            color: 'mc-red',
+          }).catch(() => {});
           return;
         }
       } catch (error) {
