@@ -67,12 +67,9 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
-import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
-import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS } from 'shared/MapConstants';
 import { getLayerObject, isRasterObservation, jstsParseGeometry, jstsParser, Constants } from 'shared/Helpers';
-import { checkIDL } from 'shared/Utils';
+import { checkIDL, createMarker } from 'shared/Utils';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
-import { createMarker } from 'shared/Utils';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -89,7 +86,6 @@ import { fromExtent as polygonFromExtent } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
-import Feature from 'ol/Feature';
 import Point from 'ol/geom/Point';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
