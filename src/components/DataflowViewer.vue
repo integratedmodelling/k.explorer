@@ -1,5 +1,6 @@
 <template>
   <div class="fit no-padding with-background" id="dfv-container">
+    <!-- <q-resize-observable @resize="handleResize" ></q-resize-observable> -->
     <div id="sprotty"></div>
   </div>
 </template>
@@ -109,6 +110,11 @@ export default {
         }
       }
     },
+    /*
+    handleResize() {
+      this.actionDispatcher.dispatch(new FitToScreenAction([]));
+    },
+    */
   },
   watch: {
     dataflow() {

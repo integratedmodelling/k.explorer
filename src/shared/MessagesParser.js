@@ -81,7 +81,7 @@ const PARSERS = {
           JSON.stringify(observation, null, 4),
         );
         dispatch('data/setContext', { context: observation }, { root: true });
-        if (typeof observation.scaleReference !== 'undefined' || observation.scaleReference !== null) {
+        if (typeof observation.scaleReference !== 'undefined' && observation.scaleReference !== null) {
           dispatch('data/setScaleReference', observation.scaleReference, { root: true });
         }
       } else if (!observation.previouslyNotified) {
