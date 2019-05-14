@@ -12,8 +12,8 @@
         toggle-color="mc-main"
         size="md"
         :options="[
-          { tabindex: 1, icon: 'mdi-vector-point',/* label: $t('label.drawPoint'),*/ value: 'Point' },
-          { tabindex: 2, icon: 'mdi-vector-line',/* label: $t('label.drawLineString'), */ value: 'LineString' },
+          { tabindex: 1, icon: 'mdi-vector-point',/* label: $t('label.drawPoint'),*/ value: 'Point', disable: true},
+          { tabindex: 2, icon: 'mdi-vector-line',/* label: $t('label.drawLineString'), */ value: 'LineString', disable: true },
           { tabindex: 3, icon: 'mdi-vector-polygon',/* label: $t('label.drawPolygon'), */ value: 'Polygon' },
           { tabindex: 4, icon: 'mdi-vector-circle-variant',/* label: $t('label.drawCircle'),*/ value: 'Circle' }
         ]"
