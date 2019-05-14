@@ -550,7 +550,7 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, ({ mainIdx = null, geometry = null } = null) => {
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, ({ mainIdx = null, geometry = null }) => {
       if (geometry === null && this.contextGeometry && this.contextGeometry !== null) {
         geometry = this.contextGeometry;
       }
