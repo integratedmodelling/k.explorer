@@ -18,6 +18,7 @@
 import KlabSplitter from 'components/KlabSplitter.vue';
 import KlabTree from 'components/KlabTree.vue';
 import ObservationInfo from 'components/ObservationInfo.vue';
+import { CUSTOM_EVENTS } from 'shared/Constants';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -50,8 +51,15 @@ export default {
       this.setObservationInfo(null);
     },
     informTree({ nodeId, state }) {
-      this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
+      if (this.$refs['klab-tree-component']) {
+        this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
+      }
     },
+  },
+  mounted() {
+    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, (event) => {
+      this.informTree(event);
+    });
   },
 };
 </script>

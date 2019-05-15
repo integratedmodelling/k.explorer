@@ -37,8 +37,20 @@ export default {
 
   /**
    * Active dataViewers
+   * idx: automatic id,
+   * main: if true is the main,
+   * type: one of Constants.VIEW_XXXX,
+   * observationType: the first observation type,
+   * observations array of observations linked to this viewer,
    */
   dataViewers: [],
+  /**
+   * Main data viewer idx
+   * Use only for comodity
+   * We don't need to check each time all the array
+   * Is managed by dataViewers mutations
+   */
+  mainDataViewerIdx: 0,
 
   /**
    * Every viewer has an autonumeric id

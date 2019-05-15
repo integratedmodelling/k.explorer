@@ -51,6 +51,8 @@ export default {
   mainDataViewer: state => state.dataViewers
     .find(dv => dv.main),
 
+  mainDataViewerIdx: state => state.mainDataViewerIdx,
+
 
   lastViewerId: state => state.lastViewerId,
 

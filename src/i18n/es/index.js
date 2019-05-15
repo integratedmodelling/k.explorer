@@ -63,6 +63,7 @@ export default {
     cancelInputRequest: 'Cancelar ejecución',
     resetInputRequest: 'Utilizar defaults',
     submitInputRequest: 'Enviar',
+    recontextualization: 'Fijar como contexto',
   },
   messages: {
     connectionClosed: 'Conexión cerrada',

@@ -1,4 +1,8 @@
 /* eslint-disable object-curly-newline,prefer-destructuring,no-multi-spaces */
+import Constants from 'shared/Constants';
+import store from 'store/index';
+import { MAP_CONSTANTS, MAP_STYLES } from 'shared/MapConstants';
+import { getGradient, interpolateArray, createMarker } from 'shared/Utils';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import WKT from 'ol/format/WKT';
@@ -10,15 +14,10 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
-import Utils from 'shared/Utils';
-import Constants from 'shared/Constants';
-import store from 'store/index';
-import Style from 'ol/style/Style';
-import { MAP_CONSTANTS, MAP_STYLES, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
-import { io as jstsIo } from 'jsts';
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
 import LinearRing from 'ol/geom/LinearRing';
 import { fromCircle } from 'ol/geom/Polygon';
+import { io as jstsIo } from 'jsts';
 
 
 const WKTInstance = new WKT();
@@ -27,12 +26,6 @@ const WKTInstance = new WKT();
  * Helpers functions shared between components.
  * A plugin (helper.js) is called to link function to Vue instance ($helpers)
  * Same js file is used to expose Constants
- * @type {{
- * validateJsonSchema: (function(*=, *=): *),
- * capitalizeFirstLetter: (function(*): string),
- * pushElementInFixedQueue: (function(*, *=)),
- * formatExtent: (function(*=)),
- * }}
  */
 
 /**
@@ -122,6 +115,7 @@ export const getNodeFromObservation = observation => ({
     observable: observation.observable,
     type: observation.shapeType,
     viewerIdx: observation.viewerIdx,
+    viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
     children: [],
     tickable: observation.viewerIdx !== null && !observation.empty,
     disabled: observation.empty,
@@ -133,6 +127,7 @@ export const getNodeFromObservation = observation => ({
     main: observation.main,
     exportFormats: observation.exportFormats,
     rootContextId: observation.rootContextId,
+    observationType: observation.observationType,
   },
   parentId: observation.folderId === null ? observation.parentId : observation.folderId,
 });
@@ -185,7 +180,7 @@ export const registerProjection = projection => new Promise((resolve, reject) =>
  * Return the geometry of context.
  * Now getLayerObject only work with observation
  * @param contextObservation
- * @returns {Promise.<module:ol/geom/Geometry>}
+ * @returns {<module:ol/geom/Geometry> || Array with 2 coordinates}
  */
 export async function getContextGeometry(contextObservation) {
   let dataProjection;
@@ -203,13 +198,25 @@ export async function getContextGeometry(contextObservation) {
   if (encodedShape.indexOf('LINEARRING') === 0) {
     encodedShape = encodedShape.replace('LINEARRING', 'LINESTRING');
   }
-  const geometry = WKTInstance.readGeometry(encodedShape, {
-    dataProjection,
-    featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
-  });
+  let geometry = null;
+  if (encodedShape.indexOf('POINT') !== -1) {
+    const feature = WKTInstance.readFeature(encodedShape, {
+      dataProjection,
+      featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
+    });
+    if (feature !== null && feature.getGeometry() !== null) {
+      geometry = feature.getGeometry().getFirstCoordinate();
+    }
+  } else {
+    geometry = WKTInstance.readGeometry(encodedShape, {
+      dataProjection,
+      featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
+    });
+  }
   contextObservation.zIndexOffset = 0; // is context, remaind it
   return geometry;
 }
+
 
 /**
  * Useful to call a REST action
@@ -256,8 +263,8 @@ export async function getLayerObject(observation, { viewport = null /* , project
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
   if (isRaster) {
-    if (observation.parentId === store.state.data.context.id) {
-      spatialProjection = store.state.data.context.spatialProjection;
+    if (observation.parentId === store.getters['data/context'].id) {
+      spatialProjection = store.getters['data/context'].spatialProjection;
     } else {
       const parent = findNodeById(store.state.data.tree, observation.parentId);
       if (parent !== null && parent.spatialProjection) {
@@ -337,8 +344,8 @@ export async function getLayerObject(observation, { viewport = null /* , project
                       const steps = Math.floor(256 / cml);
                       const lastSteps = steps + (256 - cml * steps);
                       for (let i = 0; i < cml - 1; i++) {
-                        const tmpCol = Utils.getGradient(colormap.colors[i], colormap.colors[i + 1], (i === cml - 2) ? lastSteps : steps);
-                        const tmpLab = Utils.interpolateArray([parseFloat(colormap.labels[i]), parseFloat(colormap.labels[i + 1])], (i === cml - 2) ? lastSteps : steps, 4);
+                        const tmpCol = getGradient(colormap.colors[i], colormap.colors[i + 1], (i === cml - 2) ? lastSteps : steps);
+                        const tmpLab = interpolateArray([parseFloat(colormap.labels[i]), parseFloat(colormap.labels[i + 1])], (i === cml - 2) ? lastSteps : steps, 4);
                         cmcol.push(...tmpCol);
                         cmlab.push(...tmpLab);
                       }
@@ -385,15 +392,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
     layerStyle = MAP_STYLES.LNE_OBSERVATION_STYLE;
     observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_LINES;
   } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
-    const text = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_TEXT.clone();
-    // TODO check this # = %23 to do something a little better
-    const image = MAP_STYLE_ELEMENTS.POINT_OBSERVATION_SVG_ICON({ fill: '%23eee', stroke: '%23333', strokeWidth: '4' }).clone();
-
-    text.setText(observation.label);
-    layerStyle = new Style({
-      image,
-      text,
-    });
+    layerStyle = createMarker(MAP_STYLES.POINT_OBSERVATION_SVG_PARAM, observation.label);
     observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POINTS;
   } else {
     layerStyle = MAP_STYLES.POLYGON_OBSERVATION_STYLE;
@@ -461,5 +460,4 @@ const Helpers = {
   jstsParser,
 };
 
-
-export { Constants, Helpers, Utils };
+export { Constants, Helpers };

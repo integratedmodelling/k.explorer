@@ -5,6 +5,7 @@
     :class="{'dmc-dragging': dragging}"
     v-draggable="dragMCConfig"
   >
+    <klab-breadcrumbs></klab-breadcrumbs>
     <klab-search-bar
       ref="klab-search-bar-docked"
     ></klab-search-bar>
@@ -22,6 +23,7 @@
 import { mapActions } from 'vuex';
 import { debounce, dom } from 'quasar';
 import KlabSearchBar from 'components/KlabSearchBar';
+import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
@@ -33,6 +35,7 @@ export default {
   components: {
     KlabSearchBar,
     KlabTreePane,
+    KlabBreadcrumbs,
   },
   directives: {
     Draggable,
@@ -82,20 +85,26 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  #dmc-tree
-    background-color: rgba(119,119,119,0.65);
-    #oi-container
-      height "calc(100% -  %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
-      max-height "calc(100% - %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
-      #oi-metadata-map-wrapper
-        height "calc(100% - %s)" % ($docked-padding + $docked-correction)
-        &.with-histogram
-          height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
+  #dmc-container
+    #dmc-tree
+      background-color: rgba(119,119,119,0.65);
+      #oi-container
+        height "calc(100% -  %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
+        max-height "calc(100% - %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
+        #oi-metadata-map-wrapper
+          height "calc(100% - %s)" % ($docked-padding + $docked-correction)
+          &.with-histogram
+            height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
 
-    #kt-container
-      height "calc(100% - %s)" % $docked-padding
-      max-height "calc(100% - %s)" % $docked-padding
-      position relative
-  .dmc-dragging
-    cursor move
+      #kt-container
+        height "calc(100% - %s)" % $docked-padding
+        max-height "calc(100% - %s)" % $docked-padding
+        position relative
+    .dmc-dragging
+      cursor move
+    .kbc-container
+      margin 2px
+      padding 0
+      height 10px
+
 </style>

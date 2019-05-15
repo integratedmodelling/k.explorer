@@ -64,15 +64,16 @@ export const MAP_STYLE_ELEMENTS = {
     opacity: 0.8,
     scale: 0.6,
   }),
-  POINT_OBSERVATION_SVG_ICON: style => new Icon({
+  POINT_OBSERVATION_SVG_ICON: (style, scale = 0.3) => new Icon({
     opacity: 1,
     src: `data:image/svg+xml;utf8,${MAP_ELEMENTS.MARKER_SVG(style)}`,
-    scale: 0.3,
+    scale,
   }),
-  POINT_OBSERVATION_TEXT: new Text({
+  POINT_OBSERVATION_TEXT: ({ offsetY = 25, bold = false, size = '10px' } = {}) => new Text({
     textAlign: 'center',
     textBaseline: 'bottom',
-    offsetY: -20,
+    offsetY,
+    font: `${(bold) ? 'bold' : 'normal'} ${size} Roboto, sans-serif`,
   }),
 };
 
@@ -100,6 +101,22 @@ export const MAP_STYLES = {
       width: 2,
     }),
   }),
+  // { fill, stroke, strokeWidth, scale = 0.3 }
+  POINT_OBSERVATION_SVG_PARAM: {
+    fill: 'rgb(238,238,238)',
+    stroke: 'rgb(51,51,51)',
+    strokeWidth: '4',
+    scale: 0.3,
+  },
+  POINT_CONTEXT_SVG_PARAM: {
+    fill: 'rgb(17, 170, 187)',
+    stroke: 'rgb(51,51,51)',
+    strokeWidth: '5',
+    scale: 0.5,
+    offsetY: 35,
+    bold: true,
+    size: '14px',
+  },
 };
 
 /**

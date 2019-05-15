@@ -220,4 +220,7 @@ export default {
     border 4px solid rgba(135, 135, 135, .6)
     animation-duration .2s
 
+  .fullscreen
+    z-index 10000
+
 </style>

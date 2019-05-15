@@ -63,6 +63,7 @@ export default {
     cancelInputRequest: 'Cancel run',
     resetInputRequest: 'Use defaults',
     submitInputRequest: 'Submit',
+    recontextualization: 'Set as context',
     IDLAlertTitle: 'Warning!',
   },
   messages: {

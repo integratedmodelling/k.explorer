@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
-import Constants, { VIEWERS, LEFTMENU_COMPONENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import Constants, { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_COMPONENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
@@ -52,6 +52,7 @@ export default {
     commit('SET_LEFTMENU_CONTENT', viewer.leftMenuContent);
     commit('SET_LEFTMENU_STATE', viewer.leftMenuState);
     commit('SET_MAIN_VIEWER', viewer);
+    commit('RESET_MAIN_DATA_VIEWER', null);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
@@ -82,8 +83,10 @@ export default {
     commit('SET_LEFTMENU_STATE', visibility);
   },
 
-  setMainDataViewer: ({ commit }, idx) => {
-    commit('SET_MAIN_DATA_VIEWER', idx);
+  setMainDataViewer: ({ commit, getters }, { viewerIdx, viewerType = null, visible = true }) => {
+    if ((visible && viewerIdx !== getters.mainDataViewerIdx) || (!visible && viewerIdx !== null) || (!visible && viewerType !== null && viewerType.hideable)) {
+      commit('SET_MAIN_DATA_VIEWER', { viewerIdx, visible });
+    }
   },
 
   assignViewer: ({
@@ -94,6 +97,7 @@ export default {
   }, { observation, main = false }) => new Promise((resolve, reject) => {
     // check what we need to do with observation based on his type
     let viewerType = null;
+    let label = null;
     // set the viewer type.
     // TODO now using observation type, better way will be need
     if (observation.observationType) {
@@ -104,33 +108,51 @@ export default {
             viewerType = null;
           } else {
             // is a map but...
-            viewerType = Constants.VIEW_MAP;
+            viewerType = VIEWER_COMPONENTS.VIEW_MAP;
             // i need WKT from parent
+            let parent = null;
             if (observation.parentId === rootGetters['data/contextId']) {
               // parent is context
-              observation.encodedShape = rootGetters['data/fullContext'].encodedShape;
+              parent = rootGetters['data/context'];
             } else {
               // search for parent in tree
-              const parent = findNodeById(rootGetters['data/tree'], observation.parentId);
-              if (parent !== null) {
-                observation.encodedShape = parent.encodedShape;
-              } else {
-                console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
-              }
+              parent = findNodeById(rootGetters['data/tree'], observation.parentId);
+            }
+            if (parent !== null) {
+              observation.encodedShape = parent.encodedShape;
+              ({ label } = parent);
+            } else {
+              console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
             }
           }
           break;
         case Constants.OBSTYP_INITIAL:
         case Constants.OBSTYP_SUBJECT:
-        case Constants.OBSTYP_RELATIONSHIP:
-          viewerType = Constants.VIEW_MAP;
+        case Constants.OBSTYP_RELATIONSHIP: {
+          viewerType = VIEWER_COMPONENTS.VIEW_MAP;
+          // isn't context?
+          let parent = null;
+          if (observation.parentId !== null) {
+            parent = findNodeById(rootGetters['data/tree'], observation.rootContextId);
+            if (typeof parent === 'undefined') {
+              console.warn(`Observation with id ${observation.id} has an invalid rootContextId: ${observation.rootContextId}`);
+              parent = null;
+            }
+          }
+          if (parent !== null) {
+            ({ label } = parent);
+          } else {
+            ({ label } = observation);
+          }
           break;
+        }
         case Constants.OBSTYP_CONFIGURATION:
-          viewerType = Constants.VIEW_GRAPH;
+          viewerType = VIEWER_COMPONENTS.VIEW_GRAPH;
+          ({ label } = observation);
           break;
         case Constants.OBSTYP_EVENT:
         case Constants.OBSTYP_PROCESS:
-          viewerType = Constants.VIEW_UNKNOWN;
+          viewerType = VIEWER_COMPONENTS.VIEW_UNKNOWN;
           break;
         default:
           reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
@@ -138,21 +160,26 @@ export default {
       }
     }
     if (viewerType !== null) {
-      console.debug(`Need a viewer of type ${viewerType}`);
-      const viewer = getters.dataViewers.find(v => v.type === viewerType);
+      console.debug(`Need a viewer of type ${viewerType.component}`);
+      let viewer;
+      if (!viewerType.forceNew) {
+        viewer = getters.dataViewers.find(v => v.type.component === viewerType.component);
+      }
       // if no viewer, create it
       if (typeof viewer === 'undefined') {
-        console.info(`Create new viewer of type ${viewerType}`);
+        console.info(`Create new viewer of type ${viewerType.component}`);
         commit('ADD_VIEWER_ELEMENT', {
           main,
           type: viewerType,
+          label: label && label !== null ? label : viewerType.label,
+          visible: !viewerType.hideable,
           callback: (idx) => {
             resolve(idx);
           },
         });
       } else {
         if (main) {
-          dispatch('setMainDataViewer', viewer.idx);
+          dispatch('setMainDataViewer', { viewerIdx: viewer.idx });
         }
         resolve(viewer.idx);
       }

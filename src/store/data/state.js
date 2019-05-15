@@ -1,3 +1,4 @@
+import Stack from 'classes/Stack';
 /**
  * Data states
  */
@@ -33,10 +34,12 @@ export default {
    * @property total: real total we need,
    */
   lasts: [],
+
   /**
-   * If not null, a context was established and saved in this object
+   * The stack of contexts
+   *
    */
-  context: null,
+  contexts: new Stack(),
 
   /**
    * Contain scale info

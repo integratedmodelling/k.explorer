@@ -173,12 +173,16 @@ import Constants, { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
+import LoadContext from 'shared/LoadContextMixin';
 import { Cookies } from 'quasar';
 import { copyToClipboard, capitalizeFirstLetter } from 'shared/Utils';
 
 export default {
   name: 'MainControlMenu',
-  mixins: [TooltipIt],
+  mixins: [
+    TooltipIt,
+    LoadContext,
+  ],
   components: {
     ScaleReference,
   },
@@ -246,13 +250,10 @@ export default {
   },
   methods: {
     ...mapActions('data', [
-      'loadContext',
-      'setWaitinForReset',
       'setInteractiveMode',
     ]),
     ...mapActions('view', [
       'setDrawMode',
-      'setSpinner',
     ]),
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
@@ -268,28 +269,7 @@ export default {
       }
       this.closePopups();
       this.clearTooltip();
-      if (contextId !== null) {
-        this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
-      }
-      if (this.hasContext) {
-        /*
-        const task = this.lastActiveTask;
-        if (task !== null) {
-          const subscriptionObject = this.subscriptions.find(ts => ts.id === task.id);
-          if (typeof subscriptionObject !== 'undefined') {
-            subscriptionObject.subscription.unsubscribe();
-          }
-        }
-        */
-        this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
-        if (contextId !== null) {
-          this.setWaitinForReset(contextId);
-        } else {
-          this.closePopups();
-        }
-      } else {
-        this.loadContext(contextId);
-      }
+      this.loadOrReloadContext(contextId, this.closePopups());
     },
     formatContextTime(context) {
       let timestamp = context.lastUpdate;

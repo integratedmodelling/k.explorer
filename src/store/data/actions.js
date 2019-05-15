@@ -9,19 +9,19 @@ export default {
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */
-  setContext: ({ commit, state, dispatch }, context) => {
+  setContext: ({ commit, getters, dispatch }, { context, isRecontext }) => {
     // If set context, everything is resetted
     // set new context
-    if (state.context !== null && state.context.id === context.id) {
+    if (getters.context !== null && getters.context.id === context.id) {
       return;
     }
-    commit('SET_CONTEXT', context);
+    commit('SET_CONTEXT', { context, isRecontext });
     dispatch('view/setContextLayer', context, { root: true });
   },
 
-  resetContext: ({ commit, dispatch, state }) => {
-    if (state.context !== null) {
-      commit('SET_CONTEXT', null);
+  resetContext: ({ commit, dispatch, state, getters }) => {
+    if (getters.context !== null) {
+      commit('SET_CONTEXT', {});
       dispatch('getSessionContexts');
       dispatch('view/resetContext', null, { root: true });
       if (state.waitingForReset !== null) {
@@ -51,7 +51,7 @@ export default {
     }).then(async ({ data: context }) => {
       context.restored = true;
       // remove children so no reactive observations are loaded
-      await dispatch('setContext', { ...context, children: [] });
+      await dispatch('setContext', { context: { ...context, children: [] } });
       commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
       console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
       // console.dir(context);
@@ -167,7 +167,7 @@ export default {
    * @param visible visibility
    * @main if true, indicate that this observation set his viewer as main
    */
-  addObservation: ({ commit, state, dispatch }, {
+  addObservation: ({ commit, state, dispatch, rootGetters }, {
     observation,
     folderId = null,
     main = false,
@@ -238,6 +238,8 @@ export default {
             notified: observation.notified || observation.previouslyNotified,
             exportFormats: observation.empty ? undefined : observation.exportFormats,
             firstChildId: observation.id,
+            viewerIdx: observation.viewerIdx,
+            viewerType: rootGetters['view/viewer'](observation.viewerIdx).type,
           },
           parentId: observation.parentId,
         });
@@ -338,42 +340,18 @@ export default {
         resolve();
       });
   }),
-  /**
-   * Hide a node in a tree, this hide the relative layer too
-   * This will be in view?
-   * @param nodeId
-   */
-  hideNode: ({ commit }, nodeId) => {
-    commit('SET_VISIBLE', { id: nodeId, visible: false });
-  },
 
   /**
-   * Show a node in a tree, this show the relative layer too
-   * This will be in view?
-   * @param nodeId
-   */
-  showNode: ({ commit, dispatch }, { nodeId, selectMainViewer = false }) => {
-    commit('SET_VISIBLE', {
-      id: nodeId,
-      visible: true,
-      callback: selectMainViewer ? (observation) => {
-        dispatch('view/setMainDataViewer', observation.viewerIdx, { root: true });
-      } : null,
-    });
-  },
-
-  /**
-   * Apply a visibility to all folder (all observation yet not in tree)
+   * Show a node in a tree, this show the relative layer too or
+   * apply a visibility to all folder (all observation yet not in tree) if isFolder is true
    * @param folderId folder to change visibility
    * @param visible hide (false) or show (true)
    */
-  setFolderVisibility: ({ commit, dispatch }, { folderId, visible, selectMainViewer = false }) => {
-    commit('SET_FOLDER_VISIBLE', {
-      folderId,
+  setVisibility: ({ commit, dispatch }, { node, visible }) => {
+    dispatch('view/setMainDataViewer', { viewerIdx: node.viewerIdx, viewerType: node.viewerType, visible }, { root: true });
+    commit(node.type === Constants.GEOMTYP_FOLDER ? 'SET_FOLDER_VISIBLE' : 'SET_VISIBLE', {
+      nodeId: node.id,
       visible,
-      callback: visible && selectMainViewer ? (observation) => {
-        dispatch('view/setMainDataViewer', observation.viewerIdx, { root: true });
-      } : null,
     });
   },
 
@@ -384,7 +362,7 @@ export default {
       const selectedObservation = state.observations.find(observation => observation.id === selectedId);
       if (selectedObservation) {
         if (selectedObservation.visible && !selectedObservation.top) {
-          dispatch('showNode', { nodeId: selectedId });
+          dispatch('setVisibility', { nodeId: selectedId, viewerIdx: selectedObservation.viewerIdx, visible: true });
         }
         dispatch('view/setObservationInfo', selectedObservation, { root: true });
       }
