@@ -462,6 +462,7 @@ export default {
     this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
   },
   mounted() {
+    console.warn('mounted');
     // Set base layer
     // this.center = this.$mapDefaults.center;
     // this.zoom = this.$mapDefaults.zoom;
