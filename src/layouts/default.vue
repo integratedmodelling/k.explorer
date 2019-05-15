@@ -21,7 +21,6 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { LEFTMENU_VISIBILITY, CUSTOM_EVENTS } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
 export default {
@@ -60,7 +59,6 @@ export default {
   },
   created() {
     this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
-    this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: false }, this.session).body);
   },
 };
 </script>

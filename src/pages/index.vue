@@ -48,7 +48,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
-
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
 import ReportViewer from 'components/ReportViewer.vue';
@@ -77,6 +77,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'session',
+    ]),
     ...mapGetters('stomp', [
       'connectionState',
     ]),
@@ -172,6 +175,7 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
       this.askForUndocking = ask;
     });
+    this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: false }, this.session).body);
   },
 };
 </script>

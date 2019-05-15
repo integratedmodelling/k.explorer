@@ -75,7 +75,6 @@ export default ({ store }) => {
     path: '/',
   });
   console.info(`Session: ${session} / mode: ${mode}`);
-
   /*
   Use color.getBrand(xxx)
   Vue.prototype.$colors = {
