@@ -154,6 +154,13 @@ export default {
         }
       }
     });
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
+      if (this.actionDispatcher !== null) {
+        setTimeout(() => {
+          this.actionDispatcher.dispatch(new FitToScreenAction([]));
+        }, 400);
+      }
+    });
   },
 
   activated() {

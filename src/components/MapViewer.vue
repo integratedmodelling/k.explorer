@@ -556,17 +556,14 @@ export default {
       }
       if (geometry !== null) {
         // we must wait for the end of drawer animation
-        if (mainIdx !== null) {
-          // the event come from data viewer
-          if (this.idx !== mainIdx) {
-            this.storedZoom = this.view.getZoom();
-          }
+        if (mainIdx === null || this.idx !== mainIdx) {
+          this.storedZoom = this.view.getZoom();
         }
         setTimeout(() => {
           if (geometry instanceof Array) {
             this.view.setCenter(geometry);
           } else {
-            this.view.fit(geometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
+            this.view.fit(geometry, { padding: [10, 10, 10, 10], constrainResolution: false });
           }
         }, 200);
       } else if (this.storedZoom !== null) {
