@@ -43,7 +43,7 @@
         :stripe="true"
         :animate="true"
         height="1em"
-      />
+      ></q-progress>
     </q-modal>
     <div id="mv-popup" ref="mv-popup" class="ol-popup">
       <q-btn
@@ -143,6 +143,7 @@ export default {
         },
       },
       uploadProgress: null,
+      storedZoom: null,
     };
   },
   computed: {
@@ -448,6 +449,7 @@ export default {
     this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
   },
   mounted() {
+    console.warn('mounted');
     // Set base layer
     // this.center = this.$mapDefaults.center;
     // this.zoom = this.$mapDefaults.zoom;
@@ -536,12 +538,18 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, (geometry = null) => {
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, ({ mainIdx = null, geometry = null }) => {
       if (geometry === null && this.contextGeometry && this.contextGeometry !== null) {
         geometry = this.contextGeometry;
       }
       if (geometry !== null) {
         // we must wait for the end of drawer animation
+        if (mainIdx !== null) {
+          // the event come from data viewer
+          if (this.idx !== mainIdx) {
+            this.storedZoom = this.view.getZoom();
+          }
+        }
         setTimeout(() => {
           if (geometry instanceof Array) {
             this.view.setCenter(geometry);
@@ -549,6 +557,9 @@ export default {
             this.view.fit(geometry, { duration: 400, padding: [10, 10, 10, 10], constrainResolution: false });
           }
         }, 200);
+      } else if (this.storedZoom !== null) {
+        this.view.setZoom(this.storedZoom);
+        this.storedZoom = null;
       }
     });
   },

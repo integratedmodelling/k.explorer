@@ -64,8 +64,37 @@ export default {
    * Set the main data viewer by viewer index
    * @param idx the viewer idx
    */
-  SET_MAIN_DATA_VIEWER: (state, idx) => {
-    state.dataViewers.forEach((viewer) => { viewer.main = viewer.idx === idx; });
+  SET_MAIN_DATA_VIEWER: (state, { viewerIdx, visible }) => {
+    if (visible) {
+      state.dataViewers.forEach((viewer) => {
+        if (viewer.idx === viewerIdx) {
+          viewer.main = true;
+          state.mainDataViewerIdx = viewerIdx;
+        } else {
+          viewer.main = false;
+        }
+        viewer.visible = !viewer.type.hideable || viewer.idx === viewerIdx || viewer.visible;
+      });
+    } else {
+      let first = false;
+      state.dataViewers.forEach((viewer) => {
+        if (!first && (!viewer.type.hideable || viewer.visible)) {
+          viewer.main = true;
+          state.mainDataViewerIdx = viewer.idx;
+          first = true;
+        } else {
+          viewer.main = false;
+          if (viewer.type.hideable) {
+            viewer.visible = false;
+          }
+        }
+      });
+    }
+  },
+
+  RESET_MAIN_DATA_VIEWER: (state) => {
+    state.dataViewer = [];
+    state.mainDataViewerIdx = 0;
   },
 
   SET_MAIN_CONTROL_DOCKED: (state, docked) => {
@@ -79,7 +108,7 @@ export default {
    * @param type one of contstants.VIEWER_[TYPE]
    * @param data content of viewer
    */
-  ADD_VIEWER_ELEMENT: (state, { main, type, callback }) => {
+  ADD_VIEWER_ELEMENT: (state, { main, type, label, visible, callback }) => {
     // if first, than main
     if (state.lastViewerId === 0) {
       main = true;
@@ -93,6 +122,8 @@ export default {
       idx: state.lastViewerId,
       main,
       type,
+      label,
+      visible,
       observations: [],
     });
     if (typeof callback === 'function') {
