@@ -67,8 +67,8 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
-import { getLayerObject, isRasterObservation, jstsParseGeometry, jstsParser, Constants } from 'shared/Helpers';
-import { checkIDL, createMarker } from 'shared/Utils';
+import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
+import { checkExtentOnIDL, createMarker } from 'shared/Utils';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -82,7 +82,6 @@ import Overlay from 'ol/Overlay';
 import LayerSwitcher from 'ol-layerswitcher';
 import WKT from 'ol/format/WKT';
 import MapDrawer from 'components/MapDrawer';
-import { fromExtent as polygonFromExtent } from 'ol/geom/Polygon';
 import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -176,6 +175,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('data', [
+      'setCrossingIDL',
+    ]),
     ...mapActions('view', [
       'addToKexplorerLog',
       'setSpinner',
@@ -213,18 +215,12 @@ export default {
         });
       }
       try {
-        const extent = view.calculateExtent(this.map.getSize());
-        // check extent
-        const polygon = polygonFromExtent(extent);
-        const idl = checkIDL(jstsParseGeometry(polygon));
-        if (idl !== null && idl.length === 0) {
+        const extent = this.map.getView().calculateExtent(this.map.getSize());
+        if (checkExtentOnIDL(extent)) {
+          this.setCrossingIDL(false);
           message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
         } else {
-          this.$q.dialog({
-            title: this.$t('label.IDLAlertTitle'),
-            message: this.$t('messages.IDLAlertText'),
-            color: 'mc-red',
-          }).catch(() => {});
+          this.setCrossingIDL(true);
           return;
         }
       } catch (error) {
@@ -351,6 +347,7 @@ export default {
       if (features) {
         const wktShape = this.wktInstance.writeFeaturesText(features, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' });
         this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION({ wktShape }, this.session).body);
+        this.setCrossingIDL(false);
         /*
         this.$q.notify({
           message: this.$t('messages.spatialLocationSent'),

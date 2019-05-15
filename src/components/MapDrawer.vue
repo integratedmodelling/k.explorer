@@ -31,9 +31,8 @@ import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style.js';
 import { Draw, Modify } from 'ol/interaction.js';
 import Feature from 'ol/Feature';
-import { createIDLPolygon } from 'shared/Utils';
+import { createIDLPolygon, jstsParser, jstsParseGeometry } from 'shared/Utils';
 import { Polygon, Circle } from 'ol/geom';
-import { jstsParser, jstsParseGeometry } from 'shared/Helpers';
 /**
  * Used to draw path and modify existing path
  */

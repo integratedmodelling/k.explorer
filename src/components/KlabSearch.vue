@@ -111,6 +111,7 @@ export default {
     ...mapGetters('data', [
       'searchResult',
       'contextId',
+      'isCrossingIDL',
     ]),
     ...mapGetters('view', [
       'spinner',
@@ -331,6 +332,14 @@ export default {
     // ask for token to keylab to obtain possibility
     searchInKLab() {
       if (this.suggestionShowed) {
+        return;
+      }
+      if (this.isCrossingIDL) {
+        this.$q.dialog({
+          title: this.$t('label.IDLAlertTitle'),
+          message: this.$t('messages.IDLAlertText'),
+          color: 'mc-red',
+        }).catch(() => {});
         return;
       }
       if (this.acceptedTokens.length > 0) {

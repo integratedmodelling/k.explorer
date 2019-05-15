@@ -31,6 +31,7 @@ export default {
     state.dataflow = null;
     state.dataflowStatuses = [];
     state.nodeSelected = null;
+    state.crossingIDL = false;
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {
@@ -323,5 +324,9 @@ export default {
 
   SET_INTERACTIVE_MODE: (state, value) => {
     state.interactiveMode = value;
+  },
+
+  SET_CROSSING_IDL: (state, value) => {
+    state.crossingIDL = value;
   },
 };

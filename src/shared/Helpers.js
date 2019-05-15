@@ -14,11 +14,6 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
-import { io as jstsIo } from 'jsts';
-import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
-import LinearRing from 'ol/geom/LinearRing';
-import { fromCircle } from 'ol/geom/Polygon';
-
 
 const WKTInstance = new WKT();
 
@@ -417,21 +412,6 @@ export async function getLayerObject(observation, { viewport = null /* , project
 }
 
 /**
- * JSTS centralized method to use only one instance for all app
- */
-const jstsParser = new jstsIo.OL3Parser();
-jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
-
-export { jstsParser };
-
-export const jstsParseGeometry = (geometry) => {
-  if (geometry instanceof Circle) {
-    geometry = fromCircle(geometry);
-  }
-  return jstsParser.read(geometry);
-};
-
-/**
  * DEFAULT Viewer on start
  */
 export const OBSERVATION_DEFAULT = {
@@ -455,8 +435,6 @@ const Helpers = {
   getContextGeometry,
   getAxiosContent,
   getLayerObject,
-  jstsParseGeometry,
-  jstsParser,
 };
 
 export { Constants, Helpers };

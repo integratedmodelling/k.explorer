@@ -90,4 +90,9 @@ export default {
    * Interactive mode
    */
   interactiveMode: state => state.interactiveMode,
+
+  /**
+   * Is crossing IDL
+   */
+  isCrossingIDL: state => state.crossingIDL,
 };

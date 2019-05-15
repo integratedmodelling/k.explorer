@@ -1,8 +1,11 @@
 import { colors } from 'quasar';
-import { geom as jstsGeom, operation as jstsOperation } from 'jsts';
+import { geom as jstsGeom, operation as jstsOperation, io as jstsIo } from 'jsts';
 import { transform } from 'ol/proj';
+import { fromCircle, fromExtent } from 'ol/geom/Polygon';
 import Style from 'ol/style/Style';
 import { MAP_CONSTANTS, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
+import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
+import LinearRing from 'ol/geom/LinearRing';
 
 /**
  * RegExp to detect a color string as rgba(...)
@@ -221,6 +224,21 @@ export function copyToClipboard(str) {
 }
 
 /**
+ * JSTS centralized method to use only one instance for all app
+ */
+const jstsParser = new jstsIo.OL3Parser();
+jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
+
+export { jstsParser };
+
+export const jstsParseGeometry = (geometry) => {
+  if (geometry instanceof Circle) {
+    geometry = fromCircle(geometry);
+  }
+  return jstsParser.read(geometry);
+};
+
+/**
  * Check if a polygon cross IDL
  * @param polygon polygon
  * @returns {Array} an array with which IDL the polygon cross. If empty, no IDL crossing
@@ -235,6 +253,12 @@ export function checkIDL(polygon) {
     idl.push(JSTS_IDLS.right);
   }
   return idl;
+}
+
+export function checkExtentOnIDL(extent) {
+  const polygon = fromExtent(extent);
+  const idl = checkIDL(jstsParseGeometry(polygon));
+  return (idl !== null && idl.length === 0);
 }
 
 /**
@@ -306,6 +330,9 @@ export default {
   uniqueArray,
   getBrightnessColor,
   copyToClipboard,
+  jstsParser,
+  jstsParseGeometry,
   checkIDL,
+  checkExtentOnIDL,
   createMarker,
 };

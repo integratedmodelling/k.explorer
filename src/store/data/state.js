@@ -179,4 +179,9 @@ export default {
    * Interactive mode on / off
    */
   interactiveMode: false,
+
+  /**
+   * indicate if we are crossing IDL, so we cannot make observation
+   */
+  crossingIDL: false,
 };

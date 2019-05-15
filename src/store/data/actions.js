@@ -407,4 +407,8 @@ export default {
   setInteractiveMode: ({ commit }, value) => {
     commit('SET_INTERACTIVE_MODE', value);
   },
+
+  setCrossingIDL: ({ commit }, value) => {
+    commit('SET_CROSSING_IDL', value);
+  },
 };
