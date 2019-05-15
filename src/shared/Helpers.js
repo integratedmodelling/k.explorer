@@ -14,10 +14,14 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
+import { getGradient, interpolateArray, createMarker } from 'shared/Utils';
+import Constants from 'shared/Constants';
+import store from 'store/index';
+import { MAP_CONSTANTS, MAP_STYLES } from 'shared/MapConstants';
+import { io as jstsIo } from 'jsts';
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
 import LinearRing from 'ol/geom/LinearRing';
 import { fromCircle } from 'ol/geom/Polygon';
-import { io as jstsIo } from 'jsts';
 
 
 const WKTInstance = new WKT();
@@ -425,7 +429,6 @@ jstsParser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineS
 export { jstsParser };
 
 export const jstsParseGeometry = (geometry) => {
-  console.log(geometry instanceof Polygon);
   if (geometry instanceof Circle) {
     geometry = fromCircle(geometry);
   }

@@ -332,9 +332,6 @@ export default {
       this.sendInteractiveModeState(newValue);
     },
   },
-  created() {
-    this.sendInteractiveModeState(false);
-  },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
       if (!this.isDrawMode) {

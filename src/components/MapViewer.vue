@@ -82,11 +82,11 @@ import Overlay from 'ol/Overlay';
 import LayerSwitcher from 'ol-layerswitcher';
 import WKT from 'ol/format/WKT';
 import MapDrawer from 'components/MapDrawer';
+import { fromExtent as polygonFromExtent } from 'ol/geom/Polygon';
+import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
-import { fromExtent as polygonFromExtent } from 'ol/geom/Polygon';
-import Feature from 'ol/Feature';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -462,7 +462,6 @@ export default {
     this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
   },
   mounted() {
-    console.warn('mounted');
     // Set base layer
     // this.center = this.$mapDefaults.center;
     // this.zoom = this.$mapDefaults.zoom;

@@ -16,6 +16,9 @@ export default {
       return;
     }
     commit('SET_CONTEXT', { context, isRecontext });
+    if (isRecontext) {
+      dispatch('view/resetContext', null, { root: true });
+    }
     dispatch('view/setContextLayer', context, { root: true });
   },
 

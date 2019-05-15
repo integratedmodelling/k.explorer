@@ -30,8 +30,8 @@
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
-              :self="`${enableContextMenu ? 'bottom' : 'top'} left`"
-              :anchor="`${enableContextMenu ? 'top' : 'bottom'} middle`"
+              self="bottom left"
+              anchor="top left"
               class="kt-q-tooltip"
             >{{ clearObservable(prop.node.observable) }}</q-tooltip>
           </span>
