@@ -114,7 +114,7 @@ export default {
     NumberInputRequest,
     BooleanInputRequest,
   },
-  sectionTitle: null,
+  sectionTitle: undefined,
   data() {
     return {
       formData: {},
@@ -224,8 +224,9 @@ export default {
 
   .irm-container
     padding 20px
-    width 80vh
+    width 60vw
     overflow hidden
+    position relative
     h3, h4, h5, p
       margin 0 0 0 0
       padding 0
@@ -263,20 +264,22 @@ export default {
       border-bottom-width 10px
       color rgba(255, 255, 255, .3)
     .irm-fields-container
-      max-height 60vh
+      max-height 50vh
       overflow hidden
       border 1px dotted $main-control-main-color
       margin 10px 0
       .irm-fields-wrapper
         padding 10px
         overflow-x hidden
-      .irm-group
-        margin 10px 0
       label
         font-style italic
+    .irm-group
+      margin-bottom 30px
     .irm-buttons
-      width 100%
-      text-align right
+      position absolute
+      bottom 0
+      right 0
+      margin 0 30px 10px 0
       .q-btn
         margin-left 10px
 </style>
