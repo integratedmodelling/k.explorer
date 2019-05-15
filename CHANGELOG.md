@@ -99,6 +99,8 @@ Feature notification on Integrated Modelling Confluence
 
 ## 0.7.0 - Soon
 ### Added
-- Graph viewer for configurations 
+- Graph viewer for configurations
+- Recontextualization
 ### Improvements
 ### Solved
+- crossing IDL now is permitted only if a context is drawn

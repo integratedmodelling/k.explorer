@@ -68,7 +68,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
 import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
-import { checkExtentOnIDL, createMarker } from 'shared/Utils';
+import { createMarker } from 'shared/Utils';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -204,25 +204,26 @@ export default {
         return;
       }
       let message = null;
-      const view = this.map.getView();
       // try to "clean" center
-      const center = transform(view.getCenter(), MAP_CONSTANTS.PROJ_EPSG_3857, MAP_CONSTANTS.PROJ_EPSG_4326);
+      const center = transform(this.view.getCenter(), MAP_CONSTANTS.PROJ_EPSG_3857, MAP_CONSTANTS.PROJ_EPSG_4326);
       if (Math.abs(center[0]) > 180) {
         center[0] %= 180;
-        view.animate({
+        this.view.animate({
           center: transform(center, MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857),
           duration: 500,
         });
       }
       try {
-        const extent = this.map.getView().calculateExtent(this.map.getSize());
-        if (checkExtentOnIDL(extent)) {
-          this.setCrossingIDL(false);
-          message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformExtent(extent, 'EPSG:3857', 'EPSG:4326'), this.session);
-        } else {
+        const transformedExtent = transformExtent(this.map.getView().calculateExtent(this.map.getSize()), 'EPSG:3857', 'EPSG:4326');
+        if (transformedExtent[0] < -180 // bottom left longitude
+          || transformedExtent[1] < -90 // bottom left latitude
+          || transformedExtent[2] > 180 // bottom right longitude
+          || transformedExtent[3] > 90) { // bottom right latitude
           this.setCrossingIDL(true);
           return;
         }
+        this.setCrossingIDL(false);
+        message = MESSAGES_BUILDERS.REGION_OF_INTEREST(transformedExtent, this.session);
       } catch (error) {
         console.error(error);
         this.addToKexplorerLog({
@@ -236,7 +237,7 @@ export default {
       if (message && message.body) {
         this.sendStompMessage(message.body);
         if (this.saveLocation) {
-          Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: view.getCenter(), zoom: view.getZoom() }, {
+          Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: this.view.getCenter(), zoom: this.view.getZoom() }, {
             expires: 30,
             path: '/',
           });

@@ -1,7 +1,7 @@
 import { colors } from 'quasar';
 import { geom as jstsGeom, operation as jstsOperation, io as jstsIo } from 'jsts';
 import { transform } from 'ol/proj';
-import { fromCircle, fromExtent } from 'ol/geom/Polygon';
+import { fromCircle } from 'ol/geom/Polygon';
 import Style from 'ol/style/Style';
 import { MAP_CONSTANTS, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
@@ -255,12 +255,6 @@ export function checkIDL(polygon) {
   return idl;
 }
 
-export function checkExtentOnIDL(extent) {
-  const polygon = fromExtent(extent);
-  const idl = checkIDL(jstsParseGeometry(polygon));
-  return (idl !== null && idl.length === 0);
-}
-
 /**
  * Return a polygon with IDL crossing issue solved if necessary
  * @param originalPolygon the original polygon
@@ -333,6 +327,5 @@ export default {
   jstsParser,
   jstsParseGeometry,
   checkIDL,
-  checkExtentOnIDL,
   createMarker,
 };

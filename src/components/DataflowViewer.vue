@@ -1,6 +1,5 @@
 <template>
   <div class="fit no-padding with-background" id="dfv-container">
-    <!-- <q-resize-observable @resize="handleResize" ></q-resize-observable> -->
     <div id="sprotty"></div>
   </div>
 </template>
@@ -110,11 +109,6 @@ export default {
         }
       }
     },
-    /*
-    handleResize() {
-      this.actionDispatcher.dispatch(new FitToScreenAction([]));
-    },
-    */
   },
   watch: {
     dataflow() {
@@ -154,13 +148,15 @@ export default {
         }
       }
     });
+    /*
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
       if (this.actionDispatcher !== null) {
         setTimeout(() => {
-          this.actionDispatcher.dispatch(new FitToScreenAction([]));
-        }, 400);
+          this.handleResize();
+        }, 1000);
       }
     });
+    */
   },
 
   activated() {
