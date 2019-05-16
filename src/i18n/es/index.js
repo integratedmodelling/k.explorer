@@ -101,7 +101,7 @@ export default {
     noReportTask: 'Cannot view report,\nwait for task end',
     noReportObservation: 'Report no disponibile,\nno hay observaciones',
     noDataflow: 'Dataflow no disponible',
-    dataflowViewer: 'Ver data flow (will be...)',
+    dataflowViewer: 'Ver data flow',
     provenanceViewer: 'Ver provenance (will be...)',
     undock: 'Desacoplar',
     copyEncodedShapeToClipboard: 'Copiar el contexto en el portapapeles',

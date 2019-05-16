@@ -84,7 +84,7 @@ export default {
           first = true;
         } else {
           viewer.main = false;
-          if (viewer.type.hideable) {
+          if (viewer.type.hideable && viewer.idx === viewerIdx) {
             viewer.visible = false;
           }
         }
