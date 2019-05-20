@@ -35,7 +35,7 @@
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
-        >{{ hasDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
+        >{{ hasDataflow || reloadDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
       </q-icon></div>
       <!-- PROVENANCE (disabled) -->
       <!-- in the future
