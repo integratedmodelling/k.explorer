@@ -294,7 +294,7 @@ export const BASE_LAYERS = {
     Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_MINIMO,
     Layers.MAPBOX_CALI_TERRAIN,
-    Layers.MAPBOX_GOT, // Game of throne joke
+    // Layers.MAPBOX_GOT, // Game of throne joke
   ],
   mask: null,
   hasMask() {
