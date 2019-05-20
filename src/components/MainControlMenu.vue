@@ -176,6 +176,7 @@ import TooltipIt from 'shared/TooltipItMixin';
 import LoadContext from 'shared/LoadContextMixin';
 import { Cookies } from 'quasar';
 import { copyToClipboard, capitalizeFirstLetter } from 'shared/Utils';
+import { DEFAULT_OPTIONS } from 'shared/MapConstants';
 
 export default {
   name: 'MainControlMenu',
@@ -297,6 +298,16 @@ export default {
         expires: 30,
         path: '/',
       });
+      if (!saveLocation) {
+        Cookies.set(Constants.COOKIE_SAVELOCATION, saveLocation, {
+          expires: 30,
+          path: '/',
+        });
+        Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom }, {
+          expires: 30,
+          path: '/',
+        });
+      }
     },
     copyContextES(event, ctxShape) {
       event.stopPropagation();
