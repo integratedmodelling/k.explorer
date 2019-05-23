@@ -66,7 +66,7 @@
 
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
+import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
 import { createMarker } from 'shared/Utils';
 import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION, VIEWERS } from 'shared/Constants';
@@ -111,6 +111,7 @@ export default {
       layers: new Collection(),
       zIndexCounter: 0,
       baseLayers: null,
+      layerSwitcher: null,
       visibleBaseLayer: null,
       mapSelectionMarker: undefined,
       wktInstance: new WKT(),
@@ -482,13 +483,17 @@ export default {
         }
       });
     });
+    const baseLayersGroup = new Group({
+      title: 'BaseLayers',
+      layers: this.baseLayers.layers,
+    });
     // Set main map
     this.map = new Map({
       view: new View({
         center: this.center,
         zoom: this.zoom,
       }),
-      layers: this.baseLayers.layers,
+      layers: baseLayersGroup,
       target: `map${this.idx}`,
       loadTilesWhileAnimating: true,
       loadTilesWhileInteracting: true,
@@ -505,6 +510,15 @@ export default {
     });
     */
     this.map.on('click', (event) => {
+      if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
+        baseLayersGroup.getLayers().push(Layers.MAPBOX_GOT);
+        this.layerSwitcher.renderPanel();
+        this.$q.notify({
+          message: this.$t('messages.youHaveGOT'),
+          type: 'info',
+          timeout: 1500,
+        });
+      }
       if ((this.exploreMode || this.topLayer !== null) && !(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         if (this.exploreMode) {
           const layerSelected = this.findExistingLayerById(this.observationInfo);
@@ -528,8 +542,8 @@ export default {
     this.proj = this.view.getProjection();
     // Add components to main map
     this.map.addLayer(new Group({ layers: this.layers }));
-    const layerSwitcher = new LayerSwitcher();
-    this.map.addControl(layerSwitcher);
+    this.layerSwitcher = new LayerSwitcher();
+    this.map.addControl(this.layerSwitcher);
     this.mapSelectionMarker = new Overlay({
       element: document.getElementById(`msm-${this.idx}`),
       positioning: 'center-center',

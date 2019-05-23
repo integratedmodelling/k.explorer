@@ -92,6 +92,7 @@ export default {
     noLogItems: 'Empty log',
     uploadComplete: 'Upload of file {fileName} complete',
     IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
+    youHaveGOT: 'Winter is coming',
   },
   tooltips: {
     treePane: 'View tree',
