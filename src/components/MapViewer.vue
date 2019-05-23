@@ -483,6 +483,8 @@ export default {
         }
       });
     });
+    const GOTLayer = Layers.MAPBOX_GOT;
+    GOTLayer.setVisible(true);
     const baseLayersGroup = new Group({
       title: 'BaseLayers',
       layers: this.baseLayers.layers,
@@ -511,13 +513,24 @@ export default {
     */
     this.map.on('click', (event) => {
       if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
-        baseLayersGroup.getLayers().push(Layers.MAPBOX_GOT);
-        this.layerSwitcher.renderPanel();
-        this.$q.notify({
-          message: this.$t('messages.youHaveGOT'),
-          type: 'info',
-          timeout: 1500,
-        });
+        const lastLayer = baseLayersGroup.getLayersArray().slice(-1)[0];
+        if (lastLayer && lastLayer.get('name') === 'mapbox_got') {
+          baseLayersGroup.getLayers().pop();
+          this.baseLayers.layers.forEach((l) => {
+            if (l.get('name') === this.$baseLayer) {
+              l.setVisible(true);
+              this.visibleBaseLayer = l;
+            }
+          });
+        } else {
+          baseLayersGroup.getLayers().push(GOTLayer);
+          // this.layerSwitcher.renderPanel();
+          this.$q.notify({
+            message: this.$t('messages.youHaveGOT'),
+            type: 'info',
+            timeout: 1500,
+          });
+        }
       }
       if ((this.exploreMode || this.topLayer !== null) && !(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
         if (this.exploreMode) {
