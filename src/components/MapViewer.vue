@@ -69,7 +69,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES } from 'shared/MapConstants';
 import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
 import { createMarker } from 'shared/Utils';
-import Constant, { CUSTOM_EVENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
+import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION, VIEWERS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -551,7 +551,7 @@ export default {
     }
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, ({ mainIdx = null, geometry = null }) => {
       if (geometry === null
-        && this.mainViewer.name === Constant.DATA_VIEWER.name
+        && this.mainViewer.name === VIEWERS.DATA_VIEWER.name
         && this.contextGeometry
         && this.contextGeometry !== null
       ) {
