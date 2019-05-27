@@ -3,8 +3,8 @@ const webpack = require('webpack');
 
 module.exports = function (ctx) {
   return {
-    // app plugins (/src/plugins)
-    plugins: [
+    // app boot (/src/boot)
+    boot: [
       'initApp',
       'i18n',
       'axios',
@@ -16,10 +16,10 @@ module.exports = function (ctx) {
       'app.styl',
     ],
     extras: [
-      ctx.theme.mat ? 'roboto-font' : null,
-      'material-icons',
-      'ionicons',
-      'mdi',
+      'roboto-font',
+      // 'material-icons',
+      'ionicons-v4',
+      'mdi-v3',
       // 'fontawesome',
     ],
     supportIE: true,
@@ -146,13 +146,13 @@ module.exports = function (ctx) {
         'Ripple',
         'TouchHold',
       ],
-      // Quasar plugins
+      // Quasar boot
       plugins: [
         'Notify',
         'Cookies',
         'Dialog',
       ],
-      i18n: 'en-us',
+      lang: 'en-us',
     },
     // animations: 'all' --- includes all animations
     animations: 'all',

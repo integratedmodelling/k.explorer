@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@korzio/djv-draft-04": "^2.0.0",
+    "@quasar/extras": "^1.1.2",
     "axios": "^0.18.0",
     "djv": "^2.0.0",
     "draggable-vue-directive": "^2.0.2",
@@ -26,7 +27,7 @@
     "ol-ext": "^3.0.1",
     "ol-layerswitcher": "^3.0.0",
     "proj4": "^2.4.4",
-    "quasar": "^0.0.18",
+    "quasar": "^1.0.0-rc.2",
     "reflect-metadata": "^0.1.12",
     "simplebar": "3.0.0-beta.5",
     "sprotty": "^0.4.2",
@@ -35,6 +36,7 @@
     "webstomp-client": "^1.2.0"
   },
   "devDependencies": {
+    "@quasar/app": "^1.0.0-rc.4",
     "babel-eslint": "^10.0.1",
     "babel-polyfill": "^6.26.0",
     "eslint": "^5.6.1",
@@ -43,7 +45,6 @@
     "eslint-loader": "^2.1.1",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-vue": "^4.3.0",
-    "quasar-cli": "^0.17.20",
     "strip-ansi": "=3.0.1"
   },
   "engines": {

@@ -13,7 +13,7 @@ import { applyTransform } from 'ol/extent';
 import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
-import { axiosInstance } from 'plugins/axios';
+import { axiosInstance } from 'boot/axios';
 
 const WKTInstance = new WKT();
 

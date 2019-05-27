@@ -1,5 +1,5 @@
 import { CUSTOM_EVENTS } from 'shared/Constants';
-import { eventBus } from 'plugins/initApp';
+import { eventBus } from 'boot/initApp';
 import { SelectAction, SelectCommand } from 'sprotty/lib';
 
 const inversify = require('inversify');

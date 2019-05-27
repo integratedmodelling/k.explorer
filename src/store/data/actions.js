@@ -1,4 +1,4 @@
-import { axiosInstance } from 'plugins/axios';
+import { axiosInstance } from 'boot/axios';
 import { Constants, findNodeById, getAxiosContent, getNodeFromObservation, OBSERVATION_DEFAULT } from 'shared/Helpers';
 
 export default {

@@ -1,4 +1,4 @@
-import { djvValidator } from 'plugins/djv';
+import { djvValidator } from 'boot/djv';
 import moment from 'moment';
 import { OUT } from './MessagesConstants';
 
