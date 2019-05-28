@@ -49,8 +49,8 @@
     >
     <!-- :style="{ 'background-color': waitForDouble ? 'rgba(0, 0, 0, .1)' : 'transparent' }" TODO: implement way to know if we are waiting -->
       <klab-autocomplete
-        @search="search"
-        @selected="selected"
+        @filter="search"
+        @input="selected"
         @show="onAutocompleteShow"
         @hide="onAutocompleteHide"
         :debounce="200"
@@ -72,14 +72,11 @@ import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import Constants, { MATCH_TYPES, SEMANTIC_TYPES } from 'shared/Constants';
-import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
+import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 
 export default {
   name: 'KlabSearch',
-  components: {
-    KlabAutocomplete,
-  },
   mixins: [HandleTouch],
   props: {
     maxResults: {
@@ -87,6 +84,9 @@ export default {
       default: -1,
     },
   },
+  components: [
+    KlabAutocomplete,
+  ],
   data() {
     return {
       searchContextId: null,
@@ -596,7 +596,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   #ks-container
     overflow-x hidden
     overflow-y hidden
@@ -624,7 +624,7 @@ export default {
     /* background-color: rgba(155, 155, 155, 0.5); */
     max-width $main-control-width
 
-  .q-popover
+  .q-menu
     max-width $main-control-width !important
     border-radius 10px
 

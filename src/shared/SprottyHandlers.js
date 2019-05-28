@@ -4,7 +4,6 @@ import { SelectAction, SelectCommand } from 'sprotty/lib';
 
 const inversify = require('inversify');
 
-
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["handle", "initialize"] }] */
 class SelectActionHandler {
   handle(action) {

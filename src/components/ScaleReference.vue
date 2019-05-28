@@ -122,7 +122,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   $sr-scaletype-width = 40px
   $sr-lock-width = 30px
   .sr-container

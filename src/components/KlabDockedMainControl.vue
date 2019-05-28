@@ -84,7 +84,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   #dmc-container
     #dmc-tree
       background-color: rgba(119,119,119,0.65);

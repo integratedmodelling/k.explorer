@@ -255,7 +255,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
 
   #oi-container
     height $main-control-height - $main-control-spc-height - $main-control-scrollbar

@@ -201,7 +201,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   .md-draw-controls
     position absolute
     top 30px

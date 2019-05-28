@@ -73,19 +73,24 @@
       </klab-q-tree>
     </div>
 
-    <q-context-menu ref="observations-context" v-show="enableContextMenu" @hide="enableContextMenu = false">
+    <q-menu
+      ref="observations-context"
+      v-show="enableContextMenu"
+      @hide="enableContextMenu = false"
+      context-menu
+    >
       <q-list dense no-border style="min-width: 150px">
         <template v-for="(action, index) in itemActions">
-          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
+          <q-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-separator>
           <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-            <q-item-main :label="action.actionLabel"></q-item-main>
+            <q-item-label :label="action.actionLabel"></q-item-label>
           </q-item>
           <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-            <q-item-main :label="action.actionLabel"></q-item-main>
+            <q-item-label :label="action.actionLabel"></q-item-label>
           </q-item>
         </template>
       </q-list>
-    </q-context-menu>
+    </q-menu>
 
   </div>
 </template>
@@ -464,7 +469,7 @@ export default {
 };
 </script>
 <style lang="stylus">
-  @import '~variables'
+
   #kt-container
     /* removed 30px of padding and scrollbar padding-bottom */
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)

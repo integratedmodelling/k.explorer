@@ -36,7 +36,6 @@ export const isRasterObservation = (observation = null) => {
   return geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
 };
 
-
 /**
  * Push an element in a queue with a max length (all history queue)
  * @param array array to push element
@@ -170,7 +169,6 @@ export const registerProjection = projection => new Promise((resolve, reject) =>
     }));
 });
 
-
 /**
  * Return the geometry of context.
  * Now getLayerObject only work with observation
@@ -211,7 +209,6 @@ export async function getContextGeometry(contextObservation) {
   contextObservation.zIndexOffset = 0; // is context, remaind it
   return geometry;
 }
-
 
 /**
  * Useful to call a REST action

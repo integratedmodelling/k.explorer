@@ -26,7 +26,7 @@ export default ({ app, Vue }) => {
     console.debug(`Lang cookie setted to ${cookieLocale}`);
   }
 
-  app.lang = new VueI18n({
+  app.i18n = new VueI18n({
     locale: cookieLocale,
     fallbackLocale: 'en',
     messages,

@@ -1,7 +1,7 @@
 <template>
   <div class="fit gv-container" @wheel="changeForce">
     <q-spinner v-if="nodes.length === 0" color="mc-main" :size="40"></q-spinner>
-    <q-resize-observable @resize="resize" />
+    <q-resize-observer @resize="resize"></q-resize-observer>
     <d3-network
       :net-nodes="nodes"
       :net-links="links"
@@ -121,7 +121,7 @@ export default {
 </script>
 <style src="vue-d3-network/dist/vue-d3-network.css"></style>
 <style lang="stylus">
-  @import '~variables'
+
 
   .gv-container
     background-color $grey-4

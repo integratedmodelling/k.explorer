@@ -1,5 +1,6 @@
-/* eslint-disable no-underscore-dangle,one-var,prefer-destructuring,no-undef,prefer-template,no-void,arrow-parens,space-before-function-paren,quote-props,semi,indent,comma-dangle,object-curly-newline,no-unused-expressions */
-import { QAutocomplete, QPopover, QItemWrapper, QList, uid, dom } from 'quasar';
+/* eslint-disable */
+import QAutocomplete from 'components/quasar-mod/QAutocomplete';
+import { dom } from 'quasar';
 
 const { width } = dom;
 

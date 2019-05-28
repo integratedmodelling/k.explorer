@@ -53,7 +53,6 @@ export default {
 
   mainDataViewerIdx: state => state.mainDataViewerIdx,
 
-
   lastViewerId: state => state.lastViewerId,
 
   /**

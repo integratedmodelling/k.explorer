@@ -6,7 +6,7 @@
         <component :is="mainViewer.name"></component>
         <!-- </transition> -->
       </keep-alive>
-      <q-resize-observable @resize="setSiblingsToAskFor" />
+      <q-resize-observer @resize="setSiblingsToAskFor"></q-resize-observer>
     </div>
     <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
@@ -19,15 +19,17 @@
                 leave-active-class="animated zoomOut">
       <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
     </transition>
-    <q-modal
+    <q-dialog
         id="modal-connection-status"
-        v-model="modalVisible"
+        :value="modalVisible"
         no-esc-dismiss
         no-backdrop-dismiss
-        :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
-        :content-classes="['modal-borders', 'no-padding', 'no-margin']"
+        persistent
     >
-      <div class="bg-opaque-white modal-borders">
+      <div
+        class="modal-borders"
+        :style="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
+      >
           <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
             <klab-spinner
               :color="modalColor"
@@ -40,7 +42,7 @@
             <span class="text-white">{{ modalText }}</span>
           </div>
       </div>
-    </q-modal>
+    </q-dialog>
     <input-request-modal></input-request-modal>
   </q-page>
 </template>
@@ -93,13 +95,8 @@ export default {
     logVisible() {
       return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
     },
-    modalVisible: {
-      get() {
-        return this.connectionState !== this.$constants.CONNECTION_UP;
-      },
-      set(visible) {
-        console.warn(`Try to set modalVisible as ${visible}`);
-      },
+    modalVisible() {
+      return this.connectionState !== this.$constants.CONNECTION_UP;
     },
     modalText() {
       return {
@@ -192,8 +189,6 @@ export default {
   }
 </style>
 <style lang="stylus">
-  .modal-borders
-    border-radius 40px
   .klab-spinner
     display inline
     vertical-align middle
@@ -206,15 +201,18 @@ export default {
 
   #modal-spinner
     margin-right 10px
-    margin-left 5px
+    margin-left 2px
   .modal-klab-content > span
     display inline-block
     line-height 100%
     vertical-align middle
     margin-right 15px
 
-  #modal-connection-status .modal-content
-    min-width 200px
+  #modal-connection-status
+    .modal-borders
+      border-radius 40px
+    .modal-content
+      min-width 200px
 
   #mc-undocking
     position fixed

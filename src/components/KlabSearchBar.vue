@@ -124,7 +124,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   #ksb-container
     width 100%
     transition background-color 0.8s

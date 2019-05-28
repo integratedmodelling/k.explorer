@@ -39,7 +39,6 @@ export default {
     }
   },
 
-
   WAITING_FOR_RESET(state, contextId) {
     // if null, no context will be load
     state.waitingForReset = contextId;

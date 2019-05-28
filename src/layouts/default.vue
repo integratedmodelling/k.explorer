@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-layout-drawer
+    <q-drawer
       side="left"
       :overlay="false"
       v-model="leftMenuVisible"
@@ -10,7 +10,7 @@
       class="print-hide"
     >
       <klab-left-menu></klab-left-menu>
-    </q-layout-drawer>
+    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -64,7 +64,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   .klab-left
     background-color rgba(35, 35, 35, 0)
 </style>

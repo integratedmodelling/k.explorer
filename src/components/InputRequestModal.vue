@@ -1,8 +1,9 @@
 <template>
-  <q-modal
+  <q-dialog
     v-model="opened"
     :no-esc-dismiss="true"
     :no-backdrop-dismiss="true"
+    :persistent="true"
     :content-classes="['irm-container']"
     ref="irm-modal-container"
     @hide="cleanInputRequest"
@@ -21,7 +22,9 @@
         :class="{ 'irm-tabs-hidden': inputRequests.length <= 1 }"
         slot="title">
       </q-tab>
-      <q-tab-pane
+    </q-tabs>
+    <q-tab-panels v-model="selectedRequest">
+      <q-tab-panel
         v-for="request in inputRequests"
         :key="request.messageId"
         :name="`request-${request.messageId}`"
@@ -93,9 +96,9 @@
             </q-btn>
           </div>
         </div>
-      </q-tab-pane>
-    </q-tabs>
-  </q-modal>
+      </q-tab-panel>
+    </q-tab-panels>
+  </q-dialog>
 </template>
 
 <script>
@@ -220,8 +223,6 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables';
-
   .irm-container
     padding 20px
     width 60vw

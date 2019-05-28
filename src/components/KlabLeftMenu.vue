@@ -132,7 +132,7 @@ export default {
 </script>
 
 <style  lang="stylus">
-  @import '~variables'
+
   #lm-container
     width 100%
     // background: linear-gradient(to right, rgba(35, 35, 35, .5) 0, rgba(35, 35, 35, .5) 95%, rgba(35, 35, 35, 0) 100%)

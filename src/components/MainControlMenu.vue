@@ -7,7 +7,7 @@
     flat
     class="mcm-menubutton absolute-top-right"
   >
-    <q-popover
+    <q-menu
       v-if="!isDrawMode"
       anchor="top right"
       self="top left"
@@ -24,7 +24,7 @@
         round
       ></q-btn>
       <q-list dense>
-        <q-list-header style="padding: 0 16px 0 16px; min-height: 0">
+        <q-item-label header style="padding: 0 16px 0 16px; min-height: 0">
           {{ $t('label.mcMenuContext') }}
           <q-icon
             v-if="hasContext"
@@ -36,8 +36,8 @@
               {{ $t('tooltips.copyEncodedShapeToClipboard') }}
             </q-tooltip>
           </q-icon>
-        </q-list-header>
-        <q-item-separator></q-item-separator>
+        </q-item-label>
+        <q-separator></q-separator>
         <q-item v-if="hasContext">
           <div class="mcm-container">
             <div class="klab-menuitem klab-clickable" @click="closeAndCall(null)">
@@ -61,7 +61,7 @@
                   size="sm"
                   class="mcm-contextbutton"
                 ></q-icon>
-                <q-popover
+                <q-menu
                   ref="mcm-contexts-popover"
                   anchor="top right"
                   self="top left"
@@ -69,7 +69,7 @@
                 >
                   <q-list dense >
                     <q-item v-for="context in contextsHistory" :key="context.id">
-                      <q-item-main>
+                      <q-item-label>
                         <div class="mcm-container mcm-context-label">
                           <div class="klab-menuitem"
                                @click="closeAndCall(context.id)"
@@ -97,48 +97,48 @@
                             </q-tooltip>
                           </q-icon>
                         </div>
-                      </q-item-main>
+                      </q-item-label>
                     </q-item>
                   </q-list>
-                </q-popover>
+                </q-menu>
               </div>
             </div>
           </div>
         </q-item>
         <template v-if="!(searchIsActive || hasContext)">
           <q-item>
-            <q-item-main>
+            <q-item-label>
               <div class="mcm-container">
                 <div class="klab-menuitem klab-clickable" :class="[ isDrawMode ? 'klab-select' : '']" @click="startDraw()">
                   <div class="klab-item mdi mdi-vector-polygon klab-icon"></div>
                   <div class="klab-item klab-text klab-only-text">{{ $t('label.drawCustomContext') }}</div>
                 </div>
               </div>
-            </q-item-main>
+            </q-item-label>
           </q-item>
-          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-list-header>
-          <q-item-separator></q-item-separator>
+          <q-item-label header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuScale') }}</q-item-label>
+          <q-separator></q-separator>
           <q-item>
-            <q-item-main>
+            <q-item-label>
               <scale-reference width="180px" :light="true" scaleType="space" :editable="true" :full="true"></scale-reference>
-            </q-item-main>
+            </q-item-label>
           </q-item>
           <q-item>
-            <q-item-main>
+            <q-item-label>
               <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
-            </q-item-main>
+            </q-item-label>
           </q-item>
         </template>
         <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuOption') }}</q-list-header>
-        <q-item-separator></q-item-separator>
+        <q-separator></q-separator>
         <q-item v-if="hasContext && contextReloaded">
           <div class="mcm-container">
             <div class="klab-menuitem">
               <div class="klab-item">{{ $t('label.optionShowAll') }}</div>
             </div>
-            <q-item-side right>
+            <q-item-section right>
               <q-toggle v-model="showAll" color="mc-main" />
-            </q-item-side>
+            </q-item-section>
           </div>
         </q-item>
         <q-item v-if="!hasContext">
@@ -146,9 +146,9 @@
             <div class="klab-menuitem">
               <div class="klab-item">{{ $t('label.optionSaveLocation') }}</div>
             </div>
-            <q-item-side right>
+            <q-item-section right>
               <q-toggle v-model="saveLocationVar" color="mc-main" />
-            </q-item-side>
+            </q-item-section>
           </div>
         </q-item>
         <q-item>
@@ -156,13 +156,13 @@
             <div class="klab-menuitem">
               <div class="klab-item">{{ $t('label.interactiveMode') }}</div>
             </div>
-            <q-item-side right>
+            <q-item-section right>
               <q-toggle v-model="interactiveModeModel" color="mc-main" />
-            </q-item-side>
+            </q-item-section>
           </div>
         </q-item>
       </q-list>
-    </q-popover>
+    </q-menu>
   </q-btn>
 </template>
 
@@ -354,7 +354,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   .mcm-icon-close-popover
     position absolute
     right 4px

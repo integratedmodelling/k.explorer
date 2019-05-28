@@ -14,7 +14,6 @@ import { SelectHandlerInitializer } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'k.elksprottybridge/lib';
 import { TYPES, FitToScreenAction } from 'sprotty/lib';
 
-
 export default {
   name: 'DataflowViewer',
   data() {
@@ -177,7 +176,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   #dfv-container
     #sprotty
       position absolute

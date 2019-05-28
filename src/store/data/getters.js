@@ -66,7 +66,6 @@ export default {
 
   contextReloaded: (state, getters) => getters.context !== null && typeof getters.context.restored !== 'undefined' && getters.context.restored,
 
-
   /**
    * The session, very important accessing it using getter
    */

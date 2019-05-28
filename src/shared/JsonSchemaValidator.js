@@ -53,7 +53,6 @@ export default class {
     throw Error(`Schema not found: ${schema}`);
   }
 
-
   /**
    * Init validator loading schema(s)
    * @param url url of schema(s)

@@ -37,9 +37,9 @@
       v-show="!isHidden"
       @contextmenu.native.prevent
     >
-      <q-card-title
+      <q-card-section
         id="mc-q-card-title"
-        class="q-pa-xs"
+        class="q-pa-xs q-card-title"
         ref="mc-draggable"
         :style="{
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
@@ -47,17 +47,17 @@
       >
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
-      </q-card-title>
-      <q-card-main
+      </q-card-section>
+      <q-card-section
         v-show="hasContext && !isHidden"
-        class="no-margin relative-position"
+        class="no-margin relative-position q-card-main"
       >
         <keep-alive>
           <transition name="component-fade" mode="out-in">
             <component :is="selectedTab"></component>
           </transition>
         </keep-alive>
-      </q-card-main>
+      </q-card-section>
       <q-card-actions
         v-show="hasContext && !isHidden"
         class="no-margin"
@@ -303,7 +303,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
 
   #mc-container
     #mc-q-card-title

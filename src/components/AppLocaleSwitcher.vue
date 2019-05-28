@@ -14,8 +14,8 @@ import Constants from 'shared/Constants';
 // import VueCookie from 'vue-cookie';
 
 // Vue.use(VueCookie);
-// Vue.config.lang = VueCookie.get('locale') || 'en';
-// console.log(`Locale from cookie = ${Vue.config.lang} : activeLocale = ${this.activeLocale}`);
+// Vue.config.i18n = VueCookie.get('locale') || 'en';
+// console.log(`Locale from cookie = ${Vue.config.i18n} : activeLocale = ${this.activeLocale}`);
 
 export default {
   components: {

@@ -13,21 +13,21 @@
           :key="log.id"
           class="log-item q-pa-xs"
         >
-          <q-item-side>
-            <q-item-tile style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
-          </q-item-side>
-          <q-item-main>
-            <q-item-tile>{{ logText(log) }}</q-item-tile>
-          </q-item-main>
+          <q-item-section>
+            <q-item-section style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-section>
+          </q-item-section>
+          <q-item-label>
+            <q-item-section>{{ logText(log) }}</q-item-section>
+          </q-item-label>
         </q-item>
       </template>
       <template v-else>
         <q-item
           class="log-no-items q-pa-xs"
         >
-          <q-item-main>
-            <q-item-tile>{{ $t('messages.noLogItems') }}</q-item-tile>
-          </q-item-main>
+          <q-item-label>
+            <q-item-section>{{ $t('messages.noLogItems') }}</q-item-section>
+          </q-item-label>
         </q-item>
       </template>
     </q-list>
@@ -85,12 +85,12 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   #klab-log-pane
     max-height: "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
     .q-item.log-item
       font-size 10px
-    .log-item .q-item-side
+    .log-item .q-item-section
       min-width auto
     .q-list-dense > .q-item
       padding-left 10px

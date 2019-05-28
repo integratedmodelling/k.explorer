@@ -2,12 +2,13 @@
   <div class="fit no-padding map-viewer"  v-upload-files="uploadConfig">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
     <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
-    <q-resize-observable @resize="handleResize" />
+    <q-resize-observer @resize="handleResize"></q-resize-observer>
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
-    <q-modal
+    <q-dialog
       v-model="geolocationWaiting"
       no-esc-dismiss
       no-backdrop-dismiss
+      persistent
       :content-classes="['gl-msg-content']"
     >
       <div class="bg-opaque-white">
@@ -30,21 +31,22 @@
           </div>
         </div>
       </div>
-    </q-modal>
-    <q-modal
+    </q-dialog>
+    <q-dialog
       v-model="progressBarVisible"
       :no-route-dismiss="true"
       :no-esc-dismiss="true"
       :no-backdrop-dismiss="true"
+      :persistent="true"
     >
-      <q-progress
+      <q-linear-progress
         :percentage="uploadProgress"
         color="mc-main"
         :stripe="true"
         :animate="true"
         height="1em"
-      ></q-progress>
-    </q-modal>
+      ></q-linear-progress>
+    </q-dialog>
     <div id="mv-popup" ref="mv-popup" class="ol-popup">
       <q-btn
         icon="mdi-close"
@@ -59,7 +61,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 /* eslint-disable object-shorthand,space-before-function-paren,no-unused-vars */
@@ -579,7 +580,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   .layer-switcher
     top 5em
     button

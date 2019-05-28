@@ -151,7 +151,6 @@ export default {
    */
   contextsHistory: [],
 
-
   /**
    * This variable store an eventual context id that will be loaded on previous reset
    * Getter and Mutation are given to change it atomically

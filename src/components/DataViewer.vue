@@ -112,8 +112,6 @@ export default {
 </script>
 
 <style scoped lang="stylus">
-  @import '~variables'
-
   .thumb-view
     width 200px
     height 200px

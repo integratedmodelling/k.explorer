@@ -105,7 +105,7 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
+
   .klab-destructive-actions .klab-button
     color $main-control-red !important
 </style>

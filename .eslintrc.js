@@ -9,7 +9,10 @@ module.exports = {
   },
   // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
   // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
-  extends: ['plugin:vue/essential', 'airbnb-base'],
+  extends: [
+    'plugin:vue/essential',
+    'airbnb-base'
+  ],
   // required to lint *.vue files
   plugins: [
     'vue'
@@ -21,26 +24,26 @@ module.exports = {
   },
   // add your custom rules here
   'rules': {
-    'no-param-reassign': 0,
+    'no-param-reassign': 'off',
 
-    'import/first': 0,
-    'import/named': 2,
-    'import/namespace': 2,
-    'import/default': 2,
-    'import/export': 2,
-    'import/extensions': 0,
-    'import/no-unresolved': 0,
-    'import/no-extraneous-dependencies': 0,
-    'max-len': 0, // [1, { "ignoreStrings": true }],
+    'import/first': 'off',
+    'import/named': 'error',
+    'import/namespace': 'error',
+    'import/default': 'error',
+    'import/export': 'error',
+    'import/extensions': 'off',
+    'import/no-unresolved': 'off',
+    'import/no-extraneous-dependencies': 'off',
+    'max-len': 'off', // [1, { "ignoreStrings": true }],
     // added for klab team
     // allow console during development
-    'no-console': process.env.NODE_ENV === 'production' ? 2 : 0,
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 
     // allow debugger during development
-    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'no-unused-expressions': [1, { "allowTernary": true }],
-    'no-plusplus': 0,
-    'no-nested-ternary': 0,
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-unused-expressions': ['warn', { "allowTernary": true }],
+    'no-plusplus': 'off',
+    'no-nested-ternary': 'off',
     'object-curly-newline': ['error', { 'ImportDeclaration': 'never', "ObjectExpression": { 'multiline': true, 'minProperties': 4, consistent: true }}],
   }
 };

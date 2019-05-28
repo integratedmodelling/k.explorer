@@ -34,7 +34,6 @@ export default {
 </script>
 
 <style lang="stylus">
-  @import '~variables'
   .kbc-container
     position relative
     height $main-control-spc-height
@@ -50,6 +49,5 @@ export default {
         &:after
           content ' / '
           color #eee
-
 
 </style>
