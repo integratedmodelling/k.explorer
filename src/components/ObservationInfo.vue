@@ -7,6 +7,7 @@
           :keep-color="true"
           color="mc-yellow"
           @click.native="showNode"
+          :readonly="observationInfo.valueCount === 1 || observationInfo.empty"
           :disabled="observationInfo.valueCount === 1 || observationInfo.empty"
         ></q-checkbox>
       </div>
