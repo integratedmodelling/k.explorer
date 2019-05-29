@@ -4,13 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.7.0 - Soon
+## 0.7.0 - 2019-05-29
 ### Added
 - Graph viewer for configurations
-- Recontextualization
+- Recontextualization is partially working
 ### Improvements
+- The ELK - sprotty bridge now is part of the k.EXPLORER project
+  Is based on [https://github.com/OpenKieler/elkgraph-web] and the bridge changelog is available
+  in [this folder](src/ts/elk-sprotty-bridge/README.md)
 ### Solved
 - crossing IDL now is permitted only if a context is drawn
+- various bug solved
+### Extra
+- now the repository is public!
 
 ## 0.6.5 - 2019-05-03
 ### Added

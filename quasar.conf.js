@@ -1,6 +1,17 @@
 const path = require('path');
 const webpack = require('webpack');
 
+function extendTypescriptToWebpack(cfg) {
+  // added the type-script supports
+  cfg.resolve.extensions.push('.ts');
+  cfg.resolve.extensions.push('.tsx');
+  cfg.module.rules.push({
+    test: /\.ts(x?)$/,
+    loader: 'ts-loader',
+    options: { appendTsSuffixTo: [/\.vue$/] },
+  });
+}
+
 module.exports = function (ctx) {
   return {
     // app plugins (/src/plugins)
@@ -58,6 +69,7 @@ module.exports = function (ctx) {
       // extractCSS: false,
       // useNotifier: false,
       extendWebpack(cfg) {
+        extendTypescriptToWebpack(cfg);
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,
@@ -76,6 +88,7 @@ module.exports = function (ctx) {
           shared: path.resolve(__dirname, './src/shared'),
           classes: path.resolve(__dirname, './src/classes'),
           store: path.resolve(__dirname, './src/store'),
+          ts: path.resolve(__dirname, './src/ts'),
         };
         /*
         for (const rule of cfg.module.rules) {

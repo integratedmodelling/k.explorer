@@ -11,7 +11,7 @@ import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
 import { SelectHandlerInitializer } from 'shared/SprottyHandlers';
-import { createContainer, ElkGraphJsonToSprotty } from 'k.elksprottybridge/lib';
+import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
 import { TYPES, FitToScreenAction } from 'sprotty/lib';
 
 
