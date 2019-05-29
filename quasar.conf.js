@@ -38,8 +38,7 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            WS_BASE_URL: JSON.stringify('http://localhost:8283'), // Enrico
-            // WS_BASE_URL: JSON.stringify('http://127.0.0.1:8283'),
+            WS_BASE_URL: JSON.stringify('http://localhost:8283'),
             STOMP_CLIENT_DEBUG: true,
           }
           : { // and on build (production):
@@ -58,8 +57,8 @@ module.exports = function (ctx) {
         REST_UPLOAD_MAX_SIZE: JSON.stringify('1024MB'),
         SEARCH_TIMEOUT_MS: JSON.stringify('4000'),
       },
-      // distDir: 'dist/ui',
-      distDir: '../klab/klab.engine/src/main/resources/static/ui',
+      // distDir: 'dist/ui', // the compiled file are putted in a local folder and then copied...
+      distDir: '../klab/klab.engine/src/main/resources/static/ui', // or you can use your k.LAB local engine directory
       scopeHoisting: true,
       // vue-route configuration is maded in route/index.js
       // publicPath: '/',
@@ -102,10 +101,9 @@ module.exports = function (ctx) {
     devServer: {
       // https: true,
       port: 8080,
-      open: true, // opens browser window automatically
-      // openPage: '/viewer?mode=ide&session=&test_tree=true',
+      open: false, // doesn't opens browser window automatically
+      // openPage: '/viewer?session=<session-id>',
     },
-    // framework: 'all' --- includes everything; for dev only!
     framework: {
       components: [
         'QIcon',
@@ -178,7 +176,7 @@ module.exports = function (ctx) {
       manifest: {
         name: 'k.explorer',
         short_name: 'k.explorer',
-        description: 'Explorer for k.LAB',
+        description: 'k.EXPLORER for k.LAB',
         display: 'standalone',
         orientation: 'landscape',
         background_color: '#ffffff',
