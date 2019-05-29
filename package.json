@@ -1,8 +1,8 @@
 {
   "name": "klab.explorer",
   "version": "0.7.0",
-  "description": "k.EXPLORER module of k.LAB",
-  "productName": "k.EXPLORER",
+  "description": "k.Explorer module of k.LAB",
+  "productName": "k.Explorer",
   "license": "AGPL-3.0-only",
   "author": "Enrico Girotto <enrico.girotto@gmail.com>",
   "repository": {

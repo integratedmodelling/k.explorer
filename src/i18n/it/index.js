@@ -82,7 +82,7 @@ export default {
     invalidGeometry: 'Poligono non valido',
     spatialLocationSent: 'Spatial location inviata',
     geolocationWaitingTitle: 'Attivare la geolocalizzazione?',
-    geolocationWaitingText: '<em>k.EXPLORER</em> può detettare la posizione per inizializzare la vista geografica.<br />Perché questo sia possibile, <em>è necessario autorizzare la geolocalizzazione</em>.<br />Quest\'ultimo è esclusivamente per comodità e <em>non influenza l\'operatività</em>.<br />Your choice will be remembered and can be changed at any time.',
+    geolocationWaitingText: '<em>k.Explorer</em> può detettare la posizione per inizializzare la vista geografica.<br />Perché questo sia possibile, <em>è necessario autorizzare la geolocalizzazione</em>.<br />Quest\'ultimo è esclusivamente per comodità e <em>non influenza l\'operatività</em>.<br />Your choice will be remembered and can be changed at any time.',
     geolocationErrorPermissionDenied: 'Non si ha autorizzato la geolocalizzazione',
     geolocationErrorPositionUnavailable: 'Posizione non disponibile',
     geolocationErrorTimeout: 'Terminato il tempo di attesa per la geolocalizzazione',

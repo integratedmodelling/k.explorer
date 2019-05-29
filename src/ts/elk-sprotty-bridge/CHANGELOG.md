@@ -32,10 +32,10 @@ inversify.decorate(inversify.injectable(), ClickHandlerInitializer);
 - exporting only `ElkGraphJsonToSprotty` and `createContainer`)
 ## 0.4.0 - 2018-12-11
 ### Reconfigurated
-- reconfigurating all to generate something useful to use in k.explorer side:
+- reconfigurating all to generate something useful to use in k.Explorer side:
   - reorganize `package.json`, `tsconfig.json` and `webpack.config.js` eliminating unused features
   - renamed the project and recommit everything
-  - in k.explorer the project is included has bitbucket repository with ssh-key auth
+  - in k.Explorer the project is included has bitbucket repository with ssh-key auth
 ## 0.4.1 - 2019-01-10
 ### Changed
 - `needsClientLayout` now is not the first argument but property of it

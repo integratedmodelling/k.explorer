@@ -1,12 +1,12 @@
-# k.explorer for k.LAB
+# k.Explorer for k.LAB
 
 Web based explorer for k.LAB engine.
 
-The k.explorer is served by the k.LAB engine using the compiled version.
+The k.Explorer is served by the k.LAB engine using the compiled version.
 
 ## Start
 
-k.EXPLORER is developed using the [0.17 version of Quasar Framework](https://v0-17.quasar-framework.org/)
+k.Explorer is developed using the [0.17 version of Quasar Framework](https://v0-17.quasar-framework.org/)
 
 First, we install Quasar CLI. Make sure you have Node >=8 and NPM >=5 installed on your machine.
 

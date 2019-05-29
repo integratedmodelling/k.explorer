@@ -174,9 +174,9 @@ module.exports = function (ctx) {
     pwa: {
       cacheExt: 'js,html,css,ttf,eot,otf,woff,woff2,json,svg,gif,jpg,jpeg,png,wav,ogg,webm,flac,aac,mp4,mp3',
       manifest: {
-        name: 'k.explorer',
-        short_name: 'k.explorer',
-        description: 'k.EXPLORER for k.LAB',
+        name: 'k.Explorer',
+        short_name: 'k.Explorer',
+        description: 'k.Explorer for k.LAB',
         display: 'standalone',
         orientation: 'landscape',
         background_color: '#ffffff',

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Graph viewer for configurations
 - Recontextualization is partially working
 ### Improvements
-- The ELK - sprotty bridge now is part of the k.EXPLORER project
+- The ELK - sprotty bridge now is part of the k.Explorer project
   Is based on [https://github.com/OpenKieler/elkgraph-web] and the bridge changelog is available
   in [this folder](src/ts/elk-sprotty-bridge/README.md)
 ### Solved
@@ -99,7 +99,7 @@ Feature notification on Integrated Modelling Confluence
 ### Added
 - This CHANGELOG file to hopefully serve as an evolving example of a
   standardized open source project CHANGELOG.
-- First tagged version of k.EXPLORER
+- First tagged version of k.Explorer
   - Custom context for observation search
   - Observation search with suggestions based on user certificate
   - Logs
