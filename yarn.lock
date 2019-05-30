@@ -5451,10 +5451,10 @@ ol-layerswitcher@^3.0.0:
   resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-3.2.0.tgz#f4ef6427a997738d6adfe1004d98038600b22ef3"
   integrity sha512-c17P/cq5FAOPDcAHOwYdYB7MIGKlKe+ZVgj9a8rJZpDVh9fi+e6j51IJzI+UeOfEk+HPu/FOIlW+TOkIyXUXRw==
 
-ol@=5.3.2, ol@^5.3.0:
-  version "5.3.2"
-  resolved "https://registry.yarnpkg.com/ol/-/ol-5.3.2.tgz#dfc70b315b2dcce3cb4b9b79a2e9eb4ef856dd72"
-  integrity sha512-PfS8Fe1iy4YNJ7P+TvebKME+8gp5NBfQuIldAHfBCkc7agmTezscQrsJWggz5B6Sprm/M/4YBtbyQtw4pIC65w==
+ol@^5.3.0:
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/ol/-/ol-5.3.3.tgz#ad39b7b485fdbae4b3e1535a0a07cc5d88b0b9b5"
+  integrity sha512-7eU4x8YMduNcED1D5wI+AMWDRe7/1HmGfsbV+kFFROI9RNABU/6n4osj6Q3trZbxxKnK2DSRIjIRGwRHT/Z+Ww==
   dependencies:
     pbf "3.1.0"
     pixelworks "1.1.0"
@@ -7724,9 +7724,9 @@ typedarray@^0.0.6:
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
 typescript@^3.4.5:
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.4.5.tgz#2d2618d10bb566572b8d7aad5180d84257d70a99"
-  integrity sha512-YycBxUb49UUhdNMU5aJ7z5Ej2XGmaIBL0x34vZ82fn3hGvD+bgrMrVDpatgz2f7YxUMJxMkbWxJZeAvDxVe7Vw==
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.1.tgz#ba72a6a600b2158139c5dd8850f700e231464202"
+  integrity sha512-64HkdiRv1yYZsSe4xC1WVgamNigVYjlssIoaH2HcZF0+ijsk5YK2g0G34w9wJkze8+5ow4STd22AynfO6ZYYLw==
 
 uglify-es@^3.3.4:
   version "3.3.9"
