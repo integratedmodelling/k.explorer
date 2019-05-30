@@ -7,6 +7,12 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 
+## Next release - ?
+### Added
+### Improvements
+- with a click on map, info about the point is showed even if observation info panel is open
+### Solve
+
 ## 0.7.0 - 2019-05-29
 ### Added
 - Graph viewer for configurations

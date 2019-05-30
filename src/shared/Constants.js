@@ -440,4 +440,5 @@ export const CUSTOM_EVENTS = {
   VIEWER_CLICK: 'viewerclick',
   VIEWER_SELECTED: 'viewerselected', // fired when a minimize viewer is maximize
   VIEWER_CLOSED: 'viewerclosed',
+  OBSERVATION_INFO_CLOSED: 'observationinfoclosed', // when the observation info panel is close, I must close any mapinfo
 };

@@ -429,9 +429,9 @@ export default {
               <p class="mv-popup-value">${newValue.value}</p>
               <div class="mv-popup-separator"></div>
               <p class="mv-popup-coord">${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}</p>`;
-          if (!this.exploreMode) {
-            this.popupOverlay.setPosition(newValue.pixelSelected);
-          }
+          // if (!this.exploreMode) {
+          this.popupOverlay.setPosition(newValue.pixelSelected);
+          // }
         }
       } else {
         this.mapSelectionMarker.setPosition(undefined);
@@ -600,6 +600,9 @@ export default {
         this.view.setZoom(this.storedZoom);
         this.storedZoom = null;
       }
+    });
+    this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, () => {
+      this.closePopup();
     });
   },
 };

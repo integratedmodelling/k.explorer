@@ -49,6 +49,7 @@ export default {
     ]),
     onCloseInfo() {
       this.setObservationInfo(null);
+      this.$eventBus.$emit(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED);
     },
     informTree({ nodeId, state }) {
       if (this.$refs['klab-tree-component']) {
