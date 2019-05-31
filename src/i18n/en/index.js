@@ -23,6 +23,7 @@ export default {
     askForObservation: 'Observing {urn}',
     noTokenDescription: 'No description available',
     btnContextReset: 'Reset context',
+    contextReset: 'Context reset',
     itemCounter: '{loaded} of {total}',
     logTab: 'Log',
     treeTab: 'Tree',

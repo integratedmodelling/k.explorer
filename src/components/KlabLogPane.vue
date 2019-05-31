@@ -1,7 +1,6 @@
 <template>
   <div id="klab-log-pane" class="klab-menu-component">
     <q-list
-      striped
       dense
       dark
       id="log-container"
@@ -14,7 +13,7 @@
           class="log-item q-pa-xs"
         >
           <template v-if="isSeparator(log)">
-            <q-item-main class="klp-separator"><q-item-tile></q-item-tile></q-item-main>
+            <q-item-main class="klp-separator"><span>{{ $t('label.contextReset') }}</span></q-item-main>
           </template>
           <template v-else>
             <q-item-side>
@@ -108,7 +107,13 @@ export default {
       color #ccc
       text-shadow 1px 0 0 #777
     .klp-separator
-      margin 5px 0
+      width 100%
+      text-align center
       border-top 1px solid #555
       border-bottom 1px solid #777
+      line-height 0
+      margin 10px 0
+      &>span
+        padding 0 10px
+        background-color rgb(113,112,112)
 </style>
