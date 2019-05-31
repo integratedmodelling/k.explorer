@@ -11,6 +11,7 @@ is not available.
 ### Added
 ### Improvements
 - with a click on map, info about the point is showed even if observation info panel is open
+- add a separator in log visualizer for each context reset
 ### Solve
 
 ## 0.7.0 - 2019-05-29
