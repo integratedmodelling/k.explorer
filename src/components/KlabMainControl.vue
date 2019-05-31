@@ -78,7 +78,7 @@
           <div class="klab-button mc-tab"
             :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
             @click="selectedTab = 'klab-tree-pane'"
-          ><q-icon name="mdi-file-tree">
+          ><q-icon name="mdi-eye-outline">
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
@@ -86,18 +86,19 @@
             >{{ $t('tooltips.treePane') }}</q-tooltip>
           </q-icon></div>
         </div>
+        <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
         <!-- scale -->
         <!-- SPACE -->
-        <div id="mc-spacereference" class="mc-scalereference">
-          <scale-reference width="110px" scale-type="space" :editable="false"></scale-reference>
+        <div class="mc-separator" style="right:325px"></div>
+        <div id="mc-spacereference" class="mc-scalereference" style="right: 180px">
+          <scale-reference width="140px" scale-type="space" :editable="false"></scale-reference>
         </div>
-        <div class="mc-separator" style="right: 290px"></div>
+        <div class="mc-separator" style="right: 175px"></div>
         <!-- TIME -->
-        <div id="mc-timereference" class="mc-scalereference">
-          <scale-reference width="110px" scale-type="time" :editable="false"></scale-reference>
+        <div id="mc-timereference" class="mc-scalereference" style="right: 50px">
+          <scale-reference width="120px" scale-type="time" :editable="false"></scale-reference>
         </div>
-        <div class="mc-separator" style="right: 160px"></div>
-        <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
+        <div class="mc-separator" style="right:45px"></div>
         <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
     </q-card>
@@ -348,9 +349,9 @@ export default {
       background-color alpha($faded, 85%)
       padding 0 /* 0 0 10px 0*/
 
-    .klab-main-actions
-      position absolute
-      right 55px
+    // .klab-main-actions
+      // position relative
+      // right 55px
     .klab-button-notification
       top 6px
       right 4px
@@ -379,12 +380,6 @@ export default {
     .mc-scalereference
       position absolute
       height 37px
-
-    #mc-spacereference
-      right 305px
-
-    #mc-timereference
-      right 175px
 
     .mc-tab.active
       background-color alpha($faded, 85%)

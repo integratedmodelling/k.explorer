@@ -123,7 +123,7 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  $sr-scaletype-width = 40px
+  $sr-scaletype-width = 30px
   $sr-lock-width = 30px
   .sr-container
     height 100%
@@ -160,7 +160,7 @@ export default {
           font-size 20px
       .sr-description
         font-size 12px
-        width "calc(100% - %s - 20px)" % $sr-scaletype-width
+        width "calc(100% - %s * 2)" % $sr-scaletype-width
       .sr-spacescale
         font-size 9px
         height 20px
@@ -169,6 +169,7 @@ export default {
         text-align center
         padding 5px 0 0 0
         display inline-block
+        margin 0 5px
       &.sr-full
         .sr-description
           width "calc(100% - %s - 20px)" % ($sr-scaletype-width + $sr-lock-width)

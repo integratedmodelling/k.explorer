@@ -5,6 +5,7 @@
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.DATA_VIEWER.name ? setMainViewer(isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DATA_VIEWER.name }]"
+           v-if="orientation !== 'horizontal'"
       ><q-icon name="mdi-eye-outline">
         <q-tooltip
           :offset="[0, 8]"
