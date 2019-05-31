@@ -223,6 +223,7 @@ export default {
     background-color rgba(35, 35, 35, .3)
     border 4px solid rgba(135, 135, 135, .6)
     animation-duration .2s
+    cursor move
 
   #modal-connection-status.fullscreen
     z-index 10000

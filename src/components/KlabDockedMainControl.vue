@@ -100,8 +100,8 @@ export default {
         height "calc(100% - %s)" % $docked-padding
         max-height "calc(100% - %s)" % $docked-padding
         position relative
-    .dmc-dragging
-      cursor move
+    &.dmc-dragging
+      cursor move !important
     .kbc-container
       margin 2px
       padding 0
