@@ -36,6 +36,8 @@ export default {
           main: true,
         });
       }
+      console.log('ADDED SEPARATOR');
+      dispatch('view/addToKlabLog', { type: Constants.TYPE_INFO, payload: { message: 'Reset context', separator: true } }, { root: true });
     } else {
       console.warn('Try to reset null context');
     }
