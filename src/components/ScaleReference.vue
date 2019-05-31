@@ -129,6 +129,7 @@ export default {
   @import '~variables'
   $sr-scaletype-width = 30px
   $sr-lock-width = 30px
+  $sr-scalescale-width = 30px
   .sr-container
     height 100%
     display flex
@@ -164,7 +165,7 @@ export default {
           font-size 20px
       .sr-description
         font-size 12px
-        width "calc(100% - %s * 2)" % $sr-scaletype-width
+        width "calc(100% - %s)" % ($sr-scaletype-width + $sr-scalescale-width)
       .sr-spacescale
         font-size 9px
         height 20px
@@ -176,7 +177,7 @@ export default {
         margin 0 5px
       &.sr-full
         .sr-description
-          width "calc(100% - %s - 20px)" % ($sr-scaletype-width + $sr-lock-width)
+          width "calc(100% - %s)" % ($sr-scaletype-width + $sr-lock-width + $sr-scalescale-width)
     &.sr-vertical
       margin 5px 0
       .klab-item
