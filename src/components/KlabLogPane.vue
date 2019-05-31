@@ -13,12 +13,17 @@
           :key="log.id"
           class="log-item q-pa-xs"
         >
-          <q-item-side>
-            <q-item-tile style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
-          </q-item-side>
-          <q-item-main>
-            <q-item-tile>{{ logText(log) }}</q-item-tile>
-          </q-item-main>
+          <template v-if="isSeparator(log)">
+            <q-item-main class="klp-separator"><q-item-tile></q-item-tile></q-item-main>
+          </template>
+          <template v-else>
+            <q-item-side>
+              <q-item-tile style="font-size: 18px" :icon="logColorAndIcon(log).icon" :color="logColorAndIcon(log).color"></q-item-tile>
+            </q-item-side>
+            <q-item-main>
+              <q-item-tile>{{ logText(log) }}</q-item-tile>
+            </q-item-main>
+          </template>
         </q-item>
       </template>
       <template v-else>
@@ -69,6 +74,9 @@ export default {
     logColorAndIcon(log) {
       return LOG_ICON_COLORS[log.type];
     },
+    isSeparator(log) {
+      return log && log.payload && log.payload.separator;
+    },
   },
   watch: {
     klabLog() {
@@ -99,4 +107,8 @@ export default {
       margin 10px 0
       color #ccc
       text-shadow 1px 0 0 #777
+    .klp-separator
+      margin 5px 0
+      border-top 1px solid #555
+      border-bottom 1px solid #777
 </style>
