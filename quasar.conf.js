@@ -17,7 +17,6 @@ module.exports = function (ctx) {
     // app plugins (/src/plugins)
     plugins: [
       'initApp',
-      'i18n',
       'axios',
       'vue-i18n',
       'djv',
