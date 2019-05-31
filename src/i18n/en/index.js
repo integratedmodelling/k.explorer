@@ -39,6 +39,7 @@ export default {
     resolutionLabel: 'Resolution value',
     unitLabel: 'Unit value',
     clickToEditScale: 'Click to edit',
+    clickToLock: 'Click to lock scale',
     clickToUnlock: 'Click to unlock scale',
     labelCm: 'Centimeters',
     labelM: 'Meters',

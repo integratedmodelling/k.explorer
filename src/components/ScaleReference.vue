@@ -5,18 +5,16 @@
         v-if="full"
         class="sr-locked klab-item mdi sr-icon"
         :class="[ isScaleLocked[scaleType] ? 'mdi-lock-outline' : 'mdi-lock-open-outline']"
-        :style="{ cursor: isScaleLocked[scaleType] ? 'pointer' : 'default' }"
-        @click.prevent="isScaleLocked ? unlockScale($event) : false"
+        @click.prevent="lockScale($event)"
       >
         <q-tooltip
-          v-show="isScaleLocked[scaleType]"
           anchor="bottom middle"
           self="top middle"
           :offset="[0, 5]"
-        >{{ $t('label.clickToUnlock') }}</q-tooltip>
+        >{{ isScaleLocked[scaleType] ? $t('label.clickToUnlock') : $t('label.clickToLock')}}</q-tooltip>
       </div>
       <div class="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-scaletype klab-item" :class="[ scaleType === 'space' ? `mdi ${type} sr-icon` : '']">{{ scaleType === 'time' ? type : '' }}</div>
+        <div class="sr-scaletype klab-item" :class="[ scaleType === SCALE_TYPE.ST_SPACE ? `mdi ${type} sr-icon` : '']">{{ scaleType === SCALE_TYPE.ST_TIME ? type : '' }}</div>
         <div class="sr-description klab-item">{{ description }}</div>
         <div class="sr-spacescale klab-item">{{ scale }}</div>
         <q-tooltip
@@ -37,14 +35,15 @@
 import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+import { SCALE_TYPE, SETTING_NAMES } from 'shared/Constants';
 
 export default {
   name: 'ScaleReference',
   props: {
     scaleType: {
       type: String,
-      validator: value => ['space', 'time'].indexOf(value) !== -1,
-      default: 'space',
+      validator: value => [SCALE_TYPE.ST_SPACE, SCALE_TYPE.ST_TIME].indexOf(value) !== -1,
+      default: SCALE_TYPE.ST_SPACE,
     },
     width: {
       type: String,
@@ -68,6 +67,11 @@ export default {
       default: 'horizontal',
     },
   },
+  data() {
+    return {
+      SCALE_TYPE,
+    };
+  },
   computed: {
     ...mapGetters('data', [
       'scaleReference',
@@ -75,19 +79,19 @@ export default {
       'isScaleLocked',
     ]),
     resolution() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionConverted : '';
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionConverted : '';
     },
     unit() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceUnit : moment().year();
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceUnit : moment().year();
     },
     type() {
-      return this.scaleType === 'space' ? 'mdi-grid' : 'YEAR'; // TODO implement different type
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceResolutionDescription : this.unit;
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionDescription : this.unit;
     },
     scale() {
-      return this.scaleType === 'space' ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
     },
     hasScale() {
       return this.scaleReference !== null;
@@ -108,14 +112,14 @@ export default {
     ...mapActions('view', [
       'setScaleEditing',
     ]),
-    unlockScale(event) {
+    lockScale(event) {
       event.stopPropagation();
-      this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
-        scaleReference: this.scaleReference,
-        unlockSpace: this.scaleType === 'space',
-        unlockTime: this.scaleType === 'time',
+      const lock = !this.isScaleLocked[this.scaleType];
+      this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({
+        setting: this.scaleType === SCALE_TYPE.ST_SPACE ? SETTING_NAMES.LOCK_SPACE : SETTING_NAMES.LOCK_TIME,
+        value: lock,
       }, this.$store.state.data.session).body);
-      this.setScaleLocked({ scaleType: this.scaleType, scaleLocked: false });
+      this.setScaleLocked({ scaleType: this.scaleType, scaleLocked: lock });
     },
   },
 };
