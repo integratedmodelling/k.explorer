@@ -40,6 +40,7 @@ export default {
     resolutionLabel: 'Valor de la escala',
     unitLabel: 'Unidad de la escala',
     clickToEditScale: 'Click para modificar',
+    clickToLock: 'Click para bloquear la escala',
     clickToUnlock: 'Click para desbloquear la escala',
     labelCm: 'Centimetros',
     labelM: 'Metros',

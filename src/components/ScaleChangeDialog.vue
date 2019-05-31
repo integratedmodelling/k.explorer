@@ -2,7 +2,7 @@
   <q-dialog
     v-if="scaleReference !== null"
     v-model="scaleEditing"
-    :title="$t('label.titleChangeScale', { type: scaleEditingType === 'space' ? $t('label.labelSpatial') : $t('label.labelTemporal')})"
+    :title="$t('label.titleChangeScale', { type: scaleEditingType === SCALE_TYPE.ST_SPACE ? $t('label.labelSpatial') : $t('label.labelTemporal')})"
     color="info"
     :cancel="true"
     :ok="false"
@@ -39,6 +39,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+import { SCALE_TYPE } from 'shared/Constants';
 
 export default {
   name: 'ScaleChangeDialog',
@@ -59,6 +60,7 @@ export default {
         },
       ],
       resolutionError: false,
+      SCALE_TYPE,
     };
   },
   computed: {
@@ -80,7 +82,6 @@ export default {
   },
   methods: {
     ...mapActions('data', [
-      'setScaleLocked',
       'updateScaleReference',
     ]),
     ...mapActions('view', [
@@ -95,12 +96,11 @@ export default {
         this.resolutionError = false;
         this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
           scaleReference: this.scaleReference,
-          ...(this.scaleEditingType === 'space' && { spaceResolutionConverted: this.resolution }),
-          ...(this.scaleEditingType === 'space' && { spaceUnit: this.unit }),
-          ...(this.scaleEditingType === 'time' && { timeResolution: this.resolution }),
-          ...(this.scaleEditingType === 'time' && { timeUnit: this.unit }),
+          ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceResolutionConverted: this.resolution }),
+          ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceUnit: this.unit }),
+          ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeResolution: this.resolution }),
+          ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeUnit: this.unit }),
         }, this.$store.state.data.session).body);
-        this.setScaleLocked({ scaleType: this.scaleEditingType, scaleLocked: true });
         this.updateScaleReference({ type: this.scaleEditingType, resolution: this.resolution, unit: this.unit });
         this.$q.notify({
           message: this.$t('messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
@@ -111,8 +111,8 @@ export default {
     },
     initValues() {
       if (this.scaleReference !== null) {
-        this.resolution = this.scaleEditingType === 'space' ? this.scaleReference.spaceResolutionConverted : this.scaleReference.timeResolution;
-        this.unit = this.scaleEditingType === 'space' ? this.scaleReference.spaceUnit : this.scaleReference.timeUnit;
+        this.resolution = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionConverted : this.scaleReference.timeResolution;
+        this.unit = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceUnit : this.scaleReference.timeUnit;
       }
     },
   },

@@ -394,7 +394,7 @@ export default {
   setScaleReference: ({ commit }, scaleReference) => {
     console.debug(`Set scale reference: ${JSON.stringify(scaleReference, null, 2)}`);
     commit('SET_SCALE_REFERENCE', scaleReference);
-    commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
+    // commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
   },
 
   updateScaleReference: ({ commit }, { type, resolution, unit }) => {

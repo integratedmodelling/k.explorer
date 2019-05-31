@@ -156,8 +156,6 @@ export const MESSAGES_BUILDERS = {
     spaceUnit,
     timeResolutionDescription = '',
     timeUnit = '',
-    unlockSpace = false,
-    unlockTime = false,
   }, session) => buildMessage(
     OUT.CLASS_USERCONTEXTDEFINITION,
     OUT.TYPE_SCALEDEFINED,
@@ -168,8 +166,6 @@ export const MESSAGES_BUILDERS = {
       ...(typeof spaceUnit !== 'undefined' && { spaceUnit }),
       ...(typeof timeResolutionDescription !== 'undefined' && { timeResolutionDescription }),
       ...(typeof timeUnit !== 'undefined' && { timeUnit }),
-      unlockSpace,
-      unlockTime,
     },
     session,
   ),
@@ -199,12 +195,12 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  INTERACTIVE_MODE: ({ value }, session) => buildMessage(
+  SETTING_CHANGE_REQUEST: ({ setting, value }, session) => buildMessage(
     OUT.CLASS_USERINTERFACE,
     OUT.TYPE_CHANGESETTING,
     OUT.PAYLOAD_CLASS_SETTINGCHANGEREQUEST,
     {
-      setting: 'InteractiveMode',
+      setting,
       previousValue: (!value).toString(),
       newValue: value.toString(),
     },

@@ -169,7 +169,7 @@
 <script>
 import moment from 'moment';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import Constants, { CUSTOM_EVENTS } from 'shared/Constants';
+import Constants, { CUSTOM_EVENTS, SETTING_NAMES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
@@ -327,7 +327,7 @@ export default {
       }
     },
     sendInteractiveModeState(state) {
-      this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: state }, this.session).body);
+      this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: state }, this.session).body);
     },
   },
   watch: {

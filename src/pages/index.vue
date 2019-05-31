@@ -47,7 +47,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -175,7 +175,9 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
       this.askForUndocking = ask;
     });
-    this.sendStompMessage(MESSAGES_BUILDERS.INTERACTIVE_MODE({ value: false }, this.session).body);
+    this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
+    this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_SPACE, value: false }, this.session).body);
+    this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
   },
 };
 </script>

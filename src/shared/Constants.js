@@ -442,3 +442,14 @@ export const CUSTOM_EVENTS = {
   VIEWER_CLOSED: 'viewerclosed',
   OBSERVATION_INFO_CLOSED: 'observationinfoclosed', // when the observation info panel is close, I must close any mapinfo
 };
+
+export const SCALE_TYPE = {
+  ST_SPACE: 'space',
+  ST_TIME: 'time',
+};
+
+export const SETTING_NAMES = {
+  INTERACTIVE_MODE: 'InteractiveMode',
+  LOCK_SPACE: 'LockSpace',
+  LOCK_TIME: 'LockTime',
+};
