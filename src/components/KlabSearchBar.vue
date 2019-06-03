@@ -31,6 +31,14 @@
       <div class="ksb-status-texts" ref="ksb-status-texts">
         <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .6 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
       </div>
+      <q-icon v-if="isScaleLocked['space']" name="mdi-lock-outline">
+        <q-tooltip
+          anchor="bottom middle"
+          self="top middle"
+          :offset="[10, 5]"
+          :delay="500"
+        >{{ $t('label.scaleLocked', { type:  $t('label.spaceScale') })}}</q-tooltip>
+      </q-icon>
       <main-control-menu></main-control-menu>
     </div>
   </div>
@@ -61,6 +69,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'contextLabel',
+      'isScaleLocked',
     ]),
     ...mapGetters('view', [
       'spinnerColor',
@@ -193,5 +202,9 @@ export default {
       height 15px
       white-space nowrap
       overflow hidden
+    .mdi-lock-outline
+      position absolute
+      right 35px
+      top 12px
 
 </style>

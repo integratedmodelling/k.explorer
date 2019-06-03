@@ -196,4 +196,7 @@ export default {
   &:hover
     background-color #fff
   */
+  .mdi-lock-outline
+    color $main-control-main-color
+
 </style>

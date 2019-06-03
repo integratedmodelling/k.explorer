@@ -30,7 +30,7 @@ export default {
     noHistogramData: 'No data',
     noInfoValues: '',
     noScaleReference: '',
-    mcMenuScale: 'Escala actual:',
+    mcMenuScale: 'Espacio y tiempo:',
     mcMenuContext: 'Contexto',
     mcMenuOption: 'Optciones',
     titleOutputFormat: 'Download observación',
