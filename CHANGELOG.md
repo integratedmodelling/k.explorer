@@ -12,7 +12,9 @@ is not available.
 ### Improvements
 - with a click on map, info about the point is showed even if observation info panel is open
 - add a separator in log visualizer for each context reset
+- main action buttons are in different position
 ### Solve
+- lock scale functionality now is coherent
 
 ## 0.7.0 - 2019-05-29
 ### Added
