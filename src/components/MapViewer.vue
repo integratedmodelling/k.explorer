@@ -604,6 +604,9 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, () => {
       this.closePopup();
     });
+    this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, () => {
+      this.sendRegionOfInterest();
+    });
   },
 };
 </script>

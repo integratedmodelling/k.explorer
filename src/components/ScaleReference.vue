@@ -35,7 +35,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { SCALE_TYPE, SETTING_NAMES } from 'shared/Constants';
+import { SCALE_TYPE, SETTING_NAMES, CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'ScaleReference',
@@ -120,6 +120,9 @@ export default {
         value: lock,
       }, this.$store.state.data.session).body);
       this.setScaleLocked({ scaleType: this.scaleType, scaleLocked: lock });
+      if (!lock) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST);
+      }
     },
   },
 };
