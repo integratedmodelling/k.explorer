@@ -86,7 +86,6 @@ export default {
       this.processing = true;
       this.graph = new ElkGraphJsonToSprotty().transform(dataflow);
       this.modelSource.setModel(this.graph);
-      console.debug(JSON.stringify(this.graph, null, 4));
       this.actionDispatcher.dispatch(new FitToScreenAction([]));
       this.processing = false;
       this.reloadDataflow = false;
@@ -185,7 +184,6 @@ export default {
       left 0
       right 0
       bottom 0
-      padding 10px
       svg
         width 100%
         height 99%
@@ -210,7 +208,7 @@ export default {
           stroke-width 0
           stroke #000
           fill #000
-          font-family monospace
+          font-family Roboto
           font-size 10pt
           dominant-baseline middle
         .elkjunction
