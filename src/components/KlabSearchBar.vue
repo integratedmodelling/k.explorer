@@ -31,7 +31,7 @@
       <div class="ksb-status-texts" ref="ksb-status-texts">
         <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .6 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
       </div>
-      <q-icon v-if="isScaleLocked['space']" name="mdi-lock-outline">
+      <q-icon v-if="isScaleLocked['space'] && !hasContext" name="mdi-lock-outline">
         <q-tooltip
           anchor="bottom middle"
           self="top middle"
