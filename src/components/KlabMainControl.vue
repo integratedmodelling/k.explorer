@@ -349,9 +349,8 @@ export default {
       background-color alpha($faded, 85%)
       padding 0 /* 0 0 10px 0*/
 
-    // .klab-main-actions
-      // position relative
-      // right 55px
+    .klab-main-actions
+      position relative
     .klab-button-notification
       top 6px
       right 4px
