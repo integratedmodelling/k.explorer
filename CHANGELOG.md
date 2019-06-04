@@ -13,6 +13,7 @@ is not available.
 - with a click on map, info about the point is showed even if observation info panel is open
 - add a separator in log visualizer for each context reset
 - main action buttons are in different position
+- improvement on dataflow viewer
 ### Solve
 - lock scale functionality now is coherent
 
