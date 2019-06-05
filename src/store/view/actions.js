@@ -102,6 +102,9 @@ export default {
     // TODO now using observation type, better way will be need
     if (observation.observationType) {
       switch (observation.observationType) {
+        case Constants.OBSTYP_GROUP:
+          viewerType = null;
+          break;
         case Constants.OBSTYP_STATE:
           if (observation.valueCount === 1) {
             // if valueCount === 1, is added to tree but is not something to view in viewer

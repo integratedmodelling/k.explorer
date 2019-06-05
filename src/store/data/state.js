@@ -173,7 +173,7 @@ export default {
    * When we ask for siblings, we ask for a number that depends of view, but we store here for confort
    * and with a default value given from history
    */
-  siblingsToAskFor: 25,
+  childrenToAskFor: 25,
 
   /**
    * Interactive mode on / off

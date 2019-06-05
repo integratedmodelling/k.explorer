@@ -101,7 +101,7 @@ export default {
         parent.children.push({
           ...node,
           idx: parent.children.length,
-          siblingCount: parent.siblingCount,
+          childrenCount: parent.childrenCount,
         });
         parent.disabled = false; // if was empty and now has children, it cannot be disabled
       } else {

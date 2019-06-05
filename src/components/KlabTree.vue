@@ -340,7 +340,7 @@ export default {
         const unselectedId = oldValues.filter(n => newValues.indexOf(n) < 0)[0];
         const unselectedNode = findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
-          if (unselectedNode.type === Constants.GEOMTYP_FOLDER) {
+          if (unselectedNode.observationType === Constants.OBSTYP_GROUP) {
             this.setVisibility({
               isFolder: true,
               node: unselectedNode,
@@ -362,7 +362,7 @@ export default {
         const { [newValues.length - 1]: selectedId } = newValues;
         // this.selectNode(selectedId);
         const selectedNode = findNodeById(this.tree, selectedId);
-        if (selectedNode.type === Constants.GEOMTYP_FOLDER) {
+        if (selectedNode.observationType === Constants.OBSTYP_GROUP) {
           const tickAll = () => {
             this.setVisibility({
               isFolder: true,

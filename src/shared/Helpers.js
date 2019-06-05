@@ -112,8 +112,10 @@ export const getNodeFromObservation = observation => ({
     viewerIdx: observation.viewerIdx,
     viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
     children: [],
-    tickable: observation.viewerIdx !== null && !observation.empty,
-    disabled: observation.empty,
+    tickable: (observation.viewerIdx !== null && !observation.empty)
+      || (observation.observationType === Constants.OBSTYP_GROUP || observation.childrenCount > 0),
+    disabled: observation.empty
+      && (observation.observationType !== Constants.OBSTYP_GROUP || observation.childrenCount === 0),
     notified: observation.notified || observation.previouslyNotified,
     empty: observation.empty, // disabled can change
     actions: observation.actions,
