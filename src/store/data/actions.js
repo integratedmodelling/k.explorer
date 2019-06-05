@@ -1,5 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
-import { Constants, findNodeById, getAxiosContent, getNodeFromObservation, OBSERVATION_DEFAULT } from 'shared/Helpers';
+import { findNodeById, getAxiosContent, getNodeFromObservation } from 'shared/Helpers';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT } from 'shared/Constants';
 
 export default {
   /**
@@ -37,7 +38,7 @@ export default {
         });
       }
       console.log('ADDED SEPARATOR');
-      dispatch('view/addToKlabLog', { type: Constants.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
+      dispatch('view/addToKlabLog', { type: MESSAGE_TYPES.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
     } else {
       console.warn('Try to reset null context');
     }
@@ -79,10 +80,10 @@ export default {
           });
         }
       }
-      dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
+      dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
     }).catch((error) => {
       dispatch('view/setSpinner', {
-        ...Constants.SPINNER_ERROR,
+        ...SPINNER_CONSTANTS.SPINNER_ERROR,
         owner: contextId,
         errorMessage: error,
       }, { root: true });
@@ -157,7 +158,7 @@ export default {
       observation.folderId = folderId;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
-      if (observation.observationType === Constants.OBSTYP_INITIAL) {
+      if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {
         // is default observation, nothing needed
         return resolve();
       }
@@ -216,7 +217,7 @@ export default {
     })
       .then(({ data }) => {
         if (data && data.length > 1) {
-          dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: observationId }, { root: true }).then(() => {
+          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: observationId }, { root: true }).then(() => {
             data.forEach((child, index, array) => {
               child.notified = notified;
               dispatch('addObservation', {
@@ -233,7 +234,7 @@ export default {
                     total: childrenCount,
                   });
 
-                  dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: observationId }, { root: true });
+                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: observationId }, { root: true });
                   resolve();
                 }
               });
@@ -256,7 +257,7 @@ export default {
    */
   setVisibility: ({ commit, dispatch }, { node, visible }) => {
     dispatch('view/setMainDataViewer', { viewerIdx: node.viewerIdx, viewerType: node.viewerType, visible }, { root: true });
-    commit(node.observationType === Constants.OBSTYP_GROUP ? 'SET_FOLDER_VISIBLE' : 'SET_VISIBLE', {
+    commit(node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'SET_FOLDER_VISIBLE' : 'SET_VISIBLE', {
       nodeId: node.id,
       visible,
     });

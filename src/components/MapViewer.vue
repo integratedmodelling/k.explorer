@@ -65,11 +65,11 @@
 /* eslint-disable object-shorthand,space-before-function-paren,no-unused-vars */
 
 import { mapGetters, mapActions, mapState } from 'vuex';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
-import { getLayerObject, isRasterObservation, Constants } from 'shared/Helpers';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
+import { getLayerObject, isRasterObservation } from 'shared/Helpers';
 import { createMarker } from 'shared/Utils';
-import { CUSTOM_EVENTS, EMPTY_MAP_SELECTION, VIEWERS } from 'shared/Constants';
+import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -229,7 +229,7 @@ export default {
       } catch (error) {
         console.error(error);
         this.addToKexplorerLog({
-          type: this.$constants.TYPE_ERROR,
+          type: MESSAGE_TYPES.TYPE_ERROR,
           payload: {
             message: error.message,
             attach: error,
@@ -239,7 +239,7 @@ export default {
       if (message && message.body) {
         this.sendStompMessage(message.body);
         if (this.saveLocation) {
-          Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: this.view.getCenter(), zoom: this.view.getZoom() }, {
+          Cookies.set(WEB_CONSTANTS.COOKIE_MAPDEFAULT, { center: this.view.getCenter(), zoom: this.view.getZoom() }, {
             expires: 30,
             path: '/',
           });
@@ -402,7 +402,7 @@ export default {
       });
     },
     closePopup() {
-      this.setMapSelection(EMPTY_MAP_SELECTION);
+      this.setMapSelection(CONSTANTS.EMPTY_MAP_SELECTION);
       this.popupOverlay.setPosition(undefined);
     },
   },
@@ -459,7 +459,7 @@ export default {
     },
   },
   created() {
-    this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(Constants.COOKIE_MAPDEFAULT);
+    this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(WEB_CONSTANTS.COOKIE_MAPDEFAULT);
   },
   mounted() {
     // Set base layer
@@ -476,7 +476,7 @@ export default {
       layer.on('propertychange', (event) => {
         this.visibleBaseLayer = layer;
         if (event.type === 'propertychange' && event.key === 'visible' && event.target.get(event.key)) {
-          Cookies.set(Constants.COOKIE_BASELAYER, layer.get('name'), {
+          Cookies.set(WEB_CONSTANTS.COOKIE_BASELAYER, layer.get('name'), {
             expires: 30,
             path: '/',
           });

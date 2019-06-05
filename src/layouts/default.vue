@@ -5,7 +5,7 @@
       :overlay="false"
       v-model="leftMenuVisible"
       :breakpoint="0"
-      :width="leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED ? LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE : LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE"
+      :width="leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED ? LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE : LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE"
       content-class="klab-left no-scroll"
       class="print-hide"
     >
@@ -20,7 +20,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { LEFTMENU_VISIBILITY, CUSTOM_EVENTS } from 'shared/Constants';
+import { LEFTMENU_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 
 export default {
@@ -38,7 +38,7 @@ export default {
     ]),
     leftMenuVisible: {
       get() {
-        return this.leftMenuState !== LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN;
+        return this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN;
       },
       set(visibility) {
         this.setLeftMenuState(visibility);
@@ -58,7 +58,7 @@ export default {
     },
   },
   created() {
-    this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
+    this.LEFTMENU_CONSTANTS = LEFTMENU_CONSTANTS;
   },
 };
 </script>

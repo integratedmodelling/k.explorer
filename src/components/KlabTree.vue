@@ -92,8 +92,8 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { getAxiosContent, findNodeById, Constants, getContextGeometry } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import { getAxiosContent, findNodeById, getContextGeometry } from 'shared/Helpers';
+import { APP_PARAM_CONSTANTS, CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
@@ -141,7 +141,7 @@ export default {
       'showNotified',
     ]),
     filter() {
-      return this.showNotified === Constants.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
+      return this.showNotified === APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
     },
     taskIsAlive() {
       return typeof this.tasks.find(t => (t.contextId === this.contextId && t.alive)) !== 'undefined';
@@ -192,7 +192,7 @@ export default {
           this.itemActions = [];
           this.itemObservationId = null;
         }
-        if (node.observationType !== 'STATE') {
+        if (node.observationType !== OBSERVATION_CONSTANTS.TYPE_STATE) {
           this.itemActions = [{
             actionId: 0,
             actionLabel: this.$t('label.recontextualization'),
@@ -340,7 +340,7 @@ export default {
         const unselectedId = oldValues.filter(n => newValues.indexOf(n) < 0)[0];
         const unselectedNode = findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
-          if (unselectedNode.observationType === Constants.OBSTYP_GROUP) {
+          if (unselectedNode.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
             this.setVisibility({
               isFolder: true,
               node: unselectedNode,
@@ -362,7 +362,7 @@ export default {
         const { [newValues.length - 1]: selectedId } = newValues;
         // this.selectNode(selectedId);
         const selectedNode = findNodeById(this.tree, selectedId);
-        if (selectedNode.observationType === Constants.OBSTYP_GROUP) {
+        if (selectedNode.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
           const tickAll = () => {
             this.setVisibility({
               isFolder: true,

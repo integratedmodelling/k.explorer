@@ -1,4 +1,5 @@
-import { pushElementInFixedQueue, Constants } from 'shared/Helpers';
+import { pushElementInFixedQueue } from 'shared/Helpers';
+import { MESSAGE_TYPES } from 'shared/Constants';
 import moment from 'moment';
 
 export default {
@@ -11,7 +12,7 @@ export default {
     // state.receivedMessages.push({
     pushElementInFixedQueue(state.receivedMessages, {
       date: moment().format('HH:mm:ss'),
-      type: Constants.TYPE_ERROR,
+      type: MESSAGE_TYPES.TYPE_ERROR,
       message: error,
     });
   },
@@ -21,7 +22,7 @@ export default {
     // console.log('STOMP MESSAGE');
     pushElementInFixedQueue(state.receivedMessages, {
       date: moment().format('HH:mm:ss'),
-      type: Constants.TYPE_MESSAGE,
+      type: MESSAGE_TYPES.TYPE_MESSAGE,
       message,
     });
   },

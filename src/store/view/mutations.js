@@ -1,5 +1,5 @@
 import { pushElementInFixedQueue } from 'shared/Helpers';
-import { EMPTY_MAP_SELECTION } from 'shared/Constants';
+import { CONSTANTS } from 'shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
@@ -196,13 +196,13 @@ export default {
   SET_OBSERVATION_INFO: (state, observation) => {
     if (observation === null) {
       state.treeSelected = null;
-      state.mapSelection = EMPTY_MAP_SELECTION;
+      state.mapSelection = CONSTANTS.EMPTY_MAP_SELECTION;
       state.observationInfo = null;
     } else if (state.observationInfo === null || (observation.id !== state.observationInfo.id)) {
       // new observation selected
       state.observationInfo = observation;
       // we need to reset mapSelection...
-      state.mapSelection = EMPTY_MAP_SELECTION;
+      state.mapSelection = CONSTANTS.EMPTY_MAP_SELECTION;
       // and select it on tree
       state.treeSelected = observation.id;
     }
@@ -219,7 +219,7 @@ export default {
   SET_MAP_SELECTION: (state, mapSelection) => {
     const { pixelSelected, layerSelected, value = null } = mapSelection;
     if (mapSelection === null || pixelSelected === null) { // map selection reset or strange values
-      state.mapSelection = EMPTY_MAP_SELECTION;
+      state.mapSelection = CONSTANTS.EMPTY_MAP_SELECTION;
     } else {
       state.mapSelection = { pixelSelected, layerSelected, value };
     }

@@ -1,4 +1,5 @@
 import Stack from 'classes/Stack';
+import { CONSTANTS } from 'shared/Constants';
 /**
  * Data states
  */
@@ -173,7 +174,7 @@ export default {
    * When we ask for siblings, we ask for a number that depends of view, but we store here for confort
    * and with a default value given from history
    */
-  childrenToAskFor: 25,
+  childrenToAskFor: CONSTANTS.CHILDREN_TO_ASK_FOR,
 
   /**
    * Interactive mode on / off
