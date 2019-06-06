@@ -41,7 +41,7 @@
             size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
-            :style="{ right: prop.node.children.length > 0 ? '35px' : typeof prop.node.idx !== 'undefined' ? prop.node.siblingCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
+            :style="{ right: prop.node.children.length > 0 ? '35px' : typeof prop.node.idx !== 'undefined' ? prop.node.childrenCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
             v-if="!prop.node.empty"
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats)"
           >
@@ -51,7 +51,7 @@
           </template>
           <template else>
             <q-chip v-show="typeof prop.node.idx !== 'undefined'" class="node-chip transparent" small dense text-color="grey-9">
-              {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingCount }) }}
+              {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
             </q-chip>
           </template>
         </div>
@@ -63,12 +63,12 @@
             size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
-            :style="{ right: `${35 + Math.trunc(prop.node.siblingCount.toString().length / 3) * 5}px` }"
+            :style="{ right: `${35 + Math.trunc(prop.node.childrenCount.toString().length / 3) * 5}px` }"
             v-if="prop.node.exportFormats"
-            @click.native="askForOutputFormat($event, prop.node.firstChildId, prop.node.exportFormats, true)"
+            @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
           >
           </q-btn>
-          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.siblingCount ? prop.node.siblingCount : prop.node.children.length }}</q-chip>
+          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.childrenCount ? prop.node.childrenCount : prop.node.children.length }}</q-chip>
         </div>
       </klab-q-tree>
     </div>
@@ -111,7 +111,7 @@ export default {
       enableContextMenu: false,
       itemActions: [],
       itemObservationId: null,
-      askingForSiblings: false,
+      askingForChildren: false,
       scrollElement: null,
       showPopover: null,
     };
@@ -151,7 +151,7 @@ export default {
     ...mapActions('data', [
       'setVisibility',
       'selectNode',
-      'askForSiblings',
+      'askForChildren',
       'setContext',
     ]),
     ...mapActions('view', [
@@ -228,7 +228,7 @@ export default {
       }
       return text;
     },
-    askForOutputFormat(event, observationId, formats, folder = false) {
+    askForOutputFormat(event, observationId, formats) {
       if (formats !== null && formats.length > 0) {
         event.stopPropagation();
         this.$q.dialog({
@@ -243,7 +243,7 @@ export default {
           preventClose: false,
           color: 'info',
         }).then((data) => {
-          this.askDownload(observationId, data, formats, folder);
+          this.askDownload(observationId, data, formats);
         }).catch(() => {
           // pressed cancel, the Quasar Framework manage it with catch, we don't need it
         });
@@ -255,7 +255,7 @@ export default {
         });
       }
     },
-    askDownload(observationId, outputFormat, formats, folder = false, label = observationId) {
+    askDownload(observationId, outputFormat, formats, label = observationId) {
       const selectedFormat = formats.find(f => f.value === outputFormat);
       getAxiosContent(
         `dw_${observationId}`,
@@ -265,7 +265,6 @@ export default {
             format: 'RAW', // TODO change when RAW call work as expected
             outputFormat,
             adapter: selectedFormat.adapter,
-            folder,
           },
           responseType: 'blob',
         },
@@ -340,22 +339,23 @@ export default {
         const unselectedId = oldValues.filter(n => newValues.indexOf(n) < 0)[0];
         const unselectedNode = findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
+          this.setVisibility({
+            node: unselectedNode,
+            visible: false,
+          });
           if (unselectedNode.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
-            this.setVisibility({
-              isFolder: true,
-              node: unselectedNode,
-              visible: false,
-            });
             this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
-          } else {
-            /* TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If we need to check this, is expensive (need to find node to check if is a fake or real folder
+          }
+          /*
+          else {
+            TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If we need to check this, is expensive (need to find node to check if is a fake or real folder
             if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
               // we unselect the folder
               this.ticked.splice(this.ticked.indexOf(unselectedNode.folderId), 1);
             }
-            */
-            this.setVisibility({ node: unselectedNode, visible: false });
+
           }
+          */
         }
       } else {
         // checked some new
@@ -365,24 +365,22 @@ export default {
         if (selectedNode.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
           const tickAll = () => {
             this.setVisibility({
-              isFolder: true,
               node: selectedNode,
               visible: true,
             });
             this.ticked.push(...(selectedNode.children.map(child => child.id)));
           };
-          if (selectedNode.siblingsLoaded < selectedNode.siblingCount && !this.askingForSiblings) {
-            this.askingForSiblings = true;
+          if (selectedNode.childrenLoaded < selectedNode.childrenCount && !this.askingForChildren) {
+            this.askingForChildren = true;
             const node = this.lasts.find(l => l.folderId === selectedNode.id);
-            this.askForSiblings({
-              nodeId: node.observationId,
+            this.askForChildren({
               folderId: node.folderId,
-              offset: selectedNode.siblingsLoaded - 1,
+              offset: selectedNode.childrenLoaded - 1,
               count: -1,
               toTree: false,
               visible: true,
             }).then(() => {
-              this.askingForSiblings = false;
+              this.askingForChildren = false;
               tickAll();
             });
           } else {
@@ -397,7 +395,7 @@ export default {
   mounted() {
     this.scrollElement = (new SimpleBar(document.getElementById('kt-tree-container'))).getScrollElement();
     this.scrollElement.addEventListener('scroll', (event) => {
-      if (this.askingForSiblings) {
+      if (this.askingForChildren) {
         event.preventDefault();
         console.debug('KlabTree -> We are asking for tree now, this call is not need so exit');
         return;
@@ -413,16 +411,14 @@ export default {
         if (ltc !== null) {
           const ltcBoundingClinetRect = ltc.getBoundingClientRect();
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
-            this.askingForSiblings = true;
+            this.askingForChildren = true;
             const folder = findNodeById(this.tree, last.folderId);
-            this.askForSiblings({
-              nodeId: last.observationId,
+            this.askForChildren({
               folderId: last.folderId,
               offset: last.offset,
-              count: this.$store.state.data.siblingsToAskFor,
               visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
             }).then(() => {
-              this.askingForSiblings = false;
+              this.askingForChildren = false;
               console.debug('KlabTree -> Asked for them');
               this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
             });

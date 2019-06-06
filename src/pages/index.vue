@@ -6,7 +6,7 @@
         <component :is="mainViewer.name"></component>
         <!-- </transition> -->
       </keep-alive>
-      <q-resize-observable @resize="setSiblingsToAskFor" />
+      <q-resize-observable @resize="setChildrenToAskFor" />
     </div>
     <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
@@ -133,14 +133,14 @@ export default {
       'searchFocus',
       'setMainViewer',
     ]),
-    setSiblingsToAskFor() {
-      // calculate and set min results for siblings
+    setChildrenToAskFor() {
+      // calculate and set min results for children
       // we suppose that maxHeight is vh and childMinHeight are pixels
       const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
       const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
-      console.info(`Setted max siblings as ${minResults}`);
-      this.$store.state.data.siblingsToAskFor = minResults;
+      console.info(`Setted max children as ${minResults}`);
+      this.$store.state.data.childrenToAskFor = minResults;
     },
   },
   watch: {
@@ -171,7 +171,7 @@ export default {
         }
       }
     });
-    this.setSiblingsToAskFor();
+    this.setChildrenToAskFor();
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
       this.askForUndocking = ask;
     });

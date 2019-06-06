@@ -52,7 +52,7 @@ export default {
     console.info(`Ask for context to restore ${contextId}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
       params: {
-        collapseSiblings: true,
+        collapseChildren: true,
       },
     }).then(async ({ data: context }) => {
       context.restored = true;
@@ -140,12 +140,13 @@ export default {
     observation,
     folderId = null,
     main = false,
+    toTree = true,
     visible = false,
     restored = false,
   }) => new Promise((resolve, reject) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') {
-      console.error(`Observaton exists!!! ${existingObservation.description}`);
+      console.error(`Observation exists!!! ${existingObservation.label}`);
       return reject();
     }
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
@@ -170,16 +171,9 @@ export default {
           dispatch('addObservation', { observation: child });
         });
       }
-      // ask for siblings
-      if (observation.childrenCount > 0) {
-        dispatch('askForChildren', {
-          observation,
-          notified: observation.notified || observation.previouslyNotified,
-          offset: 0,
-          count: state.childrenToAskFor,
-        });
+      if (toTree) {
+        commit('ADD_NODE', getNodeFromObservation(observation));
       }
-      commit('ADD_NODE', getNodeFromObservation(observation));
       dispatch('view/setReloadReport', true, { root: true });
       return resolve();
     });
@@ -190,26 +184,43 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit }, { taskId, fromTask }) => {
+  recalculateTree: ({ commit, dispatch }, { taskId, fromTask }) => {
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
     return new Promise((resolve) => {
       commit('RECALCULATE_TREE', { taskId, fromTask });
+      dispatch('askForChildrenOfTask', { taskId });
       resolve();
     });
   },
 
+  askForChildrenOfTask: ({ dispatch, state }, { taskId }) => {
+    // ask for children
+    const filtered = state.observations.filter(observation => observation.taskId === taskId);
+    filtered.forEach((observation) => {
+      if (observation.childrenCount > 0 && observation.children.length < observation.childrenCount) {
+        dispatch('askForChildren', {
+          folderId: observation.id,
+          total: observation.childrenCount,
+          notified: observation.notified || observation.previouslyNotified,
+          offset: 0,
+        });
+      }
+    });
+  },
+
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
-    observation,
+    folderId,
+    total,
     offset = 0,
-    count = state.siblingsToAskFor,
+    count = state.childrenToAskFor, // if - we ask for all
+    toTree = true, // indicate that we ask for siblings but we don't want to put them on tree (only for view on map)
     visible = false,
     notified = true,
   }) => new Promise((resolve) => {
-    const { id: observationId, childrenCount } = observation;
-    console.debug(`Ask for children of node ${observationId}: count:${count} / offset ${offset}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${observationId}`, {
+    console.debug(`Ask for children of node ${folderId}: count:${count} / offset ${offset}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${folderId}`, {
       params: {
         count,
         offset,
@@ -217,31 +228,34 @@ export default {
     })
       .then(({ data }) => {
         if (data && data.length > 1) {
-          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: observationId }, { root: true }).then(() => {
+          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: folderId }, { root: true }).then(() => {
             data.forEach((child, index, array) => {
               child.notified = notified;
+              child.siblingsCount = total; // the total of element for [INDEX] of [TOTAL]
               dispatch('addObservation', {
                 observation: child,
-                folderId: observationId,
+                folderId,
+                toTree,
                 visible,
               }).then(() => {
                 if (index === array.length - 1) {
-                  // last element
-                  commit('ADD_LAST', {
-                    folderId: observationId,
-                    observationId: child.id,
-                    offsetToAdd: data.length,
-                    total: childrenCount,
-                  });
-
-                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: observationId }, { root: true });
+                  if (toTree) {
+                    // last element
+                    commit('ADD_LAST', {
+                      folderId,
+                      observationId: child.id,
+                      offsetToAdd: data.length,
+                      total,
+                    });
+                  }
+                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: folderId }, { root: true });
                   resolve();
                 }
               });
             });
-            const parent = findNodeById(state.tree, observationId);
+            const parent = findNodeById(state.tree, folderId);
             if (parent !== null) {
-              parent.siblingsLoaded += data.length;
+              parent.childrenLoaded += data.length;
             }
           });
         }
@@ -256,11 +270,22 @@ export default {
    * @param visible hide (false) or show (true)
    */
   setVisibility: ({ commit, dispatch }, { node, visible }) => {
-    dispatch('view/setMainDataViewer', { viewerIdx: node.viewerIdx, viewerType: node.viewerType, visible }, { root: true });
-    commit(node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'SET_FOLDER_VISIBLE' : 'SET_VISIBLE', {
-      nodeId: node.id,
-      visible,
-    });
+    if (node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+      commit('SET_FOLDER_VISIBLE', {
+        nodeId: node.id,
+        visible,
+      });
+    } else {
+      dispatch('view/setMainDataViewer', {
+        viewerIdx: node.viewerIdx,
+        viewerType: node.viewerType,
+        visible,
+      }, { root: true });
+      commit('SET_VISIBLE', {
+        nodeId: node.id,
+        visible,
+      });
+    }
   },
 
   selectNode: ({ dispatch, state }, selectedId) => {

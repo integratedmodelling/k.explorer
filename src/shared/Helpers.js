@@ -112,6 +112,7 @@ export const getNodeFromObservation = observation => ({
     viewerIdx: observation.viewerIdx,
     viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
     children: [],
+    childrenCount: observation.childrenCount,
     tickable: (observation.viewerIdx !== null && !observation.empty)
       || (observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount > 0),
     disabled: observation.empty
@@ -119,12 +120,14 @@ export const getNodeFromObservation = observation => ({
     notified: observation.notified || observation.previouslyNotified,
     empty: observation.empty, // disabled can change
     actions: observation.actions,
-    header: 'default',
+    header: observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'folder' : 'default',
     folderId: observation.folderId,
     main: observation.main,
     exportFormats: observation.exportFormats,
     rootContextId: observation.rootContextId,
     observationType: observation.observationType,
+    ...(observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP && { childrenLoaded: 0 }),
+    ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
   },
   parentId: observation.folderId === null ? observation.parentId : observation.folderId,
 });

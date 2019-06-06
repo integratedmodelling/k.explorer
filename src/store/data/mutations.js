@@ -114,12 +114,13 @@ export default {
   },
 
   RECALCULATE_TREE: (state, { taskId, fromTask }) => {
-    if (state.contexts.peek() === null) {
+    const context = state.contexts.peek();
+    if (context === null) {
       // context was reset while processing
       return;
     }
     const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
-    const restored = typeof state.contexts.peek().restored !== 'undefined';
+    const restored = typeof context.restored !== 'undefined' && context.restored;
     if (filtered.length === 0) {
       console.info('No recalculation needed, no observation for this task');
       return;
@@ -172,7 +173,7 @@ export default {
       children.forEach((child, idx) => {
         child.folderId = main.id;
         child.idx = idx;
-        child.siblingCount = children.length;
+        child.childrenCount = children.length;
       });
       main.children.push(...children);
       main.disabled = false; // if was empty and now has children, it cannot be disabled
