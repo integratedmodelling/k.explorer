@@ -114,6 +114,7 @@ export default {
   },
 
   RECALCULATE_TREE: (state, { taskId, fromTask }) => {
+    console.warn('Start Recalculate');
     const context = state.contexts.peek();
     if (context === null) {
       // context was reset while processing
@@ -194,6 +195,7 @@ export default {
         folder.splice(insertionIndex + 1, 0, ...mains);
       }
     }
+    console.warn('End Recalculate');
   },
 
   SET_FOLDER_VISIBLE: (state, {

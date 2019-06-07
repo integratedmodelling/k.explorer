@@ -163,12 +163,17 @@ export default {
         // is default observation, nothing needed
         return resolve();
       }
-
       // ask for children
       if (observation.children.length > 0) {
         observation.disabled = false; // if is empty but has children, cannot be disabled
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child });
+        });
+      } else if (observation.childrenCount > 0) {
+        dispatch('askForChildren', {
+          folderId: observation.id,
+          offset: 0,
+          count: state.childrenToAskFor,
         });
       }
       if (toTree) {
@@ -184,13 +189,13 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit, dispatch }, { taskId, fromTask }) => {
+  recalculateTree: ({ commit/* , dispatch */ }, { taskId, fromTask }) => {
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
     return new Promise((resolve) => {
       commit('RECALCULATE_TREE', { taskId, fromTask });
-      dispatch('askForChildrenOfTask', { taskId });
+      // dispatch('askForChildrenOfTask', { taskId });
       resolve();
     });
   },
@@ -219,6 +224,7 @@ export default {
     visible = false,
     notified = true,
   }) => new Promise((resolve) => {
+    console.warn('Children loaded');
     console.debug(`Ask for children of node ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${folderId}`, {
       params: {
@@ -259,6 +265,7 @@ export default {
             }
           });
         }
+        console.warn('Children loaded');
         resolve();
       });
   }),
