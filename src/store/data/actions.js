@@ -146,7 +146,14 @@ export default {
   }) => new Promise((resolve, reject) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') {
-      console.error(`Observation exists!!! ${existingObservation.label}`);
+      // console.error(`Observation exists!!! ${existingObservation.label}`);
+      dispatch('view/addToKexplorerLog', {
+        type: MESSAGE_TYPES.TYPE_WARNING,
+        payload: {
+          message: `Existing observation received: ${existingObservation.label}`,
+        },
+        important: true,
+      }, { root: true });
       return reject();
     }
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
@@ -208,7 +215,6 @@ export default {
         dispatch('askForChildren', {
           folderId: observation.id,
           total: observation.childrenCount,
-          notified: observation.notified || observation.previouslyNotified,
           offset: 0,
         });
       }
@@ -224,7 +230,6 @@ export default {
     visible = false,
     notified = true,
   }) => new Promise((resolve) => {
-    console.warn('Children loaded');
     console.debug(`Ask for children of node ${folderId}: count:${count} / offset ${offset}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${folderId}`, {
       params: {
@@ -265,7 +270,6 @@ export default {
             }
           });
         }
-        console.warn('Children loaded');
         resolve();
       });
   }),

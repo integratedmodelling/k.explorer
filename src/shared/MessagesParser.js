@@ -71,7 +71,7 @@ const PARSERS = {
     }
     // check if is context and is a new context
     if (observation.parentId === null) { // || observation.parentId === observation.id) {
-      if (rootGetters['data/context'] === null && !observation.previouslyNotified) {
+      if (rootGetters['data/context'] === null) {
         // new context
         addToKexplorerLog(
           dispatch,
@@ -83,8 +83,9 @@ const PARSERS = {
         if (typeof observation.scaleReference !== 'undefined' && observation.scaleReference !== null) {
           dispatch('data/setScaleReference', observation.scaleReference, { root: true });
         }
-      } else if (!observation.previouslyNotified) {
-        console.error(`Strange behaviour: new context with a setted one: ${observation.id} - ${observation.label}`);
+      } else {
+        addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR,
+          `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`);
       }// else is the second message, so nothing to do
     } else if (rootGetters['data/context'] !== null && rootGetters['data/context'].id === observation.rootContextId) {
       // check if it is an observation linkable to actual context (checking rootContextId)

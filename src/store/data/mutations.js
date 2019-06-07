@@ -1,4 +1,4 @@
-import { getNodeFromObservation, findNodeById } from 'shared/Helpers';
+import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -114,13 +114,12 @@ export default {
   },
 
   RECALCULATE_TREE: (state, { taskId, fromTask }) => {
-    console.warn('Start Recalculate');
     const context = state.contexts.peek();
     if (context === null) {
       // context was reset while processing
       return;
     }
-    const filtered = state.observations.filter(observation => observation.taskId === taskId); // state.observations.filter(observation => observation.taskId === taskId);
+    const filtered = state.observations.filter(observation => observation.taskId.startsWith(taskId)); // state.observations.filter(observation => observation.taskId === taskId);
     const restored = typeof context.restored !== 'undefined' && context.restored;
     if (filtered.length === 0) {
       console.info('No recalculation needed, no observation for this task');
@@ -131,20 +130,21 @@ export default {
       return;
     }
     const idsToDelete = []; // only ids
-    const mains = []; // main observations
-    let main = null; // main observation
-    const children = []; // no main, children of main observation
+    const mains = []; // main observations ids
+    let main = null; // main observation id
+    const children = []; // no main, children of main observation ids
     filtered.forEach((observation, index) => {
       if (observation.main) {
         if ((fromTask && index === filtered.length - 1) || (restored && index === 0)) {
-          main = getNodeFromObservation(observation).node;
+          main = findNodeById(state.tree, observation.id);
         } else {
-          mains.push(getNodeFromObservation(observation).node);
+          mains.push(findNodeById(state.tree, observation.id));
         }
-      } else {
-        children.push(getNodeFromObservation(observation).node);
+        idsToDelete.push(observation.id);
+      } else if (observation.folderId === null) {
+        children.push(findNodeById(state.tree, observation.id));
+        idsToDelete.push(observation.id);
       }
-      idsToDelete.push(observation.id);
     });
     if (main === null) {
       if (!restored) {
@@ -174,7 +174,7 @@ export default {
       children.forEach((child, idx) => {
         child.folderId = main.id;
         child.idx = idx;
-        child.childrenCount = children.length;
+        child.siblingsCount = children.length;
       });
       main.children.push(...children);
       main.disabled = false; // if was empty and now has children, it cannot be disabled
@@ -195,7 +195,6 @@ export default {
         folder.splice(insertionIndex + 1, 0, ...mains);
       }
     }
-    console.warn('End Recalculate');
   },
 
   SET_FOLDER_VISIBLE: (state, {

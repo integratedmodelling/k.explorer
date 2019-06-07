@@ -120,8 +120,13 @@ export default {
         this.$q.notify({
           message: lastKexplorerLog.payload.message,
           type: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'negative' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'warning' : 'info'),
-          timeout: 1000,
+          timeout: 1500,
         });
+        if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING) {
+          console.warn(lastKexplorerLog.payload.message);
+        } else if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR) {
+          console.error(lastKexplorerLog.payload.message);
+        }
       }
     },
   },

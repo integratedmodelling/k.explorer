@@ -117,7 +117,6 @@ export const getNodeFromObservation = observation => ({
       || (observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount > 0),
     disabled: observation.empty
       && (observation.observationType !== OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount === 0),
-    notified: observation.notified || observation.previouslyNotified,
     empty: observation.empty, // disabled can change
     actions: observation.actions,
     header: observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'folder' : 'default',
