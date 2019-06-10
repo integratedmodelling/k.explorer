@@ -154,7 +154,7 @@ export default {
         },
         important: true,
       }, { root: true });
-      return reject();
+      return reject(new Error(`Existing observation received: ${existingObservation.label}`));
     }
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
