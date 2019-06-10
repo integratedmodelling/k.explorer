@@ -367,7 +367,7 @@ export default {
       const selectedObservation = state.observations.find(observation => observation.id === selectedId);
       if (selectedObservation) {
         if (selectedObservation.visible && !selectedObservation.top) {
-          dispatch('setVisibility', { nodeId: selectedId, viewerIdx: selectedObservation.viewerIdx, visible: true });
+          dispatch('setVisibility', { node: selectedObservation, visible: true });
         }
         dispatch('view/setObservationInfo', selectedObservation, { root: true });
       }
