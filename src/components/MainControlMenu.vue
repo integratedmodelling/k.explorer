@@ -17,7 +17,7 @@
       <q-btn
         icon="mdi-close"
         class="mcm-icon-close-popover"
-        @click="closePopups"
+        @click="closeMenuPopups"
         color="grey-8"
         size="xs"
         flat
@@ -268,9 +268,9 @@ export default {
       if (this.contextId === contextId) {
         return;
       }
-      this.closePopups();
+      this.closeMenuPopups();
       this.clearTooltip();
-      this.loadOrReloadContext(contextId, this.closePopups());
+      this.loadOrReloadContext(contextId, this.closeMenuPopups());
     },
     formatContextTime(context) {
       let timestamp = context.lastUpdate;
@@ -318,7 +318,7 @@ export default {
         timeout: 500,
       });
     },
-    closePopups() {
+    closeMenuPopups() {
       if (this.$refs['mcm-main-popover']) {
         this.$refs['mcm-main-popover'].hide();
       }
@@ -332,11 +332,11 @@ export default {
   },
   watch: {
     hasContext() {
-      this.closePopups();
+      this.closeMenuPopups();
     },
     searchIsActive(newValue) {
       if (newValue) {
-        this.closePopups();
+        this.closeMenuPopups();
       }
     },
     interactiveModeModel(newValue) {
@@ -346,7 +346,7 @@ export default {
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
       if (!this.isDrawMode) {
-        this.closePopups();
+        this.closeMenuPopups();
       }
     });
   },

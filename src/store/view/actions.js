@@ -155,7 +155,7 @@ export default {
           viewerType = VIEWER_COMPONENTS.VIEW_UNKNOWN;
           break;
         default:
-          reject(new Error(`Unknown observation type ${JSON.stringify(observation)}`));
+          reject(new Error(`Unknown observation type in observation labeled ${observation.label}: ${observation.observationType}`));
           break;
       }
     }
@@ -250,7 +250,7 @@ export default {
     commit('SET_OBSERVATION_INFO', observation);
   },
 
-  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected = null, observationId = null }) => {
+  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected = null, observationId = null, locked = false }) => {
     if (pixelSelected !== null) {
       if (observationId === null) {
         observationId = state.observationInfo.id;
@@ -267,7 +267,7 @@ export default {
         if (response && typeof response.data !== 'undefined') {
           value = response.data;
         }
-        commit('SET_MAP_SELECTION', { pixelSelected, layerSelected, value });
+        commit('SET_MAP_SELECTION', { pixelSelected, layerSelected, value, locked });
         callback();
       });
     } else {

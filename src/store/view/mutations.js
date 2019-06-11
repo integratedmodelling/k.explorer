@@ -196,13 +196,17 @@ export default {
   SET_OBSERVATION_INFO: (state, observation) => {
     if (observation === null) {
       state.treeSelected = null;
-      state.mapSelection = EMPTY_MAP_SELECTION;
+      if (!state.mapSelection.locked) {
+        state.mapSelection = EMPTY_MAP_SELECTION;
+      }
       state.observationInfo = null;
     } else if (state.observationInfo === null || (observation.id !== state.observationInfo.id)) {
       // new observation selected
       state.observationInfo = observation;
-      // we need to reset mapSelection...
-      state.mapSelection = EMPTY_MAP_SELECTION;
+      // we need to reset mapSelection if is not locked
+      if (!state.mapSelection.locked) {
+        state.mapSelection = EMPTY_MAP_SELECTION;
+      }
       // and select it on tree
       state.treeSelected = observation.id;
     }
@@ -217,11 +221,16 @@ export default {
    * @constructor
    */
   SET_MAP_SELECTION: (state, mapSelection) => {
-    const { pixelSelected, layerSelected, value = null } = mapSelection;
+    const { pixelSelected, layerSelected, value = null, locked = false } = mapSelection;
     if (mapSelection === null || pixelSelected === null) { // map selection reset or strange values
       state.mapSelection = EMPTY_MAP_SELECTION;
     } else {
-      state.mapSelection = { pixelSelected, layerSelected, value };
+      state.mapSelection = {
+        pixelSelected,
+        layerSelected,
+        value,
+        locked,
+      };
     }
     /*
     Now the selection can be made directly on map

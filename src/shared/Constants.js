@@ -119,6 +119,7 @@ export const EMPTY_MAP_SELECTION = {
   pixelSelected: null,
   layerSelected: null,
   value: null,
+  locked: false,
 };
 
 export const MATCH_TYPES = {

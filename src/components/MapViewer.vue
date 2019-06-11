@@ -1,7 +1,7 @@
 <template>
   <div class="fit no-padding map-viewer"  v-upload-files="uploadConfig">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
-    <q-icon name="mdi-crop-free" class="map-selection-marker" :id="`msm-${idx}`" />
+    <q-icon :name="mapSelection.locked ? 'mdi-image-filter-center-focus' : 'mdi-crop-free'" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
     <q-modal
@@ -16,17 +16,17 @@
           <p v-html="$t('messages.geolocationWaitingText')"></p>
           <p v-show="geolocationIncidence !== null" class="gl-incidence">{{ geolocationIncidence }}</p>
           <div class="gl-btn-container">
-          <q-btn
-            v-show="geolocationIncidence !== null"
-            :label="$t('label.appRetry')"
-            @click="retryGeolocation"
-            color="primary"
-          ></q-btn>
-          <q-btn
-            :label="$t('label.appCancel')"
-            @click="stopGeolocation(true)"
-            color="mc-main"
-          ></q-btn>
+            <q-btn
+              v-show="geolocationIncidence !== null"
+              :label="$t('label.appRetry')"
+              @click="retryGeolocation"
+              color="primary"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appCancel')"
+              @click="stopGeolocation(true)"
+              color="mc-main"
+            ></q-btn>
           </div>
         </div>
       </div>
@@ -145,6 +145,7 @@ export default {
       },
       uploadProgress: null,
       storedZoom: null,
+      clicksOnMap: 0,
     };
   },
   computed: {
@@ -247,16 +248,16 @@ export default {
       }
     },
 
-    findExistingLayerById(observation) {
+    findExistingLayerById(observationId) {
       if (this.layers && this.layers !== null) {
         const layerArray = this.layers.getArray();
-        return layerArray.find(layer => layer.get('id') === observation.id);
+        return layerArray.find(layer => layer.get('id') === observationId);
       }
       return null;
     },
 
     async findLayerById(observation) {
-      const found = this.findExistingLayerById(observation);
+      const found = this.findExistingLayerById(observation.id);
       if (typeof found !== 'undefined' && found !== null) {
         return found;
       }
@@ -335,15 +336,16 @@ export default {
                 && (this.topLayer === null || this.topLayer.id !== observation.id)
               ) {
                 this.setTopLayer({ id: observation.id, desc: observation.label });
-                this.closePopup();
               } else if ((!observation.visible || !observation.top)
                 && this.topLayer !== null && this.topLayer.id === observation.id) {
                 this.setTopLayer(null);
-                this.closePopup();
               }
             }
           });
         });
+        if (this.topLayer === null) {
+          this.closePopup();
+        }
       }
     },
     sendSpatialLocation(features) {
@@ -401,9 +403,46 @@ export default {
         }
       });
     },
-    closePopup() {
-      this.setMapSelection(EMPTY_MAP_SELECTION);
-      this.popupOverlay.setPosition(undefined);
+    closePopup(force = false) {
+      if (force || !this.mapSelection.locked) {
+        this.setMapSelection(EMPTY_MAP_SELECTION);
+        this.popupOverlay.setPosition(undefined);
+      }
+    },
+    setMapInfoPoint({ event = null, locked = false } = {}) {
+      if ((this.exploreMode || this.topLayer !== null)
+        && (event === null || (!(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)))) {
+        let coordinate;
+        if (event !== null) {
+          ({ coordinate } = event);
+          if (locked) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        } else {
+          ({ locked } = this.mapSelection);
+          coordinate = this.mapSelection.pixelSelected;
+        }
+        let topLayerId;
+        if (this.exploreMode) {
+          topLayerId = this.observationInfo.id;
+        } else {
+          topLayerId = this.topLayer.id;
+        }
+        const layerSelected = this.findExistingLayerById(topLayerId);
+        const clonedLayer = new ImageLayer({
+          id: `cl_${topLayerId}`,
+          source: layerSelected.getSource(),
+        });
+        this.setMapSelection({
+          pixelSelected: coordinate,
+          layerSelected: clonedLayer,
+          ...(!this.exploreMode && { observationId: this.topLayer.id }),
+          locked,
+        });
+      } else {
+        this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_CLICK, event); // inform that we make a click
+      }
     },
   },
   watch: {
@@ -425,15 +464,16 @@ export default {
         if (this.topLayer !== null) {
           const coordinates = transform(newValue.pixelSelected, 'EPSG:3857', 'EPSG:4326');
           this.popupContent = `<h3>${this.topLayer.desc}</h3>
-              <div class="mv-popup-separator"></div>
-              <p class="mv-popup-value">${newValue.value}</p>
-              <div class="mv-popup-separator"></div>
-              <p class="mv-popup-coord">${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}</p>`;
+          <div class="mv-popup-separator"></div>
+          <p class="mv-popup-value">${newValue.value}</p>
+          <div class="mv-popup-separator"></div>
+          <p class="mv-popup-coord">${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}</p>`;
           // if (!this.exploreMode) {
           this.popupOverlay.setPosition(newValue.pixelSelected);
           // }
         }
       } else {
+        this.closePopup();
         this.mapSelectionMarker.setPosition(undefined);
       }
     },
@@ -448,13 +488,10 @@ export default {
       }
     },
     topLayer(newValue) {
-      if (newValue === null) {
+      if (newValue === null || !this.mapSelection.locked) {
         this.closePopup();
-      }
-    },
-    exploreMode(newValue) {
-      if (newValue) {
-        this.closePopup();
+      } else {
+        this.setMapInfoPoint();
       }
     },
   },
@@ -532,23 +569,20 @@ export default {
           });
         }
       }
-      if ((this.exploreMode || this.topLayer !== null) && !(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-        if (this.exploreMode) {
-          const layerSelected = this.findExistingLayerById(this.observationInfo);
-          const clonedLayer = new ImageLayer({
-            id: `cl_${this.observationInfo.id}`,
-            source: layerSelected.getSource(),
-          });
-          this.setMapSelection({
-            pixelSelected: event.coordinate,
-            // transform(event.coordinate, 'EPSG:3857', 'EPSG:4326');
-            layerSelected: clonedLayer,
-          });
-        } else {
-          this.setMapSelection({ pixelSelected: event.coordinate, observationId: this.topLayer.id });
+      this.clicksOnMap += 1;
+      setTimeout(() => {
+        if (this.clicksOnMap === 1) {
+          this.setMapInfoPoint({ event });
+          this.clicksOnMap = 0;
         }
+      }, 300);
+    });
+    this.map.on('dblclick', (event) => {
+      if (this.exploreMode) {
+        return;
       }
-      this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_CLICK, event);
+      this.setMapInfoPoint({ event, locked: true });
+      this.clicksOnMap = 0;
     });
     // ...and set some attribute for rapid access
     this.view = this.map.getView();
@@ -602,7 +636,9 @@ export default {
       }
     });
     this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, () => {
-      this.closePopup();
+      if (!this.mapSelection.locked) {
+        this.closePopup();
+      }
     });
     this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, () => {
       this.sendRegionOfInterest();
