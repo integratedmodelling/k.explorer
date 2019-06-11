@@ -52,7 +52,7 @@ export default {
     console.info(`Ask for context to restore ${contextId}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
       params: {
-        collapseChildren: true,
+        childLevel: 1,
       },
     }).then(async ({ data: context }) => {
       context.restored = true;
@@ -238,7 +238,7 @@ export default {
       },
     })
       .then(({ data }) => {
-        if (data && data.length > 1) {
+        if (data && data.length > 0) {
           dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: folderId }, { root: true }).then(() => {
             data.forEach((child, index, array) => {
               child.notified = notified;
