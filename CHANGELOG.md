@@ -14,6 +14,7 @@ is not available.
 - add a separator in log visualizer for each context reset
 - main action buttons are in different position
 - improvement on dataflow viewer
+- notifications of observation between explorer and engine was completely redefine
 ### Solve
 - lock scale functionality now is coherent
 
