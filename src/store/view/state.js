@@ -1,7 +1,7 @@
 /**
  * State of view
  */
-import Constants, { LEFTMENU_VISIBILITY } from 'shared/Constants';
+import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS } from '../../shared/Constants';
 
 export default {
   /**
@@ -76,7 +76,7 @@ export default {
   /**
    * The state of left menu. Will be one of LEFTMENU_VISIBILITY constants
    */
-  leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
+  leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,
 
   mainControlDocked: false,
 
@@ -93,7 +93,7 @@ export default {
    * time: time in seconds of temporary state
    * then: other option object to decide the state after time is gone
    */
-  spinner: Constants.SPINNER_STOPPED,
+  spinner: SPINNER_CONSTANTS.SPINNER_STOPPED,
   spinnerOwners: [],
 
   /**
@@ -130,7 +130,7 @@ export default {
    * More info content
    */
   observationInfo: null,
-  mapSelection: Constants.EMPTY_MAP_SELECTION,
+  mapSelection: CONSTANTS.EMPTY_MAP_SELECTION,
 
   /**
    * Indicate if explore map mode is active

@@ -1,5 +1,5 @@
 import { mapGetters, mapActions } from 'vuex';
-import Constants from 'shared/Constants';
+import { SPINNER_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 export default {
@@ -20,7 +20,7 @@ export default {
     ]),
     loadOrReloadContext(contextId, callbackIfNothing) {
       if (contextId !== null) {
-        this.setSpinner({ ...Constants.SPINNER_LOADING, owner: contextId });
+        this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: contextId });
       }
       if (this.hasContext) {
         /*

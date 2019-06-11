@@ -1,6 +1,5 @@
 import { IN } from './MessagesConstants';
-import { Constants } from './Helpers';
-import { DATAFLOW_STATUS, FAKE_TEXTS } from './Constants';
+import { DATAFLOW_STATUS, FAKE_TEXTS, MESSAGE_TYPES } from './Constants';
 
 function addToKexplorerLog(dispatch, type, message, attach, important = false) {
   dispatch('view/addToKexplorerLog', { type, payload: { message, attach }, important }, { root: true });
@@ -9,31 +8,31 @@ function addToKexplorerLog(dispatch, type, message, attach, important = false) {
 const PARSERS = {
   [IN.TYPE_TASKSTARTED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskStart', task, { root: true });
-    addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Started task with id ${task.id}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Started task with id ${task.id}`);
     dispatch('view/addToStatusTexts', { id: task.id, text: task.description }, { root: true });
   },
   [IN.TYPE_TASKABORTED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskAbort', task, { root: true });
-    addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Aborted task with id ${task.id}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Aborted task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
   [IN.TYPE_TASKFINISHED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskEnd', task, { root: true });
     dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
-    addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Ended task with id ${task.id}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
   [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch }) => {
     if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
       try {
         const jsonEklLayout = JSON.parse(payload.jsonElkLayout);
-        addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
+        addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
         dispatch('data/addDataflow', jsonEklLayout, { root: true });
       } catch (e) {
-        addToKexplorerLog(dispatch, Constants.TYPE_ERROR, `Error in dataflos layout in task ${payload.taskId}: ${e}`);
+        addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Error in dataflos layout in task ${payload.taskId}: ${e}`);
       }
     } else {
-      addToKexplorerLog(dispatch, Constants.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
     }
   },
   [IN.TYPE_DATAFLOWSTATECHANGED]: ({ payload }, { dispatch }) => {
@@ -65,18 +64,18 @@ const PARSERS = {
       }, { root: true });
       addToKexplorerLog(
         dispatch,
-        Constants.TYPE_INFO,
+        MESSAGE_TYPES.TYPE_INFO,
         'Received an observation of previous context with no task associated. Session was been reloaded?',
         JSON.stringify(observation, null, 4),
       );
     }
     // check if is context and is a new context
     if (observation.parentId === null) { // || observation.parentId === observation.id) {
-      if (rootGetters['data/context'] === null && !observation.previouslyNotified) {
+      if (rootGetters['data/context'] === null) {
         // new context
         addToKexplorerLog(
           dispatch,
-          Constants.TYPE_DEBUG,
+          MESSAGE_TYPES.TYPE_DEBUG,
           `New context received with id ${observation.id}`,
           JSON.stringify(observation, null, 4),
         );
@@ -84,14 +83,15 @@ const PARSERS = {
         if (typeof observation.scaleReference !== 'undefined' && observation.scaleReference !== null) {
           dispatch('data/setScaleReference', observation.scaleReference, { root: true });
         }
-      } else if (!observation.previouslyNotified) {
-        console.error(`Strange behaviour: new context with a setted one: ${observation.id} - ${observation.label}`);
+      } else {
+        addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR,
+          `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`);
       }// else is the second message, so nothing to do
     } else if (rootGetters['data/context'] !== null && rootGetters['data/context'].id === observation.rootContextId) {
       // check if it is an observation linkable to actual context (checking rootContextId)
       addToKexplorerLog(
         dispatch,
-        Constants.TYPE_INFO,
+        MESSAGE_TYPES.TYPE_INFO,
         `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
         JSON.stringify(observation, null, 4),
       );
@@ -100,40 +100,40 @@ const PARSERS = {
     } else {
       addToKexplorerLog(
         dispatch,
-        Constants.TYPE_INFO,
+        MESSAGE_TYPES.TYPE_INFO,
         'Received an observation of different context',
         JSON.stringify(observation, null, 4),
       );
     }
   },
   [IN.TYPE_QUERYRESULT]: ({ payload: results }, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received search results', JSON.stringify(results));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received search results', JSON.stringify(results));
     dispatch('data/storeSearchResult', results, { root: true });
   },
   [IN.TYPE_RESETCONTEXT]: (message, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received context reset');
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received context reset');
     dispatch('data/resetContext', null, { root: true });
   },
   [IN.TYPE_SCALEDEFINED]: ({ payload: scaleReference }, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
     dispatch('data/setScaleReference', scaleReference, { root: true });
   },
   [IN.TYPE_USERINPUTREQUESTED]: (message, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_INFO, 'Received input request', message.payload);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received input request', message.payload);
     dispatch('view/inputRequest', message, { root: true });
   },
   // k.LAB log messages
   [IN.TYPE_DEBUG]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_DEBUG, message);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, message);
   },
   [IN.TYPE_INFO]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_INFO, message);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, message);
   },
   [IN.TYPE_WARNING]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_WARNING, message);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, message);
   },
   [IN.TYPE_ERROR]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, Constants.TYPE_ERROR, message);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, message);
   },
 };
 

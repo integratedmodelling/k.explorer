@@ -1,6 +1,6 @@
 import moment from 'moment';
+import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
-import Constants, { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_COMPONENTS, EMPTY_MAP_SELECTION } from 'shared/Constants';
 import { transform } from 'ol/proj';
 
 export default {
@@ -62,9 +62,9 @@ export default {
 
   setMainViewer: ({ state, commit, dispatch }, viewer) => {
     if (viewer && typeof state.mainViewer !== 'undefined') {
-      if (state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT) {
+      if (state.mainViewer.leftMenuContent === LEFTMENU_CONSTANTS.DOCKED_DATA_VIEWER_COMPONENT) {
         commit('SET_MAIN_CONTROL_DOCKED', true);
-      } else if (state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT) {
+      } else if (state.mainViewer.leftMenuContent === LEFTMENU_CONSTANTS.DATA_VIEWER_COMPONENT) {
         commit('SET_MAIN_CONTROL_DOCKED', false);
       }
     }
@@ -102,7 +102,10 @@ export default {
     // TODO now using observation type, better way will be need
     if (observation.observationType) {
       switch (observation.observationType) {
-        case Constants.OBSTYP_STATE:
+        case OBSERVATION_CONSTANTS.TYPE_GROUP:
+          viewerType = null;
+          break;
+        case OBSERVATION_CONSTANTS.TYPE_STATE:
           if (observation.valueCount === 1) {
             // if valueCount === 1, is added to tree but is not something to view in viewer
             viewerType = null;
@@ -126,9 +129,9 @@ export default {
             }
           }
           break;
-        case Constants.OBSTYP_INITIAL:
-        case Constants.OBSTYP_SUBJECT:
-        case Constants.OBSTYP_RELATIONSHIP: {
+        case OBSERVATION_CONSTANTS.TYPE_INITIAL:
+        case OBSERVATION_CONSTANTS.TYPE_SUBJECT:
+        case OBSERVATION_CONSTANTS.TYPE_RELATIONSHIP: {
           viewerType = VIEWER_COMPONENTS.VIEW_MAP;
           // isn't context?
           let parent = null;
@@ -146,12 +149,12 @@ export default {
           }
           break;
         }
-        case Constants.OBSTYP_CONFIGURATION:
+        case OBSERVATION_CONSTANTS.TYPE_CONFIGURATION:
           viewerType = VIEWER_COMPONENTS.VIEW_GRAPH;
           ({ label } = observation);
           break;
-        case Constants.OBSTYP_EVENT:
-        case Constants.OBSTYP_PROCESS:
+        case OBSERVATION_CONSTANTS.TYPE_EVENT:
+        case OBSERVATION_CONSTANTS.TYPE_PROCESS:
           viewerType = VIEWER_COMPONENTS.VIEW_UNKNOWN;
           break;
         default:
@@ -204,8 +207,8 @@ export default {
         if (getters.spinnerOwners.length !== 0) {
           // there are other process waiting for spinner
           animated = true;
-          if (color !== Constants.SPINNER_ERROR.color) {
-            ({ color } = Constants.SPINNER_LOADING);
+          if (color !== SPINNER_CONSTANTS.SPINNER_ERROR.color) {
+            ({ color } = SPINNER_CONSTANTS.SPINNER_LOADING);
           }
         }
       }
@@ -271,7 +274,7 @@ export default {
         callback();
       });
     } else {
-      commit('SET_MAP_SELECTION', EMPTY_MAP_SELECTION);
+      commit('SET_MAP_SELECTION', CONSTANTS.EMPTY_MAP_SELECTION);
     }
   },
 

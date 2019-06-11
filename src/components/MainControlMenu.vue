@@ -137,7 +137,7 @@
               <div class="klab-item">{{ $t('label.optionShowAll') }}</div>
             </div>
             <q-item-side right>
-              <q-toggle v-model="showAll" color="mc-main" />
+              <q-toggle v-model="showAll" color="mc-main"></q-toggle>
             </q-item-side>
           </div>
         </q-item>
@@ -147,7 +147,7 @@
               <div class="klab-item">{{ $t('label.optionSaveLocation') }}</div>
             </div>
             <q-item-side right>
-              <q-toggle v-model="saveLocationVar" color="mc-main" />
+              <q-toggle v-model="saveLocationVar" color="mc-main"></q-toggle>
             </q-item-side>
           </div>
         </q-item>
@@ -157,7 +157,7 @@
               <div class="klab-item">{{ $t('label.interactiveMode') }}</div>
             </div>
             <q-item-side right>
-              <q-toggle v-model="interactiveModeModel" color="mc-main" />
+              <q-toggle v-model="interactiveModeModel" color="mc-main"></q-toggle>
             </q-item-side>
           </div>
         </q-item>
@@ -169,7 +169,7 @@
 <script>
 import moment from 'moment';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import Constants, { CUSTOM_EVENTS, SETTING_NAMES } from 'shared/Constants';
+import { CUSTOM_EVENTS, SETTING_NAMES, APP_PARAM_CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
@@ -177,6 +177,7 @@ import LoadContext from 'shared/LoadContextMixin';
 import { Cookies } from 'quasar';
 import { copyToClipboard, capitalizeFirstLetter } from 'shared/Utils';
 import { DEFAULT_OPTIONS } from 'shared/MapConstants';
+
 
 export default {
   name: 'MainControlMenu',
@@ -217,7 +218,7 @@ export default {
     ]),
     showAll: {
       get() {
-        return this.showNotified === Constants.PARAMS_NOTIFIED_ALL;
+        return this.showNotified === APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ALL;
       },
       set(showAll) {
         this.changeShowAll(showAll);
@@ -285,25 +286,25 @@ export default {
       return '';
     },
     changeShowAll(showAll) {
-      const notified = (showAll) ? Constants.PARAMS_NOTIFIED_ALL : Constants.PARAMS_NOTIFIED_ONLY;
+      const notified = (showAll) ? APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ALL : APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ONLY;
       this.$store.commit('view/SET_SHOW_NOTIFIED', notified, { root: true });
-      Cookies.set(Constants.COOKIE_NOTIFIED, notified, {
+      Cookies.set(WEB_CONSTANTS.COOKIE_NOTIFIED, notified, {
         expires: 30,
         path: '/',
       });
     },
     changeSaveLocation(saveLocation) {
       this.$store.commit('view/SET_SAVE_LOCATION', saveLocation, { root: true });
-      Cookies.set(Constants.COOKIE_SAVELOCATION, saveLocation, {
+      Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
         expires: 30,
         path: '/',
       });
       if (!saveLocation) {
-        Cookies.set(Constants.COOKIE_SAVELOCATION, saveLocation, {
+        Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
           expires: 30,
           path: '/',
         });
-        Cookies.set(Constants.COOKIE_MAPDEFAULT, { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom }, {
+        Cookies.set(WEB_CONSTANTS.COOKIE_MAPDEFAULT, { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom }, {
           expires: 30,
           path: '/',
         });

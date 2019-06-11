@@ -1,5 +1,5 @@
 /* eslint-disable object-curly-newline,prefer-destructuring,no-multi-spaces */
-import Constants from 'shared/Constants';
+import { CONSTANTS, GEOMETRY_CONSTANTS, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import store from 'store/index';
 import { MAP_CONSTANTS, MAP_STYLES } from 'shared/MapConstants';
 import { getGradient, interpolateArray, createMarker } from 'shared/Utils';
@@ -33,7 +33,7 @@ export const isRasterObservation = (observation = null) => {
     return false;
   }
   const { geometryTypes } = observation;
-  return geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
+  return geometryTypes && typeof geometryTypes.find(gt => gt === GEOMETRY_CONSTANTS.TYPE_RASTER) !== 'undefined';
 };
 
 
@@ -44,7 +44,7 @@ export const isRasterObservation = (observation = null) => {
  * @param maxLenght max array length (optional). If not indicated
  * Constants.HIST_MAX_LENGTH is used
  */
-export const pushElementInFixedQueue = (array, element, maxLenght = Constants.HIST_MAX_LENGTH) => {
+export const pushElementInFixedQueue = (array, element, maxLenght = CONSTANTS.HIST_MAX_LENGTH) => {
   array.push(element);
   if (array.length > maxLenght) {
     array.shift();
@@ -112,17 +112,22 @@ export const getNodeFromObservation = observation => ({
     viewerIdx: observation.viewerIdx,
     viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
     children: [],
-    tickable: observation.viewerIdx !== null && !observation.empty,
-    disabled: observation.empty,
-    notified: observation.notified || observation.previouslyNotified,
+    childrenCount: observation.childrenCount,
+    siblingsCount: observation.siblingsCount,
+    tickable: (observation.viewerIdx !== null && !observation.empty)
+      || (observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount > 0),
+    disabled: observation.empty
+      && (observation.observationType !== OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount === 0),
     empty: observation.empty, // disabled can change
     actions: observation.actions,
-    header: 'default',
+    header: observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'folder' : 'default',
     folderId: observation.folderId,
     main: observation.main,
     exportFormats: observation.exportFormats,
     rootContextId: observation.rootContextId,
     observationType: observation.observationType,
+    ...(observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP && { childrenLoaded: 0 }),
+    ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
   },
   parentId: observation.folderId === null ? observation.parentId : observation.folderId,
 });
@@ -222,19 +227,19 @@ export async function getContextGeometry(contextObservation) {
  * @param errorCallback callback to call if error
  */
 export const getAxiosContent = (uid, url, parameters, callback, errorCallback = null) => {
-  store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: uid }, { root: true });
+  store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: uid }, { root: true });
 
   axiosInstance.get(url, parameters)
     .then((response) => {
       if (response) {
         callback(response, () => {
-          store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: uid }, { root: true });
+          store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: uid }, { root: true });
         });
       }
     })
     .catch((error) => {
       store.dispatch('view/setSpinner', {
-        ...Constants.SPINNER_ERROR,
+        ...SPINNER_CONSTANTS.SPINNER_ERROR,
         owner: uid,
         errorMessage: error,
       }, { root: true });
@@ -296,10 +301,10 @@ export async function getLayerObject(observation, { viewport = null /* , project
     // z-index offset = 0, raster is down
     observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_RASTER;
     if (viewport === null) {
-      viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * Constants.PARAM_VIEWPORT_MULTIPLIER;
+      viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MULTIPLIER;
       // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
-    } else if (viewport > Constants.PARAM_VIEWPORT_MAX_SIZE) {
-      viewport = Constants.PARAM_VIEWPORT_MAX_SIZE;
+    } else if (viewport > GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MAX_SIZE) {
+      viewport = GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MAX_SIZE;
     }
     const layerExtent = geometry.getExtent();
     const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
@@ -312,10 +317,10 @@ export async function getLayerObject(observation, { viewport = null /* , project
       url,
       style: MAP_STYLES.POLYGON_OBSERVATION_STYLE,
       imageLoadFunction: (imageWrapper, src) => {
-        store.dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: src }, { root: true });
+        store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: src }, { root: true });
         axiosInstance.get(src, {
           params: {
-            format: Constants.GEOMTYP_RASTER,
+            format: GEOMETRY_CONSTANTS.TYPE_RASTER,
             viewport,
           },
           responseType: 'blob',
@@ -327,7 +332,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
               reader.onload = () => {
                 const image = imageWrapper.getImage();
                 image.src = reader.result;
-                store.dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: src }, { root: true });
+                store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: src }, { root: true });
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
@@ -358,7 +363,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
               };
               reader.onerror = (error) => {
                 store.dispatch('view/setSpinner', {
-                  ...Constants.SPINNER_ERROR,
+                  ...SPINNER_CONSTANTS.SPINNER_ERROR,
                   owner: src,
                   errorMessage: error,
                 }, { root: true });
@@ -367,7 +372,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
           })
           .catch((error) => {
             store.dispatch('view/setSpinner', {
-              ...Constants.SPINNER_ERROR,
+              ...SPINNER_CONSTANTS.SPINNER_ERROR,
               owner: src,
               errorMessage: error,
             }, { root: true });
@@ -411,20 +416,6 @@ export async function getLayerObject(observation, { viewport = null /* , project
   return vectorLayer;
 }
 
-/**
- * DEFAULT Viewer on start
- */
-export const OBSERVATION_DEFAULT = {
-  shapeType: 'POINT',
-  encodedShape: 'POINT (40.299841 9.343971)',
-  id: null,
-  label: 'DEFAULT',
-  parentId: -1,
-  visible: true,
-  spatialProjection: 'EPSG:4326',
-  observationType: Constants.OBSTYP_INITIAL,
-};
-
 const Helpers = {
   isRasterObservation,
   pushElementInFixedQueue,
@@ -437,4 +428,4 @@ const Helpers = {
   getLayerObject,
 };
 
-export { Constants, Helpers };
+export { Helpers };

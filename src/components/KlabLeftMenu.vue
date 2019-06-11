@@ -67,7 +67,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { LEFTMENU_VISIBILITY, LEFTMENU_COMPONENTS, CUSTOM_EVENTS } from 'shared/Constants';
+import { LEFTMENU_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import HandleTouch from 'shared/HandleTouchMixin';
 import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
@@ -101,10 +101,10 @@ export default {
       'leftMenuState',
     ]),
     logShowed() {
-      return this.leftMenuContent === LEFTMENU_COMPONENTS.LOG_COMPONENT;
+      return this.leftMenuContent === LEFTMENU_CONSTANTS.LOG_COMPONENT;
     },
     maximized() {
-      return this.leftMenuState === LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED && this.leftMenuContent;
+      return this.leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED && this.leftMenuContent;
     },
   },
   methods: {
@@ -117,8 +117,8 @@ export default {
         this.setLeftMenuContent(this.mainViewer.leftMenuContent);
         this.setLeftMenuState(this.mainViewer.leftMenuState);
       } else {
-        this.setLeftMenuContent(LEFTMENU_COMPONENTS.LOG_COMPONENT);
-        this.setLeftMenuState(LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED);
+        this.setLeftMenuContent(LEFTMENU_CONSTANTS.LOG_COMPONENT);
+        this.setLeftMenuState(LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED);
       }
     },
     askForSuggestion(event) {
@@ -126,7 +126,7 @@ export default {
     },
   },
   created() {
-    this.LEFTMENU_VISIBILITY = LEFTMENU_VISIBILITY;
+    this.LEFTMENU_VISIBILITY = LEFTMENU_CONSTANTS;
   },
 };
 </script>

@@ -71,7 +71,7 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import Constants, { MATCH_TYPES, SEMANTIC_TYPES } from 'shared/Constants';
+import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS } from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -312,18 +312,18 @@ export default {
         queryString: this.actualSearchString, // terms split space
       }, this.$store.state.data.session).body);
       this.setSpinner({
-        ...Constants.SPINNER_LOADING,
+        ...SPINNER_CONSTANTS.SPINNER_LOADING,
         owner: this.$options.name,
       });
       this.doneFunc = done;
       this.searchTimeout = setTimeout(() => {
         this.setSpinner({
-          ...Constants.SPINNER_ERROR,
+          ...SPINNER_CONSTANTS.SPINNER_ERROR,
           owner: this.$options.name,
           errorMessage: this.$t('errors.searchTimeout'),
           time: 2,
           then: {
-            ...Constants.SPINNER_STOPPED,
+            ...SPINNER_CONSTANTS.SPINNER_STOPPED,
           },
         });
         this.doneFunc([]);
@@ -454,7 +454,7 @@ export default {
         console.warn(`Something strange was happened: differents search context ids:\n
         actual: ${this.searchContextId} / received: ${contextId}`);
         this.setSpinner({
-          ...Constants.SPINNER_ERROR,
+          ...SPINNER_CONSTANTS.SPINNER_ERROR,
           owner: this.$options.name,
           errorMessage: 'Different search context id',
         });
@@ -473,7 +473,7 @@ export default {
         console.warn(`Result discarded for bad request id:\n
         actual: ${this.searchRequestId} / received: ${requestId}\n`);
         this.setSpinner({
-          ...Constants.SPINNER_ERROR,
+          ...SPINNER_CONSTANTS.SPINNER_ERROR,
           owner: this.$options.name,
           errorMessage: 'Different search request id',
         });
@@ -530,7 +530,7 @@ export default {
           timeout: 1000,
         });
       }
-      this.setSpinner({ ...Constants.SPINNER_STOPPED, owner: this.$options.name });
+      this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: this.$options.name });
       Vue.nextTick(() => {
         this.doneFunc(results);
         this.autocompleteEl.keyboardIndex = 0;

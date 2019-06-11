@@ -1,25 +1,46 @@
 /**
  * Useful constants in app
  */
-export const COLORS = {
-  SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)', // $main-control-main-color
-  SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)', // $main-control-yellow
-  SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
-  SPINNER_ERROR_COLOR: 'negative',
+
+/**
+ * Constants of application
+ */
+export const CONSTANTS = {
+  /**
+   * Used to centralize the default empty map selection
+   * @type {{pixelSelected: null, layerSelected: null, value: null}}
+   */
+  EMPTY_MAP_SELECTION: {
+    pixelSelected: null,
+    layerSelected: null,
+    value: null,
+    locked: false,
+  },
+
+  /**
+   * Max length of an array contains history (f.e. log)
+   */
+  HIST_MAX_LENGTH: 50,
+
+  /**
+   * Default children to ask for
+   */
+  CHILDREN_TO_ASK_FOR: 25,
 };
-export const LEFTMENU_VISIBILITY = {
+
+export const LEFTMENU_CONSTANTS = {
+  /**
+   * Left menu visibility
+    */
   LEFTMENU_MAXSIZE: 512,
   LEFTMENU_MINSIZE: 80,
   LEFTMENU_MAXIMIZED: 'max',
   LEFTMENU_MINIMIZED: 'min',
   LEFTMENU_HIDDEN: 'hidden',
-};
-
-/**
- * The viewers asociated component for left menu
- * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
- */
-export const LEFTMENU_COMPONENTS = {
+  /**
+   * The viewers associated component for left menu
+   * @type {{DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}}
+   */
   DATA_VIEWER_COMPONENT: 'klab-main-control',
   DOCKED_DATA_VIEWER_COMPONENT: 'docked-main-control',
   REPORT_VIEWER_COMPONENT: 'reports-details',
@@ -45,32 +66,32 @@ export const LEFTMENU_COMPONENTS = {
 export const VIEWERS = {
   DATA_VIEWER: {
     name: 'DataViewer',
-    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_HIDDEN,
-    leftMenuContent: LEFTMENU_COMPONENTS.DATA_VIEWER_COMPONENT,
+    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,
+    leftMenuContent: LEFTMENU_CONSTANTS.DATA_VIEWER_COMPONENT,
     mainControl: true,
   },
   DOCKED_DATA_VIEWER: {
     name: 'DataViewer',
-    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MAXIMIZED,
-    leftMenuContent: LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT,
+    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED,
+    leftMenuContent: LEFTMENU_CONSTANTS.DOCKED_DATA_VIEWER_COMPONENT,
     mainControl: false,
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
-    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
-    leftMenuContent: LEFTMENU_COMPONENTS.REPORT_VIEWER_COMPONENT,
+    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_CONSTANTS.REPORT_VIEWER_COMPONENT,
     mainControl: false,
   },
   DATAFLOW_VIEWER: {
     name: 'DataflowViewer',
-    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
-    leftMenuContent: LEFTMENU_COMPONENTS.DATAFLOW_VIEWER_COMPONENT,
+    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_CONSTANTS.DATAFLOW_VIEWER_COMPONENT,
     mainControl: false,
   },
   PROVENANCE_VIEWER: {
     name: 'ProvenanceViewer',
-    leftMenuState: LEFTMENU_VISIBILITY.LEFTMENU_MINIMIZED,
-    leftMenuContent: LEFTMENU_COMPONENTS.PROVENANCE_VIEWER_COMPONENT,
+    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
+    leftMenuContent: LEFTMENU_CONSTANTS.PROVENANCE_VIEWER_COMPONENT,
     mainControl: false,
   },
 };
@@ -109,17 +130,6 @@ export const VIEWER_COMPONENTS = {
     hideable: false,
     forceNew: false,
   },
-};
-
-/**
- * Used to centralize the default empty map selection
- * @type {{pixelSelected: null, layerSelected: null, value: null}}
- */
-export const EMPTY_MAP_SELECTION = {
-  pixelSelected: null,
-  layerSelected: null,
-  value: null,
-  locked: false,
 };
 
 export const MATCH_TYPES = {
@@ -176,7 +186,6 @@ export const MATCH_TYPES = {
 /**
  * Semantic Types
  */
-
 export const SEMANTIC_TYPES = {
   QUALITY: {
     label: 'Quality',
@@ -278,31 +287,21 @@ export const graphDefaultData = {
   },
 };
 
-export default {
-  EMPTY_MAP_SELECTION,
-  /**
-   * Max length of an array contains history (f.e. log)
-   */
-  HIST_MAX_LENGTH: 50,
-
-  /**
-   * Default siblings to ask for
-   * substituted by store.data.siblingsToAskFor
-   */
-  // SIBLINGS_TO_ASK_FOR: 25,
-
-  /**
-   * Connections states
-   */
+/**
+ * Connections states
+ */
+export const CONNECTION_CONSTANTS = {
   CONNECTION_UNKNOWN: 'UNKNOWN',
   CONNECTION_UP: 'UP',
   CONNECTION_DOWN: 'DOWN',
   CONNECTION_WORKING: 'WORKING',
   CONNECTION_ERROR: 'ERROR',
+};
 
-  /**
-   * Messages types
-   */
+/**
+ * Message types
+ */
+export const MESSAGE_TYPES = {
   TYPE_DEBUG: 'debug',
   TYPE_WARNING: 'warning',
   TYPE_ERROR: 'error',
@@ -310,38 +309,103 @@ export default {
 
   TYPE_MESSAGE: 'MSG',
   TYPE_ALL: 'ALL',
+};
 
+/**
+ * Observation types
+ */
+export const OBSERVATION_CONSTANTS = {
+  TYPE_PROCESS: 'PROCESS',
+  TYPE_STATE: 'STATE',
+  TYPE_SUBJECT: 'SUBJECT',
+  TYPE_CONFIGURATION: 'CONFIGURATION',
+  TYPE_EVENT: 'EVENT',
+  TYPE_RELATIONSHIP: 'RELATIONSHIP',
+  TYPE_GROUP: 'GROUP',
+  TYPE_INITIAL: 'INITIAL', // wildcard for initial state
+};
+
+/**
+ * DEFAULT Viewer on start
+ */
+export const OBSERVATION_DEFAULT = {
+  shapeType: 'POINT',
+  encodedShape: 'POINT (40.299841 9.343971)',
+  id: null,
+  label: 'DEFAULT',
+  parentId: -1,
+  visible: true,
+  spatialProjection: 'EPSG:4326',
+  observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
+};
+
+/**
+ * Value types
+ */
+export const VALUE_CONSTANTS = {
+  TYPE_VOID: 'VOID',
+  TYPE_NUMBER: 'NUMBER',
+  TYPE_BOOLEAN: 'BOOLEAN',
+  TYPE_CATEGORY: 'CATEGORY',
+  TYPE_DISTRIBUTION: 'DISTRIBUTION',
+};
+
+/**
+ * Constants relatives to observations geometry
+ */
+export const GEOMETRY_CONSTANTS = {
   /**
-   * Observation types
+   * Geometries types
    */
-  OBSTYP_PROCESS: 'PROCESS',
-  OBSTYP_STATE: 'STATE',
-  OBSTYP_SUBJECT: 'SUBJECT',
-  OBSTYP_CONFIGURATION: 'CONFIGURATION',
-  OBSTYP_EVENT: 'EVENT',
-  OBSTYP_RELATIONSHIP: 'RELATIONSHIP',
-  OBSTYP_INITIAL: 'INITIAL', // wildcard for initial state
-
+  TYPE_RASTER: 'RASTER',
+  TYPE_SHAPE: 'SHAPE',
+  TYPE_SCALAR: 'SCALAR',
+  TYPE_TIMESERIES: 'TIMESERIES',
+  TYPE_NETWORK: 'NETWORK',
+  TYPE_PROPORTIONS: 'PROPORTIONS',
   /**
-   * Value types
+   * Shapes types
    */
-  VALTYP_VOID: 'VOID',
-  VALTYP_NUMBER: 'NUMBER',
-  VALTYP_BOOLEAN: 'BOOLEAN',
-  VALTYP_CATEGORY: 'CATEGORY',
-  VALTYP_DISTRIBUTION: 'DISTRIBUTION',
+  SHAPE_POLYGON: 'POLYGON',
+  SHAPE_POINT: 'POINT',
+  /**
+   * Viewport constants
+   */
+  PARAM_VIEWPORT_SIZE: 800, // default viewport for image layer
+  PARAM_VIEWPORT_MAX_SIZE: 7680, // 8K, possibly highest on August 2018
+  PARAM_VIEWPORT_MULTIPLIER: 2, // default viewport multiplier
 
-  GEOMTYP_RASTER: 'RASTER',
-  GEOMTYP_SHAPE: 'SHAPE',
-  GEOMTYP_SCALAR: 'SCALAR',
-  GEOMTYP_TIMESERIES: 'TIMESERIES',
-  GEOMTYP_NETWORK: 'NETWORK',
-  GEOMTYP_PROPORTIONS: 'PROPORTIONS',
-  GEOMTYP_FOLDER: 'FOLDER', // used only in frontend
+};
 
-  MATCH_TYPES,
-  SEMANTIC_TYPES,
+/**
+ * Constants for fron end part only
+ */
+export const FRONT_END_CONSTANTS = {
+  COLOR_PRIMARY: 'primary',
+  COLOR_SECONDARY: 'secondary',
+  COLOR_TERTIARY: 'tertiary',
+  COLOR_POSITIVE: 'positive',
+  COLOR_NEGATIVE: 'negative',
+  COLOR_INFO: 'info',
+  COLOR_WARNING: 'warning',
+  COLOR_LIGHT: 'light',
+  COLOR_DARK: 'dark',
+  COLOR_FADED: 'faded',
+};
 
+export const APP_PARAM_CONSTANTS = {
+  /**
+   * APP params
+   */
+  PARAMS_NOTIFIED: 'notified',
+  PARAMS_NOTIFIED_ONLY: 'only',
+  PARAMS_NOTIFIED_ALL: 'all',
+};
+
+/**
+ * Constants relative to web page
+ */
+export const WEB_CONSTANTS = {
   /**
    * URL params
    */
@@ -352,10 +416,6 @@ export default {
   PARAMS_LOG: 'log',
   PARAMS_LOG_HIDDEN: 'hidden',
   PARAMS_LOG_VISIBLE: 'visible',
-  PARAMS_NOTIFIED: 'notified',
-  PARAMS_NOTIFIED_ONLY: 'only',
-  PARAMS_NOTIFIED_ALL: 'all',
-
   /**
    * Cookies name
    */
@@ -367,44 +427,32 @@ export default {
   COOKIE_NOTIFIED: 'klab_notified',
   COOKIE_MAPDEFAULT: 'klab_mapdefault',
   COOKIE_SAVELOCATION: 'klab_saveLocation',
+};
 
-  /**
-   * Shapes types
-   */
-  SHAPE_POLYGON: 'POLYGON',
-  SHAPE_POINT: 'POINT',
+export const SPINNER_COLORS = {
+  SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)', // $main-control-main-color
+  SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)', // $main-control-yellow
+  SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
+  SPINNER_ERROR_COLOR: 'negative',
+};
 
-  PARAM_VIEWPORT_SIZE: 800, // default viewport for image layer
-  PARAM_VIEWPORT_MAX_SIZE: 7680, // 8K, possibly highest on August 2018
-  PARAM_VIEWPORT_MULTIPLIER: 2, // default viewport multiplier
-
-  COLOR_PRIMARY: 'primary',
-  COLOR_SECONDARY: 'secondary',
-  COLOR_TERTIARY: 'tertiary',
-  COLOR_POSITIVE: 'positive',
-  COLOR_NEGATIVE: 'negative',
-  COLOR_INFO: 'info',
-  COLOR_WARNING: 'warning',
-  COLOR_LIGHT: 'light',
-  COLOR_DARK: 'dark',
-  COLOR_FADED: 'faded',
-
+export const SPINNER_CONSTANTS = {
   SPINNER_LOADING: {
-    color: COLORS.SPINNER_LOADING_COLOR,
+    color: SPINNER_COLORS.SPINNER_LOADING_COLOR,
     animated: true,
   },
 
   SPINNER_STOPPED: {
-    color: COLORS.SPINNER_STOPPED_COLOR,
+    color: SPINNER_COLORS.SPINNER_STOPPED_COLOR,
     animated: false,
   },
 
   SPINNER_ERROR: {
-    color: COLORS.SPINNER_ERROR_COLOR,
+    color: SPINNER_COLORS.SPINNER_ERROR_COLOR,
     animated: false,
     time: 2,
     then: {
-      color: COLORS.SPINNER_STOPPED_COLOR,
+      color: SPINNER_COLORS.SPINNER_STOPPED_COLOR,
       animated: false,
     },
   },
@@ -454,4 +502,30 @@ export const SETTING_NAMES = {
   INTERACTIVE_MODE: 'InteractiveMode',
   LOCK_SPACE: 'LockSpace',
   LOCK_TIME: 'LockTime',
+};
+
+export default {
+  CONSTANTS,
+  LEFTMENU_CONSTANTS,
+  VIEWERS,
+  VIEWER_COMPONENTS,
+  MATCH_TYPES,
+  SEMANTIC_TYPES,
+  graphDefaultData,
+  CONNECTION_CONSTANTS,
+  MESSAGE_TYPES,
+  OBSERVATION_CONSTANTS,
+  OBSERVATION_DEFAULT,
+  VALUE_CONSTANTS,
+  GEOMETRY_CONSTANTS,
+  FRONT_END_CONSTANTS,
+  APP_PARAM_CONSTANTS,
+  WEB_CONSTANTS,
+  SPINNER_COLORS,
+  SPINNER_CONSTANTS,
+  FAKE_TEXTS,
+  DATAFLOW_STATUS,
+  CUSTOM_EVENTS,
+  SCALE_TYPE,
+  SETTING_NAMES,
 };

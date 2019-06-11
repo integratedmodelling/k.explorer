@@ -1,5 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
-import { Constants, findNodeById, getAxiosContent, getNodeFromObservation, OBSERVATION_DEFAULT } from 'shared/Helpers';
+import { findNodeById, getAxiosContent, getNodeFromObservation } from 'shared/Helpers';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT } from 'shared/Constants';
 
 export default {
   /**
@@ -37,7 +38,7 @@ export default {
         });
       }
       console.log('ADDED SEPARATOR');
-      dispatch('view/addToKlabLog', { type: Constants.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
+      dispatch('view/addToKlabLog', { type: MESSAGE_TYPES.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
     } else {
       console.warn('Try to reset null context');
     }
@@ -51,7 +52,7 @@ export default {
     console.info(`Ask for context to restore ${contextId}`);
     axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
       params: {
-        collapseSiblings: true,
+        childLevel: 1,
       },
     }).then(async ({ data: context }) => {
       context.restored = true;
@@ -79,10 +80,10 @@ export default {
           });
         }
       }
-      dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
+      dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
     }).catch((error) => {
       dispatch('view/setSpinner', {
-        ...Constants.SPINNER_ERROR,
+        ...SPINNER_CONSTANTS.SPINNER_ERROR,
         owner: contextId,
         errorMessage: error,
       }, { root: true });
@@ -135,137 +136,51 @@ export default {
     });
   }),
 
-  //  restoreSession: () => {
-  /*
-      console.log(`Ask for context to restore ${contextId}`);
-      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {})
-        .then(({ data: context }) => {
-          dispatch('setContext', context);
-          /*
-          if (state.orphans.length > 0) {
-            for (let i = state.orphans.length - 1; i >= 0; i--) {
-              if (findNodeById(state.tree, state.orphans[i].id) !== null) {
-                state.orphans.splice(i, 1);
-              }
-              if (state.orphans[i].parentId === context.id
-                  || findNodeById(state.tree, state.orphans[i].parentId) !== null) {
-                dispatch('addObservation', { observation: state.orphans.splice(i, 1) });
-              }
-            }
-          }
-          *
-        });
-      */
-  // },
-
-  /**
-   * Add an observation do this:
-   * Add observation to store.observations
-   * Assign a viewer for observation
-   * Add observation to tree
-   * If there are siblings, add folder to tree and ask for them
-   * If there are childrens, ask for them and repeat operation
-   * @param observation observation to add
-   * @param folderId if null and has siblings, we must ask for them, else parentId is folderId
-   * @param main indicate if is main viewer
-   * @param toTree indicate if observation will be added to tree
-   * @param visible visibility
-   * @main if true, indicate that this observation set his viewer as main
-   */
-  addObservation: ({ commit, state, dispatch, rootGetters }, {
+  addObservation: ({ commit, state, dispatch }, {
     observation,
     folderId = null,
     main = false,
     toTree = true,
     visible = false,
     restored = false,
-  }) => new Promise((resolve) => {
+  }) => new Promise((resolve, reject) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
-    if (typeof existingObservation !== 'undefined') { // observation exists in observations but in tree?
-      existingObservation.main = observation.main; // is possible that main was changed to true
-      // If a complex model that isn't completely calculate is part of a reloaded context, the main observation
-      // is notified but not still calculate. We need to check if previouslyNotified change from false to true
-      // TODO engine must doesn't send it
-      existingObservation.notified = existingObservation.notified || observation.previouslyNotified;
-      if (existingObservation.main && existingObservation.folderId !== null && existingObservation.folderId.indexOf('ff_') === 0) {
-        // is a main observations in a fake folder, so if main is true we need to translate value to folder
-        const folder = findNodeById(state.tree, existingObservation.folderId);
-        folder.main = true;
-        existingObservation.main = false;
-      }
-      // check if observation is in tree or is a lazy tree node
-      const self = findNodeById(state.tree, observation.id);
-      if (self !== null) {
-        // if is in tree, I update main attribute
-        self.main = existingObservation.main;
-      } else {
-        // create a new node using existingObservation (observation gain a lot of attribute in her first time)
-        commit('ADD_NODE', getNodeFromObservation(existingObservation));
-      }
-      return resolve();
+    if (typeof existingObservation !== 'undefined') {
+      // console.error(`Observation exists!!! ${existingObservation.label}`);
+      dispatch('view/addToKexplorerLog', {
+        type: MESSAGE_TYPES.TYPE_WARNING,
+        payload: {
+          message: `Existing observation received: ${existingObservation.label}`,
+        },
+        important: true,
+      }, { root: true });
+      return reject(new Error(`Existing observation received: ${existingObservation.label}`));
     }
     dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = visible;
       observation.top = false;
       observation.zIndex = 0;
-      observation.layerOpacity = 1;
-      observation.colormap = null;
-
-      let needSiblings = false;
-      if (observation.siblingCount > 1 && folderId === null) {
-        folderId = `ff_${observation.id}`;
-        needSiblings = true;
-      }
-
+      observation.layerOpacity = observation.layerOpacity || 1;
+      observation.colormap = observation.colormap || null;
       observation.folderId = folderId;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
-      if (observation.observationType === Constants.OBSTYP_INITIAL) {
+      if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {
         // is default observation, nothing needed
         return resolve();
       }
-
-      if (needSiblings) {
-        // if has siblings, create folder and ask for them
-        // fake folder id is ff_[id of observation with siblings]
-        commit('ADD_NODE', {
-          node: {
-            id: folderId,
-            label: `${observation.observable} folder`,
-            type: Constants.GEOMTYP_FOLDER,
-            header: 'folder',
-            siblingCount: observation.siblingCount,
-            siblingsLoaded: 1,
-            children: [],
-            main: observation.main,
-            rootContextId: observation.rootContextId,
-            notified: observation.notified || observation.previouslyNotified,
-            exportFormats: observation.empty ? undefined : observation.exportFormats,
-            firstChildId: observation.id,
-            viewerIdx: observation.viewerIdx,
-            viewerType: rootGetters['view/viewer'](observation.viewerIdx).type,
-          },
-          parentId: observation.parentId,
-        });
-        needSiblings = true;
-      }
-
       // ask for children
       if (observation.children.length > 0) {
         observation.disabled = false; // if is empty but has children, cannot be disabled
         observation.children.forEach((child) => {
-          dispatch('addObservation', { observation: child, toTree });
+          dispatch('addObservation', { observation: child });
         });
-      }
-      // ask for siblings
-      if (needSiblings) {
-        dispatch('askForSiblings', {
-          nodeId: observation.id,
-          notified: observation.notified || observation.previouslyNotified,
-          folderId,
+      } else if (observation.childrenCount > 0) {
+        dispatch('askForChildren', {
+          folderId: observation.id,
           offset: 0,
-          count: state.siblingsToAskFor,
+          count: state.childrenToAskFor,
         });
       }
       if (toTree) {
@@ -281,64 +196,77 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit }, { taskId, fromTask }) => {
+  recalculateTree: ({ commit/* , dispatch */ }, { taskId, fromTask }) => {
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
     return new Promise((resolve) => {
       commit('RECALCULATE_TREE', { taskId, fromTask });
+      // dispatch('askForChildrenOfTask', { taskId });
       resolve();
     });
   },
 
-  askForSiblings: ({ commit, dispatch, state /* , getters */ }, {
-    nodeId,
+  askForChildrenOfTask: ({ dispatch, state }, { taskId }) => {
+    // ask for children
+    const filtered = state.observations.filter(observation => observation.taskId === taskId);
+    filtered.forEach((observation) => {
+      if (observation.childrenCount > 0 && observation.children.length < observation.childrenCount) {
+        dispatch('askForChildren', {
+          folderId: observation.id,
+          total: observation.childrenCount,
+          offset: 0,
+        });
+      }
+    });
+  },
+
+  askForChildren: ({ commit, dispatch, state /* , getters */ }, {
     folderId,
+    total,
     offset = 0,
-    count = state.siblingsToAskFor,
-    toTree = true,
+    count = state.childrenToAskFor, // if - we ask for all
+    toTree = true, // indicate that we ask for siblings but we don't want to put them on tree (only for view on map)
     visible = false,
     notified = true,
   }) => new Promise((resolve) => {
-    console.debug(`Ask for sibling of node ${nodeId} in folder ${folderId}: count:${count} / offset ${offset}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}siblings/${nodeId}`, {
+    console.debug(`Ask for children of node ${folderId}: count:${count} / offset ${offset}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${folderId}`, {
       params: {
         count,
         offset,
-        childLevel: -1,
       },
     })
       .then(({ data }) => {
-        if (data && data.siblingCount > 1 && data.siblings) {
-          dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: nodeId }, { root: true }).then(() => {
-            if (data.siblings && data.siblings.length > 0) {
-              data.siblings.forEach((sibling, index, array) => {
-                sibling.notified = notified;
-                dispatch('addObservation', {
-                  observation: sibling,
-                  folderId,
-                  toTree,
-                  visible,
-                }).then(() => {
-                  if (index === array.length - 1) {
+        if (data && data.length > 0) {
+          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: folderId }, { root: true }).then(() => {
+            data.forEach((child, index, array) => {
+              child.notified = notified;
+              child.siblingsCount = total; // the total of element for [INDEX] of [TOTAL]
+              dispatch('addObservation', {
+                observation: child,
+                folderId,
+                toTree,
+                visible,
+              }).then(() => {
+                if (index === array.length - 1) {
+                  if (toTree) {
                     // last element
-                    if (toTree) {
-                      commit('ADD_LAST', {
-                        folderId,
-                        observationId: sibling.id,
-                        offsetToAdd: data.siblings.length,
-                        total: data.siblingCount,
-                      });
-                    }
-                    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: nodeId }, { root: true });
-                    resolve();
+                    commit('ADD_LAST', {
+                      folderId,
+                      observationId: child.id,
+                      offsetToAdd: data.length,
+                      total,
+                    });
                   }
-                });
+                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: folderId }, { root: true });
+                  resolve();
+                }
               });
-              const folder = findNodeById(state.tree, folderId);
-              if (folder !== null) {
-                folder.siblingsLoaded += data.siblings.length;
-              }
+            });
+            const parent = findNodeById(state.tree, folderId);
+            if (parent !== null) {
+              parent.childrenLoaded += data.length;
             }
           });
         }
@@ -353,11 +281,22 @@ export default {
    * @param visible hide (false) or show (true)
    */
   setVisibility: ({ commit, dispatch }, { node, visible }) => {
-    dispatch('view/setMainDataViewer', { viewerIdx: node.viewerIdx, viewerType: node.viewerType, visible }, { root: true });
-    commit(node.type === Constants.GEOMTYP_FOLDER ? 'SET_FOLDER_VISIBLE' : 'SET_VISIBLE', {
-      nodeId: node.id,
-      visible,
-    });
+    if (node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+      commit('SET_FOLDER_VISIBLE', {
+        nodeId: node.id,
+        visible,
+      });
+    } else {
+      dispatch('view/setMainDataViewer', {
+        viewerIdx: node.viewerIdx,
+        viewerType: node.viewerType,
+        visible,
+      }, { root: true });
+      commit('SET_VISIBLE', {
+        nodeId: node.id,
+        visible,
+      });
+    }
   },
 
   selectNode: ({ dispatch, state }, selectedId) => {

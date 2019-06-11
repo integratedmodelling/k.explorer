@@ -6,10 +6,10 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { OBSERVATION_DEFAULT, Constants } from 'shared/Helpers';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
+import { MESSAGE_TYPES, OBSERVATION_DEFAULT } from 'shared/Constants';
 
 export default {
   name: 'App',
@@ -115,13 +115,18 @@ export default {
   watch: {
     kexplorerLog() {
       const lastKexplorerLog = this.lastKexplorerLog();
-      if (lastKexplorerLog !== null && (lastKexplorerLog.type === Constants.TYPE_ERROR
-          || lastKexplorerLog.type === Constants.TYPE_WARNING || lastKexplorerLog.important)) {
+      if (lastKexplorerLog !== null && (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR
+          || lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING || lastKexplorerLog.important)) {
         this.$q.notify({
           message: lastKexplorerLog.payload.message,
-          type: lastKexplorerLog.type === Constants.TYPE_ERROR ? 'negative' : (lastKexplorerLog.type === Constants.TYPE_WARNING ? 'warning' : 'info'),
-          timeout: 1000,
+          type: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'negative' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'warning' : 'info'),
+          timeout: 1500,
         });
+        if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING) {
+          console.warn(lastKexplorerLog.payload.message);
+        } else if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR) {
+          console.error(lastKexplorerLog.payload.message);
+        }
       }
     },
   },

@@ -6,7 +6,7 @@
         <component :is="mainViewer.name"></component>
         <!-- </transition> -->
       </keep-alive>
-      <q-resize-observable @resize="setSiblingsToAskFor" />
+      <q-resize-observable @resize="setChildrenToAskFor" />
     </div>
     <div class="col-1 row">
       <klab-log v-if="logVisible"></klab-log>
@@ -47,7 +47,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, CONNECTION_CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -91,11 +91,11 @@ export default {
       'isInModalMode',
     ]),
     logVisible() {
-      return this.$logVisibility === this.$constants.PARAMS_LOG_VISIBLE;
+      return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
     },
     modalVisible: {
       get() {
-        return this.connectionState !== this.$constants.CONNECTION_UP;
+        return this.connectionState !== CONNECTION_CONSTANTS.CONNECTION_UP;
       },
       set(visible) {
         console.warn(`Try to set modalVisible as ${visible}`);
@@ -103,26 +103,26 @@ export default {
     },
     modalText() {
       return {
-        [this.$constants.CONNECTION_UNKNOWN]: this.$t('messages.connectionClosed'),
-        [this.$constants.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
-        [this.$constants.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
-        [this.$constants.CONNECTION_ERROR]: this.$t('errors.connectionError'),
+        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: this.$t('messages.connectionClosed'),
+        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
+        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
+        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: this.$t('errors.connectionError'),
       }[this.connectionState];
     },
     modalColor() {
       return {
-        [this.$constants.CONNECTION_UNKNOWN]: colors.getBrand('warning'),
-        [this.$constants.CONNECTION_DOWN]: colors.getBrand('warning'),
-        [this.$constants.CONNECTION_WORKING]: colors.getBrand('info'),
-        [this.$constants.CONNECTION_ERROR]: colors.getBrand('negative'),
+        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: colors.getBrand('warning'),
+        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: colors.getBrand('warning'),
+        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: colors.getBrand('info'),
+        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: colors.getBrand('negative'),
       }[this.connectionState];
     },
     modalAnimated() {
       return {
-        [this.$constants.CONNECTION_UNKNOWN]: false,
-        [this.$constants.CONNECTION_DOWN]: false,
-        [this.$constants.CONNECTION_WORKING]: true,
-        [this.$constants.CONNECTION_ERROR]: false,
+        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: false,
+        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: false,
+        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: true,
+        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: false,
       }[this.connectionState];
     },
   },
@@ -133,14 +133,14 @@ export default {
       'searchFocus',
       'setMainViewer',
     ]),
-    setSiblingsToAskFor() {
-      // calculate and set min results for siblings
+    setChildrenToAskFor() {
+      // calculate and set min results for children
       // we suppose that maxHeight is vh and childMinHeight are pixels
       const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
       const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
-      console.info(`Setted max siblings as ${minResults}`);
-      this.$store.state.data.siblingsToAskFor = minResults;
+      console.info(`Setted max children as ${minResults}`);
+      this.$store.state.data.childrenToAskFor = minResults;
     },
   },
   watch: {
@@ -171,7 +171,7 @@ export default {
         }
       }
     });
-    this.setSiblingsToAskFor();
+    this.setChildrenToAskFor();
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
       this.askForUndocking = ask;
     });

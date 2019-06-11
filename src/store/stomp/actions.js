@@ -1,4 +1,4 @@
-import Constants from 'shared/Constants';
+import { CONNECTION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import { parseAndExecute } from 'shared/MessagesParser';
 
 /**
@@ -7,15 +7,15 @@ import { parseAndExecute } from 'shared/MessagesParser';
 export default {
 
   stomp_onconnect: ({ commit }, frame) => {
-    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_UP);
+    commit('STOMP_CONNECTION_STATE', CONNECTION_CONSTANTS.CONNECTION_UP);
     commit('STOMP_RECONNECTIONS_ATTEMPT_RESET'); // Reset reconnections
     commit('STOMP_MESSAGE', frame);
   },
   stomp_onclose: ({ commit }) => {
-    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_DOWN);
+    commit('STOMP_CONNECTION_STATE', CONNECTION_CONSTANTS.CONNECTION_DOWN);
   },
   stomp_onerror: ({ commit }, error) => {
-    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_ERROR);
+    commit('STOMP_CONNECTION_STATE', CONNECTION_CONSTANTS.CONNECTION_ERROR);
     commit('STOMP_ERROR', error);
   },
   stomp_onmessage: (context, message) => {
@@ -31,7 +31,7 @@ export default {
   // mutations for reconnect methods
   stomp_reconnect: ({ commit }, count) => {
     commit('STOMP_RECONNECTIONS_ATTEMPT', count);
-    commit('STOMP_CONNECTION_STATE', Constants.CONNECTION_WORKING);
+    commit('STOMP_CONNECTION_STATE', CONNECTION_CONSTANTS.CONNECTION_WORKING);
   },
 
   stomp_onsend: ({ commit }, { message }) => {
@@ -48,18 +48,18 @@ export default {
 
   // TASKS LIFE
   taskStart: ({ commit, dispatch }, task) => {
-    dispatch('view/setSpinner', { ...Constants.SPINNER_LOADING, owner: task.id }, { root: true });
+    dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: task.id }, { root: true });
     commit('TASK_START', task);
     // commit('data/ADD_TASKID', task.id, { root: true }); this is managed by data/addObservation
   },
 
   taskAbort: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
-    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
+    dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
 
   taskEnd: ({ commit, dispatch }, task) => {
     commit('TASK_END', task);
-    dispatch('view/setSpinner', { ...Constants.SPINNER_STOPPED, owner: task.id }, { root: true });
+    dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: task.id }, { root: true });
   },
 };

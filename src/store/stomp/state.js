@@ -1,4 +1,4 @@
-import Constants from 'shared/Constants';
+import { CONNECTION_CONSTANTS } from 'shared/Constants';
 
 /**
  * In this state everything about stomp comm is stored.
@@ -10,7 +10,7 @@ export default {
   /**
    * Connection state
    */
-  connectionState: Constants.CONNECTION_UNKNOWN,
+  connectionState: CONNECTION_CONSTANTS.CONNECTION_UNKNOWN,
   /**
    * Reconnection counter if we are trying to reconnect
    */

@@ -117,7 +117,7 @@
 import { mapGetters, mapActions } from 'vuex';
 // import { Draggable } from 'draggable-vue-directive';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
-import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_VISIBILITY } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
 import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
@@ -166,7 +166,7 @@ export default {
       },
       dragging: false,
       askForDocking: false,
-      leftMenuMaximized: `${LEFTMENU_VISIBILITY.LEFTMENU_MAXSIZE}px`,
+      leftMenuMaximized: `${LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE}px`,
       boundingElement: undefined,
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
@@ -391,8 +391,10 @@ export default {
     .component-fade-leave-to
       opacity 0
 
+    /*
     .lot-of-flow
       transition top 0.05s ease 0s, left 0.05s ease 0s
+    */
 
     .mc-docking
       position fixed

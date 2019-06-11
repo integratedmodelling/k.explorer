@@ -10,7 +10,7 @@
 
 <script>
 import { QSelect, Cookies } from 'quasar';
-import Constants from 'shared/Constants';
+import { WEB_CONSTANTS } from 'shared/Constants';
 // import VueCookie from 'vue-cookie';
 
 // Vue.use(VueCookie);
@@ -31,7 +31,7 @@ export default {
     setLocale() {
       this.$i18n.locale = this.activeLocale;
       // change cookie
-      Cookies.set(Constants.COOKIE_LANG, this.activeLocale, {
+      Cookies.set(WEB_CONSTANTS.COOKIE_LANG, this.activeLocale, {
         expires: 30,
         path: '/',
       });

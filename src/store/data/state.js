@@ -1,4 +1,5 @@
 import Stack from 'classes/Stack';
+import { CONSTANTS } from 'shared/Constants';
 /**
  * Data states
  */
@@ -19,18 +20,18 @@ export default {
    * @property folderId: if has a folder, the id of it,
    * @property main: is a main observation (need for style)
    * @property children: array of children. Empty on node add
-   * @property siblingCount: siblings count in tree, need for show X of Y (is Y var)
-   * @property siblingsLoaded: siblings loaded at this moment
-   * @property idx: index of sibling to show X of Y (is X var)
+   * @property childrenCount: children count in tree, need for show X of Y (is Y var)
+   * @property childrenLoaded: children loaded at this moment
+   * @property idx: index of children to show X of Y (is X var)
    */
   tree: [],
 
   /**
-   * Last elements in folder that need more siblings
+   * Last elements in folder that need more children
    * LAST:
    * @property folderId: the folder id
    * @property observationId: the observation,
-   * @property offset: offset of element (last index),
+   * @property offsetToAdd: offset of element (last index),
    * @property total: real total we need,
    */
   lasts: [],
@@ -109,20 +110,67 @@ export default {
   },
   /**
    * Store of all observation data
-   * Observation will add a viewerIdx with the id of the assigned viewer
-   * OBSERVATION (only remarcables fields):
-   * id: id of observation, the same in tree
-   * shapeType: shape type
-   * encodedShape: WKF shape
-   * spatialProjection: spatial projection
-   * label: the label to show
-   * siblingCount: has siblings?
-   * folderId:
-   * folderLabel:
-   * children:
-   * siblings:
-   * viewerIdx: index of the viewer where is shows
-   * TODO update comment
+   Observatio object: {
+    "shapeType",
+   "encodedShape"
+   "spatialProjection"
+   "id"
+   "rootContextId"
+   "label"
+   "observable"
+   "valueType"
+   "observationType"
+   "semantics": [],
+   "geometryTypes": [],
+   "literalValue"
+   "traits": [],
+   "metadata": { ... },
+   "taskId"
+   "empty"
+   "style"
+   "main"
+   "primary"
+   "dataSummary"
+   "exportFormats": [
+   {
+     "label"
+     "value"
+     "adapter
+     "extension"
+   }
+   ],
+   "scaleReference"
+   "childrenCount"
+   "roles": [],
+   "observableType"
+   "parentId"
+   "children"
+   "actions": [
+   {
+     "actionLabel"
+     "actionId"
+     "downloadUrl"
+     "downloadFileExtension"
+     "enabled"
+     "separator"
+     "submenu": []
+   }
+   ],
+   "structure": [],
+   "contextTime"
+   "creationTime"
+   "urn"
+   "valueCount"
+   "previouslyNotified"
+   "lastUpdate"
+   "notified"
+   "viewerIdx"
+   "visible"
+   "top"
+   "zIndex"
+   "layerOpacity"
+   "colormap"
+   "folderId"
    */
   observations: [],
 
@@ -170,10 +218,10 @@ export default {
   searchResult: null,
 
   /**
-   * When we ask for siblings, we ask for a number that depends of view, but we store here for confort
+   * When we ask for children, we ask for a number that depends of view, but we store here for confort
    * and with a default value given from history
    */
-  siblingsToAskFor: 25,
+  childrenToAskFor: CONSTANTS.CHILDREN_TO_ASK_FOR,
 
   /**
    * Interactive mode on / off
