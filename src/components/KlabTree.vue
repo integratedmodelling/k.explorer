@@ -538,9 +538,8 @@ export default {
       .kt-q-tooltip
         background-color #333
 
-      .q-tree-node .q-tree-children
-        & > .q-tree-node-parent
-        & .q-tree-node-child
+      .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible
+        .q-tree-node-parent
           padding-left 1px
           .q-tree-node-header
             padding-left 0
@@ -549,16 +548,15 @@ export default {
               left -14px
             > i
               margin-right 2px
-          .q-tree-children .q-tree-node
-            &:after
-              left -17px
+          .q-tree-node-collapsible
+            .q-tree-children .q-tree-node
             .q-tree-node-header
-              padding-left 2px
+              padding-left 7px
               &:before
-                width 16px
-                left -18px
-              > i
-                margin-right 4px
+                width 25px
+                left -24px
+              &:after
+                left -17px
 
   @keyframes flash {
     0% { opacity: 1; }
