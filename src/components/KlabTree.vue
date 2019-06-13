@@ -375,7 +375,7 @@ export default {
             const node = this.lasts.find(l => l.folderId === selectedNode.id);
             this.askForChildren({
               folderId: node.folderId,
-              offset: selectedNode.childrenLoaded - 1,
+              offset: selectedNode.childrenLoaded,
               count: -1,
               toTree: false,
               visible: true,
