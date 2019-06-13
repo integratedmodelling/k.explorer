@@ -114,6 +114,7 @@ export const getNodeFromObservation = observation => ({
     children: [],
     childrenCount: observation.childrenCount,
     siblingsCount: observation.siblingsCount,
+    parentArtifactId: observation.parentArtifactId,
     tickable: (observation.viewerIdx !== null && !observation.empty)
       || (observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount > 0),
     disabled: observation.empty

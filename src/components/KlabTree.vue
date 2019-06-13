@@ -369,7 +369,7 @@ export default {
               node: selectedNode,
               visible: true,
             });
-            this.ticked.push(...(selectedNode.children.map(child => child.id)));
+            this.ticked.push(...(selectedNode.children.filter(child => child.parentArtifactId === selectedNode.id).map(child => child.id)));
           };
           if (!this.askingForChildren) {
             if (selectedNode.childrenLoaded < selectedNode.childrenCount) {

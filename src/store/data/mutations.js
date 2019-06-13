@@ -223,7 +223,9 @@ export default {
     const node = findNodeById(state.tree, nodeId);
     if (typeof node !== 'undefined' && node !== null && node.children.length > 0) {
       node.children.forEach((n) => {
-        n.ticked = visible;
+        if (n.parentArtifactId === node.id) {
+          n.ticked = visible;
+        }
       });
       node.ticked = visible;
     }
