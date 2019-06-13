@@ -34,6 +34,7 @@ export default {
       'dataflowStatuses',
       'contextId',
       'session',
+      'context',
     ]),
     reloadDataflow: {
       get() {
@@ -143,7 +144,7 @@ export default {
       if (action !== null && action.selectedElementsIDs) {
         const { length } = action.selectedElementsIDs;
         for (let i = length - 1; i >= 0; i -= 1) {
-          this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({ nodeId: action.selectedElementsIDs[i] }, this.session).body);
+          this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({ nodeId: action.selectedElementsIDs[i], contextId: this.context.id }, this.session).body);
         }
       }
     });
