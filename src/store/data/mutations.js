@@ -212,6 +212,10 @@ export default {
           o.top = false;
         }
       });
+      const folder = state.observations.find(o => o.id === nodeId);
+      if (typeof folder !== 'undefined') {
+        folder.visible = visible;
+      }
     } else {
       console.warn(`Folder with id ${nodeId} has no elements`);
     }

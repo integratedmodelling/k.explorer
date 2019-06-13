@@ -128,6 +128,7 @@ export default {
     ]),
     hasSlider() {
       return this.observationInfo.visible
+        && this.observationInfo.viewerIdx !== null
         && this.viewer(this.observationInfo.viewerIdx).type.component === VIEWER_COMPONENTS.VIEW_MAP.component;
     },
     hasHistogram() {

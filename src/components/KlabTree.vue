@@ -152,6 +152,7 @@ export default {
       'setVisibility',
       'selectNode',
       'askForChildren',
+      'addChildrenToTree',
       'setContext',
     ]),
     ...mapActions('view', [
@@ -370,21 +371,24 @@ export default {
             });
             this.ticked.push(...(selectedNode.children.map(child => child.id)));
           };
-          if (selectedNode.childrenLoaded < selectedNode.childrenCount && !this.askingForChildren) {
-            this.askingForChildren = true;
-            const node = this.lasts.find(l => l.folderId === selectedNode.id);
-            this.askForChildren({
-              folderId: node.folderId,
-              offset: selectedNode.childrenLoaded,
-              count: -1,
-              toTree: false,
-              visible: true,
-            }).then(() => {
-              this.askingForChildren = false;
+          if (!this.askingForChildren) {
+            if (selectedNode.childrenLoaded < selectedNode.childrenCount) {
+              this.askingForChildren = true;
+              const node = this.lasts.find(l => l.folderId === selectedNode.id);
+              this.askForChildren({
+                folderId: node.folderId,
+                offset: selectedNode.childrenLoaded,
+                count: -1,
+                toTree: false,
+                visible: true,
+                total: selectedNode.childrenCount,
+              }).then(() => {
+                this.askingForChildren = false;
+                tickAll();
+              });
+            } else {
               tickAll();
-            });
-          } else {
-            tickAll();
+            }
           }
         } else {
           this.setVisibility({ node: selectedNode, visible: true });
@@ -413,15 +417,28 @@ export default {
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
             this.askingForChildren = true;
             const folder = findNodeById(this.tree, last.folderId);
-            this.askForChildren({
-              folderId: last.folderId,
-              offset: last.offset,
-              visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
-            }).then(() => {
+            if (folder.children.length < folder.childrenLoaded) { // we have the children, only need to add to tree
+              this.addChildrenToTree({ folder });
+              this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
+                folderId: folder.id,
+                visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
+              });
               this.askingForChildren = false;
-              console.debug('KlabTree -> Asked for them');
-              this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, { folderId: last.folderId, visible: typeof folder.ticked === 'undefined' ? false : folder.ticked });
-            });
+            } else {
+              this.askForChildren({
+                folderId: last.folderId,
+                offset: last.offset,
+                visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
+                total: folder.childrenCount,
+              }).then(() => {
+                this.askingForChildren = false;
+                console.debug('KlabTree -> Asked for them');
+                this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
+                  folderId: last.folderId,
+                  visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
+                });
+              });
+            }
           }
         }
       });
@@ -440,23 +457,15 @@ export default {
         }
       }
     });
-    /*
-    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, ({ nodeId, state }) => {
-      console.warn('Im here');
-      if (typeof this.$refs['klab-tree'] !== 'undefined') {
-        this.$refs['klab-tree'].setTicked([nodeId], state);
-      }
-    });
-    */
     this.selected = this.treeSelected;
     this.ticked = this.treeTicked;
     this.expanded = this.treeExpanded;
   },
-  /*
-  destroyed() {
-    this.$eventBus.$off(CUSTOM_EVENTS.SHOW_NODE);
+
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.UPDATE_FOLDER);
   },
-  */
+
 };
 </script>
 <style lang="stylus">

@@ -181,6 +181,7 @@ export default {
           folderId: observation.id,
           offset: 0,
           count: state.childrenToAskFor,
+          total: observation.childrenCount,
         });
       }
       if (toTree) {
@@ -204,20 +205,6 @@ export default {
       commit('RECALCULATE_TREE', { taskId, fromTask });
       // dispatch('askForChildrenOfTask', { taskId });
       resolve();
-    });
-  },
-
-  askForChildrenOfTask: ({ dispatch, state }, { taskId }) => {
-    // ask for children
-    const filtered = state.observations.filter(observation => observation.taskId === taskId);
-    filtered.forEach((observation) => {
-      if (observation.childrenCount > 0 && observation.children.length < observation.childrenCount) {
-        dispatch('askForChildren', {
-          folderId: observation.id,
-          total: observation.childrenCount,
-          offset: 0,
-        });
-      }
     });
   },
 
@@ -274,6 +261,31 @@ export default {
       });
   }),
 
+  /**
+   * If we load children but we don't add to tree, we use the loaded observation to create the nodes
+   */
+  addChildrenToTree({ commit, state }, {
+    folder,
+    count = state.childrenToAskFor,
+  }) {
+    if (folder && folder !== null) {
+      const folderObservations = state.observations.filter(obs => obs.folderId === folder.id);
+      const total = folderObservations.length;
+      const offset = folder.children.length;
+      for (let i = offset, n = 0; i < total && n < count; i++, n++) {
+        const child = folderObservations[i];
+        commit('ADD_NODE', getNodeFromObservation(child));
+        if (n === count - 1 || i === total - 1) {
+          commit('ADD_LAST', {
+            folderId: folder.id,
+            observationId: child.id,
+            offsetToAdd: n + 1,
+            total: folder.childrenLoaded,
+          });
+        }
+      }
+    }
+  },
   /**
    * Show a node in a tree, this show the relative layer too or
    * apply a visibility to all folder (all observation yet not in tree) if isFolder is true
