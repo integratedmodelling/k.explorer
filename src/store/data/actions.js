@@ -338,6 +338,19 @@ export default {
     commit('SET_DATAFLOW_STATUS', { id, status });
   },
 
+  setDataflowInfo: ({ commit }, { id, html }) => {
+    if (id !== null && id !== '') {
+      const splitted = id.split('.');
+      const elementId = splitted[splitted.length - 1];
+      const elementTypes = splitted.slice(0, splitted.length - 1);
+      commit('SET_DATAFLOW_INFO', {
+        elementId,
+        elementTypes,
+        html,
+      });
+    }
+  },
+
   storeSearchResult: ({ commit }, results) => {
     commit('STORE_RAW_SEARCH_RESULT', results);
   },

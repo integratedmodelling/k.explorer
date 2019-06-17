@@ -44,6 +44,7 @@ export class ElkGraphJsonToSprotty {
         const sNode = <ElkNodeSchema> {
             type: 'node',
             id: elkNode.id,
+            nodeType: elkNode.id.split('.')[0],
             position: this.pos(elkNode),
             size: this.size(elkNode),
             status: elkNode.status || 'waiting',

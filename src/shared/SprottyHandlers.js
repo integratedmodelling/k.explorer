@@ -1,25 +1,33 @@
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { eventBus } from 'plugins/initApp';
-import { SelectAction, SelectCommand } from 'sprotty/lib';
+import { SelectCommand, MoveCommand } from 'sprotty/lib';
 
 const inversify = require('inversify');
 
 
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["handle", "initialize"] }] */
-class SelectActionHandler {
+class KlabActionHandler {
   handle(action) {
-    if (action instanceof SelectAction) {
-      eventBus.$emit(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, action);
+    switch (action.kind) {
+      case SelectCommand.KIND:
+        eventBus.$emit(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, action);
+        break;
+      case MoveCommand.KIND:
+        console.warn(`MOVE -> ${JSON.stringify(action, null, 4)}`);
+        break;
+      default:
+        console.warn(`Unknow action: ${action.kind}`);
+        break;
     }
   }
-}
-class SelectHandlerInitializer {
+
   initialize(registry) {
-    registry.register(SelectCommand.KIND, new SelectActionHandler());
+    registry.register(SelectCommand.KIND, this);
+    registry.register(MoveCommand.KIND, this);
   }
 }
 
-inversify.decorate(inversify.injectable(), SelectHandlerInitializer);
+inversify.decorate(inversify.injectable(), KlabActionHandler);
 
 // eslint-disable-next-line import/prefer-default-export
-export { SelectHandlerInitializer };
+export { KlabActionHandler };

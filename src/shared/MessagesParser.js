@@ -48,6 +48,14 @@ const PARSERS = {
     }
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
+  [IN.TYPE_DATAFLOWDOCUMENTATION]: ({ payload }, { dispatch }) => {
+    if (payload && payload !== null && payload.dataflowId && payload.htmlDescription) {
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', JSON.stringify(payload, null, 4));
+      dispatch('data/setDataflowInfo', { id: payload.dataflowId, html: payload.htmlDescription }, { root: true });
+    } else {
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, `Strange payload of dataflow element info received: ${JSON.stringify(payload, null, 4)}`);
+    }
+  },
   [IN.TYPE_NEWOBSERVATION]: ({ payload: observation }, vuexContext) => {
     const { rootState, rootGetters, dispatch } = vuexContext;
     if (rootState.stomp.tasks.findIndex(task => task.id === observation.taskId) === -1

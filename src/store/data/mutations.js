@@ -30,6 +30,7 @@ export default {
     state.observations = [];
     state.dataflow = null;
     state.dataflowStatuses = [];
+    state.dataflowInfo = null;
     state.nodeSelected = null;
     state.crossingIDL = false;
     if (context === null) {
@@ -70,6 +71,10 @@ export default {
     // } else {
     //   throw new Error(`Status not valid: ${status}`);
     // }
+  },
+
+  SET_DATAFLOW_INFO: (state, dataflowInfo) => {
+    state.dataflowInfo = dataflowInfo;
   },
 
   ADD_OBSERVATION: (state, { observation }) => {

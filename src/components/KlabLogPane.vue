@@ -1,5 +1,5 @@
 <template>
-  <div id="klab-log-pane" class="klab-menu-component">
+  <div id="klab-log-pane" class="klab-menu-component kp-container">
     <q-list
       dense
       dark
@@ -44,7 +44,7 @@ import { IN } from 'shared/MessagesConstants';
 import SimpleBar from 'simplebar';
 
 const LOG_ICON_COLORS = {
-  [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'black' },
+  [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'grey-6' },
   [IN.TYPE_INFO]: { icon: 'mdi-information', color: 'info' },
   [IN.TYPE_WARNING]: { icon: 'mdi-alert', color: 'warning' },
   [IN.TYPE_ERROR]: { icon: 'mdi-close-circle', color: 'negative' },
@@ -77,13 +77,6 @@ export default {
       return log && log.payload && log.payload.separator;
     },
   },
-  watch: {
-    klabLog() {
-    //  this.$nextTick(() =>
-    //  this.scrollBar.recalculate();
-    //  });
-    },
-  },
   mounted() {
     this.scrollBar = new SimpleBar(document.getElementById('klab-log-pane'));
   },
@@ -93,7 +86,7 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  #klab-log-pane
+  .kp-container
     max-height: "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
     .q-item.log-item
       font-size 10px

@@ -185,6 +185,16 @@ export default {
   dataflowStatuses: [],
 
   /**
+   * Info about the selected dataflow element
+   * Object: {
+   *  elementId
+   *  elementType
+   *  html
+   * }
+   */
+  dataflowInfo: null,
+
+  /**
    * The session id given from url and used everywhere
    */
   session: null,

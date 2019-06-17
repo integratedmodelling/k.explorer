@@ -69,6 +69,7 @@ export const IN = Object.freeze({
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
   TYPE_DATAFLOWSTATECHANGED: 'DataflowStateChanged',
+  TYPE_DATAFLOWDOCUMENTATION: 'DataflowDocumentation',
   TYPE_NEWOBSERVATION: 'NewObservation',
   TYPE_MODIFIEDOBSERVATION: 'ModifiedObservation',
   TYPE_QUERYRESULT: 'QueryResult',

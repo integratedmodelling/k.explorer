@@ -17,14 +17,10 @@ const JSX = {createElement: snabbdom.svg};
 
 export class ElkNodeView extends RectangularNodeView {
     render(node: KlabElkNode, context: RenderingContext): VNode {
+        let classNames = `elknode ${node.hoverFeedback ? 'mouseover ' : ''}${node.selected ? 'selected ' : ''}${node.status} elk-${node.nodeType}`;
         return <g>
             <rect
-                class-elknode={true}
-                class-mouseover={node.hoverFeedback}
-                class-selected={node.selected}
-                class-waiting={node.status === 'waiting'}
-                class-processing={node.status === 'processing'}
-                class-processed={node.status === 'processed'}
+                classNames={classNames}
                 x="0" y="0" width={node.bounds.width} height={node.bounds.height}
             />
             { context.renderChildren(node) }

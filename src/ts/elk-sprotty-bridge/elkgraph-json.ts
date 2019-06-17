@@ -24,6 +24,7 @@ export interface ElkShape extends ElkGraphElement {
 
 export interface KlabElkNode extends ElkShape {
     status?: string;
+    nodeType?: string;
     children?: KlabElkNode[]
     ports?: ElkPort[]
     edges?: ElkEdge[]

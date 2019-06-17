@@ -38,6 +38,7 @@ export default {
   hasDataflow: state => state.dataflow !== null,
 
   dataflowStatuses: state => state.dataflowStatuses,
+  dataflowInfo: state => state.dataflowInfo,
 
   contextsId: state => state.contexts.map(ctxt => ctxt.id),
   context: state => state.contexts.peek(),

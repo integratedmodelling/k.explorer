@@ -16,6 +16,7 @@ export interface ElkNodeSchema extends SNodeSchema {
 
 export class KlabElkNode extends RectangularNode {
     status?: string;
+    nodeType?: string;
 
     hasFeature(feature: symbol): boolean {
         if (feature === moveFeature)

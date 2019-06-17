@@ -74,6 +74,7 @@ import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import DockedMainControl from 'components/KlabDockedMainControl.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
+import DataflowInfo from 'components/DataflowInfoPane.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 
 export default {
@@ -84,6 +85,7 @@ export default {
     StopActionsButtons,
     DockedMainControl,
     KlabLogPane,
+    DataflowInfo,
     ScaleReference,
   },
   mixins: [HandleTouch],
@@ -91,6 +93,9 @@ export default {
     return {};
   },
   computed: {
+    ...mapGetters('data', [
+      'dataflowInfo',
+    ]),
     ...mapGetters('stomp', [
       'hasTasks',
     ]),
@@ -123,6 +128,17 @@ export default {
     },
     askForSuggestion(event) {
       this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, event);
+    },
+  },
+  watch: {
+    dataflowInfo() {
+      if (this.dataflowInfo !== null) {
+        this.setLeftMenuContent(LEFTMENU_CONSTANTS.DATAFLOW_INFO_COMPONENT);
+        this.setLeftMenuState(LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED);
+      } else {
+        this.setLeftMenuContent(this.mainViewer.leftMenuContent);
+        this.setLeftMenuState(this.mainViewer.leftMenuState);
+      }
     },
   },
   created() {

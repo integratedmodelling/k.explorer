@@ -10,9 +10,9 @@ import { findNodeById } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
-import { SelectHandlerInitializer } from 'shared/SprottyHandlers';
+import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
-import { TYPES, FitToScreenAction } from 'sprotty/lib';
+import { TYPES, FitToScreenAction, CenterAction } from 'sprotty/lib';
 
 
 export default {
@@ -35,6 +35,9 @@ export default {
       'contextId',
       'session',
       'context',
+    ]),
+    ...mapGetters('view', [
+      'leftMenuState',
     ]),
     reloadDataflow: {
       get() {
@@ -124,6 +127,9 @@ export default {
       },
       deep: true,
     },
+    leftMenuState() {
+      this.actionDispatcher.dispatch(new CenterAction([]));
+    },
     /*
     reloadDataflow() {
       // eslint-disable-next-line no-underscore-dangle
@@ -136,7 +142,8 @@ export default {
 
   mounted() {
     const sprottyContainer = createContainer({ needsClientLayout: false, needsServerLayout: true }, 'info');
-    sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(SelectHandlerInitializer);
+    sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(KlabActionHandler);
+
 
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
@@ -178,6 +185,7 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+
   #dfv-container
     #sprotty
       position absolute
@@ -217,13 +225,48 @@ export default {
           stroke none
           fill $blue-grey-9
         .selected > rect
-          stroke-width 3
+          stroke-width 3px
         .mouseover
-          stroke $blue-grey-11
+          stroke-width 2px
+
+        .elk-resources
+          stroke $green
+          stroke-width 2px
+        .elk-actuator
+        .elk-resolver
+          stroke $blue-grey-12
+          stroke-width 2px
+        .elk-instantiator
+        .elk-table
+          stroke $grey-5
+          stroke-width 2px
         .waiting
-          /* fill #ffab32 */
+          &.elk-resource
+            fill $green-1
+          &.elk-actuator
+          &.elk-resolver
+            fill $blue-grey-11
+          &.elk-instantiator
+          &.elk-table
+            fill $grey-4
         .processed
-          fill $blue-grey-11
+          &.elk-resource
+            fill $green-2
+          &.elk-actuator
+          &.elk-resolver
+            fill $blue-grey-12
+          &.elk-instantiator
+          &.elk-table
+            fill $grey-5
         .processing
-          fill $blue-grey-13
+          &.elk-resource
+            fill $green-3
+          &.elk-actuator
+          &.elk-resolver
+            fill $blue-grey-13
+          &.elk-instantiator
+          &.elk-table
+            fill $grey-6
+
+
 </style>

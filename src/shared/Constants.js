@@ -45,6 +45,7 @@ export const LEFTMENU_CONSTANTS = {
   DOCKED_DATA_VIEWER_COMPONENT: 'docked-main-control',
   REPORT_VIEWER_COMPONENT: 'reports-details',
   DATAFLOW_VIEWER_COMPONENT: 'dataflow-details',
+  DATAFLOW_INFO_COMPONENT: 'dataflow-info',
   PROVENANCE_VIEWER_COMPONENT: 'provenance-details',
   LOG_COMPONENT: 'klab-log-pane',
 };
