@@ -215,7 +215,7 @@ export default {
             event.preventDefault();
             this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
               contextId: this.searchContextId,
-              matchIndex: item.matchIndexgit ,
+              matchIndex: item.matchIndex,
               matchId: item.id,
               added: false,
             }, this.$store.state.data.session).body);

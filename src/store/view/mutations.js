@@ -257,10 +257,6 @@ export default {
     state.customContext = customContext;
   },
 
-  SET_SHOW_NOTIFIED: (state, showNotified) => {
-    state.showNotified = showNotified;
-  },
-
   SET_SAVE_LOCATION: (state, saveLocation) => {
     state.saveLocation = saveLocation;
   },

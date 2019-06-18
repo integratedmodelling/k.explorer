@@ -3,7 +3,7 @@
     <div id="kt-tree-container" class="simplebar-vertical-only" @contextmenu="rightClickHandler">
       <klab-q-tree
         ref="klab-tree"
-        :nodes="visibleTree(filter)"
+        :nodes="tree"
         node-key="id"
         :ticked.sync="ticked"
         :selected.sync="selected"
@@ -93,7 +93,7 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { getAxiosContent, findNodeById, getContextGeometry } from 'shared/Helpers';
-import { APP_PARAM_CONSTANTS, CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
@@ -119,7 +119,6 @@ export default {
   computed: {
     ...mapGetters('data', [
       'tree',
-      'visibleTree',
       'treeNode',
       'lasts',
       'contextReloaded',
@@ -140,9 +139,11 @@ export default {
       'treeExpanded',
       'showNotified',
     ]),
+    /*
     filter() {
       return this.showNotified === APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
     },
+    */
     taskIsAlive() {
       return typeof this.tasks.find(t => (t.contextId === this.contextId && t.alive)) !== 'undefined';
     },
@@ -158,9 +159,11 @@ export default {
     ...mapActions('view', [
       'setSpinner',
     ]),
+    /*
     filterMethod(node) {
       return !this.contextReloaded || node.notified;
     },
+    */
     rightClickHandler(e) {
       e.preventDefault();
       let spanNode = null;
