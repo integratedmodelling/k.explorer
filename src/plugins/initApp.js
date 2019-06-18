@@ -16,8 +16,7 @@ export default ({ store }) => {
   const log = urlParams.get(WEB_CONSTANTS.PARAMS_LOG)
     || Cookies.get(WEB_CONSTANTS.COOKIE_LOG) || WEB_CONSTANTS.PARAMS_LOG_HIDDEN;
   const baseLayer = Cookies.get(WEB_CONSTANTS.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;
-  const notified = urlParams.get(WEB_CONSTANTS.PARAMS_NOTIFIED)
-    || Cookies.get(WEB_CONSTANTS.COOKIE_NOTIFIED) || WEB_CONSTANTS.PARAMS_NOTIFIED_ONLY;
+
   const mapDefaults = Cookies.get(WEB_CONSTANTS.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
 
@@ -60,11 +59,6 @@ export default ({ store }) => {
   });
   Vue.prototype.$baseLayer = baseLayer;
   Cookies.set(WEB_CONSTANTS.COOKIE_BASELAYER, baseLayer, {
-    expires: 30,
-    path: '/',
-  });
-  store.state.view.showNotified = notified;
-  Cookies.set(WEB_CONSTANTS.COOKIE_NOTIFIED, notified, {
     expires: 30,
     path: '/',
   });

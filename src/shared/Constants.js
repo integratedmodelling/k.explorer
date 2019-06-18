@@ -393,14 +393,16 @@ export const FRONT_END_CONSTANTS = {
   COLOR_FADED: 'faded',
 };
 
+/*
 export const APP_PARAM_CONSTANTS = {
   /**
    * APP params
-   */
-  PARAMS_NOTIFIED: 'notified',
-  PARAMS_NOTIFIED_ONLY: 'only',
-  PARAMS_NOTIFIED_ALL: 'all',
+   *
+  PARAMS_SHOW: 'notified',
+  PARAMS_SHOW_MAIN: 'only',
+  PARAMS_SHOW_ALL: 'all',
 };
+*/
 
 /**
  * Constants relative to web page
@@ -424,7 +426,7 @@ export const WEB_CONSTANTS = {
   COOKIE_MODE: 'klab_mode',
   COOKIE_LOG: 'klab_log',
   COOKIE_BASELAYER: 'klab_baselayer',
-  COOKIE_NOTIFIED: 'klab_notified',
+  // COOKIE_NOTIFIED: 'klab_notified',
   COOKIE_MAPDEFAULT: 'klab_mapdefault',
   COOKIE_SAVELOCATION: 'klab_saveLocation',
 };
@@ -519,7 +521,7 @@ export default {
   VALUE_CONSTANTS,
   GEOMETRY_CONSTANTS,
   FRONT_END_CONSTANTS,
-  APP_PARAM_CONSTANTS,
+  // APP_PARAM_CONSTANTS,
   WEB_CONSTANTS,
   SPINNER_COLORS,
   SPINNER_CONSTANTS,

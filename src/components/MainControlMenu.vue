@@ -131,6 +131,7 @@
         </template>
         <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuOption') }}</q-list-header>
         <q-item-separator></q-item-separator>
+        <!--
         <q-item v-if="hasContext && contextReloaded">
           <div class="mcm-container">
             <div class="klab-menuitem">
@@ -141,6 +142,7 @@
             </q-item-side>
           </div>
         </q-item>
+        -->
         <q-item v-if="!hasContext">
           <div class="mcm-container">
             <div class="klab-menuitem">
@@ -169,7 +171,7 @@
 <script>
 import moment from 'moment';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { CUSTOM_EVENTS, SETTING_NAMES, APP_PARAM_CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, SETTING_NAMES, WEB_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
@@ -213,17 +215,9 @@ export default {
       'isDrawMode',
     ]),
     ...mapState('view', [
-      'showNotified',
       'saveLocation',
     ]),
-    showAll: {
-      get() {
-        return this.showNotified === APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ALL;
-      },
-      set(showAll) {
-        this.changeShowAll(showAll);
-      },
-    },
+
     saveLocationVar: {
       get() {
         return this.saveLocation;
@@ -284,14 +278,6 @@ export default {
         return isToday ? dateTime.format('HH:mm:ss') : dateTime.format('YYYY/mm/dd HH:mm:ss');
       }
       return '';
-    },
-    changeShowAll(showAll) {
-      const notified = (showAll) ? APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ALL : APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ONLY;
-      this.$store.commit('view/SET_SHOW_NOTIFIED', notified, { root: true });
-      Cookies.set(WEB_CONSTANTS.COOKIE_NOTIFIED, notified, {
-        expires: 30,
-        path: '/',
-      });
     },
     changeSaveLocation(saveLocation) {
       this.$store.commit('view/SET_SAVE_LOCATION', saveLocation, { root: true });

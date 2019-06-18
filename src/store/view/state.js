@@ -154,7 +154,7 @@ export default {
 
   drawMode: false,
   customContext: false,
-  showNotified: null,
+
   saveLocation: true,
 
   modalMode: false,
