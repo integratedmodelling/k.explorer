@@ -10,9 +10,7 @@ let prevent = false;
 
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["handle", "initialize"] }] */
 class KlabActionHandler {
-  handle(action, a, b, c, d, e) {
-    console.log(`LALALA: ${a}/${b}/${c}/${d}/${e}/`);
-    console.warn(`Action -> ${JSON.stringify(action, null, 2)}`);
+  handle(action) {
     switch (action.kind) {
       case SelectCommand.KIND:
         timer = setTimeout(() => {
@@ -27,7 +25,6 @@ class KlabActionHandler {
       case ViewportCommand.KIND:
         clearTimeout(timer);
         prevent = true;
-        // action.selectedElementsIDs.splice();
         break;
       default:
         console.warn(`Unknow action: ${action.kind}`);
