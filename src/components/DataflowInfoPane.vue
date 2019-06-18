@@ -1,5 +1,5 @@
 <template>
-  <div id="klab-dataflowinfo-pane" class="klab-menu-component kp-container">
+  <div class="klab-menu-component full-height dip-container">
     <div class="dip-close">
       <q-btn
         flat
@@ -10,7 +10,9 @@
         @click.native="closePanel"
       ></q-btn>
     </div>
-    <div v-if="dataflowInfo !== null" class="dip-content" v-html="dataflowInfo.html"></div>
+    <div v-if="dataflowInfo !== null" id="dip-scroll-container">
+      <div class="dip-content" v-html="dataflowInfo.html"></div>
+    </div>
     <div v-else>No content</div>
   </div>
 </template>
@@ -43,7 +45,9 @@ export default {
     },
   },
   mounted() {
-    this.scrollBar = new SimpleBar(document.getElementById('klab-dataflowinfo-pane'));
+    if (document.getElementById('dip-scroll-container')) {
+      this.scrollBar = new SimpleBar(document.getElementById('dip-scroll-container'));
+    }
   },
 };
 
@@ -51,13 +55,16 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .kp-container
+  .dip-container
+    max-height calc(100% - 15px)
     color white
-    max-height: "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
     .dip-close
-      float right
+      width 100%
+      text-align right
+    .simplebar-scrollbar:before
+      background white
     article
-      padding 5px 10px
+      padding 0 10px
       h1
         font-size 1.2em
         color $main-control-main-color

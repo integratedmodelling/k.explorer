@@ -229,43 +229,47 @@ export default {
           stroke-width 2px
 
         .elk-resources
-          stroke $green
-          stroke-width 2px
         .elk-actuator
         .elk-resolver
-          stroke $blue-grey-12
-          stroke-width 2px
         .elk-instantiator
         .elk-table
-          stroke $grey-5
           stroke-width 2px
         .waiting
           &.elk-resource
             fill $green-1
+            stroke $green-2
           &.elk-actuator
           &.elk-resolver
             fill $blue-grey-11
+            stroke $blue-grey-12
           &.elk-instantiator
           &.elk-table
             fill $grey-4
+            stroke $grey-5
         .processed
           &.elk-resource
             fill $green-2
+            stroke $green-3
           &.elk-actuator
           &.elk-resolver
             fill $blue-grey-12
+            stroke $blue-grey-13
           &.elk-instantiator
           &.elk-table
             fill $grey-5
+            stroke $grey-6
         .processing
           &.elk-resource
             fill $green-3
+            stroke $green-4
           &.elk-actuator
           &.elk-resolver
             fill $blue-grey-13
+            stroke $blue-grey-14
           &.elk-instantiator
           &.elk-table
             fill $grey-6
+            stroke $grey-7
 
 
 </style>
