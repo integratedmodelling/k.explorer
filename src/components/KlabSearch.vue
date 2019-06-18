@@ -210,9 +210,15 @@ export default {
       switch (event.keyCode) {
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
-            this.acceptedTokens.pop();
+            const item = this.acceptedTokens.pop();
             this.searchHistoryIndex = -1;
             event.preventDefault();
+            this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
+              contextId: this.searchContextId,
+              matchIndex: item.matchIndexgit ,
+              matchId: item.id,
+              added: false,
+            }, this.$store.state.data.session).body);
           } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
@@ -289,8 +295,13 @@ export default {
     selected(item, isNavigation) {
       if (!isNavigation) {
         this.acceptedTokens.push(item);
-        // this.actualToken = ''; TODO change
         this.actualSearchString = '';
+        this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
+          contextId: this.searchContextId,
+          matchIndex: item.matchIndex,
+          matchId: item.id,
+          added: true,
+        }, this.$store.state.data.session).body);
       } else {
         this.inputSearchColor = item.rgb;
       }
@@ -429,8 +440,14 @@ export default {
     },
     deleteLastToken() {
       if (this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
-        this.acceptedTokens.pop();
+        const item = this.acceptedTokens.pop();
         this.searchHistoryIndex = -1;
+        this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
+          contextId: this.searchContextId,
+          matchIndex: item.matchIndex,
+          matchId: item.id,
+          added: false,
+        }, this.$store.state.data.session).body);
       }
     },
   },
@@ -517,6 +534,7 @@ export default {
             rgb: desc.rgb,
             id: match.id,
             index: this.acceptedTokens.length + 1,
+            matchIndex: match.index,
             selected: false,
             // stamp: `${index + 1}/${totMatches}`, TODO is useless?
           });
