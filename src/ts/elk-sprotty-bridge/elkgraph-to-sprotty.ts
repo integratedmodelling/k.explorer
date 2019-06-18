@@ -7,9 +7,7 @@
  *******************************************************************************/
 import { SNodeSchema, SEdgeSchema, SPortSchema, SLabelSchema, SGraphSchema, Point, Dimension } from 'sprotty/lib'
 import { ElkNodeSchema } from './sprotty-model';
-import {
-    ElkShape, KlabElkNode, ElkPort, ElkLabel, ElkEdge, ElkGraphElement, isPrimitive, isExtended
-} from './elkgraph-json'
+import { ElkShape, KlabElkNode, KlabElkGraph, ElkPort, ElkLabel, ElkEdge, ElkGraphElement, isPrimitive, isExtended } from './elkgraph-json'
 
 export class ElkGraphJsonToSprotty {
 
@@ -18,14 +16,17 @@ export class ElkGraphJsonToSprotty {
     private portIds: Set<string> = new Set();
     private labelIds: Set<string> = new Set();
     private sectionIds: Set<string> = new Set();
+    private isRestored: boolean = false;
 
-    public transform(elkGraph: KlabElkNode): SGraphSchema {
+    public transform(elkGraph: KlabElkGraph): SGraphSchema {
         const sGraph = <SGraphSchema> {
             type: 'graph',
             id: elkGraph.id || 'root',
             children: []
         };
-
+        if (elkGraph.restored) {
+          this.isRestored = true;
+        }
         if (elkGraph.children) {
             const children = elkGraph.children.map(n => this.transformElkNode(n));
             sGraph.children.push(...children)
@@ -47,7 +48,7 @@ export class ElkGraphJsonToSprotty {
             nodeType: elkNode.id.split('.')[0],
             position: this.pos(elkNode),
             size: this.size(elkNode),
-            status: elkNode.status || 'waiting',
+            status: this.isRestored ? 'processed' : 'waiting',
             children: []
         };
         // children

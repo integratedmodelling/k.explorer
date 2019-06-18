@@ -30,6 +30,11 @@ export interface KlabElkNode extends ElkShape {
     edges?: ElkEdge[]
 }
 
+export interface KlabElkGraph extends KlabElkNode {
+    restored?: boolean;
+}
+
+
 export interface ElkPort extends ElkShape { }
 
 export interface ElkLabel extends ElkShape {

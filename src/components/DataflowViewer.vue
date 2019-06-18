@@ -12,7 +12,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
-import { TYPES, FitToScreenAction, CenterAction } from 'sprotty/lib';
+import { TYPES, FitToScreenAction } from 'sprotty/lib';
 
 
 export default {
@@ -63,8 +63,9 @@ export default {
         .then(({ data }) => {
           if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
             try {
-              const jsonEklLayout = JSON.parse(data.jsonElkLayout);
-              this.addDataflow(jsonEklLayout);
+              const jsonElkLayout = JSON.parse(data.jsonElkLayout);
+              jsonElkLayout.restored = this.context.restored;
+              this.addDataflow(jsonElkLayout);
             } catch (e) {
               console.error(`Error in dataflos layout for the context ${data.taskId}: ${e}`);
             }
@@ -127,9 +128,7 @@ export default {
       },
       deep: true,
     },
-    leftMenuState() {
-      this.actionDispatcher.dispatch(new CenterAction([]));
-    },
+
     /*
     reloadDataflow() {
       // eslint-disable-next-line no-underscore-dangle

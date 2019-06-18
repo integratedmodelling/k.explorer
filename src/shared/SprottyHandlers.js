@@ -1,19 +1,33 @@
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { eventBus } from 'plugins/initApp';
-import { SelectCommand, MoveCommand } from 'sprotty/lib';
+import { SelectCommand, ViewportCommand } from 'sprotty/lib';
 
 const inversify = require('inversify');
 
+let timer = 0;
+const delay = 200;
+let prevent = false;
 
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["handle", "initialize"] }] */
 class KlabActionHandler {
-  handle(action) {
+  handle(action, a, b, c, d, e) {
+    console.log(`LALALA: ${a}/${b}/${c}/${d}/${e}/`);
+    console.warn(`Action -> ${JSON.stringify(action, null, 2)}`);
     switch (action.kind) {
       case SelectCommand.KIND:
-        eventBus.$emit(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, action);
+        timer = setTimeout(() => {
+          if (!prevent) {
+            eventBus.$emit(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, action);
+          } else if (action.deselectedElementsIDs.length === 0) {
+            action.deselectedElementsIDs.push(action.selectedElementsIDs);
+          }
+          prevent = false;
+        }, delay);
         break;
-      case MoveCommand.KIND:
-        console.warn(`MOVE -> ${JSON.stringify(action, null, 4)}`);
+      case ViewportCommand.KIND:
+        clearTimeout(timer);
+        prevent = true;
+        // action.selectedElementsIDs.splice();
         break;
       default:
         console.warn(`Unknow action: ${action.kind}`);
@@ -23,7 +37,7 @@ class KlabActionHandler {
 
   initialize(registry) {
     registry.register(SelectCommand.KIND, this);
-    registry.register(MoveCommand.KIND, this);
+    registry.register(ViewportCommand.KIND, this);
   }
 }
 
