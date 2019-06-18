@@ -102,6 +102,24 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
+  SEARCH_MATCH: ({
+    contextId,
+    matchId,
+    matchIndex,
+    added,
+  }, session) => buildMessage(
+    OUT.CLASS_SEARCH,
+    OUT.TYPE_MATCHACTION,
+    OUT.PAYLOAD_CLASS_SEARCHMATCHACTION,
+    {
+      contextId,
+      matchId,
+      matchIndex,
+      added,
+    },
+    session,
+  ),
+
   OBSERVATION_REQUEST: ({
     urn,
     contextId,
