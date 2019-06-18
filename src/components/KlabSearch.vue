@@ -273,7 +273,7 @@ export default {
           if (!this.isAcceptedKey(event.key)) {
             if (event.keyCode !== 39) { // right arrow
               event.preventDefault();
-            } // only letters are permitted
+            } // only chars added in initApp are permitted
           } else {
             event.preventDefault();
             this.searchHistoryIndex = -1;
