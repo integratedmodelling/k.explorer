@@ -35,6 +35,11 @@ export default ({ store }) => {
         }
         return 'black';
       },
+      isAcceptedKey(key) {
+        const charList = 'abcdefghijklmnopqrstuvwxyz0123456789.<>=!()+-*/^';
+        key = key.toLowerCase();
+        return charList.indexOf(key) !== -1;
+      },
     },
   });
 

@@ -161,7 +161,7 @@ export default {
         event.preventDefault();
         return;
       }
-      if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 32 || (event.keyCode >= 65 && event.keyCode <= 90)) {
+      if (this.isAcceptedKey(event.key)) {
         if (!this.searchIsActive) {
           this.searchStart(event.key);
           event.preventDefault();
