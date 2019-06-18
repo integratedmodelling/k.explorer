@@ -210,15 +210,9 @@ export default {
       switch (event.keyCode) {
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
-            event.preventDefault();
-            const item = this.acceptedTokens.pop();
+            this.acceptedTokens.pop();
             this.searchHistoryIndex = -1;
-            this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
-              contextId: this.searchContextId,
-              matchIndex: item.index,
-              matchId: item.id,
-              added: false,
-            }, this.$store.state.data.session).body);
+            event.preventDefault();
           } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
@@ -276,7 +270,7 @@ export default {
           }
           break;
         default:
-          if (event.keyCode < 65 || event.keyCode > 90) {
+          if (!this.isAcceptedKey(event.key)) {
             if (event.keyCode !== 39) { // right arrow
               event.preventDefault();
             } // only letters are permitted
@@ -295,13 +289,8 @@ export default {
     selected(item, isNavigation) {
       if (!isNavigation) {
         this.acceptedTokens.push(item);
+        // this.actualToken = ''; TODO change
         this.actualSearchString = '';
-        this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
-          contextId: this.searchContextId,
-          matchIndex: item.index,
-          matchId: item.id,
-          added: true,
-        }, this.$store.state.data.session).body);
       } else {
         this.inputSearchColor = item.rgb;
       }
@@ -440,14 +429,8 @@ export default {
     },
     deleteLastToken() {
       if (this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
-        const item = this.acceptedTokens.pop();
+        this.acceptedTokens.pop();
         this.searchHistoryIndex = -1;
-        this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
-          contextId: this.searchContextId,
-          matchIndex: item.index,
-          matchId: item.id,
-          added: false,
-        }, this.$store.state.data.session).body);
       }
     },
   },
