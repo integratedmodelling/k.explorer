@@ -62,7 +62,7 @@ export default {
       width 100%
       text-align right
     .simplebar-scrollbar:before
-      background white
+      background #888
     article
       padding 0 10px
       h1
@@ -78,5 +78,13 @@ export default {
             color $main-control-main-color
             text-align left
             border-bottom 1px solid $main-control-main-color
+      pre
+        font-size: .8em
+      hr
+        height: 1px;
+        border-left none
+        border-right none
+        border-top 1px solid rgba(24,24,24,0.5)
+        border-bottom 1px solid #444
 
 </style>
