@@ -47,14 +47,14 @@
       @contextmenu.native.prevent
       @touchstart.native="handleTouch($event, null, searchInKLab)"
     >
-    <!-- :style="{ 'background-color': waitForDouble ? 'rgba(0, 0, 0, .1)' : 'transparent' }" TODO: implement way to know if we are waiting -->
       <klab-autocomplete
+        v-if="!freeText"
         @search="search"
         @selected="selected"
         @show="onAutocompleteShow"
         @hide="onAutocompleteHide"
         :debounce="200"
-        :min-characters="2"
+        :min-characters="minimumCharForAutocomplete"
         :max-results="50"
         ref="mc-autocomplete"
         id="mc-autocomplete"
@@ -74,6 +74,8 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS } from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
+
+const SINGLE_CHARS = ' =(<)>';
 
 export default {
   name: 'KlabSearch',
@@ -105,6 +107,8 @@ export default {
       searchTimeout: null,
       searchHistoryIndex: -1,
       autocompleteSB: null,
+      freeText: false,
+      minimumCharForAutocomplete: 2,
     };
   },
   computed: {
@@ -205,6 +209,7 @@ export default {
         }
       }
     },
+
     onKeyPressedOnSearchInput(event) {
       this.noSearch = false;
       switch (event.keyCode) {
@@ -219,6 +224,7 @@ export default {
               matchId: item.id,
               added: false,
             }, this.$store.state.data.session).body);
+            this.freeText = false;
           } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
@@ -231,11 +237,17 @@ export default {
           if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
             this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
             this.searchHistoryIndex = -1;
+          } else if (this.freeText) {
+            this.acceptFreeText();
           }
           event.preventDefault();
           break;
         case 13: // ENTER
-          this.searchInKLab(event);
+          if (this.freeText) {
+            this.acceptFreeText();
+          } else {
+            this.searchInKLab(event);
+          }
           break;
         case 27: // ESCAPE
           if (this.suggestionShowed) {
@@ -247,7 +259,9 @@ export default {
           break;
         case 32: // SPACE BAR is not allowed in search but if is the first char, we ask for suggestions
           event.preventDefault();
-          if (!this.askForSuggestion()) {
+          if (this.freeText) { // Accept text
+            this.acceptFreeText();
+          } else if (!this.askForSuggestion()) {
             this.$q.notify({
               message: this.$t('messages.noSpaceAllowedInSearch'),
               type: 'warning',
@@ -284,12 +298,22 @@ export default {
             event.preventDefault();
             this.searchHistoryIndex = -1;
             this.actualSearchString += event.key;
+            if (SINGLE_CHARS.indexOf(event.key) !== -1) {
+              this.askForSuggestion(event.key.trim());
+            }
             // this.searchInput.$refs.input.style.color = 'black';
             // this.actualToken = this.actualSearchString; todo change
             // this.autocompleteEl.trigger();
           }
           break;
       }
+    },
+    acceptFreeText() {
+      this.search(this.actualToken, (results) => {
+        if (results && results.length > 0) {
+          this.selected(results[0], false);
+        }
+      });
     },
     // call when autocomplete decide that an element is selected
     selected(item, isNavigation) {
@@ -302,6 +326,7 @@ export default {
           matchId: item.id,
           added: true,
         }, this.$store.state.data.session).body);
+        this.freeText = item.nextTokenClass !== MATCH_TYPES.NEXT_TOKENS.TOKEN;
       } else {
         this.inputSearchColor = item.rgb;
       }
@@ -396,6 +421,7 @@ export default {
         this.actualSearchString = ''; // actualToken is changed using watcher
         this.scrolled = 0;
         this.noSearch = false;
+        this.freeText = false;
         this.searchStop();
       }
     },
@@ -421,9 +447,9 @@ export default {
         }
       }
     },
-    askForSuggestion() {
+    askForSuggestion(char = '') {
       if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
-        this.search('', (results) => {
+        this.search(char, (results) => {
           this.autocompleteEl.__clearSearch();
           if (Array.isArray(results) && results.length > 0) {
             this.autocompleteEl.results = results;
@@ -536,6 +562,7 @@ export default {
             index: this.acceptedTokens.length + 1,
             matchIndex: match.index,
             selected: false,
+            nextTokenClass: true, // match.nextTockenClass,
             // stamp: `${index + 1}/${totMatches}`, TODO is useless?
           });
         }
@@ -582,8 +609,8 @@ export default {
           this.searchHistoryEvent(1);
         } else if (newValue === 'ArrowDown') {
           this.searchHistoryEvent(-1);
-        } else if (newValue === ' ') {
-          this.askForSuggestion();
+        } else if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
+          this.askForSuggestion(this.searchLostChar.trim());
         } else {
           this.actualSearchString = this.actualSearchString + newValue;
         }
@@ -600,8 +627,8 @@ export default {
         this.searchHistoryEvent(1);
       } else if (this.searchLostChar === 'ArrowDown') {
         this.searchHistoryEvent(-1);
-      } else if (this.searchLostChar === ' ') {
-        this.askForSuggestion();
+      } else if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
+        this.askForSuggestion(this.searchLostChar.trim());
       } else {
         this.actualSearchString = this.searchLostChar;
       }

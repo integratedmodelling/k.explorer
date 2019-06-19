@@ -142,13 +142,13 @@ export const MATCH_TYPES = {
   },
   PREFIX_OPERATOR: {
     label: 'Prefix operator',
-    symbol: 'Po',
+    symbol: 'O',
     color: 'sem-types',
     rgb: 'rgb(38, 50, 56)',
   },
   INFIX_OPERATOR: {
     label: 'Infix operator',
-    symbol: 'Io',
+    symbol: 'O',
     color: 'sem-types',
     rgb: 'rgb(38, 50, 56)',
   },
@@ -160,19 +160,19 @@ export const MATCH_TYPES = {
   },
   MODEL: {
     label: 'Model',
-    symbol: 'Ml',
+    symbol: 'M',
     color: 'sem-types',
     rgb: 'rgb(38, 50, 56)',
   },
   MODIFIER: {
     label: 'Modifier',
-    symbol: 'Mf',
+    symbol: 'O',
     color: 'sem-types',
     rgb: 'rgb(38, 50, 56)',
   },
   PRESET_OBSERVABLE: { // subject returned when using default results
     label: 'Preset observable',
-    symbol: 'Po',
+    symbol: 'O',
     color: 'sem-preset-observable',
     rgb: 'rgb(240, 240, 240)',
   },
@@ -181,6 +181,15 @@ export const MATCH_TYPES = {
     symbol: 'S',
     color: 'sem-separator',
     rgb: 'rgb(10, 10, 10)',
+  },
+  NEXT_TOKENS: {
+    TOKEN: 'TOKEN',
+    TEXT: 'TEXT',
+    INTEGER: 'INTEGER',
+    DOUBLE: 'DOUBLE',
+    BOOLEAN: 'BOOLEAN',
+    UNIT: 'UNIT',
+    CURRENCY: 'CURRENCY',
   },
 };
 
