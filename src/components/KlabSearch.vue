@@ -75,7 +75,7 @@ import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS } from 'shared/Constants
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
-const SINGLE_CHARS = ' =(<)>';
+const SINGLE_CHARS = '=(<)>';
 
 export default {
   name: 'KlabSearch',
@@ -448,7 +448,7 @@ export default {
       }
     },
     askForSuggestion(char = '') {
-      if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
+      if ((char !== '' || this.acceptedTokens.length === 0) && this.searchInput.$refs.input.selectionStart === 0) {
         this.search(char, (results) => {
           this.autocompleteEl.__clearSearch();
           if (Array.isArray(results) && results.length > 0) {
@@ -562,7 +562,7 @@ export default {
             index: this.acceptedTokens.length + 1,
             matchIndex: match.index,
             selected: false,
-            nextTokenClass: true, // match.nextTockenClass,
+            nextTokenClass: match.nextTokenClass,
             // stamp: `${index + 1}/${totMatches}`, TODO is useless?
           });
         }
@@ -609,10 +609,13 @@ export default {
           this.searchHistoryEvent(1);
         } else if (newValue === 'ArrowDown') {
           this.searchHistoryEvent(-1);
-        } else if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
-          this.askForSuggestion(this.searchLostChar.trim());
+        } else if (newValue === ' ') {
+          this.askForSuggestion();
         } else {
           this.actualSearchString = this.actualSearchString + newValue;
+          if (SINGLE_CHARS.indexOf(newValue) !== -1) {
+            this.askForSuggestion(this.searchLostChar);
+          }
         }
         this.resetSearchLostChar();
       }
@@ -627,10 +630,13 @@ export default {
         this.searchHistoryEvent(1);
       } else if (this.searchLostChar === 'ArrowDown') {
         this.searchHistoryEvent(-1);
-      } else if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
-        this.askForSuggestion(this.searchLostChar.trim());
+      } else if (this.searchLostChar === ' ') {
+        this.askForSuggestion();
       } else {
         this.actualSearchString = this.searchLostChar;
+        if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
+          this.askForSuggestion(this.searchLostChar);
+        }
       }
     } else {
       this.actualSearchString = '';
