@@ -64,22 +64,25 @@ export default {
     .simplebar-scrollbar:before
       background #888
     article
+      font-size .8em
       padding 0 10px
       h1
-        font-size 1.2em
+        font-size 1.4em
         color $main-control-main-color
         font-weight bold
       p
+        margin 1.5em 0
       table
-        font-size 0.8em
         padding 10px 0
         thead
           th
             color $main-control-main-color
             text-align left
             border-bottom 1px solid $main-control-main-color
-      pre
-        font-size: .8em
+      mark
+        background-color transparent
+        color $main-control-yellow
+        font-weight bold
       hr
         height: 1px;
         border-left none
