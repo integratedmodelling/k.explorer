@@ -262,6 +262,15 @@ export default {
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
+    mapSizeChangedListener() {
+      // eslint-disable-next-line no-underscore-dangle
+      this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+      // check if main control windows is gone out of screen
+      this.checkWhereWasDragged();
+    },
+    spinnerDoubleClickListener() {
+      this.hide();
+    },
   },
   watch: {
     hasContext() {
@@ -287,18 +296,12 @@ export default {
     this.boundingElement = document.getElementById('viewer-container');
     this.centeredLeft = this.getCenteredLeft();
     this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
-    this.$eventBus.$on(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK, () => {
-      this.hide();
-    });
-    this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, () => {
-    // eslint-disable-next-line no-underscore-dangle
-      this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
-      // check if main control windows is gone out of screen
-      this.checkWhereWasDragged();
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK, this.spinnerDoubleClickListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.mapSizeChangedListener);
   },
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
+    this.$eventBus.$off(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK, this.spinnerDoubleClickListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.mapSizeChangedListener);
   },
 };
 </script>

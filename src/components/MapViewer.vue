@@ -446,6 +446,39 @@ export default {
         this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_CLICK, event); // inform that we make a click
       }
     },
+    needFitMapListener({ mainIdx = null, geometry = null }) {
+      if (geometry === null
+        && this.mainViewer.name === VIEWERS.DATA_VIEWER.name
+        && this.contextGeometry
+        && this.contextGeometry !== null
+      ) {
+        geometry = this.contextGeometry;
+      }
+      if (geometry !== null) {
+        // we must wait for the end of drawer animation
+        if (mainIdx === null || this.idx !== mainIdx) {
+          this.storedZoom = this.view.getZoom();
+        }
+        setTimeout(() => {
+          if (geometry instanceof Array) {
+            this.view.setCenter(geometry);
+          } else {
+            this.view.fit(geometry, { padding: [10, 10, 10, 10], constrainResolution: false });
+          }
+        }, 200);
+      } else if (this.storedZoom !== null) {
+        this.view.setZoom(this.storedZoom);
+        this.storedZoom = null;
+      }
+    },
+    observationInfoClosedListener () {
+      if (!this.mapSelection.locked) {
+        this.closePopup();
+      }
+    },
+    sendRegionOfInterestListener() {
+      this.sendRegionOfInterest();
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -609,39 +642,14 @@ export default {
     if (this.geolocationWaiting) {
       this.doGeolocation();
     }
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, ({ mainIdx = null, geometry = null }) => {
-      if (geometry === null
-        && this.mainViewer.name === VIEWERS.DATA_VIEWER.name
-        && this.contextGeometry
-        && this.contextGeometry !== null
-      ) {
-        geometry = this.contextGeometry;
-      }
-      if (geometry !== null) {
-        // we must wait for the end of drawer animation
-        if (mainIdx === null || this.idx !== mainIdx) {
-          this.storedZoom = this.view.getZoom();
-        }
-        setTimeout(() => {
-          if (geometry instanceof Array) {
-            this.view.setCenter(geometry);
-          } else {
-            this.view.fit(geometry, { padding: [10, 10, 10, 10], constrainResolution: false });
-          }
-        }, 200);
-      } else if (this.storedZoom !== null) {
-        this.view.setZoom(this.storedZoom);
-        this.storedZoom = null;
-      }
-    });
-    this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, () => {
-      if (!this.mapSelection.locked) {
-        this.closePopup();
-      }
-    });
-    this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, () => {
-      this.sendRegionOfInterest();
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
   },
 };
 </script>

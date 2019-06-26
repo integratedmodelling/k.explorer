@@ -312,6 +312,20 @@ export default {
         this.setVisibility({ node, visible: true });
       }
     },
+    updateFolderListener(event) {
+      if (event && event.folderId) {
+        const folder = findNodeById(this.tree, event.folderId);
+        if (folder && folder !== null) {
+          if (event.visible) {
+            this.$refs['klab-tree'].setTicked(folder.children.map(child => child.id), true);
+            // this.ticked.push(...(folder.children.map(child => child.id)));
+          } else {
+            this.$refs['klab-tree'].setTicked(this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1), false);
+            // this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
+          }
+        }
+      }
+    },
   },
   watch: {
     treeSelected(value) {
@@ -451,27 +465,14 @@ export default {
         }
       });
     });
-    this.$eventBus.$on(CUSTOM_EVENTS.UPDATE_FOLDER, (event) => {
-      if (event && event.folderId) {
-        const folder = findNodeById(this.tree, event.folderId);
-        if (folder && folder !== null) {
-          if (event.visible) {
-            this.$refs['klab-tree'].setTicked(folder.children.map(child => child.id), true);
-            // this.ticked.push(...(folder.children.map(child => child.id)));
-          } else {
-            this.$refs['klab-tree'].setTicked(this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1), false);
-            // this.ticked = this.ticked.filter(n => folder.children.findIndex(c => c.id === n) === -1);
-          }
-        }
-      }
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.UPDATE_FOLDER, this.updateFolderListener);
     this.selected = this.treeSelected;
     this.ticked = this.treeTicked;
     this.expanded = this.treeExpanded;
   },
 
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.UPDATE_FOLDER);
+    this.$eventBus.$off(CUSTOM_EVENTS.UPDATE_FOLDER, this.updateFolderListener);
   },
 
 };

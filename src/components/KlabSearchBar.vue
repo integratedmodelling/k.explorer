@@ -112,6 +112,9 @@ export default {
       console.dir(event);
       this.setMainViewer(VIEWERS.DATA_VIEWER);
     },
+    askForSuggestionsListener(event) {
+      this.showSuggestions(event);
+    },
   },
   watch: {
     statusTextsString(newValue) {
@@ -125,9 +128,10 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, (event) => {
-      this.showSuggestions(event);
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, this.askForSuggestionsListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, this.askForSuggestionsListener);
   },
 };
 </script>

@@ -316,6 +316,11 @@ export default {
     sendInteractiveModeState(state) {
       this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: state }, this.session).body);
     },
+    viewerClickListener() {
+      if (!this.isDrawMode) {
+        this.closeMenuPopups();
+      }
+    },
   },
   watch: {
     hasContext() {
@@ -331,11 +336,10 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, () => {
-      if (!this.isDrawMode) {
-        this.closeMenuPopups();
-      }
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLICK, this.viewerClickListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.VIEWER_CLICK, this.viewerClickListener);
   },
 };
 </script>

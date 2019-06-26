@@ -56,11 +56,15 @@ export default {
         this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
       }
     },
+    showNodeListener(event) {
+      this.informTree(event);
+    },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, (event) => {
-      this.informTree(event);
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, this.showNodeListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.SHOW_NODE, this.showNodeListener);
   },
 };
 </script>
