@@ -64,24 +64,11 @@ export default {
     .simplebar-scrollbar:before
       background #888
     article
-      font-size .8em
       padding 0 10px
       h1
         font-size 1.4em
+        margin 0 0 10px 0
         color $main-control-main-color
-        font-weight bold
-      p
-        margin 1.5em 0
-      table
-        padding 10px 0
-        thead
-          th
-            color $main-control-main-color
-            text-align left
-            border-bottom 1px solid $main-control-main-color
-      mark
-        background-color transparent
-        color $main-control-yellow
         font-weight bold
       hr
         height: 1px;
@@ -90,4 +77,32 @@ export default {
         border-top 1px solid rgba(24,24,24,0.5)
         border-bottom 1px solid #444
 
+      .dfe-fixed
+        color rgba(255, 255, 255, .6)
+        font-size .7em
+        p
+          margin 0 0 .6em 0
+      .dfe-content
+        font-size .8em
+        table
+          padding 10px 0
+          th
+            color $main-control-yellow
+            text-align left
+            border-bottom 1px solid
+            margin 0
+          tr
+            &:nth-child(even)
+              background-color rgba(152, 152, 152, .1)
+        mark
+          background-color transparent
+          color $main-control-yellow
+          font-weight bold
+        div
+          margin .2em 0 .8em 0
+          padding 5px
+          border-radius 5px
+          background-color rgba(152, 152, 152, .4)
+          p
+            margin-bottom .5em
 </style>
