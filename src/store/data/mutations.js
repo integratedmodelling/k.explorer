@@ -205,15 +205,14 @@ export default {
   SET_FOLDER_VISIBLE: (state, {
     nodeId,
     visible,
+    zIndexOffset,
   }) => {
-    const observation = state.observations.find(o => o.folderId === nodeId);
-    if (typeof observation !== 'undefined') {
-      const offset = observation.zIndexOffset;
+    if (zIndexOffset !== null) {
       state.observations.forEach((o) => {
         if (o.folderId === nodeId) {
           o.visible = visible;
           o.top = visible;
-        } else if (visible && o.zIndexOffset === offset) {
+        } else if (visible && o.zIndexOffset === zIndexOffset) {
           o.top = false;
         }
       });

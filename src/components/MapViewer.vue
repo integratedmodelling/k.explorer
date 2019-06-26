@@ -69,7 +69,7 @@ import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
 import { createMarker } from 'shared/Utils';
-import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -320,28 +320,30 @@ export default {
     drawObservations() {
       if (this.observations && this.observations.length > 0) {
         this.observations.forEach((observation) => {
-          this.findLayerById(observation).then((layer) => {
-            if (layer !== null) {
-              layer.setVisible(observation.visible);
-              layer.setOpacity(observation.layerOpacity);
-              if (observation.top) {
-                layer.setZIndex(observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1));
-              } else {
-                layer.setZIndex(observation.zIndex);
+          if (observation.observationType !== OBSERVATION_CONSTANTS.TYPE_GROUP) {
+            this.findLayerById(observation).then((layer) => {
+              if (layer !== null) {
+                layer.setVisible(observation.visible);
+                layer.setOpacity(observation.layerOpacity);
+                if (observation.top) {
+                  layer.setZIndex(observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1));
+                } else {
+                  layer.setZIndex(observation.zIndex);
+                }
+                if (
+                  (observation.visible && observation.top)
+                  && isRasterObservation(observation) // is RASTER...
+                  && observation.dataSummary.histogram.length > 0 // and has values
+                  && (this.topLayer === null || this.topLayer.id !== observation.id)
+                ) {
+                  this.setTopLayer({ id: observation.id, desc: observation.label });
+                } else if ((!observation.visible || !observation.top)
+                  && this.topLayer !== null && this.topLayer.id === observation.id) {
+                  this.setTopLayer(null);
+                }
               }
-              if (
-                (observation.visible && observation.top)
-                && isRasterObservation(observation) // is RASTER...
-                && observation.dataSummary.histogram.length > 0 // and has values
-                && (this.topLayer === null || this.topLayer.id !== observation.id)
-              ) {
-                this.setTopLayer({ id: observation.id, desc: observation.label });
-              } else if ((!observation.visible || !observation.top)
-                && this.topLayer !== null && this.topLayer.id === observation.id) {
-                this.setTopLayer(null);
-              }
-            }
-          });
+            });
+          }
         });
         if (this.topLayer === null) {
           this.closePopup();

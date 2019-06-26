@@ -84,7 +84,7 @@ export default {
   },
 
   setMainDataViewer: ({ commit, getters }, { viewerIdx, viewerType = null, visible = true }) => {
-    if ((visible && viewerIdx !== getters.mainDataViewerIdx) || (!visible && viewerIdx !== null) || (!visible && viewerType !== null && viewerType.hideable)) {
+    if ((visible && viewerIdx !== getters.mainDataViewerIdx) /* || (!visible && viewerIdx !== null) */|| (!visible && viewerType !== null && viewerType.hideable)) {
       commit('SET_MAIN_DATA_VIEWER', { viewerIdx, visible });
     }
   },

@@ -292,16 +292,35 @@ export default {
    * @param folderId folder to change visibility
    * @param visible hide (false) or show (true)
    */
-  setVisibility: ({ commit, dispatch }, { node, visible }) => {
+  setVisibility: ({ commit, dispatch, state }, { node, visible }) => {
     if (node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+      // check if is the first time
+      if (node.childrenCount !== 0 && node.viewerIdx === null) {
+        // ...try to bring the viewer info from the first children
+        const observation = state.observations.find(o => o.folderId === node.id);
+        if (typeof observation !== 'undefined') {
+          const { viewerIdx, viewerType, zIndexOffset } = observation;
+          node.viewerIdx = viewerIdx;
+          node.viewerType = viewerType;
+          node.zIndexOffset = zIndexOffset;
+        } else {
+          node.zIndexOffset = null;
+        }
+      }
+      if (node.viewerIdx !== null) {
+        dispatch('view/setMainDataViewer', {
+          viewerIdx: node.viewerIdx,
+          visible,
+        }, { root: true });
+      }
       commit('SET_FOLDER_VISIBLE', {
         nodeId: node.id,
         visible,
+        zIndexOffset: node.zIndexOffset,
       });
     } else {
       dispatch('view/setMainDataViewer', {
         viewerIdx: node.viewerIdx,
-        viewerType: node.viewerType,
         visible,
       }, { root: true });
       commit('SET_VISIBLE', {

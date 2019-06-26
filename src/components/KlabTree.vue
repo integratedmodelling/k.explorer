@@ -158,6 +158,7 @@ export default {
     ]),
     ...mapActions('view', [
       'setSpinner',
+      'setMainDataViewer',
     ]),
     /*
     filterMethod(node) {
@@ -291,7 +292,11 @@ export default {
       }
     },
     async doubleClick(node, meta) {
-      if (node.observationType === 'STATE') {
+      if (node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+        if (node.viewerIdx !== null) {
+          this.setMainDataViewer({ viewerIdx: node.viewerIdx, visible: node.visible });
+        }
+      } else if (node.observationType === OBSERVATION_CONSTANTS.TYPE_STATE) {
         this.fitMap(node, meta);
       } else {
         const observation = this.observations.find(o => o.id === node.id);
