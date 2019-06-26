@@ -98,6 +98,11 @@ export default {
       this.links = [];
       this.$set(this.$data, 'options', graphDefaultData.options);
     },
+    viewerClosedListener({ idx }) {
+      if (idx === this.idx) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observation.id, state: false });
+      }
+    },
   },
   watch: {
     observation(newValue) {
@@ -111,11 +116,10 @@ export default {
   mounted() {
     this.options.size.w = this.$el.clientWidth;
     this.options.size.h = this.$el.clientHeight;
-    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, ({ idx }) => {
-      if (idx === this.idx) {
-        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observation.id, state: false });
-      }
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, this.viewerClosedListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.VIEWER_CLOSED, this.viewerClosedListener);
   },
 };
 </script>

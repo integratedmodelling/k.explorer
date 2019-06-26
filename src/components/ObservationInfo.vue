@@ -206,6 +206,11 @@ export default {
     showNode() {
       this.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
     },
+    viewerClosedListener({ idx }) {
+      if (idx === this.observationInfo.viewerIdx) {
+        this.layerShow = false;
+      }
+    },
   },
   watch: {
     mapSelection() {
@@ -247,11 +252,10 @@ export default {
       interactions: [],
     });
     this.layerShow = this.observationInfo.visible;
-    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, ({ idx }) => {
-      if (idx === this.observationInfo.viewerIdx) {
-        this.layerShow = false;
-      }
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, this.viewerClosedListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$on(CUSTOM_EVENTS.VIEWER_CLOSED, this.viewerClosedListener);
   },
 };
 </script>
