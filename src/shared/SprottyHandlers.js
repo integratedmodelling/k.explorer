@@ -13,11 +13,10 @@ class KlabActionHandler {
   handle(action) {
     switch (action.kind) {
       case SelectCommand.KIND:
+        prevent = false;
         timer = setTimeout(() => {
           if (!prevent) {
             eventBus.$emit(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, action);
-          } else if (action.deselectedElementsIDs.length === 0) {
-            action.deselectedElementsIDs.push(action.selectedElementsIDs);
           }
           prevent = false;
         }, delay);

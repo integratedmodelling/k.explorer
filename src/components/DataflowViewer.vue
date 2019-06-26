@@ -113,6 +113,17 @@ export default {
         }
       }
     },
+    graphNodeSelectedListener(action) {
+      if (action !== null && action.selectedElementsIDs) {
+        const { length } = action.selectedElementsIDs;
+        for (let i = length - 1; i >= 0; i -= 1) {
+          this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({
+            nodeId: action.selectedElementsIDs[i],
+            contextId: this.context.id,
+          }, this.session).body);
+        }
+      }
+    },
   },
   watch: {
     dataflow() {
@@ -146,14 +157,7 @@ export default {
 
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
-    this.$eventBus.$on(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, (action) => {
-      if (action !== null && action.selectedElementsIDs) {
-        const { length } = action.selectedElementsIDs;
-        for (let i = length - 1; i >= 0; i -= 1) {
-          this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({ nodeId: action.selectedElementsIDs[i], contextId: this.context.id }, this.session).body);
-        }
-      }
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, this.graphNodeSelectedListener);
     /*
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
       if (this.actionDispatcher !== null) {
@@ -178,7 +182,9 @@ export default {
   deactivated() {
     this.visible = false;
   },
-
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, this.graphNodeSelectedListener);
+  },
 };
 </script>
 
