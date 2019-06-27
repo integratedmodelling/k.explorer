@@ -7,7 +7,7 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 
-## Next release - ?
+## 0.7.5 - 2019-06-27
 ### Added
 - with double click on map, map info popup is locked and show info of the top layer. To put on top a layer, 
 you can double click in the tree on it.
@@ -20,7 +20,9 @@ you can double click in the tree on it.
 - improvement on dataflow viewer
 - notifications of observation between explorer and engine was completely redefine
 ### Solve
+- unity of scale bug solved
 - lock scale functionality now is coherent
+- unregister event listener
 
 ## 0.7.0 - 2019-05-29
 ### Added
