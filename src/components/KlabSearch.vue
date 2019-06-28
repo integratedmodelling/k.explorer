@@ -455,6 +455,9 @@ export default {
             this.autocompleteEl.results = results;
             Vue.nextTick(() => {
               this.autocompleteEl.__showResults();
+              if (char !== '') {
+                this.autocompleteEl.keyboardIndex = 0;
+              }
             });
           } else {
             this.autocompleteEl.hide();
@@ -522,7 +525,15 @@ export default {
         });
         return;
       }
-      const { matches } = this.result;
+      const { matches, error, errorMessage } = this.result;
+      if (error) {
+        this.setSpinner({
+          ...SPINNER_CONSTANTS.SPINNER_ERROR,
+          owner: this.$options.name,
+          errorMessage,
+        });
+        return;
+      }
       const results = [];
       // const totMatches = matches.length;
       matches.forEach((match/* ,index */) => {

@@ -14,6 +14,7 @@
         :size="40"
         :ball="22"
         wrapperId="ksb-spinner"
+        id="spinner-searchbar"
         @dblclick.native="emitSpinnerDoubleclick"
         @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>

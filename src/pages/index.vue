@@ -89,6 +89,7 @@ export default {
       'mainViewerName',
       'mainViewer',
       'isInModalMode',
+      'spinnerErrorMessage',
     ]),
     logVisible() {
       return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
@@ -144,6 +145,16 @@ export default {
     },
   },
   watch: {
+    spinnerErrorMessage(newValue, oldValue) {
+      if (newValue !== null && newValue !== oldValue) {
+        console.error(this.spinnerErrorMessage);
+        this.$q.notify({
+          message: this.spinnerErrorMessage,
+          type: 'negative',
+          timeout: 1000,
+        });
+      }
+    },
   },
   created() {
     if (typeof this.mainViewer === 'undefined') {
