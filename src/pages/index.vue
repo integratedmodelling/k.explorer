@@ -144,6 +144,17 @@ export default {
     },
   },
   watch: {
+    spinnerErrorMessage(newValue, oldValue) {
+      if (newValue !== null && newValue !== oldValue) {
+        console.error(this.spinnerErrorMessage);
+        this.$q.notify({
+          message: this.spinnerErrorMessage,
+          type: 'negative',
+          icon: 'mdi-alert-circle',
+          timeout: 1000,
+        });
+      }
+    },
   },
   created() {
     if (typeof this.mainViewer === 'undefined') {
@@ -208,7 +219,7 @@ export default {
 
   #modal-spinner
     margin-right 10px
-    margin-left 5px
+    margin-left 1px
   .modal-klab-content > span
     display inline-block
     line-height 100%

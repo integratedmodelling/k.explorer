@@ -255,7 +255,8 @@ export default {
       } else {
         this.$q.notify({
           message: 'No available formats',
-          type: 'warn',
+          type: 'warning',
+          icon: 'mdi-alert',
           timeout: 200,
         });
       }

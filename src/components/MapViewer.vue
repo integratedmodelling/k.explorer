@@ -130,6 +130,7 @@ export default {
           this.$q.notify({
             message: this.$t('messages.uploadComplete', { fileName }),
             type: 'info',
+            icon: 'mdi-information',
             timeout: 1000,
           });
           this.uploadProgress = null;
@@ -138,6 +139,7 @@ export default {
           this.$q.notify({
             message: `${this.$t('errors.uploadError', { fileName })}\n${error.response.data.message}`,
             type: 'negative',
+            icon: 'mdi-alert-circle',
             timeout: 1000,
           });
           this.uploadProgress = null;
@@ -275,6 +277,7 @@ export default {
         this.$q.notify({
           message: error.message,
           type: 'negative',
+          icon: 'mdi-alert-circle',
           timeout: 3000,
         });
         return null;
@@ -600,6 +603,7 @@ export default {
           this.$q.notify({
             message: this.$t('messages.youHaveGOT'),
             type: 'info',
+            icon: 'mdi-information',
             timeout: 1500,
           });
         }

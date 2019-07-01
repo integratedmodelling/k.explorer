@@ -145,6 +145,7 @@ export default {
           this.$q.notify({
             message: this.$t('messages.invalidGeometry'),
             type: 'negative',
+            icon: 'mdi-alert-circle',
             timeout: 1000,
           });
           event.feature.setGeometry(null);

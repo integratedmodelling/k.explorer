@@ -302,6 +302,7 @@ export default {
       this.$q.notify({
         message: capitalizeFirstLetter(this.$t('messages.customCopyToClipboard', { what: this.$t('label.context') })),
         type: 'info',
+        icon: 'mdi-information',
         timeout: 500,
       });
     },

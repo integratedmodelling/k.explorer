@@ -186,7 +186,8 @@ export default {
       this.$q.notify({
         message: this.$t('messages.copiedToClipboard'),
         type: 'info',
-        timeout: 500,
+        icon: 'mdi-information',
+        timeout: 1000,
       });
     },
     getContainerClasses() {
