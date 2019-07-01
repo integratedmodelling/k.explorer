@@ -41,6 +41,45 @@
           </div>
       </div>
     </q-modal>
+    <q-modal
+      v-model="showHelp"
+      id="modal-show-help"
+      :content-classes="['gl-msg-content']"
+    >
+      <div class="bg-opaque-white">
+        <div class="q-pa-lg">
+          <h5>{{ $t('messages.needHelpTitle') }}</h5>
+          <p v-html="$t(`messages.needHelp${helpIndex}Text`)"></p>
+          <div class="gl-btn-container">
+            <q-btn
+              :label="$t('label.appPrevious')"
+              color="mc-main"
+              :disable="helpIndex === 0"
+              @click="helpIndex -= 1"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appNext')"
+              color="mc-main"
+              :disable="helpIndex === 3"
+              @click="helpIndex += 1"
+            ></q-btn>
+            <q-btn
+              :label="$t('label.appOK')"
+              color="mc-main"
+              @click="hideHelp"
+            ></q-btn>
+            <q-checkbox
+              v-model="remember"
+              :keep-color="true"
+              color="mc-main"
+              :label="$t('label.rememberDecision')"
+              class="rmd-checkbox"
+              :left-label="true"
+            ></q-checkbox>
+          </div>
+        </div>
+      </div>
+    </q-modal>
     <input-request-modal></input-request-modal>
   </q-page>
 </template>
@@ -56,7 +95,7 @@ import DataflowViewer from 'components/DataflowViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 
-import { colors } from 'quasar';
+import { colors, Cookies } from 'quasar';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
 
@@ -74,6 +113,9 @@ export default {
   data() {
     return {
       askForUndocking: false,
+      needHelp: !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START),
+      helpIndex: 0,
+      remember: false,
     };
   },
   computed: {
@@ -125,6 +167,15 @@ export default {
         [CONNECTION_CONSTANTS.CONNECTION_ERROR]: false,
       }[this.connectionState];
     },
+    showHelp: {
+      get() {
+        return false;
+        // return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
+      },
+      set(needHelp) {
+        this.needHelp = needHelp;
+      },
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -141,6 +192,19 @@ export default {
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
       console.info(`Setted max children as ${minResults}`);
       this.$store.state.data.childrenToAskFor = minResults;
+    },
+    storeNoNeedHelp() {
+      this.needHelp = false;
+      Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
+        expires: 30,
+        path: '/',
+      });
+    },
+    hideHelp() {
+      if (this.remember) {
+        this.storeNoNeedHelp();
+      }
+      this.needHelp = false;
     },
   },
   watch: {
@@ -240,5 +304,21 @@ export default {
 
   #modal-connection-status.fullscreen
     z-index 10000
+
+  #modal-show-help
+    .gl-msg-content
+      width 500px
+      padding 0
+      color rgba(0,0,0,0.7)
+      p
+        padding 20px 0
+    .rmd-checkbox
+      position absolute
+      right 25px
+      bottom 15px
+      font-size 10px
+
+    .gl-msg-content .gl-btn-container
+      margin-bottom 15px
 
 </style>

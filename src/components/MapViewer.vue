@@ -5,7 +5,7 @@
     <q-resize-observable @resize="handleResize" />
     <map-drawer v-if="isDrawMode" :map="map" @drawend="sendSpatialLocation"></map-drawer>
     <q-modal
-      v-model="geolocationWaiting"
+      v-model="waitingGeolocation"
       no-esc-dismiss
       no-backdrop-dismiss
       :content-classes="['gl-msg-content']"
@@ -115,7 +115,6 @@ export default {
       visibleBaseLayer: null,
       mapSelectionMarker: undefined,
       wktInstance: new WKT(),
-      geolocationWaiting: true,
       geolocationId: null,
       geolocationIncidence: null,
       popupContent: '',
@@ -178,6 +177,14 @@ export default {
     progressBarVisible() {
       return this.uploadProgress !== null;
     },
+    waitingGeolocation: {
+      get() {
+        return this.$store.state.view.waitingGeolocation;
+      },
+      set(waitingGeolocation) {
+        this.$store.state.view.waitingGeolocation = waitingGeolocation;
+      },
+    },
   },
   methods: {
     ...mapActions('data', [
@@ -205,7 +212,7 @@ export default {
       this.sendRegionOfInterest();
     },
     sendRegionOfInterest(geometry = null) {
-      if (this.geolocationWaiting) {
+      if (this.waitingGeolocation) {
         return;
       }
       let message = null;
@@ -402,7 +409,7 @@ export default {
     stopGeolocation(force = false) {
       navigator.geolocation.clearWatch(this.geolocationId);
       this.$nextTick(() => {
-        this.geolocationWaiting = false;
+        this.waitingGeolocation = false;
         if (force) {
           this.sendRegionOfInterest();
         }
@@ -534,7 +541,7 @@ export default {
     },
   },
   created() {
-    this.geolocationWaiting = 'geolocation' in navigator && !Cookies.has(WEB_CONSTANTS.COOKIE_MAPDEFAULT);
+    this.waitingGeolocation = 'geolocation' in navigator && !Cookies.has(WEB_CONSTANTS.COOKIE_MAPDEFAULT);
   },
   mounted() {
     // Set base layer
@@ -643,7 +650,7 @@ export default {
     this.map.addOverlay(this.popupOverlay);
     this.drawContext();
     this.drawObservations();
-    if (this.geolocationWaiting) {
+    if (this.waitingGeolocation) {
       this.doGeolocation();
     }
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
