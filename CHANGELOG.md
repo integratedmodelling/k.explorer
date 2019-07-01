@@ -13,6 +13,7 @@ is not available.
 you can double click in the tree on it.
 - added dataflow element information on click
 - the search bar has new feature for more complex queries
+- possibility of free search
 ### Improvements
 - with a click on map, info about the point is showed even if observation info panel is open
 - add a separator in log visualizer for each context reset
