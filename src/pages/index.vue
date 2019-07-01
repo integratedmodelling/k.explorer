@@ -151,6 +151,7 @@ export default {
         this.$q.notify({
           message: this.spinnerErrorMessage,
           type: 'negative',
+          icon: 'mdi-alert-circle',
           timeout: 1000,
         });
       }
@@ -219,7 +220,7 @@ export default {
 
   #modal-spinner
     margin-right 10px
-    margin-left 5px
+    margin-left 1px
   .modal-klab-content > span
     display inline-block
     line-height 100%

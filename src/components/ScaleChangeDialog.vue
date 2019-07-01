@@ -105,6 +105,7 @@ export default {
         this.$q.notify({
           message: this.$t('messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
           type: 'info',
+          icon: 'mdi-information',
           timeout: 1000,
         });
       }
