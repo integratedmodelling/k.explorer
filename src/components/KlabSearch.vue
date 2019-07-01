@@ -48,8 +48,7 @@
       @touchstart.native="handleTouch($event, null, searchInKLab)"
     >
       <klab-autocomplete
-        v-if="!freeText"
-        @search="search"
+        @search="autocompleteSearch"
         @selected="selected"
         @show="onAutocompleteShow"
         @hide="onAutocompleteHide"
@@ -108,6 +107,8 @@ export default {
       searchHistoryIndex: -1,
       autocompleteSB: null,
       freeText: false,
+      parenthesisDepth: 0,
+      last: false,
       minimumCharForAutocomplete: 2,
     };
   },
@@ -212,6 +213,16 @@ export default {
 
     onKeyPressedOnSearchInput(event) {
       this.noSearch = false;
+      if (this.last) {
+        event.preventDefault();
+        this.$q.notify({
+          message: this.$t('messages.lastTermAlertText'),
+          type: 'warning',
+          icon: 'mdi-alert',
+          timeout: 2000,
+        });
+        return;
+      }
       switch (event.keyCode) {
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
@@ -261,10 +272,14 @@ export default {
           event.preventDefault();
           if (this.freeText) { // Accept text
             this.acceptFreeText();
+          } else if (this.suggestionShowed) { // take the first
+            this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
+            this.searchHistoryIndex = -1;
           } else if (!this.askForSuggestion()) {
             this.$q.notify({
               message: this.$t('messages.noSpaceAllowedInSearch'),
               type: 'warning',
+              icon: 'mdi-alert',
               timeout: 1500,
             });
           }
@@ -290,10 +305,12 @@ export default {
           }
           break;
         default:
-          if (!this.isAcceptedKey(event.key)) {
+          if (!this.isAcceptedKey(event.key)) { // ) is permitted only if we have some parenthesis open
             if (event.keyCode !== 39) { // right arrow
               event.preventDefault();
             } // only chars added in initApp are permitted
+          } else if (event.key === ')' && this.parenthesisDepth === 0) {
+            event.preventDefault();
           } else {
             event.preventDefault();
             this.searchHistoryIndex = -1;
@@ -332,6 +349,13 @@ export default {
       }
     },
     // call when autocomplete want to search
+    autocompleteSearch(terms, done) {
+      if (this.freeText) {
+        done([]);
+        return;
+      }
+      this.search(terms, done);
+    },
     search(terms, done) {
       if (this.noSearch) { // only to intercept unwanted reactivity
         this.noSearch = false;
@@ -370,6 +394,15 @@ export default {
       if (this.suggestionShowed) {
         return;
       }
+      if (this.parenthesisDepth > 0) {
+        this.$q.notify({
+          message: this.$t('messages.parenthesisAlertText'),
+          type: 'warning',
+          icon: 'mdi-alert',
+          timeout: 2000,
+        });
+        return;
+      }
       if (this.isCrossingIDL) {
         this.$q.dialog({
           title: this.$t('label.IDLAlertTitle'),
@@ -389,7 +422,7 @@ export default {
         this.$q.notify({
           message: this.$t('label.askForObservation', { urn: searchText }),
           type: 'info',
-          // position: 'top',
+          icon: 'mdi-information',
           timeout: 2000,
         });
       } else {
@@ -422,6 +455,8 @@ export default {
         this.scrolled = 0;
         this.noSearch = false;
         this.freeText = false;
+        this.parenthesisDepth = 0;
+        this.last = false;
         this.searchStop();
       }
     },
@@ -525,7 +560,9 @@ export default {
         });
         return;
       }
-      const { matches, error, errorMessage } = this.result;
+      const { matches, error, errorMessage, parenthesisDepth, last } = this.result;
+      this.parenthesisDepth = parenthesisDepth;
+      this.last = last;
       if (error) {
         this.setSpinner({
           ...SPINNER_CONSTANTS.SPINNER_ERROR,
@@ -582,7 +619,7 @@ export default {
         this.$q.notify({
           message: this.$t('messages.noSearchResults'),
           type: 'info',
-          // position: 'top',
+          icon: 'mdi-information',
           timeout: 1000,
         });
       }

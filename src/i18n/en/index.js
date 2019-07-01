@@ -97,6 +97,8 @@ export default {
     noLogItems: 'Empty log',
     uploadComplete: 'Upload of file {fileName} complete',
     IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
+    lastTermAlertText: 'No more terms allowed',
+    parenthesisAlertText: 'You have open parenthesis',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
