@@ -173,7 +173,7 @@ export default {
         event.preventDefault();
         return;
       }
-      if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 32 || this.isAcceptedKey(event.key)) {
+      if (event.keyCode === 9 || event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 32 || this.isAcceptedKey(event.key)) {
         if (!this.searchIsActive) {
           this.searchStart(event.key);
           event.preventDefault();

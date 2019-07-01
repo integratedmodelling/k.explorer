@@ -42,7 +42,7 @@
         class="q-pa-xs"
         ref="mc-draggable"
         :style="{
-          'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
+          'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
         }"
       >
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>

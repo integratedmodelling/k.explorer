@@ -2,7 +2,6 @@
   <div id="ks-container"
        ref="ks-container"
   >
-    <!-- <div id="left-shadow"></div>  TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
       :key="token.index"
@@ -31,10 +30,11 @@
         <span v-else>{{ $t('label.noTokenDescription') }}</span>
       </q-tooltip>
     </div>
-    <div class="tokens"><q-input
+    <div class="tokens" :class="[fuzzyMode ? 'tokens-fuzzy' : '']"><q-input
+      :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchFocus ? 'ks-search-focused' : '']"
       :autofocus="true"
       v-model="actualToken"
-      :placeholder="$t('label.searchPlaceholder')"
+      :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
       size="20"
       id="mc-search-input"
       ref="mc-search-input"
@@ -70,7 +70,7 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS } from 'shared/Constants';
+import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES } from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -110,6 +110,7 @@ export default {
       parenthesisDepth: 0,
       last: false,
       minimumCharForAutocomplete: 2,
+      fuzzyMode: false,
     };
   },
   computed: {
@@ -245,17 +246,19 @@ export default {
           }
           break;
         case 9: // TAB force to select with TAB
-          if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
+          if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
+            this.fuzzyMode = !this.fuzzyMode;
+          } else if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
             this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
             this.searchHistoryIndex = -1;
           } else if (this.freeText) {
-            this.acceptFreeText();
+            this.acceptText();
           }
           event.preventDefault();
           break;
         case 13: // ENTER
-          if (this.freeText) {
-            this.acceptFreeText();
+          if (this.freeText || this.fuzzyMode) {
+            this.acceptText();
           } else {
             this.searchInKLab(event);
           }
@@ -270,10 +273,14 @@ export default {
           break;
         case 32: // SPACE BAR is not allowed in search but if is the first char, we ask for suggestions
           event.preventDefault();
-          if (this.freeText) { // Accept text
+          if (this.fuzzyMode) {
+            this.searchHistoryIndex = -1;
+            this.actualSearchString += event.key;
+          } else if (this.freeText) { // Accept text
             this.acceptFreeText();
-          } else if (this.suggestionShowed) { // take the first
-            this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
+          } else if (this.suggestionShowed) { // take the first or the selected one
+            const selectedIdx = this.autocompleteEl.keyboardIndex === -1 ? 0 : this.autocompleteEl.keyboardIndex;
+            this.autocompleteEl.setValue(this.autocompleteEl.results[selectedIdx]);
             this.searchHistoryIndex = -1;
           } else if (!this.askForSuggestion()) {
             this.$q.notify({
@@ -325,12 +332,22 @@ export default {
           break;
       }
     },
-    acceptFreeText() {
-      this.search(this.actualToken, (results) => {
-        if (results && results.length > 0) {
-          this.selected(results[0], false);
-        }
-      });
+    acceptText() {
+      const trimmedSearch = this.actualToken.trim();
+      if (trimmedSearch === '') {
+        this.$q.notify({
+          message: this.$t('messages.emptyFreeTextSearch'),
+          type: 'warning',
+          icon: 'mdi-alert',
+          timeout: 1000,
+        });
+      } else {
+        this.search(this.actualToken, (results) => {
+          if (results && results.length > 0 && !this.fuzzyMode) {
+            this.selected(results[0], false);
+          }
+        });
+      }
     },
     // call when autocomplete decide that an element is selected
     selected(item, isNavigation) {
@@ -369,6 +386,7 @@ export default {
         maxResults: this.maxResults,
         cancelSearch: false,
         defaultResults: terms === '',
+        searchMode: !this.fuzzyMode ? SEARCH_MODES.SEMANTIC : SEARCH_MODES.FREETEXT,
         queryString: this.actualSearchString, // terms split space
       }, this.$store.state.data.session).body);
       this.setSpinner({
@@ -455,6 +473,7 @@ export default {
         this.scrolled = 0;
         this.noSearch = false;
         this.freeText = false;
+        this.fuzzyMode = false;
         this.parenthesisDepth = 0;
         this.last = false;
         this.searchStop();
@@ -512,6 +531,23 @@ export default {
           matchId: item.id,
           added: false,
         }, this.$store.state.data.session).body);
+      }
+    },
+    // if a char was pressed without search input focus, is possible that it will be not write, so we do it
+    charReceived(char, append = false) {
+      if (char === 'ArrowUp') {
+        this.searchHistoryEvent(1);
+      } else if (char === 'ArrowDown') {
+        this.searchHistoryEvent(-1);
+      } else if (char === 'Tab' && this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
+        this.fuzzyMode = !this.fuzzyMode;
+      } else if (char === ' ') {
+        this.askForSuggestion();
+      } else {
+        this.actualSearchString = append ? this.actualSearchString + char : char;
+        if (SINGLE_CHARS.indexOf(char) !== -1) {
+          this.askForSuggestion(char);
+        }
       }
     },
   },
@@ -650,22 +686,27 @@ export default {
         this.searchInput.blur();
       }
     },
-    // if a char was pressed without search input focus, is possible that it will be not write, so we do it
     searchLostChar(newValue) {
-      if (newValue !== null) { // && this.actualToken === '') {
-        if (newValue === 'ArrowUp') {
-          this.searchHistoryEvent(1);
-        } else if (newValue === 'ArrowDown') {
-          this.searchHistoryEvent(-1);
-        } else if (newValue === ' ') {
-          this.askForSuggestion();
-        } else {
-          this.actualSearchString = this.actualSearchString + newValue;
-          if (SINGLE_CHARS.indexOf(newValue) !== -1) {
-            this.askForSuggestion(this.searchLostChar);
-          }
-        }
+      if (newValue !== null && newValue !== '') { // && this.actualToken === '') {
+        this.charReceived(newValue, true);
         this.resetSearchLostChar();
+      }
+    },
+    fuzzyMode() {
+      if (this.fuzzyMode) {
+        this.$q.notify({
+          message: this.$t('messages.fuzzyModeOn'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 1000,
+        });
+      } else {
+        this.$q.notify({
+          message: this.$t('messages.fuzzyModeOff'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 1000,
+        });
       }
     },
   },
@@ -673,19 +714,8 @@ export default {
     this.searchDiv = this.$refs['ks-container'];
     this.searchInput = this.$refs['mc-search-input'];
     this.autocompleteEl = this.$refs['mc-autocomplete'];
-    if (this.searchLostChar !== null) {
-      if (this.searchLostChar === 'ArrowUp') {
-        this.searchHistoryEvent(1);
-      } else if (this.searchLostChar === 'ArrowDown') {
-        this.searchHistoryEvent(-1);
-      } else if (this.searchLostChar === ' ') {
-        this.askForSuggestion();
-      } else {
-        this.actualSearchString = this.searchLostChar;
-        if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
-          this.askForSuggestion(this.searchLostChar);
-        }
-      }
+    if (this.searchLostChar !== null && this.searchLostChar !== '') {
+      this.charReceived(this.searchLostChar, false);
     } else {
       this.actualSearchString = '';
     }
@@ -756,5 +786,17 @@ export default {
       border-radius 10px
       width 5px
       background-color #e5e5e5
+
+  .tokens-fuzzy
+    width 100%
+  .ks-search-focused
+    padding 0 10px;
+    border-radius: 10px;
+    background-color: $main-control-cyan;
+    &.ks-fuzzy
+      padding 0 10px;
+      border-radius: 10px;
+      background-color: $main-control-green;
+
 
 </style>

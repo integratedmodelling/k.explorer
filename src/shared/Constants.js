@@ -510,6 +510,11 @@ export const SCALE_TYPE = {
   ST_TIME: 'time',
 };
 
+export const SEARCH_MODES = {
+  SEMANTIC: 'SEMANTIC',
+  FREETEXT: 'FREETEXT',
+};
+
 export const SETTING_NAMES = {
   INTERACTIVE_MODE: 'InteractiveMode',
   LOCK_SPACE: 'LockSpace',

@@ -20,6 +20,7 @@ export default {
     contextShape: 'context shape',
     noObservation: 'No observations available',
     searchPlaceholder: 'Search in k.LAB',
+    fuzzySearchPlaceholder: 'Search all',
     askForObservation: 'Observing {urn}',
     noTokenDescription: 'No description available',
     btnContextReset: 'Reset context',
@@ -99,6 +100,9 @@ export default {
     IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
     lastTermAlertText: 'No more terms allowed',
     parenthesisAlertText: 'You have open parenthesis',
+    emptyFreeTextSearch: 'Empty search is not allowed',
+    fuzzyModeOff: 'Free search off',
+    fuzzyModeOn: 'Free search on',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

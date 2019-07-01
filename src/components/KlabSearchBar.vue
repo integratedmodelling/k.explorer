@@ -22,7 +22,7 @@
     <div
       id="ksb-search-container"
       :style="{
-          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
+          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
           'border-right': '2px solid '+ spinnerColor.color
         }">
       <klab-search ref="klab-search" v-if="searchIsActive" ></klab-search>
@@ -30,7 +30,7 @@
         <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
       </div>
       <div class="ksb-status-texts" ref="ksb-status-texts">
-        <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .6 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
+        <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .8 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
       </div>
       <q-icon v-if="isScaleLocked['space'] && !hasContext" name="mdi-lock-outline">
         <q-tooltip
