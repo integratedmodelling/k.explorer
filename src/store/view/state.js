@@ -160,4 +160,5 @@ export default {
   modalMode: false,
 
   inputRequests: [],
+  waitingGeolocation: true,
 };
