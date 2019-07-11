@@ -288,4 +288,8 @@ export default {
       }
     }
   },
+
+  SET_FUZZY_MODE: (state, fuzzyMode) => {
+    state.fuzzyMode = fuzzyMode;
+  },
 };

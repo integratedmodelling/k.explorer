@@ -6,8 +6,8 @@
       v-for="(token, index) in acceptedTokens"
       :key="token.index"
       :class="[
-        'tokens-accepted',
-        'tokens',
+        'ks-tokens-accepted',
+        'ks-tokens',
         'bg-semantic-elements',
         token.selected ? 'selected' : '',
         'text-'+token.leftColor,
@@ -30,14 +30,14 @@
         <span v-else>{{ $t('label.noTokenDescription') }}</span>
       </q-tooltip>
     </div>
-    <div class="tokens" :class="[fuzzyMode ? 'tokens-fuzzy' : '']"><q-input
-      :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchFocus ? 'ks-search-focused' : '']"
+    <div class="ks-tokens" :class="[fuzzyMode ? 'ks-tokens-fuzzy' : 'ks-tokens-klab']"><q-input
+      :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchIsFocused ? 'ks-search-focused' : '']"
       :autofocus="true"
       v-model="actualToken"
       :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
       size="20"
-      id="mc-search-input"
-      ref="mc-search-input"
+      id="ks-search-input"
+      ref="ks-search-input"
       :tabindex="acceptedTokens.length"
       :hide-underline="true"
       @focus="onInputFocus(true)"
@@ -55,8 +55,8 @@
         :debounce="200"
         :min-characters="minimumCharForAutocomplete"
         :max-results="50"
-        ref="mc-autocomplete"
-        id="mc-autocomplete"
+        ref="ks-autocomplete"
+        id="ks-autocomplete"
         :class="[ notChrome() ? 'not-chrome' : '']"
       ></klab-autocomplete>
     </q-input>
@@ -110,7 +110,6 @@ export default {
       parenthesisDepth: 0,
       last: false,
       minimumCharForAutocomplete: 2,
-      fuzzyMode: false,
     };
   },
   computed: {
@@ -124,6 +123,7 @@ export default {
       'searchIsFocused',
       'searchLostChar',
       'searchHistory',
+      'fuzzyMode',
     ]),
     inputSearchColor: {
       get() {
@@ -141,6 +141,7 @@ export default {
       'searchFocus',
       'resetSearchLostChar',
       'storePreviousSearch',
+      'setFuzzyMode',
     ]),
     notChrome() {
       return navigator.userAgent.indexOf('Chrome') === -1;
@@ -172,7 +173,7 @@ export default {
           nextFocus = `token-${this.acceptedTokens[selected - 1].index}`;
         } else if (event.keyCode === 39 && selected < this.acceptedTokens.length) {
           if (selected === this.acceptedTokens.length - 1) {
-            nextFocus = 'mc-search-input';
+            nextFocus = 'ks-search-input';
             isInput = true;
           } else {
             nextFocus = `token-${this.acceptedTokens[selected + 1].index}`;
@@ -247,7 +248,7 @@ export default {
           break;
         case 9: // TAB force to select with TAB
           if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
-            this.fuzzyMode = !this.fuzzyMode;
+            this.setFuzzyMode(!this.fuzzyMode);
           } else if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
             this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
             this.searchHistoryIndex = -1;
@@ -473,7 +474,7 @@ export default {
         this.scrolled = 0;
         this.noSearch = false;
         this.freeText = false;
-        this.fuzzyMode = false;
+        this.setFuzzyMode(false);
         this.parenthesisDepth = 0;
         this.last = false;
         this.searchStop();
@@ -540,7 +541,7 @@ export default {
       } else if (char === 'ArrowDown') {
         this.searchHistoryEvent(-1);
       } else if (char === 'Tab' && this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
-        this.fuzzyMode = !this.fuzzyMode;
+        this.setFuzzyMode(!this.fuzzyMode);
       } else if (char === ' ') {
         this.askForSuggestion();
       } else {
@@ -692,6 +693,7 @@ export default {
         this.resetSearchLostChar();
       }
     },
+    /*
     fuzzyMode() {
       if (this.fuzzyMode) {
         this.$q.notify({
@@ -709,11 +711,12 @@ export default {
         });
       }
     },
+    */
   },
   mounted() {
     this.searchDiv = this.$refs['ks-container'];
-    this.searchInput = this.$refs['mc-search-input'];
-    this.autocompleteEl = this.$refs['mc-autocomplete'];
+    this.searchInput = this.$refs['ks-search-input'];
+    this.autocompleteEl = this.$refs['ks-autocomplete'];
     if (this.searchLostChar !== null && this.searchLostChar !== '') {
       this.charReceived(this.searchLostChar, false);
     } else {
@@ -731,16 +734,16 @@ export default {
     overflow-y hidden
     white-space nowrap
 
-  .tokens
+  .ks-tokens
     display inline-block
     margin-right 1px
     padding 0 3px
 
-  .tokens-accepted
+  .ks-tokens-accepted
     /* mix-blend-mode: difference; */
     font-weight 600
 
-  .tokens.selected
+  .ks-tokens.selected
     /* color: #fff; */
     outline none
 
@@ -757,7 +760,7 @@ export default {
     max-width $main-control-width !important
     border-radius 10px
 
-  #mc-autocomplete
+  #ks-autocomplete
     /* for ff */
     scrollbar-color: #e5e5e5 rgba(0,0,0,0);
     scrollbar-width: thin;
@@ -787,16 +790,18 @@ export default {
       width 5px
       background-color #e5e5e5
 
-  .tokens-fuzzy
+  .ks-tokens-fuzzy
     width 100%
+  .ks-tokens-klab
+    width 60%
   .ks-search-focused
-    padding 0 10px;
-    border-radius: 10px;
+    padding 0 5px;
+    border-radius: 4px;
     background-color: $main-control-cyan;
+    transition background-color 0.8s, display 0.8s
     &.ks-fuzzy
-      padding 0 10px;
-      border-radius: 10px;
       background-color: $main-control-green;
+      transition background-color 0.8s
 
 
 </style>

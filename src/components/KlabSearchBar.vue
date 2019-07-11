@@ -21,11 +21,12 @@
     </div>
     <div
       id="ksb-search-container"
+      :class="[ fuzzyMode ? 'klab-fuzzy' : '', searchIsFocused ? 'klab-search-focused' : '']"
       :style="{
           'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
-          'border-right': '2px solid '+ spinnerColor.color
+          // 'border-right': '2px solid '+ spinnerColor.color
         }">
-      <klab-search ref="klab-search" v-if="searchIsActive" ></klab-search>
+      <klab-search ref="klab-search" v-if="searchIsActive"></klab-search>
       <div class="ksb-context-text text-white" v-else>
         <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
       </div>
@@ -79,6 +80,7 @@ export default {
       'hasMainControl',
       'statusTextsString',
       'statusTextsLength',
+      'fuzzyMode',
     ]),
     isDocked() {
       return !this.hasMainControl;

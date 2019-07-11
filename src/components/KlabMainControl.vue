@@ -41,6 +41,7 @@
         id="mc-q-card-title"
         class="q-pa-xs"
         ref="mc-draggable"
+        :class="[ fuzzyMode ? 'klab-fuzzy' : '', searchIsFocused ? 'klab-search-focused' : '']"
         :style="{
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
         }"
@@ -182,6 +183,7 @@ export default {
       'spinnerColor',
       'searchIsFocused',
       'isDrawMode',
+      'fuzzyMode',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -311,19 +313,14 @@ export default {
 
   #mc-container
     #mc-q-card-title
-    .q-card
-      width $main-control-width
-      &.with-context
-        #mc-q-card-title
-          width $main-control-width - 30px
-
-    #mc-q-card-title
       border-radius 30px
       cursor move
       transition background-color 0.8s
     .q-card
       overflow auto
+      width $main-control-width
       &.with-context
+        width $main-control-width - 30px
         background-color rgba(35, 35, 35 ,.8)
         border-radius 5px
         #mc-q-card-title

@@ -161,4 +161,5 @@ export default {
 
   inputRequests: [],
   waitingGeolocation: true,
+  fuzzyMode: false,
 };
