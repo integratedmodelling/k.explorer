@@ -736,7 +736,7 @@ export default {
 
   .ks-tokens
     display inline-block
-    margin-right 1px
+    margin-right -3px
     padding 0 3px
 
   .ks-tokens-accepted
@@ -748,7 +748,7 @@ export default {
     outline none
 
   .bg-semantic-elements
-     border-radius 10px
+     border-radius 4px
      border-style solid
      border-width 2px
 
@@ -795,10 +795,10 @@ export default {
   .ks-tokens-klab
     width 60%
   .ks-search-focused
-    padding 0 5px;
+    padding 0;
     border-radius: 4px;
     background-color: $main-control-cyan;
-    transition background-color 0.8s, display 0.8s
+    transition background-color 0.8s
     &.ks-fuzzy
       background-color: $main-control-green;
       transition background-color 0.8s

@@ -15,6 +15,7 @@
         :ball="22"
         wrapperId="ksb-spinner"
         id="spinner-searchbar"
+        :class="[ searchIsFocused ? 'ksb-spinner-search-focused' : '']"
         @dblclick.native="emitSpinnerDoubleclick"
         @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
@@ -43,6 +44,11 @@
       </q-icon>
       <main-control-menu></main-control-menu>
     </div>
+    <!--
+    <q-modal v-if="fullScreenSearch && searchIsActive">
+      <klab-search ref="klab-search"></klab-search>
+    </q-modal>
+    -->
   </div>
 </template>
 
@@ -81,6 +87,7 @@ export default {
       'statusTextsString',
       'statusTextsLength',
       'fuzzyMode',
+      'fullScreenSearch',
     ]),
     isDocked() {
       return !this.hasMainControl;
@@ -200,6 +207,8 @@ export default {
         &:hover
           color $main-control-main-color
           transform translate(5px) rotate(33deg)
+    .ksb-spinner-search-focused
+      box-shadow 0px 0px 2px #666
     .ksb-context-text
       white-space nowrap
       overflow hidden
