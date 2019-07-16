@@ -315,4 +315,8 @@ export default {
   setFuzzyMode: ({ commit }, fuzzyMode) => {
     commit('SET_FUZZY_MODE', fuzzyMode);
   },
+
+  setLargeMode: ({ commit }, largeMode) => {
+    commit('SET_LARGE_MODE', largeMode);
+  },
 };

@@ -2,6 +2,7 @@
   <div
     id="ksb-container"
     :class="[hasContext ? 'with-context' : 'without-context', isDocked ? 'ksb-docked' : '']"
+    :style="{ width: isDocked && searchIsFocused && largeMode ? getLargeModeWidth() : '100%' }"
     >
     <div
       id="ksb-spinner"
@@ -27,7 +28,7 @@
           'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
           // 'border-right': '2px solid '+ spinnerColor.color
         }">
-      <klab-search ref="klab-search" v-if="searchIsActive"></klab-search>
+      <klab-search class="klab-search" ref="klab-search" v-if="searchIsActive"></klab-search>
       <div class="ksb-context-text text-white" v-else>
         <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
       </div>
@@ -44,17 +45,12 @@
       </q-icon>
       <main-control-menu></main-control-menu>
     </div>
-    <!--
-    <q-modal v-if="fullScreenSearch && searchIsActive">
-      <klab-search ref="klab-search"></klab-search>
-    </q-modal>
-    -->
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS } from 'shared/Constants';
+import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -87,7 +83,7 @@ export default {
       'statusTextsString',
       'statusTextsLength',
       'fuzzyMode',
-      'fullScreenSearch',
+      'largeMode',
     ]),
     isDocked() {
       return !this.hasMainControl;
@@ -100,6 +96,9 @@ export default {
       'searchFocus',
       'searchStop',
     ]),
+    getLargeModeWidth() {
+      return `${(window.innerWidth || document.body.clientWidth) - LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE}px`;
+    },
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
@@ -134,7 +133,9 @@ export default {
       this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },
     contextLabel(newValue) {
-      this.$refs['st-context-text'].changeText(newValue);
+      if (this.$refs['st-context-text']) {
+        this.$refs['st-context-text'].changeText(newValue);
+      }
     },
   },
   mounted() {
@@ -153,6 +154,9 @@ export default {
     transition background-color 0.8s
     line-height inherit
     &.ksb-docked
+      transition width .5s
+      &.ksb-large-mode
+        width $main-control-width + $main-control-inc-width
       #ksb-search-container
         position relative
         padding 16px 10px
@@ -222,5 +226,4 @@ export default {
       position absolute
       right 35px
       top 12px
-
 </style>

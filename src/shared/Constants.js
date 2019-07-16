@@ -26,6 +26,11 @@ export const CONSTANTS = {
    * Default children to ask for
    */
   CHILDREN_TO_ASK_FOR: 25,
+
+  /**
+   * increment in pixel for the searchbar
+   */
+  SEARCHBAR_INCREMENT: 512,
 };
 
 export const LEFTMENU_CONSTANTS = {

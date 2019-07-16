@@ -124,6 +124,7 @@ export default {
       'searchLostChar',
       'searchHistory',
       'fuzzyMode',
+      'largeMode',
     ]),
     inputSearchColor: {
       get() {
@@ -142,6 +143,7 @@ export default {
       'resetSearchLostChar',
       'storePreviousSearch',
       'setFuzzyMode',
+      'setLargeMode',
     ]),
     notChrome() {
       return navigator.userAgent.indexOf('Chrome') === -1;
@@ -237,7 +239,12 @@ export default {
               matchId: item.id,
               added: false,
             }, this.$store.state.data.session).body);
-            this.freeText = false;
+            this.freeText = this.acceptedTokens.length > 0
+              ? this.acceptedTokens[this.acceptedTokens.length - 1].nextTokenClass !== MATCH_TYPES.NEXT_TOKENS.TOKEN
+              : false;
+            this.$nextTick(() => {
+              this.checkLargeMode(false);
+            });
           } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
@@ -362,8 +369,16 @@ export default {
           added: true,
         }, this.$store.state.data.session).body);
         this.freeText = item.nextTokenClass !== MATCH_TYPES.NEXT_TOKENS.TOKEN;
+        this.$nextTick(() => {
+          this.checkLargeMode(true);
+        });
       } else {
         this.inputSearchColor = item.rgb;
+      }
+    },
+    checkLargeMode(tokenAdded) {
+      if ((!this.largeMode && tokenAdded) || (this.largeMode && !tokenAdded)) {
+        this.setLargeMode((this.searchDiv.offsetWidth - this.searchDiv.scrollWidth) < 0);
       }
     },
     // call when autocomplete want to search
@@ -475,6 +490,7 @@ export default {
         this.noSearch = false;
         this.freeText = false;
         this.setFuzzyMode(false);
+        this.setLargeMode(false);
         this.parenthesisDepth = 0;
         this.last = false;
         this.searchStop();
@@ -793,7 +809,9 @@ export default {
   .ks-tokens-fuzzy
     width 100%
   .ks-tokens-klab
-    width 60%
+    width 256px
+  #ks-search-input
+    background-color transparent
   .ks-search-focused
     padding 0;
     border-radius: 4px;

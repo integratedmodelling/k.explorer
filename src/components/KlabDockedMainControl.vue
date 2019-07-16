@@ -2,7 +2,7 @@
   <div
     id="dmc-container"
     class="full-height"
-    :class="{'dmc-dragging': dragging}"
+    :class="{'dmc-dragging': dragging, 'dmc-large-mode': searchIsFocused && largeMode }"
     v-draggable="dragMCConfig"
   >
     <klab-breadcrumbs></klab-breadcrumbs>
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { debounce, dom } from 'quasar';
 import KlabSearchBar from 'components/KlabSearchBar';
 import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
@@ -56,8 +56,14 @@ export default {
       dragging: false,
     };
   },
+  computed: {
+    ...mapGetters('view', [
+      'largeMode',
+    ]),
+  },
   methods: {
     ...mapActions('view', [
+      'searchIsFocused',
       'setMainViewer',
     ]),
     onDebouncedPositionChanged(absolutePosition) {
@@ -86,6 +92,17 @@ export default {
 <style lang="stylus">
   @import '~variables'
   #dmc-container
+    #kt-container
+      height "calc(100% - %s)" % $docked-padding
+      max-height "calc(100% - %s)" % $docked-padding
+      position relative
+    &.dmc-large-mode.full-height
+      height "calc(100% -  %s)" % ($docked-search-height) !important
+      #kt-container
+        height 100%
+        max-height 100%
+        position relative
+
     #dmc-tree
       background-color: rgba(119,119,119,0.65);
       #oi-container
@@ -95,11 +112,6 @@ export default {
           height "calc(100% - %s)" % ($docked-padding + $docked-correction)
           &.with-histogram
             height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
-
-      #kt-container
-        height "calc(100% - %s)" % $docked-padding
-        max-height "calc(100% - %s)" % $docked-padding
-        position relative
     &.dmc-dragging
       cursor move !important
     .kbc-container

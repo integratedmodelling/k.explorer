@@ -30,7 +30,7 @@
     <q-card
       id="mc-q-card"
       class="no-box-shadow absolute lot-of-flow"
-      :class="[hasContext ? '' : 'bg-transparent', hasContext ? 'with-context' : 'without-context']"
+      :class="[hasContext ? 'with-context' : 'bg-transparent without-context', largeMode ? 'mc-large-mode' : '']"
       :style="{ top: `${defaultTop}px`, left: `${centeredLeft}px` }"
       :flat="true"
       v-draggable="dragMCConfig"
@@ -114,11 +114,10 @@
 </template>
 
 <script>
-// import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 // import { Draggable } from 'draggable-vue-directive';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
-import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS, CONSTANTS } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
 import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
@@ -179,19 +178,21 @@ export default {
     ...mapGetters('data', [
       'hasContext',
     ]),
+    ...mapGetters('stomp', [
+      'hasTasks',
+    ]),
     ...mapGetters('view', [
       'spinnerColor',
       'searchIsFocused',
       'isDrawMode',
       'fuzzyMode',
-    ]),
-    ...mapGetters('stomp', [
-      'hasTasks',
+      'largeMode',
     ]),
   },
   methods: {
     ...mapActions('view', [
       'setMainViewer',
+      'setLargeMode',
     ]),
     callStartType(event) {
       if (!this.searchIsFocused) {
@@ -276,6 +277,7 @@ export default {
   },
   watch: {
     hasContext() {
+      this.setLargeMode(false);
       this.$nextTick(() => {
         this.changeDraggablePosition({
           top: this.defaultTop,
@@ -283,6 +285,18 @@ export default {
         });
       });
       // this.draggableElement.classList.remove('vuela');
+    },
+    largeMode() {
+      if (this.hasContext) {
+        return;
+      }
+      this.$nextTick(() => {
+        const offset = CONSTANTS.SEARCHBAR_INCREMENT * (this.largeMode ? 1 : -1) / 2;
+        this.changeDraggablePosition({
+          top: parseFloat(this.draggableElement.style.top),
+          left: parseFloat(this.draggableElement.style.left) - offset,
+        });
+      });
     },
   },
   created() {
@@ -319,6 +333,7 @@ export default {
     .q-card
       overflow auto
       width $main-control-width
+      transition width .5s
       &.with-context
         width $main-control-width - 30px
         background-color rgba(35, 35, 35 ,.8)
@@ -326,6 +341,8 @@ export default {
         #mc-q-card-title
           overflow hidden
           margin 15px
+      &.mc-large-mode
+        width $main-control-width + $main-control-inc-width
 
     .q-card-title
       position relative
