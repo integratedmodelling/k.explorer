@@ -16,7 +16,7 @@
         :ball="22"
         wrapperId="ksb-spinner"
         id="spinner-searchbar"
-        :class="[ searchIsFocused ? 'ksb-spinner-search-focused' : '']"
+        :style="{ 'box-shadow': searchIsFocused ? `0px 0px 3gitpx ${getBGColor('.4')}` : 'none' }"
         @dblclick.native="emitSpinnerDoubleclick"
         @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
@@ -211,8 +211,6 @@ export default {
         &:hover
           color $main-control-main-color
           transform translate(5px) rotate(33deg)
-    .ksb-spinner-search-focused
-      box-shadow 0px 0px 2px #666
     .ksb-context-text
       white-space nowrap
       overflow hidden
