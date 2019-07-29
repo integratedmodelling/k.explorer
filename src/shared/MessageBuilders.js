@@ -44,19 +44,6 @@ export const PAYLOAD_BUILDERS = {
     north,
     east,
   }),
-  /*
-  SEARCH_REQUEST: ({
-    queryString,
-    requestId,
-    contextId = null,
-    matchTypes = null,
-  }) => ({
-    ...(contextId !== null && { contextId }),
-    ...(matchTypes !== null && { matchTypes }),
-    queryString,
-    requestId,
-  }),
-  */
 };
 
 /**
@@ -80,6 +67,7 @@ export const MESSAGES_BUILDERS = {
 
   SEARCH_REQUEST: ({
     queryString,
+    searchMode,
     requestId,
     contextId = null,
     matchTypes = null,
@@ -94,6 +82,7 @@ export const MESSAGES_BUILDERS = {
       ...(contextId !== null && { contextId }),
       ...(matchTypes !== null && { matchTypes }),
       queryString,
+      searchMode,
       requestId,
       cancelSearch,
       defaultResults,

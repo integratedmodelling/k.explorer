@@ -70,6 +70,7 @@ export default {
   spinner: state => state.spinner,
   spinnerOwners: state => state.spinnerOwners,
   spinnerColor: state => (state.spinner !== 'undefined' && state.spinner !== null ? getColorObject(state.spinner.color) : null),
+  spinnerErrorMessage: state => (state.spinner !== 'undefined' && state.spinner !== null ? state.spinner.errorMessage : null),
 
   searchIsActive: state => state.searchActive,
   searchIsFocused: state => state.searchFocus,
@@ -108,4 +109,6 @@ export default {
   inputRequests: state => state.inputRequests,
   hasInputRequests: state => state.inputRequests.length !== 0,
   isInModalMode: state => state.modalMode,
+  fuzzyMode: state => state.fuzzyMode,
+  largeMode: state => state.largeMode,
 };

@@ -26,6 +26,11 @@ export const CONSTANTS = {
    * Default children to ask for
    */
   CHILDREN_TO_ASK_FOR: 25,
+
+  /**
+   * increment in pixel for the searchbar
+   */
+  SEARCHBAR_INCREMENT: 512,
 };
 
 export const LEFTMENU_CONSTANTS = {
@@ -509,6 +514,11 @@ export const CUSTOM_EVENTS = {
 export const SCALE_TYPE = {
   ST_SPACE: 'space',
   ST_TIME: 'time',
+};
+
+export const SEARCH_MODES = {
+  SEMANTIC: 'SEMANTIC',
+  FREETEXT: 'FREETEXT',
 };
 
 export const SETTING_NAMES = {

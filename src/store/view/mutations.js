@@ -288,4 +288,12 @@ export default {
       }
     }
   },
+
+  SET_FUZZY_MODE: (state, fuzzyMode) => {
+    state.fuzzyMode = fuzzyMode;
+  },
+
+  SET_LARGE_MODE: (state, largeMode) => {
+    state.largeMode = largeMode;
+  },
 };

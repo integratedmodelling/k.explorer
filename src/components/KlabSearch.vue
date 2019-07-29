@@ -2,13 +2,12 @@
   <div id="ks-container"
        ref="ks-container"
   >
-    <!-- <div id="left-shadow"></div>  TODO is useless to generate an exit effect when search scroll to left -->
     <div
       v-for="(token, index) in acceptedTokens"
       :key="token.index"
       :class="[
-        'tokens-accepted',
-        'tokens',
+        'ks-tokens-accepted',
+        'ks-tokens',
         'bg-semantic-elements',
         token.selected ? 'selected' : '',
         'text-'+token.leftColor,
@@ -31,13 +30,14 @@
         <span v-else>{{ $t('label.noTokenDescription') }}</span>
       </q-tooltip>
     </div>
-    <div class="tokens"><q-input
+    <div class="ks-tokens" :class="[fuzzyMode ? 'ks-tokens-fuzzy' : 'ks-tokens-klab']"><q-input
+      :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchIsFocused ? 'ks-search-focused' : '']"
       :autofocus="true"
       v-model="actualToken"
-      :placeholder="$t('label.searchPlaceholder')"
+      :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
       size="20"
-      id="mc-search-input"
-      ref="mc-search-input"
+      id="ks-search-input"
+      ref="ks-search-input"
       :tabindex="acceptedTokens.length"
       :hide-underline="true"
       @focus="onInputFocus(true)"
@@ -48,16 +48,15 @@
       @touchstart.native="handleTouch($event, null, searchInKLab)"
     >
       <klab-autocomplete
-        v-if="!freeText"
-        @search="search"
+        @search="autocompleteSearch"
         @selected="selected"
         @show="onAutocompleteShow"
         @hide="onAutocompleteHide"
         :debounce="200"
         :min-characters="minimumCharForAutocomplete"
         :max-results="50"
-        ref="mc-autocomplete"
-        id="mc-autocomplete"
+        ref="ks-autocomplete"
+        id="ks-autocomplete"
         :class="[ notChrome() ? 'not-chrome' : '']"
       ></klab-autocomplete>
     </q-input>
@@ -71,7 +70,7 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS } from 'shared/Constants';
+import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES } from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -108,6 +107,8 @@ export default {
       searchHistoryIndex: -1,
       autocompleteSB: null,
       freeText: false,
+      parenthesisDepth: 0,
+      last: false,
       minimumCharForAutocomplete: 2,
     };
   },
@@ -122,6 +123,8 @@ export default {
       'searchIsFocused',
       'searchLostChar',
       'searchHistory',
+      'fuzzyMode',
+      'largeMode',
     ]),
     inputSearchColor: {
       get() {
@@ -139,6 +142,8 @@ export default {
       'searchFocus',
       'resetSearchLostChar',
       'storePreviousSearch',
+      'setFuzzyMode',
+      'setLargeMode',
     ]),
     notChrome() {
       return navigator.userAgent.indexOf('Chrome') === -1;
@@ -170,7 +175,7 @@ export default {
           nextFocus = `token-${this.acceptedTokens[selected - 1].index}`;
         } else if (event.keyCode === 39 && selected < this.acceptedTokens.length) {
           if (selected === this.acceptedTokens.length - 1) {
-            nextFocus = 'mc-search-input';
+            nextFocus = 'ks-search-input';
             isInput = true;
           } else {
             nextFocus = `token-${this.acceptedTokens[selected + 1].index}`;
@@ -212,6 +217,16 @@ export default {
 
     onKeyPressedOnSearchInput(event) {
       this.noSearch = false;
+      if (this.last) {
+        event.preventDefault();
+        this.$q.notify({
+          message: this.$t('messages.lastTermAlertText'),
+          type: 'warning',
+          icon: 'mdi-alert',
+          timeout: 2000,
+        });
+        return;
+      }
       switch (event.keyCode) {
         case 8: // BACKSPACE
           if (this.actualToken === '' && this.acceptedTokens.length !== 0) { // existing accepted token without actual search text
@@ -224,7 +239,12 @@ export default {
               matchId: item.id,
               added: false,
             }, this.$store.state.data.session).body);
-            this.freeText = false;
+            this.freeText = this.acceptedTokens.length > 0
+              ? this.acceptedTokens[this.acceptedTokens.length - 1].nextTokenClass !== MATCH_TYPES.NEXT_TOKENS.TOKEN
+              : false;
+            this.$nextTick(() => {
+              this.checkLargeMode(false);
+            });
           } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
@@ -234,17 +254,19 @@ export default {
           }
           break;
         case 9: // TAB force to select with TAB
-          if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
+          if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
+            this.setFuzzyMode(!this.fuzzyMode);
+          } else if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
             this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
             this.searchHistoryIndex = -1;
           } else if (this.freeText) {
-            this.acceptFreeText();
+            this.acceptText();
           }
           event.preventDefault();
           break;
         case 13: // ENTER
-          if (this.freeText) {
-            this.acceptFreeText();
+          if (this.freeText || this.fuzzyMode) {
+            this.acceptText();
           } else {
             this.searchInKLab(event);
           }
@@ -259,12 +281,20 @@ export default {
           break;
         case 32: // SPACE BAR is not allowed in search but if is the first char, we ask for suggestions
           event.preventDefault();
-          if (this.freeText) { // Accept text
+          if (this.fuzzyMode) {
+            this.searchHistoryIndex = -1;
+            this.actualSearchString += event.key;
+          } else if (this.freeText) { // Accept text
             this.acceptFreeText();
+          } else if (this.suggestionShowed) { // take the first or the selected one
+            const selectedIdx = this.autocompleteEl.keyboardIndex === -1 ? 0 : this.autocompleteEl.keyboardIndex;
+            this.autocompleteEl.setValue(this.autocompleteEl.results[selectedIdx]);
+            this.searchHistoryIndex = -1;
           } else if (!this.askForSuggestion()) {
             this.$q.notify({
               message: this.$t('messages.noSpaceAllowedInSearch'),
               type: 'warning',
+              icon: 'mdi-alert',
               timeout: 1500,
             });
           }
@@ -290,10 +320,12 @@ export default {
           }
           break;
         default:
-          if (!this.isAcceptedKey(event.key)) {
+          if (!this.isAcceptedKey(event.key)) { // ) is permitted only if we have some parenthesis open
             if (event.keyCode !== 39) { // right arrow
               event.preventDefault();
             } // only chars added in initApp are permitted
+          } else if (event.key === ')' && this.parenthesisDepth === 0) {
+            event.preventDefault();
           } else {
             event.preventDefault();
             this.searchHistoryIndex = -1;
@@ -308,12 +340,22 @@ export default {
           break;
       }
     },
-    acceptFreeText() {
-      this.search(this.actualToken, (results) => {
-        if (results && results.length > 0) {
-          this.selected(results[0], false);
-        }
-      });
+    acceptText() {
+      const trimmedSearch = this.actualToken.trim();
+      if (trimmedSearch === '') {
+        this.$q.notify({
+          message: this.$t('messages.emptyFreeTextSearch'),
+          type: 'warning',
+          icon: 'mdi-alert',
+          timeout: 1000,
+        });
+      } else {
+        this.search(this.actualToken, (results) => {
+          if (results && results.length > 0 && !this.fuzzyMode) {
+            this.selected(results[0], false);
+          }
+        });
+      }
     },
     // call when autocomplete decide that an element is selected
     selected(item, isNavigation) {
@@ -327,11 +369,26 @@ export default {
           added: true,
         }, this.$store.state.data.session).body);
         this.freeText = item.nextTokenClass !== MATCH_TYPES.NEXT_TOKENS.TOKEN;
+        this.$nextTick(() => {
+          this.checkLargeMode(true);
+        });
       } else {
         this.inputSearchColor = item.rgb;
       }
     },
+    checkLargeMode(tokenAdded) {
+      if ((!this.largeMode && tokenAdded) || (this.largeMode && !tokenAdded)) {
+        this.setLargeMode((this.searchDiv.offsetWidth - this.searchDiv.scrollWidth) < 0);
+      }
+    },
     // call when autocomplete want to search
+    autocompleteSearch(terms, done) {
+      if (this.freeText) {
+        done([]);
+        return;
+      }
+      this.search(terms, done);
+    },
     search(terms, done) {
       if (this.noSearch) { // only to intercept unwanted reactivity
         this.noSearch = false;
@@ -345,6 +402,7 @@ export default {
         maxResults: this.maxResults,
         cancelSearch: false,
         defaultResults: terms === '',
+        searchMode: !this.fuzzyMode ? SEARCH_MODES.SEMANTIC : SEARCH_MODES.FREETEXT,
         queryString: this.actualSearchString, // terms split space
       }, this.$store.state.data.session).body);
       this.setSpinner({
@@ -370,6 +428,15 @@ export default {
       if (this.suggestionShowed) {
         return;
       }
+      if (this.parenthesisDepth > 0) {
+        this.$q.notify({
+          message: this.$t('messages.parenthesisAlertText'),
+          type: 'warning',
+          icon: 'mdi-alert',
+          timeout: 2000,
+        });
+        return;
+      }
       if (this.isCrossingIDL) {
         this.$q.dialog({
           title: this.$t('label.IDLAlertTitle'),
@@ -389,7 +456,7 @@ export default {
         this.$q.notify({
           message: this.$t('label.askForObservation', { urn: searchText }),
           type: 'info',
-          // position: 'top',
+          icon: 'mdi-information',
           timeout: 2000,
         });
       } else {
@@ -422,6 +489,10 @@ export default {
         this.scrolled = 0;
         this.noSearch = false;
         this.freeText = false;
+        this.setFuzzyMode(false);
+        this.setLargeMode(false);
+        this.parenthesisDepth = 0;
+        this.last = false;
         this.searchStop();
       }
     },
@@ -455,6 +526,9 @@ export default {
             this.autocompleteEl.results = results;
             Vue.nextTick(() => {
               this.autocompleteEl.__showResults();
+              if (char !== '') {
+                this.autocompleteEl.keyboardIndex = 0;
+              }
             });
           } else {
             this.autocompleteEl.hide();
@@ -474,6 +548,23 @@ export default {
           matchId: item.id,
           added: false,
         }, this.$store.state.data.session).body);
+      }
+    },
+    // if a char was pressed without search input focus, is possible that it will be not write, so we do it
+    charReceived(char, append = false) {
+      if (char === 'ArrowUp') {
+        this.searchHistoryEvent(1);
+      } else if (char === 'ArrowDown') {
+        this.searchHistoryEvent(-1);
+      } else if (char === 'Tab' && this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
+        this.setFuzzyMode(!this.fuzzyMode);
+      } else if (char === ' ') {
+        this.askForSuggestion();
+      } else {
+        this.actualSearchString = append ? this.actualSearchString + char : char;
+        if (SINGLE_CHARS.indexOf(char) !== -1) {
+          this.askForSuggestion(char);
+        }
       }
     },
   },
@@ -522,7 +613,17 @@ export default {
         });
         return;
       }
-      const { matches } = this.result;
+      const { matches, error, errorMessage, parenthesisDepth, last } = this.result;
+      this.parenthesisDepth = parenthesisDepth;
+      this.last = last;
+      if (error) {
+        this.setSpinner({
+          ...SPINNER_CONSTANTS.SPINNER_ERROR,
+          owner: this.$options.name,
+          errorMessage,
+        });
+        return;
+      }
       const results = [];
       // const totMatches = matches.length;
       matches.forEach((match/* ,index */) => {
@@ -571,7 +672,7 @@ export default {
         this.$q.notify({
           message: this.$t('messages.noSearchResults'),
           type: 'info',
-          // position: 'top',
+          icon: 'mdi-information',
           timeout: 1000,
         });
       }
@@ -602,42 +703,38 @@ export default {
         this.searchInput.blur();
       }
     },
-    // if a char was pressed without search input focus, is possible that it will be not write, so we do it
     searchLostChar(newValue) {
-      if (newValue !== null) { // && this.actualToken === '') {
-        if (newValue === 'ArrowUp') {
-          this.searchHistoryEvent(1);
-        } else if (newValue === 'ArrowDown') {
-          this.searchHistoryEvent(-1);
-        } else if (newValue === ' ') {
-          this.askForSuggestion();
-        } else {
-          this.actualSearchString = this.actualSearchString + newValue;
-          if (SINGLE_CHARS.indexOf(newValue) !== -1) {
-            this.askForSuggestion(this.searchLostChar);
-          }
-        }
+      if (newValue !== null && newValue !== '') { // && this.actualToken === '') {
+        this.charReceived(newValue, true);
         this.resetSearchLostChar();
       }
     },
+    /*
+    fuzzyMode() {
+      if (this.fuzzyMode) {
+        this.$q.notify({
+          message: this.$t('messages.fuzzyModeOn'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 1000,
+        });
+      } else {
+        this.$q.notify({
+          message: this.$t('messages.fuzzyModeOff'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 1000,
+        });
+      }
+    },
+    */
   },
   mounted() {
     this.searchDiv = this.$refs['ks-container'];
-    this.searchInput = this.$refs['mc-search-input'];
-    this.autocompleteEl = this.$refs['mc-autocomplete'];
-    if (this.searchLostChar !== null) {
-      if (this.searchLostChar === 'ArrowUp') {
-        this.searchHistoryEvent(1);
-      } else if (this.searchLostChar === 'ArrowDown') {
-        this.searchHistoryEvent(-1);
-      } else if (this.searchLostChar === ' ') {
-        this.askForSuggestion();
-      } else {
-        this.actualSearchString = this.searchLostChar;
-        if (SINGLE_CHARS.indexOf(this.searchLostChar) !== -1) {
-          this.askForSuggestion(this.searchLostChar);
-        }
-      }
+    this.searchInput = this.$refs['ks-search-input'];
+    this.autocompleteEl = this.$refs['ks-autocomplete'];
+    if (this.searchLostChar !== null && this.searchLostChar !== '') {
+      this.charReceived(this.searchLostChar, false);
     } else {
       this.actualSearchString = '';
     }
@@ -653,21 +750,21 @@ export default {
     overflow-y hidden
     white-space nowrap
 
-  .tokens
+  .ks-tokens
     display inline-block
-    margin-right 1px
+    margin-right -3px
     padding 0 3px
 
-  .tokens-accepted
+  .ks-tokens-accepted
     /* mix-blend-mode: difference; */
     font-weight 600
 
-  .tokens.selected
+  .ks-tokens.selected
     /* color: #fff; */
     outline none
 
   .bg-semantic-elements
-     border-radius 10px
+     border-radius 4px
      border-style solid
      border-width 2px
 
@@ -679,7 +776,7 @@ export default {
     max-width $main-control-width !important
     border-radius 10px
 
-  #mc-autocomplete
+  #ks-autocomplete
     /* for ff */
     scrollbar-color: #e5e5e5 rgba(0,0,0,0);
     scrollbar-width: thin;
@@ -708,5 +805,21 @@ export default {
       border-radius 10px
       width 5px
       background-color #e5e5e5
+
+  .ks-tokens-fuzzy
+    width 100%
+  .ks-tokens-klab
+    width 256px
+  #ks-search-input
+    background-color transparent
+  .ks-search-focused
+    padding 0;
+    border-radius: 4px;
+    background-color: $main-control-cyan;
+    transition background-color 0.8s
+    &.ks-fuzzy
+      background-color: $main-control-green;
+      transition background-color 0.8s
+
 
 </style>

@@ -2,6 +2,7 @@
   <div
     id="ksb-container"
     :class="[hasContext ? 'with-context' : 'without-context', isDocked ? 'ksb-docked' : '']"
+    :style="{ width: isDocked && searchIsFocused && largeMode ? getLargeModeWidth() : '100%' }"
     >
     <div
       id="ksb-spinner"
@@ -14,22 +15,25 @@
         :size="40"
         :ball="22"
         wrapperId="ksb-spinner"
+        id="spinner-searchbar"
+        :style="{ 'box-shadow': searchIsFocused ? `0px 0px 3gitpx ${getBGColor('.4')}` : 'none' }"
         @dblclick.native="emitSpinnerDoubleclick"
         @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
     </div>
     <div
       id="ksb-search-container"
+      :class="[ fuzzyMode ? 'klab-fuzzy' : '', searchIsFocused ? 'klab-search-focused' : '']"
       :style="{
-          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.6' : '.2'),
-          'border-right': '2px solid '+ spinnerColor.color
+          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
+          // 'border-right': '2px solid '+ spinnerColor.color
         }">
-      <klab-search ref="klab-search" v-if="searchIsActive" ></klab-search>
+      <klab-search class="klab-search" ref="klab-search" v-if="searchIsActive"></klab-search>
       <div class="ksb-context-text text-white" v-else>
         <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
       </div>
       <div class="ksb-status-texts" ref="ksb-status-texts">
-        <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .6 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
+        <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .8 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>
       </div>
       <q-icon v-if="isScaleLocked['space'] && !hasContext" name="mdi-lock-outline">
         <q-tooltip
@@ -46,7 +50,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS } from 'shared/Constants';
+import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -78,6 +82,8 @@ export default {
       'hasMainControl',
       'statusTextsString',
       'statusTextsLength',
+      'fuzzyMode',
+      'largeMode',
     ]),
     isDocked() {
       return !this.hasMainControl;
@@ -90,6 +96,9 @@ export default {
       'searchFocus',
       'searchStop',
     ]),
+    getLargeModeWidth() {
+      return `${(window.innerWidth || document.body.clientWidth) - LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE}px`;
+    },
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
@@ -124,7 +133,9 @@ export default {
       this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },
     contextLabel(newValue) {
-      this.$refs['st-context-text'].changeText(newValue);
+      if (this.$refs['st-context-text']) {
+        this.$refs['st-context-text'].changeText(newValue);
+      }
     },
   },
   mounted() {
@@ -143,6 +154,9 @@ export default {
     transition background-color 0.8s
     line-height inherit
     &.ksb-docked
+      transition width .5s
+      &.ksb-large-mode
+        width $main-control-width + $main-control-inc-width
       #ksb-search-container
         position relative
         padding 16px 10px
@@ -210,5 +224,4 @@ export default {
       position absolute
       right 35px
       top 12px
-
 </style>

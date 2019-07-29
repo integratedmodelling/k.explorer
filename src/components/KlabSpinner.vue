@@ -68,48 +68,10 @@ export default {
     realColor() {
       return this.storeControlled ? this.spinner.color : this.getBrand(this.color);
     },
-    errorMessage() {
-      return this.spinner.errorMessage;
-    },
-    isVisible() {
-      let hiddenNode;
-      if (this.wrapperId !== null) {
-        hiddenNode = document.getElementById(this.wrapperId);
-        if (hiddenNode && hiddenNode != null && hiddenNode.style) {
-          return !(hiddenNode.style.display === 'none');
-        }
-        return false;
-      }
-      return false;
-    },
   },
   methods: {
     getBrand(color) {
       return colors.getBrand(color);
-    },
-  },
-  watch: {
-    /*
-    spinner() {
-      const spinnerClass = document.getElementById('spinner-circle').classList;
-      console.log(`I'm into ${this.wrapperId} and I'm ${this.isVisible ? 'Visible' : 'Hidden'} and with class ${spinnerClass} and moving: ${this.moving}`);
-    },
-    */
-    errorMessage(newValue) {
-      if (this.isVisible && newValue !== null) {
-        let errorMessage;
-        if (newValue instanceof Error) {
-          errorMessage = newValue.message;
-        } else {
-          errorMessage = newValue;
-        }
-        console.error(errorMessage);
-        this.$q.notify({
-          message: errorMessage,
-          type: 'negative',
-          timeout: 1000,
-        });
-      }
     },
   },
 };

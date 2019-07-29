@@ -6,7 +6,7 @@
       v-model="leftMenuVisible"
       :breakpoint="0"
       :width="leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED ? LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE : LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE"
-      content-class="klab-left no-scroll"
+      :content-class="['klab-left', 'no-scroll', largeMode ? 'klab-large-mode' : '' ]"
       class="print-hide"
     >
       <klab-left-menu></klab-left-menu>
@@ -35,6 +35,7 @@ export default {
     ...mapGetters('view', [
       'mainViewer',
       'leftMenuState',
+      'largeMode',
     ]),
     leftMenuVisible: {
       get() {
@@ -67,4 +68,6 @@ export default {
   @import '~variables'
   .klab-left
     background-color rgba(35, 35, 35, 0)
+  .klab-large-mode.no-scroll
+    overflow visible !important
 </style>
