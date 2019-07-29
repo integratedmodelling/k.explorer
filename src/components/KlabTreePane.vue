@@ -3,18 +3,24 @@
     <klab-splitter :margin="0" :hidden="hasObservationInfo ? '' : 'right'" @close-info="onCloseInfo">
       <div slot="left-pane" id="ktp-left" class="full-height">
         <template v-if="hasTree">
-          <klab-tree
-            ref="klab-tree-main-component"
-            id="kt-main"
-            :isMain="true"
-            :class="{ 'with-splitter': hasObservationInfo }">
-          </klab-tree>
-          <klab-tree
-            ref="klab-tree-nomain-component"
-            id="kt-not-main"
-            :isMain="false"
-            :class="{ 'with-splitter': hasObservationInfo }">
-          </klab-tree>
+          <klab-splitter :horizontal="false">
+            <div slot="left-pane">
+              <klab-tree
+                ref="klab-tree-main-component"
+                id="kt-main"
+                :isMain="true"
+                :class="{ 'with-splitter': hasObservationInfo }">
+              </klab-tree>
+            </div>
+            <div slot="right-pane">
+              <klab-tree
+                ref="klab-tree-nomain-component"
+                id="kt-not-main"
+                :isMain="false"
+                :class="{ 'with-splitter': hasObservationInfo }">
+              </klab-tree>
+            </div>
+          </klab-splitter>
         </template>
         <div class="q-ma-md text-center text-white" v-else>
           {{ $t('label.noObservation') }}
