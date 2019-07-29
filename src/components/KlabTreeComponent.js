@@ -13,6 +13,10 @@ export default {
       type: Function,
       default: null,
     },
+    noFilteredResultLabel: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {
@@ -70,8 +74,8 @@ export default {
       children.length === 0
         ? (
           this.filter
-            ? this.noResultsLabel || this.$q.lang.tree.noResults
-            : this.noNodesLabel || this.$q.lang.tree.noNodes
+            ? this.noFilteredResultLabel
+            : this.noNodesLabel || this.$t('messages.treeNoNodes')
         )
         : children,
     );

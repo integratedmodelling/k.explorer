@@ -96,7 +96,7 @@ export default {
           &.with-histogram
             height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
 
-      #kt-container
+      .kt-container
         height "calc(100% - %s)" % $docked-padding
         max-height "calc(100% - %s)" % $docked-padding
         position relative

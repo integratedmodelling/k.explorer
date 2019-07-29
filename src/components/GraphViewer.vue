@@ -100,7 +100,7 @@ export default {
     },
     viewerClosedListener({ idx }) {
       if (idx === this.idx) {
-        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observation.id, state: false });
+        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observation.id, isMain: this.observation.main, state: false });
       }
     },
   },

@@ -1,6 +1,6 @@
 <template>
-  <div id="kt-container" class="relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
-    <div id="kt-tree-container" class="simplebar-vertical-only" @contextmenu="rightClickHandler">
+  <div class="kt-container relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
+    <div class="kt-tree-container simplebar-vertical-only" @contextmenu="rightClickHandler">
       <klab-q-tree
         ref="klab-tree"
         :nodes="tree"
@@ -16,6 +16,9 @@
         :noNodesLabel="$t('label.noNodes')"
         :double-click-function="doubleClick"
         @click="$refs['observations-context'].close()"
+        :filter="isMain ? 'main' : 'noMain'"
+        :filterMethod="filterMain"
+        :noFilteredResultLabel="isMain ? $t('messages.treeNoResultMain') : $t('messages.treeNoResultNoMain')">
       >
         <div slot="header-default" slot-scope="prop">
           <span
@@ -103,6 +106,12 @@ export default {
   components: {
     KlabQTree,
   },
+  props: {
+    isMain: {
+      type: Boolean,
+      required: true,
+    },
+  },
   data() {
     return {
       ticked: [],
@@ -165,6 +174,9 @@ export default {
       return !this.contextReloaded || node.notified;
     },
     */
+    filterMain(node, filter) {
+      return node.main ? filter === 'main' : filter === 'noMain';
+    },
     rightClickHandler(e) {
       e.preventDefault();
       let spanNode = null;
@@ -420,7 +432,7 @@ export default {
     },
   },
   mounted() {
-    this.scrollElement = (new SimpleBar(document.getElementById('kt-tree-container'))).getScrollElement();
+    this.scrollElement = (new SimpleBar(document.querySelector(this.isMain ? '#kt-main .kt-tree-container' : '#kt-not-main .kt-tree-container'))).getScrollElement();
     this.scrollElement.addEventListener('scroll', (event) => {
       if (this.askingForChildren) {
         event.preventDefault();
@@ -480,7 +492,7 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
-  #kt-container
+  .kt-container
     /* removed 30px of padding and scrollbar padding-bottom */
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     padding 10px 0
@@ -493,7 +505,7 @@ export default {
       animation loading-gradient 4s linear infinite
     [data-simplebar]
       padding-bottom 10px
-    #kt-tree-container
+    .kt-tree-container
       // special class to solve the noNode
       .klab-no-nodes
         padding 5px 0 0 0

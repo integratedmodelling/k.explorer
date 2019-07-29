@@ -197,7 +197,10 @@ export default {
    * When a task finish, we need to check the internal hierarchy of observations
    * @param taskId task to check
    */
-  recalculateTree: ({ commit/* , dispatch */ }, { taskId, fromTask }) => {
+  recalculateTree: (/* { commit/* , dispatch  }, { taskId, fromTask } */) => {
+    console.log('We don\'t recalculate');
+    return true;
+    /*
     if (typeof taskId === 'undefined' || taskId === null) {
       throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
     }
@@ -206,6 +209,7 @@ export default {
       // dispatch('askForChildrenOfTask', { taskId });
       resolve();
     });
+    */
   },
 
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {

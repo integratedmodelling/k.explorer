@@ -2,7 +2,20 @@
   <div id="klab-tree-pane">
     <klab-splitter :margin="0" :hidden="hasObservationInfo ? '' : 'right'" @close-info="onCloseInfo">
       <div slot="left-pane" id="ktp-left" class="full-height">
-        <klab-tree ref="klab-tree-component" v-if="hasTree" :class="{ 'with-splitter': hasObservationInfo }"></klab-tree>
+        <template v-if="hasTree">
+          <klab-tree
+            ref="klab-tree-main-component"
+            id="kt-main"
+            :isMain="true"
+            :class="{ 'with-splitter': hasObservationInfo }">
+          </klab-tree>
+          <klab-tree
+            ref="klab-tree-nomain-component"
+            id="kt-not-main"
+            :isMain="false"
+            :class="{ 'with-splitter': hasObservationInfo }">
+          </klab-tree>
+        </template>
         <div class="q-ma-md text-center text-white" v-else>
           {{ $t('label.noObservation') }}
         </div>
@@ -51,9 +64,11 @@ export default {
       this.setObservationInfo(null);
       this.$eventBus.$emit(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED);
     },
-    informTree({ nodeId, state }) {
-      if (this.$refs['klab-tree-component']) {
-        this.$refs['klab-tree-component'].changeNodeState({ nodeId, state });
+    informTree({ nodeId, isMain, state }) {
+      if (isMain && this.$refs['klab-tree-main-component']) {
+        this.$refs['klab-tree-main-component'].changeNodeState({ nodeId, state });
+      } else if (!isMain && this.$refs['klab-tree-nomain-component']) {
+        this.$refs['klab-tree-nomain-component'].changeNodeState({ nodeId, state });
       }
     },
     showNodeListener(event) {

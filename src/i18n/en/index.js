@@ -105,6 +105,10 @@ export default {
     noLogItems: 'Empty log',
     uploadComplete: 'Upload of file {fileName} complete',
     IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
+    treeNoResult: 'No results',
+    treeNoNodes: 'No data',
+    treeNoResultMain: 'No main observation',
+    treeNoResultNoMain: 'No secondary observation',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
