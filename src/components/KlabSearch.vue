@@ -353,6 +353,13 @@ export default {
         this.search(this.actualToken, (results) => {
           if (results && results.length > 0 && !this.fuzzyMode) {
             this.selected(results[0], false);
+          } else {
+            this.$q.notify({
+              message: this.$t('messages.noSearchResults'),
+              type: 'info',
+              icon: 'mdi-information',
+              timeout: 1000,
+            });
           }
         });
       }
@@ -668,7 +675,7 @@ export default {
           });
         }
       });
-      if (results.length === 0) {
+      if (!this.fuzzyMode && results.length === 0) {
         this.$q.notify({
           message: this.$t('messages.noSearchResults'),
           type: 'info',
