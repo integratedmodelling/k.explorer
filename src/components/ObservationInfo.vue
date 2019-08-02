@@ -205,7 +205,7 @@ export default {
       };
     },
     showNode() {
-      this.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, isMain: this.observationInfo.main, state: this.layerShow });
+      this.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
     },
     viewerClosedListener({ idx }) {
       if (idx === this.observationInfo.viewerIdx) {
