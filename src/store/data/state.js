@@ -11,20 +11,57 @@ export default {
    * NODE:
    * @property id: observation id
    * @property label: the label to show in tree
-   * @property type: one of Constants TREE_XXX
+   * @property observable: the observable label
+   * @property type: one of GEOMETRY_CONSTANTS.TYPE_
    * @property viewerIdx: index of viewer,
-   * @property header: one of the possible tree node type of slot header: default / folder / main,
+   * @property viewerType: type of viewer, one of VIEWERS constants,
+   * @property children[]: array of children (loaded)
+   * @property childrenCount: total of children
+   * @property siblingCount: total of siblings
+   * @property parentArtifactId: the parent artifact id
    * @property tickable: true is tickable
    * @property disabled: true is disable,
+   * @property empty: true if node is empty,
    * @property actions: actions to show on right click,
+   * @property header: one of the possible tree node type of slot header: default / folder / main,
    * @property folderId: if has a folder, the id of it,
-   * @property main: is a main observation (need for style)
-   * @property children: array of children. Empty on node add
-   * @property childrenCount: children count in tree, need for show X of Y (is Y var)
-   * @property childrenLoaded: children loaded at this moment
+   * @property userNode: is node added to the user tree (need to filter)
+   * @property exportFormats: the export formats
+   * @property rootContextId: the root context id (needed to link the observation to the seame context,
+   * @property observationType: observation type,
    * @property idx: index of children to show X of Y (is X var)
    */
+
   tree: [],
+
+  /**
+   * User tree of observation, a subset of all the observations.
+   * This tree is filled with the observations with main: true, and then with all the observations
+   * that the user can drop to it or remove from it
+   * The content of node is the same of the node in the normal tree:
+   * @property id: observation id
+   * @property label: the label to show in tree
+   * @property observable: the observable label
+   * @property type: one of GEOMETRY_CONSTANTS.TYPE_
+   * @property viewerIdx: index of viewer,
+   * @property viewerType: type of viewer, one of VIEWERS constants,
+   * @property children[]: array of children (loaded)
+   * @property childrenCount: total of children
+   * @property siblingCount: total of siblings
+   * @property parentArtifactId: the parent artifact id
+   * @property tickable: true is tickable
+   * @property disabled: true is disable,
+   * @property empty: true if node is empty,
+   * @property actions: actions to show on right click,
+   * @property header: one of the possible tree node type of slot header: default / folder / main,
+   * @property folderId: if has a folder, the id of it,
+   * @property userNode: is node added to the user tree (need to filter)
+   * @property exportFormats: the export formats
+   * @property rootContextId: the root context id (needed to link the observation to the seame context,
+   * @property observationType: observation type,
+   * @property idx: index of children to show X of Y (is X var)
+   */
+  userTree: [],
 
   /**
    * Last elements in folder that need more children

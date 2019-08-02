@@ -25,6 +25,8 @@ export default {
 
   hasTree: state => state.tree.length > 0,
 
+  userTree: state => state.userTree,
+
   /**
    * Return observations of a viewer
    * If viewer not exists, return empty array

@@ -26,6 +26,7 @@ export default {
       }
     }
     state.tree = [];
+    state.userTree = [];
     state.lasts = [];
     state.observations = [];
     state.dataflow = null;
@@ -88,19 +89,20 @@ export default {
    * @param node
    */
   ADD_NODE: (state, { node, parentId }) => {
-    if (state.contexts.peek() === null) {
+    const context = state.contexts.peek();
+    if (context === null) {
       console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
       state.orphans.push(node);
       return;
     }
-    if (state.contexts.peek().id === node.id) {
+    if (context.id === node.id) {
       console.error('Try to add context to tree, check it!');
       return;
     }
-    if (state.contexts.peek().id === parentId) {
+    if (context.id === parentId) {
       // is a tree root node
       state.tree.push(node);
-    } else if (node.rootContextId === state.contexts.peek().id) {
+    } else if (node.rootContextId === context.id) {
       const parent = findNodeById(state.tree, parentId);
       if (parent !== null) {
         parent.children.push({
@@ -114,10 +116,48 @@ export default {
         state.orphans.push(node);
       }
     } else {
-      console.warn(`Try to add to tree an observation of other context. Actual: ${state.contexts.peek().id} / Node: ${node.rootContextId}`);
+      console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
     }
   },
 
+  /**
+   * Add a node in the user tree
+   * @param node the node to add
+   * @param userParentId the parent of node. Is different from the original parent, is what the user want.
+   *                     If doesn't exists is a root node
+   */
+  ADD_USER_NODE: (state, { node, userParentId = null }) => {
+    const context = state.contexts.peek();
+    if (context === null) {
+      console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
+      state.orphans.push(node);
+      return;
+    }
+    if (context.id === node.id) {
+      console.error('Try to add context to tree, check it!');
+      return;
+    }
+    if (userParentId === null) {
+      // is a user tree root node
+      state.userTree.push(node);
+    } else if (node.rootContextId === context.id) { // we check that the node is part of this context
+      const parent = findNodeById(state.userTree, userParentId);
+      if (parent !== null) {
+        parent.children.push({
+          ...node,
+          idx: parent.children.length,
+          siblingsCount: parent.children.length,
+        });
+        parent.disabled = false; // if was empty and now has children, it cannot be disabled
+      } else {
+        console.warn(`Orphan of user tree founded with id ${node.id}, skipped`);
+      }
+    } else {
+      console.warn(`Try to add to user tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
+    }
+  },
+
+  /*
   RECALCULATE_TREE: (state, { taskId, fromTask }) => {
     const context = state.contexts.peek();
     if (context === null) {
@@ -201,6 +241,7 @@ export default {
       }
     }
   },
+  */
 
   SET_FOLDER_VISIBLE: (state, {
     nodeId,

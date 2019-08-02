@@ -74,11 +74,13 @@ export default {
         });
 
         await Promise.all(tasks); // await for all observation to add
+        /*
         if (tasks !== null) {
           tasks.forEach((taskId) => {
             dispatch('recalculateTree', { taskId, fromTask: false });
           });
         }
+        */
       }
       dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: contextId }, { root: true }); // when loadContext is call, spinner will be started
     }).catch((error) => {
@@ -139,7 +141,6 @@ export default {
   addObservation: ({ commit, state, dispatch }, {
     observation,
     folderId = null,
-    main = false,
     toTree = true,
     visible = false,
     restored = false,
@@ -156,7 +157,7 @@ export default {
       }, { root: true });
       return reject(new Error(`Existing observation received: ${existingObservation.label}`));
     }
-    dispatch('view/assignViewer', { observation, main }, { root: true }).then((viewerIdx) => {
+    dispatch('view/assignViewer', { observation }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
       observation.visible = visible;
       observation.top = false;
@@ -185,7 +186,11 @@ export default {
         });
       }
       if (toTree) {
-        commit('ADD_NODE', getNodeFromObservation(observation));
+        const node = getNodeFromObservation(observation);
+        commit('ADD_NODE', node);
+        if (observation.main) {
+          commit('ADD_USER_NODE', node);
+        }
       }
       dispatch('view/setReloadReport', true, { root: true });
       return resolve();
