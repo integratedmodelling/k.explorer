@@ -27,12 +27,17 @@ export default {
 
   connectionState: state => (state.connectionState),
 
+  tasks: state => state.tasks,
+
   /**
    * Return if a task is alive
    */
-  tasks: state => state.tasks,
-
   taskIsAlive: state => id => typeof state.tasks.find(task => (task.id === id && task.alive)) !== 'undefined',
+  /**
+   * Return if a task of context
+   */
+  taskOfContextIsAlive: (state, getters, rootState, rootGetters) => typeof state.tasks.find(t => (t.contextId === rootGetters['data/contextId'] && t.alive)) !== 'undefined',
+
   contextTaskIsAlive: state => contextId => typeof state.tasks.find(t => (t.contextId === contextId && t.alive)) !== 'undefined',
 
   hasTasks: state => (contextId = null) => (state.tasks.findIndex(task => (task.alive && (contextId === null || task.contextId === contextId))) !== -1),
