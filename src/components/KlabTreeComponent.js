@@ -63,8 +63,11 @@ export default {
 
   render(h) {
     const children = this.__getChildren(h, this.nodes);
-    if (children.length === 0) {
+    const index = this.classes.indexOf('klab-no-nodes');
+    if (children.length === 0 && index === -1) {
       this.classes.push('klab-no-nodes');
+    } else if (children.length !== 0 && index !== -1) {
+      this.classes.splice(index, 1);
     }
     return h(
       'div', {
