@@ -18,7 +18,7 @@ const PARSERS = {
   },
   [IN.TYPE_TASKFINISHED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskEnd', task, { root: true });
-    dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
+    // dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
