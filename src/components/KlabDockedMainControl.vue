@@ -12,9 +12,9 @@
     <div
       id="dmc-tree"
       class="q-card-main full-height"
-      :class="{'dmc-dragging': dragging}"
+      :class="{'dmc-dragging': dragging, 'kdm-loading': taskOfContextIsAlive}"
     >
-      <klab-tree-pane :horizontal="true" class="full-height"></klab-tree-pane>
+      <klab-tree-pane></klab-tree-pane>
     </div>
   </div>
 </template>
@@ -60,6 +60,9 @@ export default {
     ...mapGetters('view', [
       'largeMode',
     ]),
+    ...mapGetters('stomp', [
+      'taskOfContextIsAlive',
+    ]),
   },
   methods: {
     ...mapActions('view', [
@@ -75,12 +78,14 @@ export default {
       this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
     },
     checkUndock() {
-      if (this.askForUndocking) {
-        this.askForUndocking = false;
-        this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
-        this.setMainViewer(VIEWERS.DATA_VIEWER);
-      }
-      this.dragging = false;
+      this.$nextTick(() => {
+        if (this.askForUndocking) {
+          this.askForUndocking = false;
+          this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
+          this.setMainViewer(VIEWERS.DATA_VIEWER);
+        }
+        this.dragging = false;
+      });
     },
   },
   mounted() {
@@ -92,36 +97,34 @@ export default {
 <style lang="stylus">
   @import '~variables'
   #dmc-container
-    #kt-container
-      height "calc(100% - %s)" % $docked-padding
-      max-height "calc(100% - %s)" % $docked-padding
+    #kt-out-container
+      height 100%
       position relative
+      max-height "calc(100% - %s)" % $docked-padding
     &.dmc-large-mode.full-height
       height "calc(100% -  %s)" % ($docked-search-height) !important
-      #kt-container
-        height 100%
-        max-height 100%
-        position relative
 
     #dmc-tree
       background-color: rgba(119,119,119,0.65);
       #oi-container
-        height "calc(100% -  %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
-        max-height "calc(100% - %s)" % ($main-control-spc-height + $main-control-scrollbar + $docked-padding)
+        height "calc(100% -  %s)" % ($main-control-scrollbar + $docked-padding)
+        max-height "calc(100% - %s)" % ($main-control-scrollbar + $docked-padding)
         #oi-metadata-map-wrapper
           height "calc(100% - %s)" % ($docked-padding + $docked-correction)
           &.with-histogram
             height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
 
-      .kt-container
-        height "calc(100% - %s)" % $docked-padding
-        max-height "calc(100% - %s)" % $docked-padding
-        position relative
     &.dmc-dragging
       cursor move !important
     .kbc-container
       margin 2px
       padding 0
       height 10px
-
+    .q-card-main.kdm-loading
+      background linear-gradient(90deg, #333, #999)
+      background-size 200% 100%
+      animation loading-gradient 4s linear infinite
+      .ktp-loading
+        background transparent
+        animation none
 </style>

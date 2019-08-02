@@ -427,4 +427,15 @@ export default {
       left 0
       width 100%
       text-align center
+
+    // tree
+    #kt-out-container
+      height 100%
+      overflow hidden
+      max-height "calc((var(--main-control-max-height) - %s))" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+      &.kpt-loading
+        max-height "calc((var(--main-control-max-height) - %s))" % ($main-control-header-height + $main-control-actions-height)
+      &.with-splitter
+        max-height "calc((var(--main-control-max-height) - %s))" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+
 </style>
