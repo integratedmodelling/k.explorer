@@ -113,8 +113,10 @@ export default {
     fuzzyModeOn: 'Free search on',
     treeNoResult: 'No results',
     treeNoNodes: 'No data',
-    treeNoResultMain: 'No main observation',
-    treeNoResultNoMain: 'No secondary observation',
+    treeNoResultUser: 'No main observations',
+    treeNoResultUserWaiting: 'Computing...',
+    treeNoResultNoUser: 'No observations',
+    treeNoMainSummary: 'Other observations',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
