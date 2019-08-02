@@ -1,5 +1,5 @@
 <template>
-  <div class="kt-container relative-position klab-menu-component" :class="{ 'loading':  taskIsAlive }">
+  <div class="kt-container relative-position klab-menu-component">
     <div class="kt-tree-container simplebar-vertical-only" @contextmenu="rightClickHandler">
       <klab-q-tree
         ref="klab-tree"
@@ -16,18 +16,20 @@
         :noNodesLabel="$t('label.noNodes')"
         :double-click-function="doubleClick"
         @click="$refs['observations-context'].close()"
-        :filter="isMain ? 'main' : 'noMain'"
-        :filterMethod="filterMain"
-        :noFilteredResultLabel="isMain ? $t('messages.treeNoResultMain') : $t('messages.treeNoResultNoMain')">
+        :filter="isUser ? 'user' : 'tree'"
+        :filterMethod="filterUser"
+        :noFilteredResultLabel="isUser ? taskOfContextIsAlive ? $t('messages.treeNoResultUserWaiting') : $t('messages.treeNoResultUser') : $t('messages.treeNoResultNoUser')">
       >
         <div slot="header-default" slot-scope="prop">
           <span
             v-ripple="prop.node.main"
             :class="[
-              'node-element', prop.node.main ? 'node-emphasized' : '',
+               prop.node.main ? 'node-emphasized' : '',
                hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
-               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : ''
+               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : '',
+               isUser ? 'node-user-element' : 'node-tree-element'
             ]"
+            class="node-element"
             :id="`node-${prop.node.id}`"
           >{{ prop.node.label }}
             <q-tooltip
@@ -59,7 +61,12 @@
           </template>
         </div>
         <div slot="header-folder" slot-scope="prop">
-          <span v-ripple="prop.node.main" :class="['node-element', prop.node.main ? 'node-emphasized' : '']" :id="`node-${prop.node.id}`">{{ prop.node.label }}</span>
+          <span
+            class='node-element'
+            :id="`node-${prop.node.id}`"
+            v-ripple="prop.node.main"
+            :class="[prop.node.main ? 'node-emphasized' : '']"
+          >{{ prop.node.label }}</span>
           <q-btn
             round
             flat
@@ -101,14 +108,20 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
 
+// let scrollToTimeout = null;
+
 export default {
   name: 'klabTree',
   components: {
     KlabQTree,
   },
   props: {
-    isMain: {
+    isUser: {
       type: Boolean,
+      required: true,
+    },
+    tree: {
+      type: Array,
       required: true,
     },
   },
@@ -127,7 +140,6 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
-      'tree',
       'treeNode',
       'lasts',
       'contextReloaded',
@@ -136,6 +148,7 @@ export default {
     ]),
     ...mapGetters('stomp', [
       'tasks',
+      'taskOfContextIsAlive',
     ]),
     ...mapGetters('view', [
       'observationInfo',
@@ -148,14 +161,6 @@ export default {
       'treeExpanded',
       'showNotified',
     ]),
-    /*
-    filter() {
-      return this.showNotified === APP_PARAM_CONSTANTS.PARAMS_NOTIFIED_ONLY ? 'filter-active' : '';
-    },
-    */
-    taskIsAlive() {
-      return typeof this.tasks.find(t => (t.contextId === this.contextId && t.alive)) !== 'undefined';
-    },
   },
   methods: {
     ...mapActions('data', [
@@ -174,8 +179,8 @@ export default {
       return !this.contextReloaded || node.notified;
     },
     */
-    filterMain(node, filter) {
-      return node.main ? filter === 'main' : filter === 'noMain';
+    filterUser(node, filter) {
+      return node.userNode ? filter === 'user' : filter === 'tree';
     },
     rightClickHandler(e) {
       e.preventDefault();
@@ -339,8 +344,31 @@ export default {
         }
       }
     },
+    treeSizeChangeListener() {
+      /*
+      if (!this.isUser) {
+        if (scrollToTimeout != null) {
+          clearTimeout(this.scrollToTimeout);
+          scrollToTimeout = null;
+        }
+        this.$nextTick(() => {
+          scrollToTimeout = setTimeout(() => {
+            const items = document.querySelectorAll('.node-tree-element');
+            const last = items[items.length - 1];
+            last.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }, 1000);
+        });
+      }
+      */
+    },
   },
   watch: {
+    tree() {
+      // this.treeSizeChangeListener();
+    },
     treeSelected(value) {
       if (value !== this.selected) {
         this.selected = value;
@@ -432,7 +460,7 @@ export default {
     },
   },
   mounted() {
-    this.scrollElement = (new SimpleBar(document.querySelector(this.isMain ? '#kt-main .kt-tree-container' : '#kt-not-main .kt-tree-container'))).getScrollElement();
+    this.scrollElement = (new SimpleBar(document.querySelector(`#${this.$el.id} .kt-tree-container`))).getScrollElement();
     this.scrollElement.addEventListener('scroll', (event) => {
       if (this.askingForChildren) {
         event.preventDefault();
@@ -492,25 +520,17 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
-  .kt-container
-    /* removed 30px of padding and scrollbar padding-bottom */
-    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
-    padding 10px 0
-    &.with-splitter
-      /* removed 30px of padding and scrollbar padding-bottom */
-      max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
-    &.loading
-      background linear-gradient(90deg, #333, #999)
-      background-size 200% 100%
-      animation loading-gradient 4s linear infinite
+    /*
     [data-simplebar]
       padding-bottom 10px
+    */
     .kt-tree-container
       // special class to solve the noNode
       .klab-no-nodes
         padding 5px 0 0 0
         margin 0
         text-align center
+        font-style italic
       .q-tree > .q-tree-node
           padding 0
       .q-tree-node-collapsible
