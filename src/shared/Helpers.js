@@ -124,6 +124,7 @@ export const getNodeFromObservation = observation => ({
     header: observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'folder' : 'default',
     folderId: observation.folderId,
     main: observation.main,
+    userNode: observation.main, // used to take a "user tree"
     exportFormats: observation.exportFormats,
     rootContextId: observation.rootContextId,
     observationType: observation.observationType,
