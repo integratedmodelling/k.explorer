@@ -108,7 +108,7 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/KlabTreeComponent';
 
-// let scrollToTimeout = null;
+let scrollToTimeout = null;
 
 export default {
   name: 'klabTree',
@@ -345,7 +345,6 @@ export default {
       }
     },
     treeSizeChangeListener() {
-      /*
       if (!this.isUser) {
         if (scrollToTimeout != null) {
           clearTimeout(this.scrollToTimeout);
@@ -353,21 +352,15 @@ export default {
         }
         this.$nextTick(() => {
           scrollToTimeout = setTimeout(() => {
-            const items = document.querySelectorAll('.node-tree-element');
-            const last = items[items.length - 1];
-            last.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-            });
+            this.scrollElement.scrollTop = this.scrollElement.scrollHeight;
           }, 1000);
         });
       }
-      */
     },
   },
   watch: {
     tree() {
-      // this.treeSizeChangeListener();
+      this.treeSizeChangeListener();
     },
     treeSelected(value) {
       if (value !== this.selected) {

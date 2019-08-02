@@ -127,8 +127,9 @@ export default {
   },
   watch: {
     statusTextsString(newValue) {
-      if (newValue === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
-        newValue = this.$t('messages.unknownSearchObservation');
+      if (newValue.includes(FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION)) {
+        const re = new RegExp(FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION, 'g');
+        newValue = newValue.replace(re, this.$t('messages.unknownSearchObservation'));
       }
       this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },

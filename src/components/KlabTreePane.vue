@@ -66,7 +66,6 @@ export default {
       userTreeMaxHeight: undefined,
       userTreeHeight: undefined,
       treeHeight: undefined,
-      detailsEL: undefined,
     };
   },
 
@@ -121,11 +120,7 @@ export default {
         const userTreeEL = document.getElementById('kt-user-tree');
         if (userTreeEL && this.outContainerHeight) {
           this.userTreeHeight = height(userTreeEL);
-          if (this.detailsEL && this.detailsEL.open) {
-            this.treeHeight = this.outContainerHeight - this.userTreeHeight - 24;
-          } else {
-            this.treeHeight = undefined;
-          }
+          this.treeHeight = this.outContainerHeight - this.userTreeHeight - 24;
         }
       });
     },
@@ -133,12 +128,9 @@ export default {
       if (this.hasTree) {
         this.$nextTick(() => {
           this.outContainerResized();
-          if (!this.detailsEL) {
-            this.detailsEL = document.getElementById('kt-tree-details');
-            this.detailsEL.addEventListener('toggle', () => {
-              this.recalculateTreeHeight();
-            });
-          }
+          document.getElementById('kt-tree-details').addEventListener('toggle', () => {
+            this.recalculateTreeHeight();
+          });
         });
       }
     },
@@ -156,10 +148,12 @@ export default {
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.SHOW_NODE, this.showNodeListener);
+    window.addEventListener('resize', this.outContainerResized);
     this.initTree();
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.SHOW_NODE, this.showNodeListener);
+    window.removeEventListener('resize', this.outContainerResized);
   },
 };
 </script>

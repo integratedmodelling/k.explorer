@@ -12,7 +12,7 @@
     <div
       id="dmc-tree"
       class="q-card-main full-height"
-      :class="{'dmc-dragging': dragging, 'kdm-loading': taskOfContextIsAlive}"
+      :class="{'dmc-dragging': dragging, 'dmc-loading': taskOfContextIsAlive}"
     >
       <klab-tree-pane></klab-tree-pane>
     </div>
@@ -103,9 +103,12 @@ export default {
       max-height "calc(100% - %s)" % $docked-padding
     &.dmc-large-mode.full-height
       height "calc(100% -  %s)" % ($docked-search-height) !important
-
     #dmc-tree
       background-color: rgba(119,119,119,0.65);
+      overflow hidden
+      #klab-tree-pane
+        height 100%
+
       #oi-container
         height "calc(100% -  %s)" % ($main-control-scrollbar + $docked-padding)
         max-height "calc(100% - %s)" % ($main-control-scrollbar + $docked-padding)
@@ -120,7 +123,7 @@ export default {
       margin 2px
       padding 0
       height 10px
-    .q-card-main.kdm-loading
+    .q-card-main.dmc-loading
       background linear-gradient(90deg, #333, #999)
       background-size 200% 100%
       animation loading-gradient 4s linear infinite

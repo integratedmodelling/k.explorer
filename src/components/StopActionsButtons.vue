@@ -48,8 +48,9 @@ export default {
     ]),
     lastActiveTaskText() {
       const text = this.lastActiveTask(this.contextId) === null ? '' : this.lastActiveTask(this.contextId).description;
-      if (text === FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION) {
-        return this.$t('messages.unknownSearchObservation');
+      if (text.includes(FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION)) {
+        const re = new RegExp(FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION, 'g');
+        return text.replace(re, this.$t('messages.unknownSearchObservation'));
       }
       return text;
     },
