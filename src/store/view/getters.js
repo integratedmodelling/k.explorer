@@ -1,5 +1,6 @@
 import { lastFilteredLogElement, isRasterObservation } from 'shared/Helpers';
 import { getColorObject } from 'shared/Utils';
+import { LEFTMENU_CONSTANTS } from 'shared/Constants';
 
 export default {
   /**
@@ -33,6 +34,7 @@ export default {
   mainViewerName: state => (state.mainViewer ? state.mainViewer.name : null),
   leftMenuContent: state => state.leftMenuContent,
   leftMenuState: state => state.leftMenuState,
+  isDocked: state => state.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,
   hasMainControl: state => state.mainViewer && state.mainViewer.mainControl,
   isMainControlDocked: state => state.mainControlDocked,
   /**
