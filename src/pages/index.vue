@@ -207,6 +207,9 @@ export default {
       }
       this.needHelp = false;
     },
+    askForUndockListener(ask) {
+      this.askForUndocking = ask;
+    },
   },
   watch: {
     spinnerErrorMessage(newValue, oldValue) {
@@ -248,12 +251,13 @@ export default {
       }
     });
     this.setChildrenToAskFor();
-    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, (ask) => {
-      this.askForUndocking = ask;
-    });
+    this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_SPACE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
   },
 };
 </script>
