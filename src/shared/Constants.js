@@ -30,7 +30,9 @@ export const CONSTANTS = {
   /**
    * increment in pixel for the searchbar
    */
-  SEARCHBAR_INCREMENT: 512,
+  SEARCHBAR_SIZE: 512,
+  SEARCHBAR_INCREMENT: 128,
+  MAX_SEARCHBAR_INCREMENTS: 6,
 };
 
 export const LEFTMENU_CONSTANTS = {

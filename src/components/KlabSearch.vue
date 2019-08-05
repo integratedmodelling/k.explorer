@@ -2,7 +2,8 @@
   <div id="ks-container"
        ref="ks-container"
   >
-    <div
+    <div id="ks-internal-container" style="position: relative">
+      <div
       v-for="(token, index) in acceptedTokens"
       :key="token.index"
       :class="[
@@ -30,36 +31,38 @@
         <span v-else>{{ $t('label.noTokenDescription') }}</span>
       </q-tooltip>
     </div>
-    <div class="ks-tokens" :class="[fuzzyMode ? 'ks-tokens-fuzzy' : 'ks-tokens-klab']"><q-input
-      :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchIsFocused ? 'ks-search-focused' : '']"
-      :autofocus="true"
-      v-model="actualToken"
-      :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
-      size="20"
-      id="ks-search-input"
-      ref="ks-search-input"
-      :tabindex="acceptedTokens.length"
-      :hide-underline="true"
-      @focus="onInputFocus(true)"
-      @blur="onInputFocus(false)"
-      @keydown="onKeyPressedOnSearchInput"
-      @keyup.esc="searchEnd({})"
-      @contextmenu.native.prevent
-      @touchstart.native="handleTouch($event, null, searchInKLab)"
-    >
-      <klab-autocomplete
-        @search="autocompleteSearch"
-        @selected="selected"
-        @show="onAutocompleteShow"
-        @hide="onAutocompleteHide"
-        :debounce="200"
-        :min-characters="minimumCharForAutocomplete"
-        :max-results="50"
-        ref="ks-autocomplete"
-        id="ks-autocomplete"
-        :class="[ notChrome() ? 'not-chrome' : '']"
-      ></klab-autocomplete>
-    </q-input>
+      <div class="ks-tokens" :class="[fuzzyMode ? 'ks-tokens-fuzzy' : 'ks-tokens-klab']">
+      <q-input
+        :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchIsFocused ? 'ks-search-focused' : '']"
+        :autofocus="true"
+        v-model="actualToken"
+        :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
+        size="20"
+        id="ks-search-input"
+        ref="ks-search-input"
+        :tabindex="acceptedTokens.length"
+        :hide-underline="true"
+        @focus="onInputFocus(true)"
+        @blur="onInputFocus(false)"
+        @keydown="onKeyPressedOnSearchInput"
+        @keyup.esc="searchEnd({})"
+        @contextmenu.native.prevent
+        @touchstart.native="handleTouch($event, null, searchInKLab)"
+      >
+        <klab-autocomplete
+          @search="autocompleteSearch"
+          @selected="selected"
+          @show="onAutocompleteShow"
+          @hide="onAutocompleteHide"
+          :debounce="200"
+          :min-characters="minimumCharForAutocomplete"
+          :max-results="50"
+          ref="ks-autocomplete"
+          id="ks-autocomplete"
+          :class="[ notChrome() ? 'not-chrome' : '']"
+        ></klab-autocomplete>
+      </q-input>
+    </div>
     </div>
   </div>
 </template>
@@ -70,7 +73,7 @@
 import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES } from 'shared/Constants';
+import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES, CONSTANTS } from 'shared/Constants';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -99,6 +102,8 @@ export default {
       actualSearchString: '',
       noSearch: false,
       searchDiv: null,
+      searchDivInitialSize: undefined,
+      searchDivInternal: undefined,
       searchInput: null,
       autocompleteEl: null,
       scrolled: 0,
@@ -125,6 +130,7 @@ export default {
       'searchHistory',
       'fuzzyMode',
       'largeMode',
+      'isDocked',
     ]),
     inputSearchColor: {
       get() {
@@ -383,10 +389,49 @@ export default {
         this.inputSearchColor = item.rgb;
       }
     },
-    checkLargeMode(tokenAdded) {
-      if ((!this.largeMode && tokenAdded) || (this.largeMode && !tokenAdded)) {
-        this.setLargeMode((this.searchDiv.offsetWidth - this.searchDiv.scrollWidth) < 0);
-      }
+    checkLargeMode() {
+      this.$nextTick(() => {
+        let diff;
+        if (this.isDocked) {
+          diff = this.searchDivInitialSize - this.searchDivInternal.clientWidth;
+          if (diff < 0 && this.largeMode === 0) {
+            this.setLargeMode(1);
+          } else if (diff >= 0 && this.largeMode > 0) {
+            this.setLargeMode(0);
+          }
+        } else {
+          diff = this.searchDiv.clientWidth - this.searchDivInternal.clientWidth;
+          if (diff >= 0) {
+            const fSteps = Math.floor(diff / CONSTANTS.SEARCHBAR_INCREMENT);
+            if (fSteps > 0 && this.largeMode > 0) {
+              if (fSteps > this.largeMode) {
+                this.setLargeMode(0);
+              } else {
+                this.setLargeMode(this.largeMode - fSteps);
+              }
+            }
+          } else {
+            const cSteps = Math.ceil(Math.abs(diff) / CONSTANTS.SEARCHBAR_INCREMENT);
+            this.setLargeMode(this.largeMode + cSteps);
+          }
+        }
+        /*
+        let diff = 0;
+        diff = this.searchDiv.clientWidth - this.searchDiv.scrollWidth;
+        if (this.isDocked) {
+          if (diff < 0 && this.largeMode === 0) {
+            this.setLargeMode(1);
+          } else if (diff >= 0) {
+            this.setLargeMode(0);
+          }
+        } else {
+          const actualDiff = this.searchDiv.clientWidth - CONSTANTS.SEARCHBAR_INCREMENT * this.largeMode;
+          const largeMode = Math.ceil(Math.abs(actualDiff) / CONSTANTS.SEARCHBAR_INCREMENT);
+          console.log(`this.searchDiv.clientWidth: ${this.searchDiv.clientWidth};\nthis.searchDiv.scrollWidth: ${this.searchDiv.scrollWidth}\nDIFF: ${diff}; largeMode: ${largeMode}`);
+          this.setLargeMode(largeMode);
+        }
+        */
+      });
     },
     // call when autocomplete want to search
     autocompleteSearch(terms, done) {
@@ -497,7 +542,7 @@ export default {
         this.noSearch = false;
         this.freeText = false;
         this.setFuzzyMode(false);
-        this.setLargeMode(false);
+        this.setLargeMode(0);
         this.parenthesisDepth = 0;
         this.last = false;
         this.searchStop();
@@ -505,10 +550,10 @@ export default {
     },
     // helper to reset the input search field (if tomorrow will be more complex)
     resetSearchInput() {
-      this.$nextTick(() => {
-        this.actualToken = this.actualSearchString;
-        this.inputSearchColor = 'black';
-      });
+      // this.$nextTick(() => {
+      this.actualToken = this.actualSearchString;
+      this.inputSearchColor = 'black';
+      // });
     },
     searchHistoryEvent(index, event = null) {
       if (this.actualToken === '' && this.searchHistory.length > 0
@@ -738,6 +783,7 @@ export default {
   },
   mounted() {
     this.searchDiv = this.$refs['ks-container'];
+    this.searchDivInternal = document.getElementById('ks-internal-container');
     this.searchInput = this.$refs['ks-search-input'];
     this.autocompleteEl = this.$refs['ks-autocomplete'];
     if (this.searchLostChar !== null && this.searchLostChar !== '') {
@@ -746,6 +792,11 @@ export default {
       this.actualSearchString = '';
     }
     this.inputSearchColor = 'black';
+    this.setLargeMode(0);
+    this.$nextTick(() => {
+      // for docked mode, to check dimension only with the small size
+      this.searchDivInitialSize = this.searchDiv.clientWidth;
+    });
   },
 };
 </script>
@@ -756,7 +807,8 @@ export default {
     overflow-x hidden
     overflow-y hidden
     white-space nowrap
-
+    #ks-internal-container
+      float left
   .ks-tokens
     display inline-block
     margin-right -3px

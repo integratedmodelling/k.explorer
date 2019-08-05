@@ -293,7 +293,17 @@ export default {
     state.fuzzyMode = fuzzyMode;
   },
 
+  /**
+   * Change the large mode using boolean
+   * @param largeMode 0 = reset; true = increment; false = decrement
+   * @constructor
+   */
   SET_LARGE_MODE: (state, largeMode) => {
+    if (largeMode < 0) {
+      largeMode = 0;
+    } else if (largeMode > 6) {
+      largeMode = CONSTANTS.MAX_SEARCHBAR_INCREMENTS;
+    }
     state.largeMode = largeMode;
   },
 };

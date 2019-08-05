@@ -84,6 +84,7 @@ export default {
       'statusTextsLength',
       'fuzzyMode',
       'largeMode',
+      'isDocked',
     ]),
     isDocked() {
       return !this.hasMainControl;
@@ -156,8 +157,6 @@ export default {
     line-height inherit
     &.ksb-docked
       transition width .5s
-      &.ksb-large-mode
-        width $main-control-width + $main-control-inc-width
       #ksb-search-container
         position relative
         padding 16px 10px

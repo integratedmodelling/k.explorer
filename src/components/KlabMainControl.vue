@@ -30,7 +30,7 @@
     <q-card
       id="mc-q-card"
       class="no-box-shadow absolute lot-of-flow"
-      :class="[hasContext ? 'with-context' : 'bg-transparent without-context', largeMode ? 'mc-large-mode' : '']"
+      :class="[hasContext ? 'with-context' : 'bg-transparent without-context', `mc-large-mode-${largeMode}`]"
       :style="{ top: `${defaultTop}px`, left: `${centeredLeft}px` }"
       :flat="true"
       v-draggable="dragMCConfig"
@@ -67,8 +67,8 @@
         <!-- TABS -->
         <div id="mc-tabs">
           <div class="klab-button mc-tab"
-            :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
-            @click="selectedTab = 'klab-log-pane'"
+               :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
+               @click="selectedTab = 'klab-log-pane'"
           ><q-icon name="mdi-console">
             <q-tooltip
               :offset="[0, 8]"
@@ -77,8 +77,8 @@
             >{{ $t('tooltips.logPane') }}</q-tooltip>
           </q-icon></div>
           <div class="klab-button mc-tab"
-            :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
-            @click="selectedTab = 'klab-tree-pane'"
+               :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
+               @click="selectedTab = 'klab-tree-pane'"
           ><q-icon name="mdi-eye-outline">
             <q-tooltip
               :offset="[0, 8]"
@@ -277,7 +277,7 @@ export default {
   },
   watch: {
     hasContext() {
-      this.setLargeMode(false);
+      this.setLargeMode(0); // reset large mode
       this.$nextTick(() => {
         this.changeDraggablePosition({
           top: this.defaultTop,
@@ -286,16 +286,23 @@ export default {
       });
       // this.draggableElement.classList.remove('vuela');
     },
-    largeMode() {
+    largeMode(newValue, oldValue) {
+      console.log(`newValue: ${newValue}, oldValue: ${oldValue}`);
       if (this.hasContext) {
         return;
       }
       this.$nextTick(() => {
-        const offset = CONSTANTS.SEARCHBAR_INCREMENT * (this.largeMode ? 1 : -1) / 2;
-        this.changeDraggablePosition({
-          top: parseFloat(this.draggableElement.style.top),
-          left: parseFloat(this.draggableElement.style.left) - offset,
-        });
+        const offset = CONSTANTS.SEARCHBAR_INCREMENT * this.largeMode / 2;
+        if (offset >= 0) {
+          const actualLeft = parseFloat(this.draggableElement.style.left);
+          const difference = actualLeft - this.getCenteredLeft();
+          if (difference % (CONSTANTS.SEARCHBAR_INCREMENT / 2) === 0) {
+            this.changeDraggablePosition({
+              top: parseFloat(this.draggableElement.style.top),
+              left: this.getCenteredLeft() - offset,
+            });
+          }
+        }
       });
     },
   },
@@ -341,8 +348,9 @@ export default {
         #mc-q-card-title
           overflow hidden
           margin 15px
-      &.mc-large-mode
-        width $main-control-width + $main-control-inc-width
+      for $value in (1..6)
+        {"&.mc-large-mode-" + $value}
+          width $main-control-width + $main-control-inc-width * $value
 
     .q-card-title
       position relative

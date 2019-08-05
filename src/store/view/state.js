@@ -162,5 +162,5 @@ export default {
   inputRequests: [],
   waitingGeolocation: true,
   fuzzyMode: false, // search with free text
-  largeMode: false, // search bar larger
+  largeMode: 0, // search bar steps 0: normal; >0: larger
 };
