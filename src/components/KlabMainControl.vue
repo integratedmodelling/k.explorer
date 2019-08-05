@@ -49,16 +49,6 @@
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
       </q-card-title>
-      <q-card-main
-        v-show="hasContext && !isHidden"
-        class="no-margin relative-position"
-      >
-        <keep-alive>
-          <transition name="component-fade" mode="out-in">
-            <component :is="selectedTab"></component>
-          </transition>
-        </keep-alive>
-      </q-card-main>
       <q-card-actions
         v-show="hasContext && !isHidden"
         class="no-margin"
@@ -90,18 +80,29 @@
         <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
         <!-- scale -->
         <!-- SPACE -->
-        <div class="mc-separator" style="right:325px"></div>
-        <div id="mc-spacereference" class="mc-scalereference" style="right: 180px">
-          <scale-reference width="140px" scale-type="space" :editable="false"></scale-reference>
+        <div class="mc-separator" style="right:234px"></div>
+        <div id="mc-spacereference" class="mc-scalereference" style="right: 124px">
+          <scale-reference width="110px" scale-type="space" :editable="false"></scale-reference>
         </div>
-        <div class="mc-separator" style="right: 175px"></div>
+        <div class="mc-separator" style="right: 130px"></div>
         <!-- TIME -->
-        <div id="mc-timereference" class="mc-scalereference" style="right: 50px">
-          <scale-reference width="120px" scale-type="time" :editable="false"></scale-reference>
+        <div id="mc-timereference" class="mc-scalereference" style="right: 28px">
+          <scale-reference width="100px" scale-type="time" :editable="false"></scale-reference>
         </div>
-        <div class="mc-separator" style="right:45px"></div>
+        <div class="mc-separator" style="right:34px"></div>
         <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
+      <q-card-main
+        v-show="hasContext && !isHidden"
+        class="no-margin relative-position"
+      >
+        <keep-alive>
+          <transition name="component-fade" mode="out-in">
+            <component :is="selectedTab"></component>
+          </transition>
+        </keep-alive>
+      </q-card-main>
+      <q-card-actions></q-card-actions>
     </q-card>
     </transition>
     <scale-change-dialog></scale-change-dialog>
@@ -403,7 +404,7 @@ export default {
         right 45px
     .mc-scalereference
       position absolute
-      height 37px
+      height 29px
 
     .mc-tab.active
       background-color alpha($faded, 85%)
@@ -446,4 +447,32 @@ export default {
       &.with-splitter
         max-height "calc((var(--main-control-max-height) - %s))" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
 
+    .klab-button
+      font-size 18px
+      margin 0
+      padding 4px 7px 7px 7px
+      border-top-left-radius 2px
+      border-top-right-radius 2px
+
+    $sr-scaletype-width = 18px
+    $sr-lock-width = 18px
+    $sr-scalescale-width = 18px
+    #context-actions
+      .sr-scaletype
+      .sr-locked
+        font-size 9px
+        &.sr-icon
+          font-size 14px
+      .sr-description
+        font-size 9px
+      .sr-spacescale
+        font-size 9px
+        height 16px
+        width 16px
+        border-radius 8px
+        padding 3px 0 0 0
+        margin 0 2px
+    .klab-destructive-actions .klab-button
+      font-size 21px
+      padding 3px 4px 7px 0
 </style>
