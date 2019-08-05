@@ -7,6 +7,16 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 
+## 0.8.0 - ?
+### Added
+### Improvements
+- Reorganization of tree of observations: now main observation are grouped upper and the rest are
+in a collapsible group.
+- The upper tree is "user-managed", in the future the user can use it to reorganize observations
+- The search bar width change during the user write
+### Solve
+- various little bugs
+
 ## 0.7.5 - 2019-07-01
 ### Added
 - with double click on map, map info popup is locked and show info of the top layer. To put on top a layer, 
