@@ -550,10 +550,10 @@ export default {
     },
     // helper to reset the input search field (if tomorrow will be more complex)
     resetSearchInput() {
-      // this.$nextTick(() => {
-      this.actualToken = this.actualSearchString;
-      this.inputSearchColor = 'black';
-      // });
+      this.$nextTick(() => {
+        this.actualToken = this.actualSearchString;
+        this.inputSearchColor = 'black';
+      });
     },
     searchHistoryEvent(index, event = null) {
       if (this.actualToken === '' && this.searchHistory.length > 0
