@@ -330,7 +330,7 @@ export default {
     drawObservations() {
       if (this.observations && this.observations.length > 0) {
         this.observations.forEach((observation) => {
-          if (observation.observationType !== OBSERVATION_CONSTANTS.TYPE_GROUP) {
+          if (!observation.isContainer) {
             this.findLayerById(observation).then((layer) => {
               if (layer !== null) {
                 layer.setVisible(observation.visible);

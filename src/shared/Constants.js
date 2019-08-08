@@ -339,6 +339,7 @@ export const OBSERVATION_CONSTANTS = {
   TYPE_EVENT: 'EVENT',
   TYPE_RELATIONSHIP: 'RELATIONSHIP',
   TYPE_GROUP: 'GROUP',
+  TYPE_VIEW: 'VIEW',
   TYPE_INITIAL: 'INITIAL', // wildcard for initial state
 };
 

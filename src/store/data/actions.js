@@ -140,7 +140,6 @@ export default {
 
   addObservation: ({ commit, state, dispatch }, {
     observation,
-    folderId = null,
     toTree = true,
     visible = false,
     restored = false,
@@ -164,7 +163,7 @@ export default {
       observation.zIndex = 0;
       observation.layerOpacity = observation.layerOpacity || 1;
       observation.colormap = observation.colormap || null;
-      observation.folderId = folderId;
+      observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {
@@ -179,18 +178,14 @@ export default {
         });
       } else if (observation.childrenCount > 0) {
         dispatch('askForChildren', {
-          folderId: observation.id,
+          parentId: observation.id,
           offset: 0,
           count: state.childrenToAskFor,
           total: observation.childrenCount,
         });
       }
       if (toTree) {
-        const node = getNodeFromObservation(observation);
-        commit('ADD_NODE', node);
-        if (observation.main) {
-          commit('ADD_USER_NODE', node);
-        }
+        commit('ADD_NODE', getNodeFromObservation(observation));
       }
       dispatch('view/setReloadReport', true, { root: true });
       return resolve();
@@ -198,27 +193,8 @@ export default {
     return null;
   }),
 
-  /**
-   * When a task finish, we need to check the internal hierarchy of observations
-   * @param taskId task to check
-   */
-  recalculateTree: (/* { commit/* , dispatch  }, { taskId, fromTask } */) => {
-    console.log('We don\'t recalculate');
-    return true;
-    /*
-    if (typeof taskId === 'undefined' || taskId === null) {
-      throw new Error(`Try to recalculate tree with a not existing task id: ${taskId}`);
-    }
-    return new Promise((resolve) => {
-      commit('RECALCULATE_TREE', { taskId, fromTask });
-      // dispatch('askForChildrenOfTask', { taskId });
-      resolve();
-    });
-    */
-  },
-
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
-    folderId,
+    parentId,
     total,
     offset = 0,
     count = state.childrenToAskFor, // if - we ask for all
@@ -226,8 +202,8 @@ export default {
     visible = false,
     notified = true,
   }) => new Promise((resolve) => {
-    console.debug(`Ask for children of node ${folderId}: count:${count} / offset ${offset}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${folderId}`, {
+    console.debug(`Ask for children of node ${parentId}: count:${count} / offset ${offset}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${parentId}`, {
       params: {
         count,
         offset,
@@ -235,13 +211,12 @@ export default {
     })
       .then(({ data }) => {
         if (data && data.length > 0) {
-          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: folderId }, { root: true }).then(() => {
+          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
             data.forEach((child, index, array) => {
               child.notified = notified;
               child.siblingsCount = total; // the total of element for [INDEX] of [TOTAL]
               dispatch('addObservation', {
                 observation: child,
-                folderId,
                 toTree,
                 visible,
               }).then(() => {
@@ -249,21 +224,25 @@ export default {
                   if (toTree) {
                     // last element
                     commit('ADD_LAST', {
-                      folderId,
+                      parentId,
                       observationId: child.id,
                       offsetToAdd: data.length,
                       total,
                     });
                   }
-                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: folderId }, { root: true });
+                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
                   resolve();
                 }
               });
             });
-            const parent = findNodeById(state.tree, folderId);
-            if (parent !== null) {
-              parent.childrenLoaded += data.length;
-            }
+            const setChildrenLoaded = (tree) => {
+              const parent = findNodeById(tree, parentId);
+              if (parent && parent !== null) {
+                parent.childrenLoaded += data.length;
+              }
+            };
+            setChildrenLoaded(state.tree);
+            setChildrenLoaded(state.userTree);
           });
         }
         resolve();
@@ -274,22 +253,22 @@ export default {
    * If we load children but we don't add to tree, we use the loaded observation to create the nodes
    */
   addChildrenToTree({ commit, state }, {
-    folder,
+    parent,
     count = state.childrenToAskFor,
   }) {
-    if (folder && folder !== null) {
-      const folderObservations = state.observations.filter(obs => obs.folderId === folder.id);
-      const total = folderObservations.length;
-      const offset = folder.children.length;
+    if (parent && parent !== null) {
+      const parentObservations = state.observations.filter(obs => obs.parentArtifactId === parent.id || obs.parentId === parent.id);
+      const total = parentObservations.length;
+      const offset = parent.children.length;
       for (let i = offset, n = 0; i < total && n < count; i++, n++) {
-        const child = folderObservations[i];
+        const child = parentObservations[i];
         commit('ADD_NODE', getNodeFromObservation(child));
         if (n === count - 1 || i === total - 1) {
           commit('ADD_LAST', {
-            folderId: folder.id,
+            parentId: parent.id,
             observationId: child.id,
             offsetToAdd: n + 1,
-            total: folder.childrenLoaded,
+            total: parent.childrenLoaded,
           });
         }
       }
@@ -298,15 +277,15 @@ export default {
   /**
    * Show a node in a tree, this show the relative layer too or
    * apply a visibility to all folder (all observation yet not in tree) if isFolder is true
-   * @param folderId folder to change visibility
+   * @param node node to change visibility
    * @param visible hide (false) or show (true)
    */
   setVisibility: ({ commit, dispatch, state }, { node, visible }) => {
-    if (node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+    if (node.isContainer) {
       // check if is the first time
       if (node.childrenCount !== 0 && node.viewerIdx === null) {
         // ...try to bring the viewer info from the first children
-        const observation = state.observations.find(o => o.folderId === node.id);
+        const observation = state.observations.find(o => o.parentArtifactId === node.id || o.parentId === node.id);
         if (typeof observation !== 'undefined') {
           const { viewerIdx, viewerType, zIndexOffset } = observation;
           node.viewerIdx = viewerIdx;

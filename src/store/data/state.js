@@ -24,7 +24,8 @@ export default {
    * @property empty: true if node is empty,
    * @property actions: actions to show on right click,
    * @property header: one of the possible tree node type of slot header: default / folder / main,
-   * @property folderId: if has a folder, the id of it,
+   * @property parentId: if has a parent, the id of it,
+   * @property parentArtifactId: if has a parent artifact, the id of it,
    * @property userNode: is node added to the user tree (need to filter)
    * @property exportFormats: the export formats
    * @property rootContextId: the root context id (needed to link the observation to the seame context,
@@ -54,7 +55,8 @@ export default {
    * @property empty: true if node is empty,
    * @property actions: actions to show on right click,
    * @property header: one of the possible tree node type of slot header: default / folder / main,
-   * @property folderId: if has a folder, the id of it,
+   * @property parentId: if has a parent, the id of it,
+   * @property parentArtifactId: if has a parent artifact, the id of it,
    * @property userNode: is node added to the user tree (need to filter)
    * @property exportFormats: the export formats
    * @property rootContextId: the root context id (needed to link the observation to the seame context,
@@ -66,7 +68,7 @@ export default {
   /**
    * Last elements in folder that need more children
    * LAST:
-   * @property folderId: the folder id
+   * @property parentId: the parent id
    * @property observationId: the observation,
    * @property offsetToAdd: offset of element (last index),
    * @property total: real total we need,
@@ -207,7 +209,6 @@ export default {
    "zIndex"
    "layerOpacity"
    "colormap"
-   "folderId"
    */
   observations: [],
 

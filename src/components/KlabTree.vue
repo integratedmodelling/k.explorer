@@ -310,7 +310,7 @@ export default {
       }
     },
     async doubleClick(node, meta) {
-      if (node.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+      if (node.isContainer) {
         if (node.viewerIdx !== null) {
           this.setMainDataViewer({ viewerIdx: node.viewerIdx, visible: node.visible });
         }
@@ -400,26 +400,16 @@ export default {
             node: unselectedNode,
             visible: false,
           });
-          if (unselectedNode.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+          if (unselectedNode.isContainer) {
             this.ticked = this.ticked.filter(n => unselectedNode.children.findIndex(c => c.id === n) === -1);
           }
-          /*
-          else {
-            TODO analyze this: if folder is not Constants.GEOMTYP_FOLDER, is not a good behaviour. If we need to check this, is expensive (need to find node to check if is a fake or real folder
-            if (unselectedNode.folderId !== null && this.ticked.indexOf(unselectedNode.folderId) !== -1) {
-              // we unselect the folder
-              this.ticked.splice(this.ticked.indexOf(unselectedNode.folderId), 1);
-            }
-
-          }
-          */
         }
       } else {
         // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
         // this.selectNode(selectedId);
         const selectedNode = findNodeById(this.tree, selectedId);
-        if (selectedNode.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP) {
+        if (selectedNode.isContainer) {
           const tickAll = () => {
             this.setVisibility({
               node: selectedNode,
@@ -430,9 +420,9 @@ export default {
           if (!this.askingForChildren) {
             if (selectedNode.childrenLoaded < selectedNode.childrenCount) {
               this.askingForChildren = true;
-              const node = this.lasts.find(l => l.folderId === selectedNode.id);
+              const node = this.lasts.find(l => l.parentId === selectedNode.id);
               this.askForChildren({
-                folderId: node.folderId,
+                parentId: node.parentId,
                 offset: selectedNode.childrenLoaded,
                 count: -1,
                 toTree: false,
@@ -472,26 +462,26 @@ export default {
           const ltcBoundingClinetRect = ltc.getBoundingClientRect();
           if (ltcBoundingClinetRect.bottom !== 0 && ltcBoundingClinetRect.bottom < bottom) {
             this.askingForChildren = true;
-            const folder = findNodeById(this.tree, last.folderId);
-            if (folder.children.length < folder.childrenLoaded) { // we have the children, only need to add to tree
-              this.addChildrenToTree({ folder });
+            const parent = findNodeById(this.tree, last.parentId);
+            if (parent.children.length < parent.childrenLoaded) { // we have the children, only need to add to tree
+              this.addChildrenToTree({ parent });
               this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
-                folderId: folder.id,
-                visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
+                folderId: parent.id,
+                visible: typeof parent.ticked === 'undefined' ? false : parent.ticked,
               });
               this.askingForChildren = false;
             } else {
               this.askForChildren({
-                folderId: last.folderId,
+                parentId: last.parentId,
                 offset: last.offset,
-                visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
-                total: folder.childrenCount,
+                visible: typeof parent.ticked === 'undefined' ? false : parent.ticked,
+                total: parent.childrenCount,
               }).then(() => {
                 this.askingForChildren = false;
                 console.debug('KlabTree -> Asked for them');
                 this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
                   folderId: last.folderId,
-                  visible: typeof folder.ticked === 'undefined' ? false : folder.ticked,
+                  visible: typeof parent.ticked === 'undefined' ? false : parent.ticked,
                 });
               });
             }

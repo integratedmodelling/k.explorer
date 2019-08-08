@@ -7,18 +7,6 @@ export default {
    */
   tree: state => state.tree,
 
-  visibleTree: state => (onlyNotified) => {
-    if (onlyNotified) {
-      const filterNode = node => node.filter(el => el.notified) // filter array first
-        .map(obj => ({ // then re-map to new objects
-          ...obj, // copy shallow fields
-          children: obj.children && filterNode(obj.children), // filter children
-        }));
-      return filterNode(state.tree);
-    }
-    return state.tree;
-  },
-
   treeNode: state => id => findNodeById(state.tree, id),
 
   lasts: state => state.lasts,
