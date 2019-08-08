@@ -584,6 +584,8 @@ export default {
         background-color #333
       .q-tree-node-link
         cursor default
+        .q-tree-arrow
+          cursor pointer
 
       .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible
         .q-tree-node-parent
