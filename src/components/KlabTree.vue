@@ -574,6 +574,7 @@ export default {
         animation flash linear 2s
       .node-element
         text-shadow none
+        cursor pointer
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
@@ -581,6 +582,8 @@ export default {
         text-decoration underline
       .kt-q-tooltip
         background-color #333
+      .q-tree-node-link
+        cursor default
 
       .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible
         .q-tree-node-parent
