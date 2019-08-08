@@ -95,10 +95,11 @@ export default {
     informTree({ nodeId, state }) {
       const node = this.treeNode(nodeId);
       if (node) {
+        if (this.$refs['kt-tree']) {
+          this.$refs['kt-tree'].changeNodeState({ nodeId, state });
+        }
         if (node.userNode && this.$refs['kt-user-tree']) {
           this.$refs['kt-user-tree'].changeNodeState({ nodeId, state });
-        } else if (!node.userNode && this.$refs['kt-tree']) {
-          this.$refs['kt-tree'].changeNodeState({ nodeId, state });
         }
       }
     },
@@ -186,8 +187,8 @@ export default {
       summary
         outline none
         position relative
-        color #ddd
-        font-size 1.2em
+        color #fff
+        font-size: 1rem;
         width 97%
         cursor pointer
         display list-item

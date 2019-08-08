@@ -103,6 +103,7 @@ export default {
     if (observation.observationType) {
       switch (observation.observationType) {
         case OBSERVATION_CONSTANTS.TYPE_GROUP:
+        case OBSERVATION_CONSTANTS.TYPE_VIEW:
           viewerType = null;
           break;
         case OBSERVATION_CONSTANTS.TYPE_STATE:

@@ -1,5 +1,5 @@
 /* eslint-disable object-curly-newline,prefer-destructuring,no-multi-spaces */
-import { CONSTANTS, GEOMETRY_CONSTANTS, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, GEOMETRY_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import store from 'store/index';
 import { MAP_CONSTANTS, MAP_STYLES } from 'shared/MapConstants';
 import { getGradient, interpolateArray, createMarker } from 'shared/Utils';
@@ -103,36 +103,45 @@ export const findNodeById = (tree, key = null) => {
  * Return a node object from an observation
  * @param observation
  */
-export const getNodeFromObservation = observation => ({
-  node: {
-    id: observation.id,
-    label: observation.literalValue || observation.label,
-    observable: observation.observable,
-    type: observation.shapeType,
-    viewerIdx: observation.viewerIdx,
-    viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
-    children: [],
-    childrenCount: observation.childrenCount,
-    siblingsCount: observation.siblingsCount,
-    parentArtifactId: observation.parentArtifactId,
-    tickable: (observation.viewerIdx !== null && !observation.empty)
-      || (observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount > 0),
-    disabled: observation.empty
-      && (observation.observationType !== OBSERVATION_CONSTANTS.TYPE_GROUP || observation.childrenCount === 0),
-    empty: observation.empty, // disabled can change
-    actions: observation.actions,
-    header: observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP ? 'folder' : 'default',
-    folderId: observation.folderId,
-    main: observation.main,
-    userNode: observation.main, // used to take a "user tree"
-    exportFormats: observation.exportFormats,
-    rootContextId: observation.rootContextId,
-    observationType: observation.observationType,
-    ...(observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP && { childrenLoaded: 0 }),
-    ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
-  },
-  parentId: observation.folderId === null ? observation.parentId : observation.folderId,
-});
+export const getNodeFromObservation = (observation) => {
+  const hasContainer = observation.parentArtifactId !== null;
+  const parentId = hasContainer ? observation.parentArtifactId :  observation.parentId;
+  let userNode = observation.main;
+  if (!userNode && hasContainer) {
+    const parent = findNodeById(store.getters['data/tree'], parentId);
+    if (parent !== null) {
+      userNode = userNode || parent.main || parent.userNode;
+    }
+  }
+  return {
+    node: {
+      id: observation.id,
+      label: observation.literalValue || observation.label,
+      observable: observation.observable,
+      type: observation.shapeType,
+      viewerIdx: observation.viewerIdx,
+      viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
+      children: [],
+      childrenCount: observation.childrenCount,
+      siblingsCount: observation.siblingsCount,
+      parentArtifactId: observation.parentArtifactId,
+      tickable: (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0,
+      disabled: observation.empty && (!observation.isContainer || observation.childrenCount === 0),
+      empty: observation.empty, // disabled can change
+      actions: observation.actions,
+      header: observation.isContainer ? 'folder' : 'default',
+      main: observation.main,
+      userNode,
+      isContainer: observation.isContainer,
+      exportFormats: observation.exportFormats,
+      rootContextId: observation.rootContextId,
+      observationType: observation.observationType,
+      ...(observation.isContainer && { childrenLoaded: 0 }),
+      ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
+    },
+    parentId,
+  };
+};
 
 /**
  * If we need a new projection, a call to epsg.io is maded to retrieve

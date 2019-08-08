@@ -95,6 +95,9 @@ export default {
       state.orphans.push(node);
       return;
     }
+    if (node.rootContextId !== context.id) {
+      console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
+    }
     if (context.id === node.id) {
       console.error('Try to add context to tree, check it!');
       return;
@@ -102,146 +105,31 @@ export default {
     if (context.id === parentId) {
       // is a tree root node
       state.tree.push(node);
-    } else if (node.rootContextId === context.id) {
-      const parent = findNodeById(state.tree, parentId);
-      if (parent !== null) {
-        parent.children.push({
-          ...node,
-          idx: parent.children.length,
-          siblingsCount: parent.childrenCount,
-        });
-        parent.disabled = false; // if was empty and now has children, it cannot be disabled
-      } else {
-        console.warn(`Orphan founded with id ${node.id}`);
-        state.orphans.push(node);
+      if (node.userNode) {
+        const cloneNode = JSON.parse(JSON.stringify(node));
+        state.userTree.push(cloneNode);
       }
     } else {
-      console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
-    }
-  },
-
-  /**
-   * Add a node in the user tree
-   * @param node the node to add
-   * @param userParentId the parent of node. Is different from the original parent, is what the user want.
-   *                     If doesn't exists is a root node
-   */
-  ADD_USER_NODE: (state, { node, userParentId = null }) => {
-    const context = state.contexts.peek();
-    if (context === null) {
-      console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
-      state.orphans.push(node);
-      return;
-    }
-    if (context.id === node.id) {
-      console.error('Try to add context to tree, check it!');
-      return;
-    }
-    if (userParentId === null) {
-      // is a user tree root node
-      state.userTree.push(node);
-    } else if (node.rootContextId === context.id) { // we check that the node is part of this context
-      const parent = findNodeById(state.userTree, userParentId);
-      if (parent !== null) {
-        parent.children.push({
-          ...node,
-          idx: parent.children.length,
-          siblingsCount: parent.children.length,
-        });
-        parent.disabled = false; // if was empty and now has children, it cannot be disabled
-      } else {
-        console.warn(`Orphan of user tree founded with id ${node.id}, skipped`);
-      }
-    } else {
-      console.warn(`Try to add to user tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
-    }
-  },
-
-  /*
-  RECALCULATE_TREE: (state, { taskId, fromTask }) => {
-    const context = state.contexts.peek();
-    if (context === null) {
-      // context was reset while processing
-      return;
-    }
-    const filtered = state.observations.filter(observation => observation.taskId.startsWith(taskId)); // state.observations.filter(observation => observation.taskId === taskId);
-    const restored = typeof context.restored !== 'undefined' && context.restored;
-    if (filtered.length === 0) {
-      console.info('No recalculation needed, no observation for this task');
-      return;
-    }
-    if (filtered.length === 1) {
-      console.info('No recalculation needed, only one observation');
-      return;
-    }
-    const idsToDelete = []; // only ids
-    const mains = []; // main observations ids
-    let main = null; // main observation id
-    const children = []; // no main, children of main observation ids
-    filtered.forEach((observation, index) => {
-      if (observation.main) {
-        if ((fromTask && index === filtered.length - 1) || (restored && index === 0)) {
-          main = findNodeById(state.tree, observation.id);
+      const addToParent = (tree) => {
+        const parent = findNodeById(tree, parentId);
+        if (parent !== null) {
+          parent.children.push({
+            ...node,
+            idx: parent.children.length,
+            siblingsCount: parent.childrenCount,
+          });
+          parent.disabled = false; // if was empty and now has children, it cannot be disabled
         } else {
-          mains.push(findNodeById(state.tree, observation.id));
+          console.warn(`Orphan founded with id ${node.id}`);
+          state.orphans.push(node);
         }
-        idsToDelete.push(observation.id);
-      } else if (observation.folderId === null) {
-        children.push(findNodeById(state.tree, observation.id));
-        idsToDelete.push(observation.id);
-      }
-    });
-    if (main === null) {
-      if (!restored) {
-        console.warn('No main observation found, stopped?'); // if restoring, is possible to haven't main
-      } else {
-        console.info('No main observation found'); // if restoring, is possible to haven't main
-      }
-      return;
-    }
-    // main.header = 'main';
-    // find index of first filtered occurence
-    const firstOccurence = filtered[0];
-    let folder = null;
-    let insertionIndex = -1;
-    if (firstOccurence.parentId === state.contexts.peek().id) {
-      folder = state.tree;
-      insertionIndex = state.tree.findIndex(c => c.id === firstOccurence.id);
-    } else {
-      const parentFolder = findNodeById(state.tree, firstOccurence.folderId || firstOccurence.parentId);
-      if (parentFolder === null) {
-        throw new Error(`Element is not first level but cannot find parent: folderId: ${firstOccurence.folderId}, parentId: ${firstOccurence.parentId}`);
-      }
-      folder = parentFolder.children;
-      insertionIndex = folder.findIndex(c => c.id === firstOccurence.id);
-    }
-    if (children.length > 0) {
-      children.forEach((child, idx) => {
-        child.folderId = main.id;
-        child.idx = idx;
-        child.siblingsCount = children.length;
-      });
-      main.children.push(...children);
-      main.disabled = false; // if was empty and now has children, it cannot be disabled
-    } else {
-      console.info('No children found');
-    }
-    if (folder !== null && insertionIndex !== -1) {
-      // remove all elements from tree
-      let i = folder.length;
-      // eslint-disable-next-line no-plusplus
-      while (i--) {
-        if (idsToDelete.includes(folder[i].id)) {
-          folder.splice(i, 1);
-        }
-      }
-      folder.splice(insertionIndex, 0, main);
-      if (mains.length > 0) {
-        folder.splice(insertionIndex + 1, 0, ...mains);
+      };
+      addToParent(state.tree);
+      if (node.userNode) {
+        addToParent(state.userTree);
       }
     }
   },
-  */
 
   SET_FOLDER_VISIBLE: (state, {
     nodeId,
@@ -250,7 +138,7 @@ export default {
   }) => {
     if (zIndexOffset !== null) {
       state.observations.forEach((o) => {
-        if (o.folderId === nodeId) {
+        if (o.parentArtifactId === nodeId || o.parentId === nodeId) {
           o.visible = visible;
           o.top = visible;
         } else if (visible && o.zIndexOffset === zIndexOffset) {
@@ -265,15 +153,19 @@ export default {
       console.warn(`Folder with id ${nodeId} has no elements`);
     }
     // set node ticked (for tree view)
-    const node = findNodeById(state.tree, nodeId);
-    if (typeof node !== 'undefined' && node !== null && node.children.length > 0) {
-      node.children.forEach((n) => {
-        if (n.parentArtifactId === node.id) {
-          n.ticked = visible;
-        }
-      });
-      node.ticked = visible;
-    }
+    const setNodeTicked = (tree) => {
+      const node = findNodeById(tree, nodeId);
+      if (typeof node !== 'undefined' && node !== null && node.children.length > 0) {
+        node.children.forEach((n) => {
+          if (n.parentArtifactId === node.id) {
+            n.ticked = visible;
+          }
+        });
+        node.ticked = visible;
+      }
+    };
+    setNodeTicked(state.tree);
+    setNodeTicked(state.userTree);
   },
 
   SET_VISIBLE: (state, {
@@ -297,10 +189,14 @@ export default {
         });
       }
       // set node ticked (for tree view)
-      const node = findNodeById(state.tree, nodeId);
-      if (node) {
-        node.ticked = visible;
-      }
+      const setNodeTicked = (tree) => {
+        const node = findNodeById(tree, nodeId);
+        if (node) {
+          node.ticked = visible;
+        }
+      };
+      setNodeTicked(state.tree);
+      setNodeTicked(state.userTree);
       state.observations.splice(observationIdx, 1, observation);
     } else {
       console.warn(`Try to change visibility to no existing observations with id ${nodeId}`);
@@ -312,41 +208,34 @@ export default {
   },
 
   ADD_LAST: (state, {
-    folderId,
+    parentId,
     observationId,
     offsetToAdd,
     total,
   }) => {
-    const lastIdx = state.lasts.findIndex(l => folderId === l.folderId);
+    const lastIdx = state.lasts.findIndex(l => parentId === l.parentId);
     if (lastIdx !== -1) {
       const last = state.lasts[lastIdx];
       if (last.offset + offsetToAdd + 1 >= last.total) {
         state.lasts.splice(lastIdx, 1);
-        console.info(`Delete folder ${folderId}`);
+        console.info(`Delete folder ${parentId}`);
       } else {
         last.observationId = observationId;
         last.offset += offsetToAdd;
-        console.info(`Change folder ${folderId}. Now offset is ${last.offset} `);
+        console.info(`Change folder ${parentId}. Now offset is ${last.offset} `);
       }
     } else {
       if (offsetToAdd + 1 === total) {
-        console.info(`Nothing to do in folder ${folderId}. Offset is ${offsetToAdd} and total is ${total} `);
+        console.info(`Nothing to do in folder ${parentId}. Offset is ${offsetToAdd} and total is ${total} `);
         return;
       }
       state.lasts.push({
-        folderId,
+        parentId,
         observationId,
         offset: offsetToAdd,
         total,
       });
-      console.debug(`Added folder ${folderId}. Offset is ${offsetToAdd} `);
-    }
-  },
-
-  REMOVE_LAST: (state, folderId) => {
-    const idxToRemove = state.lasts.findIndex(l => l.folderId === folderId);
-    if (idxToRemove !== -1) {
-      state.lasts.splice(idxToRemove, 1);
+      console.debug(`Added folder ${parentId}. Offset is ${offsetToAdd} `);
     }
   },
 
