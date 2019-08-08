@@ -520,7 +520,7 @@ export default {
     .kt-tree-container
       // special class to solve the noNode
       .klab-no-nodes
-        padding 5px 0 0 0
+        padding 5px 0
         margin 0
         text-align center
         font-style italic

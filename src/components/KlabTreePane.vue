@@ -31,7 +31,7 @@
             </klab-tree>
           </details>
         </div>
-        <div class="q-ma-md text-center text-white" v-else>
+        <div class="q-ma-md text-center text-white ktp-no-tree" v-else>
           {{ $t('label.noObservation') }}
         </div>
       </div>
@@ -200,5 +200,6 @@ export default {
           border-bottom 1px solid #787878
       &>div
         margin 5px 0 10px -10px
-
+  .ktp-no-tree
+    height 30px
 </style>
