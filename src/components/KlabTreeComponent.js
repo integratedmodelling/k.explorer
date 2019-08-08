@@ -79,9 +79,11 @@ export default {
               }
             },
           },
+          /*
           directives: process.env.THEME === 'mat' && meta.selectable
             ? [{ name: 'ripple' }]
             : null,
+          */
         }, [
           meta.lazy === 'loading'
             ? h(QSpinner, {
