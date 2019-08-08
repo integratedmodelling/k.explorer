@@ -14,7 +14,9 @@
         >{{ isScaleLocked[scaleType] ? $t('label.clickToUnlock') : $t('label.clickToLock')}}</q-tooltip>
       </div>
       <div class="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-scaletype klab-item" :class="[ scaleType === SCALE_TYPE.ST_SPACE ? `mdi ${type} sr-icon` : '']">{{ scaleType === SCALE_TYPE.ST_TIME ? type : '' }}</div>
+        <div class="sr-scaletype klab-item" :class="[ scaleType === SCALE_TYPE.ST_SPACE ? `mdi ${type} sr-icon` : '']">
+          <span v-if="scaleType === SCALE_TYPE.ST_TIME">{{ type }}</span>
+        </div>
         <div class="sr-description klab-item">{{ description }}</div>
         <div class="sr-spacescale klab-item">{{ scale }}</div>
         <q-tooltip
@@ -143,6 +145,7 @@ export default {
       .sr-spacescale
         background-color #333
         color #ccc
+
     &.sr-dark
       color #ccc
       text-shadow 0 0 1px #333
@@ -158,6 +161,10 @@ export default {
     .sr-no-scalereference
       .sr-scaletype
         width $sr-scaletype-width
+        span
+          display block
+          height 24px
+          line-height 24px
       .sr-locked
         width $sr-lock-width
       .sr-scaletype

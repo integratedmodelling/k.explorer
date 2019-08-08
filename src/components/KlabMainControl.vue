@@ -78,18 +78,48 @@
           </q-icon></div>
         </div>
         <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
-        <!-- scale -->
+        <!-- scales -->
         <!-- SPACE -->
-        <div class="mc-separator" style="right:234px"></div>
-        <div id="mc-spacereference" class="mc-scalereference" style="right: 124px">
-          <scale-reference width="110px" scale-type="space" :editable="false"></scale-reference>
+        <div class="kmc-scales">
+          <div
+            class="klab-button klab-action"
+            :class="[{ active: showSpaceScalePopup }]"
+            @mouseover="toggleScalePopup('space', true)"
+            @mouseleave="toggleScalePopup('space', false)"
+          >
+            <q-icon name="mdi-earth">
+              <q-popover
+                v-model="showSpaceScalePopup"
+                :anchor-click="false"
+                :offset="[0, 10]"
+              >
+                <div id="mc-spacereference" class="mc-scalereference">
+                  <scale-reference width="160px" scale-type="space" :light="true" :editable="false"></scale-reference>
+                </div>
+              </q-popover>
+            </q-icon>
+          </div>
+          <!-- TIME -->
+          <div
+             class="klab-button klab-action"
+             :class="[{ active: showTimeScalePopup }]"
+             @mouseover="toggleScalePopup('time', true)"
+             @mouseleave="toggleScalePopup('time', false)"
+          >
+            <q-icon name="mdi-clock">
+              <q-popover
+                v-model="showTimeScalePopup"
+                :anchor-click="false"
+                :offset="[0, 10]"
+              >
+                <div id="mc-timereference" class="mc-scalereference">
+                  <scale-reference width="160px" scale-type="time" :light="true" :editable="false"></scale-reference>
+                </div>
+              </q-popover>
+            </q-icon>
+          </div>
         </div>
-        <div class="mc-separator" style="right: 130px"></div>
-        <!-- TIME -->
-        <div id="mc-timereference" class="mc-scalereference" style="right: 28px">
-          <scale-reference width="100px" scale-type="time" :editable="false"></scale-reference>
-        </div>
-        <div class="mc-separator" style="right:34px"></div>
+        <div class="mc-separator" style="right:35px"></div>
         <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
       <q-card-main
@@ -173,6 +203,8 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       centeredLeft: this.defaultLeft,
+      showSpaceScalePopup: false,
+      showTimeScalePopup: false,
     };
   },
   computed: {
@@ -195,6 +227,15 @@ export default {
       'setMainViewer',
       'setLargeMode',
     ]),
+    toggleScalePopup(type, value) {
+      if (type === 'space') {
+        this.showSpaceScalePopup = value;
+        this.showTimeScalePopup = false;
+      } else if (type === 'time') {
+        this.showSpaceScalePopup = false;
+        this.showTimeScalePopup = value;
+      }
+    },
     callStartType(event) {
       if (!this.searchIsFocused) {
         this.$refs['klab-search-bar'].startType(event);
@@ -378,13 +419,10 @@ export default {
     .klab-main-actions
       position relative
     .klab-button-notification
-      top 6px
+      top 4px
       right 4px
       width 10px
       height 10px
-    .klab-destructive-actions .klab-button
-      position absolute
-      right 2px
 
     #context-actions
       border-bottom-left-radius 5px
@@ -402,9 +440,7 @@ export default {
       border-right 1px solid #666
       &.mab-separator
         right 45px
-    .mc-scalereference
-      position absolute
-      height 29px
+
 
     .mc-tab.active
       background-color alpha($faded, 85%)
@@ -448,15 +484,24 @@ export default {
         max-height "calc((var(--main-control-max-height) - %s))" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
 
     .klab-button
-      font-size 18px
+      font-size 22px
       margin 0
-      padding 4px 7px 7px 7px
-      border-top-left-radius 2px
-      border-top-right-radius 2px
+      padding 2px 7px 5px 7px
+      border-top-left-radius 4px
+      border-top-right-radius 4px
 
-    $sr-scaletype-width = 18px
-    $sr-lock-width = 18px
-    $sr-scalescale-width = 18px
+    .klab-destructive-actions .klab-button
+      position absolute
+      right 6px
+      padding-right 0
+
+    .kmc-scales
+      position absolute
+      right 42px
+      .klab-button
+        cursor default
+        padding-right 2px
+
     #context-actions
       .sr-scaletype
       .sr-locked
@@ -472,7 +517,5 @@ export default {
         border-radius 8px
         padding 3px 0 0 0
         margin 0 2px
-    .klab-destructive-actions .klab-button
-      font-size 21px
-      padding 3px 4px 7px 0
+
 </style>

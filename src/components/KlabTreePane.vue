@@ -186,10 +186,11 @@ export default {
       summary
         outline none
         position relative
-        color #484848
+        color #ddd
         font-size 1.2em
         width 97%
         cursor pointer
+        display list-item
         &:after
           content ''
           width 96%
