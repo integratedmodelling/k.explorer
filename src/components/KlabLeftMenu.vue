@@ -192,7 +192,7 @@ export default {
       top 5px
       right 8px
     .sb-scales
-      margin 20px 0
+      margin 0
       .lm-separator
         width 60%
         border-top-style dashed
