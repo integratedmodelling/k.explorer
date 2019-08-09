@@ -110,11 +110,11 @@ export default {
         state.userTree.push(cloneNode);
       }
     } else {
-      const addToParent = (tree) => {
+      const addToParent = (tree, localNode = node) => {
         const parent = findNodeById(tree, parentId);
         if (parent !== null) {
           parent.children.push({
-            ...node,
+            ...localNode,
             idx: parent.children.length,
             siblingsCount: parent.childrenCount,
           });
@@ -126,7 +126,7 @@ export default {
       };
       addToParent(state.tree);
       if (node.userNode) {
-        addToParent(state.userTree);
+        addToParent(state.userTree, JSON.parse(JSON.stringify(node)));
       }
     }
   },
