@@ -15,7 +15,7 @@
           :offset="offsets"
         >
           <div id="mc-spacereference" class="mc-scalereference">
-            <scale-reference width="160px" scale-type="space" :light="true" :editable="false"></scale-reference>
+            <scale-reference :width="spaceWidth ? spaceWidth : scaleWidth" scale-type="space" :light="true" :editable="false"></scale-reference>
           </div>
         </q-popover>
       </q-icon>
@@ -36,7 +36,7 @@
           :offset="offsets"
         >
           <div id="mc-timereference" class="mc-scalereference">
-            <scale-reference width="160px" scale-type="time" :light="true" :editable="false"></scale-reference>
+            <scale-reference :width="timeWidth ? timeWidth : scaleWidth" scale-type="time" :light="true" :editable="false"></scale-reference>
           </div>
         </q-popover>
       </q-icon>
@@ -60,6 +60,18 @@ export default {
     offset: {
       type: Number,
       default: 8,
+    },
+    scaleWidth: {
+      type: String,
+      default: '140px',
+    },
+    timeWidth: {
+      type: String,
+      default: undefined,
+    },
+    spaceWidth: {
+      type: String,
+      default: undefined,
     },
   },
   data() {
