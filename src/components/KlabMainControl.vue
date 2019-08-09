@@ -79,46 +79,7 @@
         </div>
         <main-actions-buttons orientation="horizontal" separator-class="mc-separator"></main-actions-buttons>
         <!-- scales -->
-        <!-- SPACE -->
-        <div class="kmc-scales">
-          <div
-            class="klab-button klab-action"
-            :class="[{ active: showSpaceScalePopup }]"
-            @mouseover="toggleScalePopup('space', true)"
-            @mouseleave="toggleScalePopup('space', false)"
-          >
-            <q-icon name="mdi-earth">
-              <q-popover
-                v-model="showSpaceScalePopup"
-                :anchor-click="false"
-                :offset="[0, 10]"
-              >
-                <div id="mc-spacereference" class="mc-scalereference">
-                  <scale-reference width="160px" scale-type="space" :light="true" :editable="false"></scale-reference>
-                </div>
-              </q-popover>
-            </q-icon>
-          </div>
-          <!-- TIME -->
-          <div
-             class="klab-button klab-action"
-             :class="[{ active: showTimeScalePopup }]"
-             @mouseover="toggleScalePopup('time', true)"
-             @mouseleave="toggleScalePopup('time', false)"
-          >
-            <q-icon name="mdi-clock">
-              <q-popover
-                v-model="showTimeScalePopup"
-                :anchor-click="false"
-                :offset="[0, 10]"
-              >
-                <div id="mc-timereference" class="mc-scalereference">
-                  <scale-reference width="160px" scale-type="time" :light="true" :editable="false"></scale-reference>
-                </div>
-              </q-popover>
-            </q-icon>
-          </div>
-        </div>
+        <scale-buttons :docked="false"></scale-buttons>
         <div class="mc-separator" style="right:35px"></div>
         <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
@@ -178,10 +139,9 @@ import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
 import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
-import ScaleReference from 'components/ScaleReference.vue';
+import ScaleButtons from 'components/ScaleButtons.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
-import ShowScale from 'shared/ShowScaleMixin';
 
 const { width, height } = dom;
 
@@ -194,7 +154,7 @@ export default {
     KlabTreePane,
     KlabLogPane,
     ScrollingText,
-    ScaleReference,
+    ScaleButtons,
     ScaleChangeDialog,
     MainActionsButtons,
     StopActionsButtons,
@@ -202,7 +162,7 @@ export default {
   directives: {
     Draggable,
   },
-  mixins: [HandleTouch, ShowScale],
+  mixins: [HandleTouch],
   data() {
     return {
       isHidden: false,
@@ -513,7 +473,7 @@ export default {
       right 6px
       padding-right 0
 
-    .kmc-scales
+    .sb-scales
       position absolute
       right 42px
       .klab-button
