@@ -81,9 +81,9 @@ export default {
       this.$nextTick(() => {
         if (this.askForUndocking) {
           this.askForUndocking = false;
-          this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
           this.setMainViewer(VIEWERS.DATA_VIEWER);
         }
+        this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, false);
         this.dragging = false;
       });
     },
