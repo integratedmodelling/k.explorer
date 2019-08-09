@@ -132,7 +132,10 @@
           </transition>
         </keep-alive>
       </q-card-main>
-      <q-card-actions class="kmc-bottom-actions">
+      <q-card-actions
+        id="kmc-bottom-actions"
+        v-show="hasContext && !isHidden"
+      >
         <div class="klab-button klab-action">
           <q-icon name="mdi-terrain"></q-icon>
           <q-tooltip
@@ -178,6 +181,7 @@ import ScrollingText from 'components/ScrollingText.vue';
 import ScaleReference from 'components/ScaleReference.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
+import ShowScale from 'shared/ShowScaleMixin';
 
 const { width, height } = dom;
 
@@ -198,7 +202,7 @@ export default {
   directives: {
     Draggable,
   },
-  mixins: [HandleTouch],
+  mixins: [HandleTouch, ShowScale],
   data() {
     return {
       isHidden: false,
@@ -220,8 +224,6 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       centeredLeft: this.defaultLeft,
-      showSpaceScalePopup: false,
-      showTimeScalePopup: false,
     };
   },
   computed: {
@@ -244,15 +246,6 @@ export default {
       'setMainViewer',
       'setLargeMode',
     ]),
-    toggleScalePopup(type, value) {
-      if (type === 'space') {
-        this.showSpaceScalePopup = value;
-        this.showTimeScalePopup = false;
-      } else if (type === 'time') {
-        this.showSpaceScalePopup = false;
-        this.showTimeScalePopup = value;
-      }
-    },
     callStartType(event) {
       if (!this.searchIsFocused) {
         this.$refs['klab-search-bar'].startType(event);
@@ -433,7 +426,7 @@ export default {
       background-color alpha($faded, 85%)
       padding 0 /* 0 0 10px 0*/
 
-    .q-card-actions.kmc-bottom-actions
+    #kmc-bottom-actions.q-card-actions
       padding 0 4px 4px 6px
       .klab-button
         font-size 18px

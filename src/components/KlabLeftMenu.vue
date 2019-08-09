@@ -35,12 +35,47 @@
       <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
         <div class="lm-separator"></div>
         <div id="lm-scales">
-          <!-- scale -->
-          <!-- SPACE -->
-          <scale-reference scale-type="space" :editable="false" orientation="vertical" width="100%"></scale-reference>
-          <div class="lm-separator"></div>
+          <div
+            class="klab-button klab-action"
+            :class="[{ active: showSpaceScalePopup }]"
+            @mouseover="toggleScalePopup('space', true)"
+            @mouseleave="toggleScalePopup('space', false)"
+          >
+            <q-icon name="mdi-earth">
+              <q-popover
+                v-model="showSpaceScalePopup"
+                :anchor-click="false"
+                anchor="center right"
+                self="center left"
+                :offset="[8, 0]"
+              >
+                <div id="mc-spacereference" class="mc-scalereference">
+                  <scale-reference width="160px" scale-type="space" :light="true" :editable="false"></scale-reference>
+                </div>
+              </q-popover>
+            </q-icon>
+          </div>
           <!-- TIME -->
-          <scale-reference scale-type="time" :editable="false" orientation="vertical" width="100%"></scale-reference>
+          <div
+            class="klab-button klab-action"
+            :class="[{ active: showTimeScalePopup }]"
+            @mouseover="toggleScalePopup('time', true)"
+            @mouseleave="toggleScalePopup('time', false)"
+          >
+            <q-icon name="mdi-clock">
+              <q-popover
+                v-model="showTimeScalePopup"
+                :anchor-click="false"
+                anchor="center right"
+                self="center left"
+                :offset="[8, 0]"
+              >
+                <div id="mc-timereference" class="mc-scalereference">
+                  <scale-reference width="160px" scale-type="time" :light="true" :editable="false"></scale-reference>
+                </div>
+              </q-popover>
+            </q-icon>
+          </div>
         </div>
         <div class="lm-separator"></div>
         <div id="lm-bottom-buttons">
@@ -69,6 +104,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { LEFTMENU_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import HandleTouch from 'shared/HandleTouchMixin';
+import ShowScale from 'shared/ShowScaleMixin';
 import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
@@ -88,7 +124,7 @@ export default {
     DataflowInfo,
     ScaleReference,
   },
-  mixins: [HandleTouch],
+  mixins: [HandleTouch, ShowScale],
   data() {
     return {};
   },
