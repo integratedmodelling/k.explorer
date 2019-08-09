@@ -1,5 +1,5 @@
 /* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
-import { findNodeById } from 'shared/Helpers';
+import { findNode, findNodeById } from 'shared/Helpers';
 
 export default {
   /**
@@ -12,6 +12,13 @@ export default {
   lasts: state => state.lasts,
 
   hasTree: state => state.tree.length > 0,
+
+  treeHasVisibleNodes: state => findNode(state.tree, '', (node) => {
+    if (!node.userNode) {
+      return true;
+    }
+    return null;
+  }),
 
   userTree: state => state.userTree,
 

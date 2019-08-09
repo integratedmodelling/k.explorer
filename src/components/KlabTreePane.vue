@@ -19,7 +19,7 @@
             :style="{ 'max-height': userTreeMaxHeight ? `${userTreeMaxHeight}px` : false }"
           >
           </klab-tree>
-          <details id="kt-tree-details" :open="taskOfContextIsAlive">
+          <details id="kt-tree-details" :open="taskOfContextIsAlive" v-show="treeHasVisibleNodes">
             <summary></summary>
             <klab-tree
               ref="kt-tree"
@@ -30,6 +30,7 @@
             >
             </klab-tree>
           </details>
+          <div id="kt-tree-empty" v-show="!treeHasVisibleNodes"></div>
         </div>
         <div class="q-ma-md text-center text-white ktp-no-tree" v-else>
           {{ $t('label.noObservation') }}
@@ -75,6 +76,7 @@ export default {
       'userTree',
       'treeNode',
       'hasTree',
+      'treeHasVisibleNodes',
     ]),
     ...mapGetters('stomp', [
       'taskOfContextIsAlive',
@@ -180,6 +182,8 @@ export default {
     margin 0 4%
 
   #klab-tree-pane
+    #kt-tree-empty
+      height 10px
     details
       padding 0 0 0 10px
       &:not([open])

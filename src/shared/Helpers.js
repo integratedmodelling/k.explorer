@@ -71,13 +71,8 @@ export const lastFilteredLogElement = (log, type) => {
   return null;
 };
 
-/**
- * Search a node using a property
- * @param tree the tree where to look for node
- * @param key the node key value
- */
-export const findNodeById = (tree, key = null) => {
-  if (tree && key !== null) {
+export const findNode = (tree, key = null, comparator) => {
+  if (tree && key !== null && typeof comparator === 'function') {
     const { reduce } = [];
     const find = (result, node) => {
       if (result || !node) {
@@ -86,18 +81,28 @@ export const findNodeById = (tree, key = null) => {
       if (Array.isArray(node)) {
         return reduce.call(Object(node), find, result);
       }
-      if (node.id === key) {
-        return node;
-      }
-      if (node.children && node.children.length > 0) {
+      const ret = comparator(node, key);
+      if (ret === null && node.children && node.children.length > 0) {
         return find(null, node.children);
       }
-      return null;
+      return ret;
     };
     return find(null, tree);
   }
   return null;
 };
+
+/**
+ * Search a node using a property
+ * @param tree the tree where to look for node
+ * @param key the node key value
+ */
+export const findNodeById = (tree, key = null) => findNode(tree, key, (node, needle) => {
+  if (node.id === needle) {
+    return node;
+  }
+  return null;
+});
 
 /**
  * Return a node object from an observation
