@@ -126,6 +126,8 @@ export default {
     interruptTask: 'Interrupt task {taskDescription}',
     dataViewer: 'View data',
     reportViewer: 'View report',
+    scenarios: 'Scenarios',
+    observers: 'Observers',
     noReportTask: 'Cannot view report,\nwait for task end',
     noReportObservation: 'Report not available,\nno observations',
     noDataflow: 'Dataflow not availble',

@@ -132,7 +132,24 @@
           </transition>
         </keep-alive>
       </q-card-main>
-      <q-card-actions></q-card-actions>
+      <q-card-actions class="kmc-bottom-actions">
+        <div class="klab-button klab-action">
+          <q-icon name="mdi-terrain"></q-icon>
+          <q-tooltip
+            :offset="[0, 8]"
+            self="top middle"
+            anchor="bottom middle"
+          >{{ $t('tooltips.scenarios') }}</q-tooltip>
+        </div>
+        <div class="klab-button klab-action">
+          <q-icon name="mdi-human-male-female"></q-icon>
+          <q-tooltip
+            :offset="[0, 8]"
+            self="top middle"
+            anchor="bottom middle"
+          >{{ $t('tooltips.observers') }}</q-tooltip>
+        </div>
+      </q-card-actions>
     </q-card>
     </transition>
     <scale-change-dialog></scale-change-dialog>
@@ -415,6 +432,14 @@ export default {
       line-height inherit
       background-color alpha($faded, 85%)
       padding 0 /* 0 0 10px 0*/
+
+    .q-card-actions.kmc-bottom-actions
+      padding 0 4px 4px 6px
+      .klab-button
+        font-size 18px
+        padding 4px
+        &:hover
+          color $main-control-main-color !important
 
     .klab-main-actions
       position relative
