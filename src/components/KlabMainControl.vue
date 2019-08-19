@@ -403,8 +403,6 @@ export default {
       height 10px
 
     #context-actions
-      border-bottom-left-radius 5px
-      border-bottom-right-radius 5px
       padding 0
       margin 0
       position relative

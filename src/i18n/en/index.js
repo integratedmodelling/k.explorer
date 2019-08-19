@@ -138,6 +138,8 @@ export default {
     cancelInputRequest: 'Cancel run',
     resetInputRequest: 'Use default values',
     submitInputRequest: 'Submit values',
+    displayMainTree: 'Display main tree',
+    hideMainTree: 'Hide main tree',
   },
   errors: {
     connectionError: 'Connection error',

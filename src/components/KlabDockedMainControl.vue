@@ -130,4 +130,11 @@ export default {
       .ktp-loading
         background transparent
         animation none
+    details
+      background-color #777
+      border-top 1px solid #333
+      #ktp-main-tree-arrow
+        background-color #333
+      &[open]
+        border-bottom 1px solid #333
 </style>

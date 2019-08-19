@@ -20,7 +20,15 @@
           >
           </klab-tree>
           <details id="kt-tree-details" :open="taskOfContextIsAlive" v-show="treeHasVisibleNodes">
-            <summary></summary>
+            <summary>
+              <q-icon name="mdi-dots-horizontal" id="ktp-main-tree-arrow">
+                <q-tooltip
+                  :offset="[0, 0]"
+                  self="top left"
+                  anchor="bottom right"
+                >{{ detailsOpen ? $t('tooltips.displayMainTree') : $t('tooltips.hideMainTree') }}</q-tooltip>
+              </q-icon>
+            </summary>
             <klab-tree
               ref="kt-tree"
               id="kt-tree"
@@ -30,7 +38,6 @@
             >
             </klab-tree>
           </details>
-          <div id="kt-tree-empty" v-show="!treeHasVisibleNodes"></div>
         </div>
         <div class="q-ma-md text-center text-white ktp-no-tree" v-else>
           {{ $t('label.noObservation') }}
@@ -67,6 +74,7 @@ export default {
       userTreeMaxHeight: undefined,
       userTreeHeight: undefined,
       treeHeight: undefined,
+      detailsOpen: false,
     };
   },
 
@@ -119,11 +127,11 @@ export default {
     },
     recalculateTreeHeight() {
       this.$nextTick(() => {
-        this.userTreeMaxHeight = this.outContainerHeight / 2;
+        this.userTreeMaxHeight = this.treeHasVisibleNodes ? this.outContainerHeight / 2 : this.outContainerHeight;
         const userTreeEL = document.getElementById('kt-user-tree');
         if (userTreeEL && this.outContainerHeight) {
           this.userTreeHeight = height(userTreeEL);
-          this.treeHeight = this.outContainerHeight - this.userTreeHeight - 24;
+          this.treeHeight = this.outContainerHeight - this.userTreeHeight - 20;
         }
       });
     },
@@ -131,7 +139,8 @@ export default {
       if (this.hasTree) {
         this.$nextTick(() => {
           this.outContainerResized();
-          document.getElementById('kt-tree-details').addEventListener('toggle', () => {
+          document.getElementById('kt-tree-details').addEventListener('toggle', (event) => {
+            this.detailsOpen = event.srcElement.open;
             this.recalculateTreeHeight();
           });
         });
@@ -147,6 +156,9 @@ export default {
     },
     hasTree() {
       this.initTree();
+    },
+    taskOfContextIsAlive() {
+      this.detailsOpen = this.taskOfContextIsAlive;
     },
   },
   mounted() {
@@ -171,6 +183,7 @@ export default {
 
   #kt-user-tree
     padding-top 15px
+    padding-bottom 10px
 
   // Others
   .kt-separator
@@ -182,30 +195,40 @@ export default {
     margin 0 4%
 
   #klab-tree-pane
-    #kt-tree-empty
-      height 10px
     details
-      padding 0 0 0 10px
+      padding 6px 0 10px 10px
+      background-color #7d7d7d
+      border-top 1px solid #555
       &:not([open])
+        padding 0
         margin-bottom 15px
+        #ktp-main-tree-arrow
+          top -12px
+      &[open]
+        #ktp-main-tree-arrow
+          transform rotate(90deg)
+        .kt-download
+          transform translateX(-2px)
       summary
+        height 0
         outline none
         position relative
-        color #fff
-        font-size: 1rem;
-        width 97%
         cursor pointer
         display list-item
-        &:after
-          content ''
-          width 96%
-          left 4%
-          position absolute
-          top 10px
-          border-top 1px solid #585858
-          border-bottom 1px solid #787878
+        &::-webkit-details-marker
+          color transparent
+      #ktp-main-tree-arrow
+        position: absolute
+        width 22px
+        height 22px
+        right 10px
+        top -18px
+        color #fff
+        background-color #555
+        border-radius 12px
+        transition transform .2s ease-in-out;
       &>div
-        margin 5px 0 10px -10px
+        margin 5px 0 0 -10px
   .ktp-no-tree
     height 30px
 </style>
