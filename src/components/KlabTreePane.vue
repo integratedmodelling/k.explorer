@@ -214,7 +214,7 @@ export default {
         outline none
         position relative
         cursor pointer
-        display list-item
+        display block
         &::-webkit-details-marker
           color transparent
       #ktp-main-tree-arrow

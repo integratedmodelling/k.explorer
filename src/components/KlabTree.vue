@@ -46,7 +46,8 @@
             size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
-            :style="{ right: prop.node.children.length > 0 ? '35px' : typeof prop.node.idx !== 'undefined' ? prop.node.childrenCount > 100 ? prop.node.idx > 100 ? '80px' : '70px' : '62px' : '10px' }"
+            :style="{ right: prop.node.children.length > 0 ? '35px' : (typeof prop.node.idx !== 'undefined' ?
+              calculateDownloadRightPosition([prop.node.idx + 1, 'of ', prop.node.siblingsCount]) : '10px') }"
             v-if="!prop.node.empty"
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats)"
           >
@@ -73,7 +74,7 @@
             size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
-            :style="{ right: `${35 + Math.trunc(prop.node.childrenCount.toString().length / 3) * 5}px` }"
+            :style="{ right: calculateDownloadRightPosition([prop.node.childrenCount]) }"
             v-if="prop.node.exportFormats"
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
           >
@@ -356,6 +357,10 @@ export default {
           }, 1000);
         });
       }
+    },
+    calculateDownloadRightPosition(words) {
+      const length = words.reduce((tot, word) => { console.log(`word: ${word} length ${word.toString().length}, tot: ${tot}`); return tot + word.toString().length; }, 0);
+      return `calc(${length}ch + 28px)`;
     },
   },
   watch: {
