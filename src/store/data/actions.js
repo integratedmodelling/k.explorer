@@ -143,7 +143,7 @@ export default {
     toTree = true,
     visible = false,
     restored = false,
-  }) => new Promise((resolve, reject) => {
+  }) => new Promise((resolve/* , reject */) => {
     const existingObservation = state.observations.find(obs => obs.id === observation.id);
     if (typeof existingObservation !== 'undefined') {
       // console.error(`Observation exists!!! ${existingObservation.label}`);
@@ -154,7 +154,7 @@ export default {
         },
         important: true,
       }, { root: true });
-      return reject(new Error(`Existing observation received: ${existingObservation.label}`));
+      return resolve(); // reject(new Error(`Existing observation received: ${existingObservation.label}`));
     }
     dispatch('view/assignViewer', { observation }, { root: true }).then((viewerIdx) => {
       observation.viewerIdx = viewerIdx;
