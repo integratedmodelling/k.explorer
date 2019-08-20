@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { axiosInstance } from 'plugins/axios';
 
 const url = `${process.env.WS_BASE_URL}${process.env.REST_UPLOAD}`;
 const maxSize = process.env.REST_UPLOAD_MAX_SIZE;
@@ -95,7 +96,7 @@ export default Vue.directive('upload', {
         /*
           Make the request to the POST /file-drag-drop-instant URL
         */
-        this.$axios.post(url,
+        axiosInstance.post(url,
           formData,
           {
             headers: {
