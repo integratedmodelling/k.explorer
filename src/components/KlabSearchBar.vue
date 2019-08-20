@@ -25,12 +25,19 @@
       id="ksb-search-container"
       :class="[ fuzzyMode ? 'klab-fuzzy' : '', searchIsFocused ? 'klab-search-focused' : '']"
       :style="{
-          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
+          'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : isDocked ? '1.0' : '.2'),
           // 'border-right': '2px solid '+ spinnerColor.color
         }">
       <klab-search class="klab-search" ref="klab-search" v-if="searchIsActive"></klab-search>
       <div class="ksb-context-text text-white" v-else>
-        <scrolling-text :with-edge="true" ref="st-context-text" :hoverActive="true" :initialText="contextLabel === null ? $t('label.noContext') : contextLabel"></scrolling-text>
+        <scrolling-text
+          :with-edge="true"
+          ref="st-context-text"
+          :hover-active="true"
+          :initial-text="contextLabel === null ? $t('label.noContextPlaceholder') : contextLabel"
+          :placeholder-style="!hasContext"
+        >
+        </scrolling-text>
       </div>
       <div class="ksb-status-texts" ref="ksb-status-texts">
         <scrolling-text :with-edge="true" :edgeOpacity="hasContext ? 1 : searchIsFocused ? .8 : .2" ref="st-status-text" :hoverActive="false" :initialText="statusTextsString" :accentuate="true"></scrolling-text>

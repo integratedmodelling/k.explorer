@@ -19,6 +19,7 @@ export default {
     unknownLabel: 'Unknown',
     context: 'context',
     noContext: '',
+    noContextPlaceholder: '',
     contextShape: 'context shape',
     noObservation: 'No observations available',
     searchPlaceholder: 'Search knowledge',
@@ -121,7 +122,8 @@ export default {
   },
   tooltips: {
     treePane: 'View tree',
-    logPane: 'View log',
+    showLogPane: 'View log',
+    hideLogPane: 'Hide log',
     resetContext: 'Reset context',
     interruptTask: 'Interrupt task {taskDescription}',
     dataViewer: 'View data',

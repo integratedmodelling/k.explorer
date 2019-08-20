@@ -2,7 +2,7 @@
   <div class="klab-destructive-actions">
     <div class="klab-button klab-reset-context"
          @click="resetContext"
-         v-if="!hasTasks(contextId)"
+         v-if="hasContext && !hasTasks(contextId)"
     ><q-icon name="mdi-close-circle-outline">
       <q-tooltip
         :offset="[0, 8]"
@@ -12,7 +12,7 @@
     </q-icon></div>
     <div class="klab-button klab-interrupt-task"
          @click="interruptTask"
-         v-if="hasTasks(contextId)"
+         v-if="hasContext && hasTasks(contextId)"
     ><q-icon name="mdi-stop-circle-outline">
       <q-tooltip
         :offset="[0, 8]"
@@ -39,6 +39,7 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
+      'hasContext',
       'contextId',
       'previousContext',
     ]),

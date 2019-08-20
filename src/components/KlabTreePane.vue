@@ -39,6 +39,9 @@
             </klab-tree>
           </details>
         </div>
+        <div class="q-ma-md text-center text-white ktp-no-tree" v-else-if="!hasContext">
+          {{ $t('label.noContext') }}
+        </div>
         <div class="q-ma-md text-center text-white ktp-no-tree" v-else>
           {{ $t('label.noObservation') }}
         </div>
@@ -85,6 +88,7 @@ export default {
       'treeNode',
       'hasTree',
       'treeHasVisibleNodes',
+      'hasContext',
     ]),
     ...mapGetters('stomp', [
       'taskOfContextIsAlive',

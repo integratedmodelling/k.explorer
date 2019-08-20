@@ -16,9 +16,11 @@
           ></klab-spinner>
         </div>
       </div>
-      <div class="lm-separator"></div>
-      <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
-      <div class="lm-separator"></div>
+      <template v-if="hasContext">
+        <div class="lm-separator"></div>
+        <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
+        <div class="lm-separator"></div>
+      </template>
       <div class="klab-button klab-action"
            :class="[{ active: logShowed }]"
            @click="logAction"
@@ -28,7 +30,7 @@
             :offset="[0, 8]"
             self="top left"
             anchor="bottom left"
-          >{{ $t('tooltips.logPane') }}</q-tooltip>
+          >{{ logShowed ? $t('tooltips.hideLogPane') : $t('tooltips.showLogPane') }}</q-tooltip>
         </q-icon>
       </div>
       <div class="lm-separator"></div>
@@ -87,6 +89,7 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
+      'hasContext',
       'dataflowInfo',
     ]),
     ...mapGetters('stomp', [

@@ -132,6 +132,7 @@ export default {
       'mainViewer',
       'isInModalMode',
       'spinnerErrorMessage',
+      'isMainControlDocked',
     ]),
     logVisible() {
       return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
@@ -226,7 +227,11 @@ export default {
   },
   created() {
     if (typeof this.mainViewer === 'undefined') {
-      this.setMainViewer(VIEWERS.DATA_VIEWER);
+      if (this.isMainControlDocked) {
+        this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
+      } else {
+        this.setMainViewer(VIEWERS.DATA_VIEWER);
+      }
     }
   },
   mounted() {

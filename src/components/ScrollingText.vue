@@ -1,6 +1,6 @@
 <template>
   <div class="st-container" :class="{ marquee: needMarquee < 0, 'hover-active': hoverActive }">
-    <div ref="st-text" class="st-text" :class="{ 'st-accentuate': accentuate }" :style="{ left: `${needMarquee < 0 ? needMarquee : 0}px`, 'animation-duration': `${animationDuration}s` }">
+    <div ref="st-text" class="st-text" :class="{ 'st-accentuate': accentuate, 'st-placeholder' : placeholderStyle }" :style="{ left: `${needMarquee < 0 ? needMarquee : 0}px`, 'animation-duration': `${animationDuration}s` }">
       {{ text }}
     </div>
 
@@ -39,6 +39,10 @@ export default {
     withEdge: {
       type: Boolean,
       default: true,
+    },
+    placeholderStyle: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -133,6 +137,10 @@ export default {
       position relative
       display inline-block
       overflow hidden
+
+  .st-placeholder
+    color #777
+    opacity .6
 
   .st-edges
     left -5px

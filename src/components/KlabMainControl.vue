@@ -64,7 +64,7 @@
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
-            >{{ $t('tooltips.logPane') }}</q-tooltip>
+            >{{ $t('tooltips.showLogPane') }}</q-tooltip>
           </q-icon></div>
           <div class="klab-button mc-tab"
                :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
@@ -214,7 +214,7 @@ export default {
       }
     },
     onDebouncedPositionChanged(absolutePosition) {
-      if (this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
+      if (this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
         this.askForDocking = true;
       } else {
         this.askForDocking = false;

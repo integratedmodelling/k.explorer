@@ -42,11 +42,11 @@ export default {
     });
   },
 
-  resetContext: ({ commit }) => {
+  resetContext: ({ state, commit }) => {
     commit('SET_CONTEXT_LAYER', null);
     commit('RESET_SEARCH');
     commit('SET_OBSERVATION_INFO', null);
-    const viewer = VIEWERS.DATA_VIEWER;
+    const viewer = state.mainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER;
     //  (state.mainViewer && state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT)
     //  ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER;
     commit('SET_LEFTMENU_CONTENT', viewer.leftMenuContent);
@@ -62,9 +62,9 @@ export default {
 
   setMainViewer: ({ state, commit, dispatch }, viewer) => {
     if (viewer && typeof state.mainViewer !== 'undefined') {
-      if (state.mainViewer.leftMenuContent === LEFTMENU_CONSTANTS.DOCKED_DATA_VIEWER_COMPONENT) {
+      if (viewer.leftMenuContent === LEFTMENU_CONSTANTS.DOCKED_DATA_VIEWER_COMPONENT) {
         commit('SET_MAIN_CONTROL_DOCKED', true);
-      } else if (state.mainViewer.leftMenuContent === LEFTMENU_CONSTANTS.DATA_VIEWER_COMPONENT) {
+      } else if (viewer.leftMenuContent === LEFTMENU_CONSTANTS.DATA_VIEWER_COMPONENT) {
         commit('SET_MAIN_CONTROL_DOCKED', false);
       }
     }

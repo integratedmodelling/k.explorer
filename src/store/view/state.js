@@ -78,6 +78,9 @@ export default {
    */
   leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,
 
+  /**
+   * Indicate if main control is docked
+   */
   mainControlDocked: false,
 
   /**
