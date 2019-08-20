@@ -156,6 +156,16 @@
         <q-item>
           <div class="mcm-container">
             <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.saveDockedStatus') }}</div>
+            </div>
+            <q-item-side right>
+              <q-toggle v-model="saveDockedStatusVar" color="mc-main"></q-toggle>
+            </q-item-side>
+          </div>
+        </q-item>
+        <q-item>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
               <div class="klab-item">{{ $t('label.interactiveMode') }}</div>
             </div>
             <q-item-side right>
@@ -213,9 +223,11 @@ export default {
     ...mapGetters('view', [
       'searchIsActive',
       'isDrawMode',
+      'isMainControlDocked',
     ]),
     ...mapState('view', [
       'saveLocation',
+      'saveDockedStatus',
     ]),
 
     saveLocationVar: {
@@ -224,6 +236,14 @@ export default {
       },
       set(saveLocation) {
         this.changeSaveLocation(saveLocation);
+      },
+    },
+    saveDockedStatusVar: {
+      get() {
+        return this.saveDockedStatus;
+      },
+      set(saveDockedStatus) {
+        this.changeSaveDockedStatus(saveDockedStatus);
       },
     },
     interactiveModeModel: {
@@ -294,6 +314,17 @@ export default {
           expires: 30,
           path: '/',
         });
+      }
+    },
+    changeSaveDockedStatus(saveDockedStatus) {
+      this.$store.commit('view/SET_SAVE_DOCKED_STATUS', saveDockedStatus, { root: true });
+      if (saveDockedStatus) {
+        Cookies.set(WEB_CONSTANTS.COOKIE_DOCKED_STATUS, this.isMainControlDocked, {
+          expires: 30,
+          path: '/',
+        });
+      } else {
+        Cookies.remove(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
       }
     },
     copyContextES(event, ctxShape) {

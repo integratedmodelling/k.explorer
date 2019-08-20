@@ -19,6 +19,7 @@ export default ({ store }) => {
 
   const mapDefaults = Cookies.get(WEB_CONSTANTS.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
+  const saveDockedStatus = Cookies.has(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
 
   Vue.mixin({
     methods: {
@@ -68,6 +69,10 @@ export default ({ store }) => {
     expires: 30,
     path: '/',
   });
+  store.state.view.saveDockedStatus = saveDockedStatus;
+  if (saveDockedStatus) {
+    store.state.view.mainControlDocked = Cookies.get(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
+  }
   console.info(`Session: ${session} / mode: ${mode}`);
   /*
   Use color.getBrand(xxx)

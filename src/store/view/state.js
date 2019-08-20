@@ -159,6 +159,7 @@ export default {
   customContext: false,
 
   saveLocation: true,
+  saveDockedStatus: false,
 
   modalMode: false,
 

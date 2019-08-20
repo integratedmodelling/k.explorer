@@ -16,7 +16,7 @@
       <!-- REPORT BUTTON -->
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
-           :class="[{ active: mainViewerName === VIEWERS.REPORT_VIEWER.name, disabled: (mainViewerName !== VIEWERS.REPORT_VIEWER.name && !hasObservations) }]"
+           :class="[{ active: mainViewerName === VIEWERS.REPORT_VIEWER.name, disabled: mainViewerName !== VIEWERS.REPORT_VIEWER.name && !hasObservations }]"
       ><q-icon name="mdi-file-document-box-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadReport && hasObservations"></span>
         <q-tooltip
@@ -28,10 +28,10 @@
       <!-- DATAFLOW -->
       <div
         class="klab-button klab-action"
-        @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
-        :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name }]"
+        @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
+        :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && !hasContext }]"
       ><q-icon name="mdi-sitemap">
-        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && reloadDataflow"></span>
+        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
         <q-tooltip
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
@@ -81,6 +81,7 @@ export default {
     ...mapGetters('data', [
       'hasObservations',
       'hasDataflow',
+      'hasContext',
     ]),
     ...mapGetters('view', [
       'spinnerColor',

@@ -1,5 +1,6 @@
 import { pushElementInFixedQueue } from 'shared/Helpers';
-import { CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+import { Cookies } from 'quasar';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
@@ -97,8 +98,18 @@ export default {
     state.mainDataViewerIdx = 0;
   },
 
+  SET_SAVE_DOCKED_STATUS: (state, saveDockedStatus) => {
+    state.saveDockedStatus = saveDockedStatus;
+  },
+
   SET_MAIN_CONTROL_DOCKED: (state, docked) => {
     state.mainControlDocked = docked;
+    if (state.saveDockedStatus) {
+      Cookies.set(WEB_CONSTANTS.COOKIE_DOCKED_STATUS, docked, {
+        expires: 30,
+        path: '/',
+      });
+    }
   },
 
   /**

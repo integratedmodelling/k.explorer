@@ -65,6 +65,7 @@ export default {
     drawCircle: 'Circle',
     optionShowAll: 'Show all',
     optionSaveLocation: 'Remember location',
+    saveDockedStatus: 'Remember docked status',
     noNodes: 'No observations',
     loadShowData: 'Load and show data',
     interactiveMode: 'Interactive mode',

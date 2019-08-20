@@ -448,6 +448,7 @@ export const WEB_CONSTANTS = {
   COOKIE_MAPDEFAULT: 'klab_mapdefault',
   COOKIE_SAVELOCATION: 'klab_saveLocation',
   COOKIE_HELP_ON_START: 'klab_helponstart',
+  COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not setted
 };
 
 export const SPINNER_COLORS = {
