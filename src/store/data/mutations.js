@@ -88,7 +88,7 @@ export default {
    * Add node to tree
    * @param node
    */
-  ADD_NODE: (state, { node, parentId }) => {
+  ADD_NODE: (state, { node, parentId, toUserTreeOnly = false }) => {
     const context = state.contexts.peek();
     if (context === null) {
       console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
@@ -104,7 +104,9 @@ export default {
     }
     if (context.id === parentId) {
       // is a tree root node
-      state.tree.push(node);
+      if (!toUserTreeOnly) {
+        state.tree.push(node);
+      }
       if (node.userNode) {
         const cloneNode = JSON.parse(JSON.stringify(node));
         state.userTree.push(cloneNode);
@@ -124,11 +126,39 @@ export default {
           state.orphans.push(node);
         }
       };
-      addToParent(state.tree);
+      if (!toUserTreeOnly) {
+        addToParent(state.tree);
+      }
       if (node.userNode) {
         addToParent(state.userTree, JSON.parse(JSON.stringify(node)));
       }
     }
+  },
+
+  REMOVE_NODE: (state, { id, fromMainTree = false }) => {
+    const tree = fromMainTree ? state.tree : state.userTree;
+    const deleteNode = (root, nodeId) => {
+      const idx = root.findIndex(n => n.id === nodeId);
+      if (idx === -1) {
+        if (root.children && root.children.length !== 0) {
+          deleteNode(root.children, nodeId);
+        }
+      } else {
+        root.splice(idx, 1);
+        console.debug(`Find and delete node ${nodeId} from ${fromMainTree ? 'main tree' : 'user tree'}`);
+      }
+    };
+    deleteNode(tree, id);
+  },
+
+  UPDATE_USER_NODE: (state, { node, userNode }) => {
+    const changeUserNode = (n) => {
+      n.userNode = userNode;
+      if (n.children && n.children.length > 0) {
+        n.children.forEach(cn => changeUserNode(cn));
+      }
+    };
+    changeUserNode(node);
   },
 
   SET_FOLDER_VISIBLE: (state, {

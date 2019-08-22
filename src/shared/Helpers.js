@@ -143,6 +143,7 @@ export const getNodeFromObservation = (observation) => {
       observationType: observation.observationType,
       ...(observation.isContainer && { childrenLoaded: 0 }),
       ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
+      parentId,
     },
     parentId,
   };

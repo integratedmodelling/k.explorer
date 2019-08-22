@@ -3,10 +3,10 @@
     id="dmc-container"
     class="full-height"
     :class="{'dmc-dragging': dragging, 'dmc-large-mode': searchIsFocused && largeMode > 0 }"
-    v-draggable="dragMCConfig"
   >
     <klab-breadcrumbs></klab-breadcrumbs>
     <klab-search-bar
+      v-draggable="dragMCConfig"
       ref="klab-search-bar-docked"
     ></klab-search-bar>
     <div

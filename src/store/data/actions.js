@@ -274,6 +274,21 @@ export default {
       }
     }
   },
+
+  changeTreeOfNode({ commit, state }, { id, isUserTree }) {
+    const node = findNodeById(state.tree, id);
+    if (isUserTree) {
+      if (findNodeById(state.userTree, id) === null) {
+        commit('UPDATE_USER_NODE', { node, userNode: true });
+        commit('ADD_NODE', { node, parentId: node.parentArtifactId || node.parentId, toUserTreeOnly: true });
+      } else {
+        console.warn(`Try to move to user tree an existing node: ${id}`);
+      }
+    } else {
+      commit('UPDATE_USER_NODE', { node, userNode: false });
+      commit('REMOVE_NODE', { id });
+    }
+  },
   /**
    * Show a node in a tree, this show the relative layer too or
    * apply a visibility to all folder (all observation yet not in tree) if isFolder is true

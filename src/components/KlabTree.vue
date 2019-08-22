@@ -1,5 +1,12 @@
 <template>
-  <div class="kt-container relative-position klab-menu-component">
+  <div
+    class="kt-container relative-position klab-menu-component"
+    :class="{ 'kt-drag-enter': dragEnter > 0 && !dragStart }"
+    @dragenter="onDragEnter"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @drop="onDrop"
+  >
     <div class="kt-tree-container simplebar-vertical-only" @contextmenu="rightClickHandler">
       <klab-q-tree
         ref="klab-tree"
@@ -22,6 +29,9 @@
       >
         <div slot="header-default" slot-scope="prop">
           <span
+            draggable="true"
+            @dragstart="onDragStart($event, prop.node.id)"
+            @dragend="onDragEnd"
             v-ripple="prop.node.main"
             :class="[
                prop.node.main ? 'node-emphasized' : '',
@@ -137,6 +147,8 @@ export default {
       askingForChildren: false,
       scrollElement: null,
       showPopover: null,
+      dragStart: false,
+      dragEnter: 0,
     };
   },
   computed: {
@@ -170,6 +182,7 @@ export default {
       'askForChildren',
       'addChildrenToTree',
       'setContext',
+      'changeTreeOfNode',
     ]),
     ...mapActions('view', [
       'setSpinner',
@@ -359,8 +372,45 @@ export default {
       }
     },
     calculateDownloadRightPosition(words) {
-      const length = words.reduce((tot, word) => { console.log(`word: ${word} length ${word.toString().length}, tot: ${tot}`); return tot + word.toString().length; }, 0);
+      const length = words.reduce((tot, word) => tot + word.toString().length, 0);
       return `calc(${length}ch + 28px)`;
+    },
+    onDragStart(event, id) {
+      event.dataTransfer.setData('id', id);
+      this.dragStart = true;
+    },
+    onDragEnd() {
+      this.dragStart = false;
+    },
+    onDragEnter(event) {
+      event.preventDefault();
+      if (!this.dragStart) {
+        this.dragEnter += 1;
+      }
+    },
+    onDragLeave(event) {
+      event.preventDefault();
+      if (!this.dragStart) {
+        this.dragEnter -= 1;
+      }
+    },
+    onDragOver(event) {
+      event.preventDefault();
+    },
+    onDrop(event) {
+      event.preventDefault();
+      if (this.dragEnter > 0) {
+        const id = event.dataTransfer.getData('id');
+        if (id && id !== '') {
+          this.changeTreeOfNode({ id, isUserTree: this.isUser });
+        } else {
+          console.warn(`Strange dropped node ${event.dataTransfer.getData('id')}`);
+        }
+      } else {
+        console.log('Self dropped');
+      }
+      this.dragStart = false;
+      this.dragEnter = 0;
     },
   },
   watch: {
@@ -512,6 +562,8 @@ export default {
     [data-simplebar]
       padding-bottom 10px
     */
+    .kt-drag-enter
+      background-color #555
     .kt-tree-container
       // special class to solve the noNode
       .klab-no-nodes
