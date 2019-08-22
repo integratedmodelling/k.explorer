@@ -12,8 +12,9 @@ is not available.
 ### Improvements
 - Reorganization of tree of observations: now main observation are grouped upper and the rest are
 in a collapsible group.
-- The upper tree is "user-managed", in the future the user can use it to reorganize observations
-- The search bar width change during the user write
+- The upper tree is "user-managed", is possible to move observation from the collapsible group to the user group
+and viceversa
+- The search bar width change while the user write
 ### Solve
 - various little bugs
 
