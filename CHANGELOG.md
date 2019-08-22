@@ -14,6 +14,8 @@ is not available.
 in a collapsible group.
 - The upper tree is "user-managed", in the future the user can use it to reorganize observations
 - The search bar width change during the user write
+- The docked status remain if the context is reset
+- Possibility to store the docked status for future sessions (cookie based)
 ### Solve
 - various little bugs
 
