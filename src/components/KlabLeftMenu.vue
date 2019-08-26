@@ -203,10 +203,5 @@ export default {
       position fixed
       bottom 0
       left 0
-      .klab-button
-        border none
-        &.active
-          cursor pointer
-          color $main-control-main-color !important
 
 </style>

@@ -481,7 +481,6 @@ export default {
       position absolute
       right 42px
       .klab-button
-        cursor default
         padding-right 2px
 
     #context-actions
