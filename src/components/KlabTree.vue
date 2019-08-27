@@ -29,7 +29,7 @@
       >
         <div slot="header-default" slot-scope="prop">
           <span
-            draggable="true"
+            :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
             @dragend="onDragEnd"
             v-ripple="prop.node.main"
@@ -73,6 +73,9 @@
         </div>
         <div slot="header-folder" slot-scope="prop">
           <span
+            :draggable="prop.node.parentId === contextId"
+            @dragstart="onDragStart($event, prop.node.id)"
+            @dragend="onDragEnd"
             class='node-element'
             :id="`node-${prop.node.id}`"
             v-ripple="prop.node.main"

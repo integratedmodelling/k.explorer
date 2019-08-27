@@ -104,6 +104,12 @@ export default {
     &.dmc-large-mode.full-height
       height "calc(100% -  %s)" % ($docked-search-height) !important
     #dmc-tree
+      // not selectable
+      user-select: none;
+      -khtml-user-select: none;
+      -o-user-select: none;
+      -moz-user-select: -moz-none;
+      -webkit-user-select: none;
       background-color: rgba(119,119,119,0.65);
       overflow hidden
       #klab-tree-pane

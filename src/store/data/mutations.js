@@ -140,9 +140,11 @@ export default {
     const deleteNode = (root, nodeId) => {
       const idx = root.findIndex(n => n.id === nodeId);
       if (idx === -1) {
-        if (root.children && root.children.length !== 0) {
-          deleteNode(root.children, nodeId);
-        }
+        root.forEach((node) => {
+          if (node.children && node.children.length !== 0) {
+            deleteNode(node.children, nodeId);
+          }
+        });
       } else {
         root.splice(idx, 1);
         console.debug(`Find and delete node ${nodeId} from ${fromMainTree ? 'main tree' : 'user tree'}`);
