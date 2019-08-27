@@ -28,6 +28,7 @@
       leave-active-class="animated fadeOutLeft"
     >
     <q-card
+      draggable="false"
       id="mc-q-card"
       class="no-box-shadow absolute lot-of-flow"
       :class="[hasContext ? 'with-context' : 'bg-transparent without-context', `mc-large-mode-${largeMode}`]"
@@ -84,6 +85,7 @@
         <stop-actions-buttons></stop-actions-buttons>
       </q-card-actions>
       <q-card-main
+        draggable="false"
         v-show="hasContext && !isHidden"
         class="no-margin relative-position"
       >
@@ -343,13 +345,17 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-
   #mc-container
     #mc-q-card-title
       border-radius 30px
       cursor move
       transition background-color 0.8s
-    .q-card
+    .q-card // no selection permitted
+      user-select: none;
+      -khtml-user-select: none;
+      -o-user-select: none;
+      -moz-user-select: -moz-none;
+      -webkit-user-select: none;
       overflow auto
       width $main-control-width
       transition width .5s
@@ -475,7 +481,6 @@ export default {
       position absolute
       right 42px
       .klab-button
-        cursor default
         padding-right 2px
 
     #context-actions

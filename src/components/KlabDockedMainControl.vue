@@ -3,10 +3,10 @@
     id="dmc-container"
     class="full-height"
     :class="{'dmc-dragging': dragging, 'dmc-large-mode': searchIsFocused && largeMode > 0 }"
-    v-draggable="dragMCConfig"
   >
     <klab-breadcrumbs></klab-breadcrumbs>
     <klab-search-bar
+      v-draggable="dragMCConfig"
       ref="klab-search-bar-docked"
     ></klab-search-bar>
     <div
@@ -104,6 +104,12 @@ export default {
     &.dmc-large-mode.full-height
       height "calc(100% -  %s)" % ($docked-search-height) !important
     #dmc-tree
+      // not selectable
+      user-select: none;
+      -khtml-user-select: none;
+      -o-user-select: none;
+      -moz-user-select: -moz-none;
+      -webkit-user-select: none;
       background-color: rgba(119,119,119,0.65);
       overflow hidden
       #klab-tree-pane
