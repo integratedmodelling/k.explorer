@@ -106,6 +106,11 @@ export default {
     #dmc-tree
       background-color: rgba(119,119,119,0.65);
       overflow hidden
+      user-select: none;
+      -khtml-user-select: none;
+      -o-user-select: none;
+      -moz-user-select: -moz-none;
+      -webkit-user-select: none;
       #klab-tree-pane
         height 100%
 
