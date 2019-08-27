@@ -1,52 +1,6 @@
 import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
-const staticAddToNode = (state, contextId, { node, parentId, toUserTreeOnly, noChildren = false }) => {
-  if (contextId === parentId) {
-    // is a tree root node
-    if (!toUserTreeOnly) {
-      state.tree.push(node);
-    }
-    if (node.userNode) {
-      const cloneNode = JSON.parse(JSON.stringify(node));
-      if (noChildren) {
-        cloneNode.children = [];
-      }
-      state.userTree.push(cloneNode);
-    }
-  } else {
-    const addToParent = (tree, localNode, localParentId = parentId) => {
-      const parent = findNodeById(tree, localParentId);
-      if (parent !== null) {
-        parent.children.push({
-          ...localNode,
-          idx: parent.children.length,
-          siblingsCount: parent.childrenCount,
-          noChildren: true,
-        });
-        parent.disabled = false; // if was empty and now has children, it cannot be disabled
-      } else if (toUserTreeOnly) {
-        const parentNode = findNodeById(state.tree, localParentId);
-        parentNode.userNode = true;
-        staticAddToNode(state, contextId, {
-          node: parentNode,
-          parentId: parentNode.parentId,
-          toUserTreeOnly: true,
-        });
-      } else {
-        console.warn(`Orphan founded with id ${node.id}`);
-        state.orphans.push(node);
-      }
-    };
-    if (!toUserTreeOnly) {
-      addToParent(state.tree, node);
-    }
-    if (node.userNode) {
-      addToParent(state.userTree, JSON.parse(JSON.stringify(node)));
-    }
-  }
-};
-
 export default {
 
   /**
@@ -148,7 +102,37 @@ export default {
       console.error('Try to add context to tree, check it!');
       return;
     }
-    staticAddToNode(state, context.id, { node, parentId, toUserTreeOnly });
+    if (context.id === parentId) {
+      // is a tree root node
+      if (!toUserTreeOnly) {
+        state.tree.push(node);
+      }
+      if (node.userNode) {
+        const cloneNode = JSON.parse(JSON.stringify(node));
+        state.userTree.push(cloneNode);
+      }
+    } else {
+      const addToParent = (tree, localNode = node) => {
+        const parent = findNodeById(tree, parentId);
+        if (parent !== null) {
+          parent.children.push({
+            ...localNode,
+            idx: parent.children.length,
+            siblingsCount: parent.childrenCount,
+          });
+          parent.disabled = false; // if was empty and now has children, it cannot be disabled
+        } else {
+          console.warn(`Orphan founded with id ${node.id}`);
+          state.orphans.push(node);
+        }
+      };
+      if (!toUserTreeOnly) {
+        addToParent(state.tree);
+      }
+      if (node.userNode) {
+        addToParent(state.userTree, JSON.parse(JSON.stringify(node)));
+      }
+    }
   },
 
   REMOVE_NODE: (state, { id, fromMainTree = false }) => {
@@ -156,11 +140,9 @@ export default {
     const deleteNode = (root, nodeId) => {
       const idx = root.findIndex(n => n.id === nodeId);
       if (idx === -1) {
-        root.forEach((node) => {
-          if (node.children && node.children.length !== 0) {
-            deleteNode(node.children, nodeId);
-          }
-        });
+        if (root.children && root.children.length !== 0) {
+          deleteNode(root.children, nodeId);
+        }
       } else {
         root.splice(idx, 1);
         console.debug(`Find and delete node ${nodeId} from ${fromMainTree ? 'main tree' : 'user tree'}`);
