@@ -55,8 +55,8 @@ module.exports = function (ctx) {
         REST_UPLOAD_MAX_SIZE: JSON.stringify('1024MB'),
         SEARCH_TIMEOUT_MS: JSON.stringify('4000'),
       },
-      // distDir: 'dist/ui', // the compiled file are putted in a local folder and then copied...
-      distDir: '../klab/klab.engine/src/main/resources/static/ui', // or you can use your k.LAB local engine directory
+      distDir: 'dist/ui', // the compiled file are putted in a local folder and then copied...
+      // distDir: '../klab/klab.engine/src/main/resources/static/ui', // or you can use your k.LAB local engine directory
       scopeHoisting: true,
       // vue-route configuration is maded in route/index.js
       // publicPath: '/',
@@ -71,7 +71,7 @@ module.exports = function (ctx) {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /(node_modules|quasar|logos)/, // TODO logo only for see the logo in report locally, so remove as soon as possible
+          exclude: /(node_modules|quasar)/, // TODO logo only for see the logo in report locally, so remove as soon as possible
           /* used when CR+LF are changed from ide and everything breaks
           options: {
             fix: true,
