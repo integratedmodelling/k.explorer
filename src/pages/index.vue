@@ -227,11 +227,7 @@ export default {
   },
   created() {
     if (typeof this.mainViewer === 'undefined') {
-      if (this.isMainControlDocked) {
-        this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
-      } else {
-        this.setMainViewer(VIEWERS.DATA_VIEWER);
-      }
+      this.setMainViewer(VIEWERS.DATA_VIEWER);
     }
   },
   mounted() {

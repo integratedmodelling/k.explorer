@@ -63,13 +63,7 @@ export const LEFTMENU_CONSTANTS = {
  * REPORT_VIEWER: container for reports
  * DATAFLOW_VIEWER: container for dataflow
  * PROVENANCE_VIEWER: container for provenance (not implemented)
- * @type {{VIEWER: {
- *   name: string,
- *   leftMenuState: string,
- *   leftMenuContent: undefined,
- *   mainControl: boolean
- * }
- * }}
+ * @type {{DATA_VIEWER: {name: string, leftMenuState: string, leftMenuContent: {DATA_VIEWER_COMPONENT: string, REPORT_VIEWER_COMPONENT: string, DATAFLOW_VIEWER_COMPONENT: string, PROVENANCE_VIEWER_COMPONENT: string, LOG_COMPONENT: string}, mainControl: boolean}, DOCKED_DATA_VIEWER: {name: string, leftMenuState: string, leftMenuContent: string, mainControl: boolean}, REPORT_VIEWER: {name: string, leftMenuState: string, leftMenuContent: string, mainControl: boolean}, DATAFLOW_VIEWER: {name: string, leftMenuState: string, leftMenuContent: string, mainControl: boolean}, PROVENANCE_VIEWER: {name: string, leftMenuState: string, leftMenuContent: string, mainControl: boolean}}}
  */
 export const VIEWERS = {
   DATA_VIEWER: {

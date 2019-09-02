@@ -216,11 +216,7 @@ export default {
       }
     },
     onDebouncedPositionChanged(absolutePosition) {
-      if (this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3)) {
-        this.askForDocking = true;
-      } else {
-        this.askForDocking = false;
-      }
+      this.askForDocking = !!(this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3));
     },
     hide() {
       this.dragMCConfig.resetInitialPos = false;

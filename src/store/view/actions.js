@@ -32,21 +32,24 @@ export default {
     commit('REMOVE_FROM_STATUS_TEXTS', id);
   },
 
-  setContextLayer: ({ commit, dispatch }, contextData) => {
+  setContextLayer: ({ state, commit, dispatch }, contextData) => {
     // If context layer change, mutation reset everything
     getContextGeometry(contextData).then((layer) => {
       commit('SET_CONTEXT_LAYER', layer);
       commit('RESET_SEARCH'); // stop any search, if new context, previous search has no sense
       // context need a viewer (if no observation, I need to see the context)
       dispatch('assignViewer', { observation: contextData, main: true });
+      if (state.mainViewer.name === VIEWERS.DATA_VIEWER.name && state.mainControlDocked) {
+        dispatch('setMainViewer', VIEWERS.DOCKED_DATA_VIEWER);
+      }
     });
   },
 
-  resetContext: ({ state, commit }) => {
+  resetContext: ({ commit }) => {
     commit('SET_CONTEXT_LAYER', null);
     commit('RESET_SEARCH');
     commit('SET_OBSERVATION_INFO', null);
-    const viewer = state.mainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER;
+    const viewer = VIEWERS.DATA_VIEWER;
     //  (state.mainViewer && state.mainViewer.leftMenuContent === LEFTMENU_COMPONENTS.DOCKED_DATA_VIEWER_COMPONENT)
     //  ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER;
     commit('SET_LEFTMENU_CONTENT', viewer.leftMenuContent);
