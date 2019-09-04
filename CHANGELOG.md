@@ -7,18 +7,18 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 
-## 0.8.0 - ?
-### Added
+## 0.8.0 - 2019-09-04
 ### Improvements
 - Reorganization of tree of observations: now main observation are grouped upper and the rest are
 in a collapsible group.
 - The upper tree is "user-managed", is possible to move observation from the collapsible group to the user group
 and viceversa
 - The search bar width change while the user write
+- redesign of scale indicator
 - The docked status remain if the context is reset
 - Possibility to store the docked status for future sessions (cookie based)
 ### Solve
-- various little bugs
+- various bugs solved
 
 ## 0.7.5 - 2019-07-01
 ### Added
