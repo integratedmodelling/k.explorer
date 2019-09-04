@@ -456,7 +456,7 @@ export default {
         this.$eventBus.$emit(CUSTOM_EVENTS.VIEWER_CLICK, event); // inform that we make a click
       }
     },
-    needFitMapListener({ mainIdx = null, geometry = null }) {
+    needFitMapListener({ mainIdx = null, geometry = null, withPadding = true }) {
       if (geometry === null
         && this.mainViewer.name === VIEWERS.DATA_VIEWER.name
         && this.contextGeometry
@@ -473,7 +473,7 @@ export default {
           if (geometry instanceof Array) {
             this.view.setCenter(geometry);
           } else {
-            this.view.fit(geometry, { padding: [10, 10, 10, 10], constrainResolution: false });
+            this.view.fit(geometry, { padding: withPadding ? [10, 10, 10, 10] : [0, 0, 0, 0], constrainResolution: false });
           }
         }, 200);
       } else if (this.storedZoom !== null) {
@@ -493,6 +493,9 @@ export default {
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
       this.drawContext(newContextGeometry, oldContextGeometry);
+      if (newContextGeometry === null) {
+        this.needFitMapListener({ geometry: oldContextGeometry, withPadding: false });
+      }
     },
     observations: {
       handler() {

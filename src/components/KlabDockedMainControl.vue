@@ -6,8 +6,8 @@
   >
     <klab-breadcrumbs></klab-breadcrumbs>
     <klab-search-bar
-      v-draggable="dragMCConfig"
       ref="klab-search-bar-docked"
+      v-draggable="dragMCConfig"
     ></klab-search-bar>
     <div
       id="dmc-tree"
@@ -70,12 +70,14 @@ export default {
       'setMainViewer',
     ]),
     onDebouncedPositionChanged(absolutePosition) {
-      if (absolutePosition && absolutePosition.left > this.undockLimit) {
-        this.askForUndocking = true;
-      } else {
-        this.askForUndocking = false;
+      if (this.dragging) {
+        if (absolutePosition && absolutePosition.left > this.undockLimit) {
+          this.askForUndocking = true;
+        } else {
+          this.askForUndocking = false;
+        }
+        this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
       }
-      this.$eventBus.$emit(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndocking);
     },
     checkUndock() {
       this.$nextTick(() => {
