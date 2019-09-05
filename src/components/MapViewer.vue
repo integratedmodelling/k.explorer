@@ -108,6 +108,7 @@ export default {
       zoom: this.$mapDefaults.zoom,
       map: null,
       view: null,
+      movedWithContext: false,
       layers: new Collection(),
       zIndexCounter: 0,
       baseLayers: null,
@@ -206,6 +207,10 @@ export default {
     },
     onMoveEnd() {
       if (this.hasContext || this.isDrawMode) {
+        this.movedWithContext = true;
+        return;
+      }
+      if (this.isDrawMode) {
         return;
       }
       // const { map } = event;
@@ -473,7 +478,11 @@ export default {
           if (geometry instanceof Array) {
             this.view.setCenter(geometry);
           } else {
-            this.view.fit(geometry, { padding: withPadding ? [10, 10, 10, 10] : [0, 0, 0, 0], constrainResolution: false });
+            this.view.fit(geometry, {
+              padding: withPadding ? [10, 10, 10, 10] : [0, 0, 0, 0],
+              constrainResolution: false,
+              callback: () => { this.movedWithContext = false; },
+            });
           }
         }, 200);
       } else if (this.storedZoom !== null) {
@@ -493,9 +502,10 @@ export default {
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
       this.drawContext(newContextGeometry, oldContextGeometry);
-      if (newContextGeometry === null) {
+      if (newContextGeometry === null && !this.movedWithContext) {
         this.needFitMapListener({ geometry: oldContextGeometry, withPadding: false });
       }
+      this.movedWithContext = false;
     },
     observations: {
       handler() {
