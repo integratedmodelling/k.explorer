@@ -46,8 +46,8 @@
       id="modal-show-help"
       :content-classes="['gl-msg-content']"
     >
-      <div class="bg-opaque-white">
-        <div class="q-pa-lg">
+      <div class="bg-opaque-white full-height">
+        <div class="q-pa-lg" id="gl-container">
           <h5>{{ $t('messages.needHelpTitle') }}</h5>
           <p v-html="$t(`messages.needHelp${helpIndex}Text`)"></p>
           <div class="gl-btn-container">
@@ -78,6 +78,7 @@
             ></q-checkbox>
           </div>
         </div>
+        <div id="gl-page-counter">1/6</div>
       </div>
     </q-modal>
     <input-request-modal></input-request-modal>
@@ -312,19 +313,35 @@ export default {
     z-index 10000
 
   #modal-show-help
+    #gl-container
+      height 100%
+      width 100%
+      position relative
     .gl-msg-content
-      width 500px
+      width 40vw
+      height 60vh
       padding 0
       color rgba(0,0,0,0.7)
+      position relative
       p
         padding 20px 0
     .rmd-checkbox
       position absolute
-      right 25px
-      bottom 15px
+      right 0px
+      bottom -25px
       font-size 10px
 
-    .gl-msg-content .gl-btn-container
-      margin-bottom 15px
-
+    .gl-msg-content
+      .gl-btn-container
+        position: absolute
+        bottom 30px
+        right 0
+        margin-bottom 15px
+        margin-right 15px
+    #gl-page-counter
+      position relative
+      width 100px
+      margin 0 auto
+      text-align center
+      bottom 75px
 </style>
