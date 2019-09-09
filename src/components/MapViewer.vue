@@ -206,7 +206,7 @@ export default {
       }
     },
     onMoveEnd() {
-      if (this.hasContext || this.isDrawMode) {
+      if (this.hasContext) {
         this.movedWithContext = true;
         return;
       }
