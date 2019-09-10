@@ -316,8 +316,11 @@ export default {
     commit('SET_MODAL_MODE', modalMode);
   },
 
-  setFuzzyMode: ({ commit }, fuzzyMode) => {
-    commit('SET_FUZZY_MODE', fuzzyMode);
+  setFuzzyMode: ({ rootGetters, commit }, fuzzyMode) => {
+    // TODO when fuzzy could search with context, remove it
+    if (!rootGetters['data/hasContext']) {
+      commit('SET_FUZZY_MODE', fuzzyMode);
+    }
   },
 
   setLargeMode: ({ commit }, largeMode) => {
