@@ -6,6 +6,11 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.8.1 - ?
+### Improvements
+- Fuzzy search now is linked to overpass query: if the search start with capital letter, the engine search for 
+an answer from OSM and return a context
+- Now the dock action works better 
 
 ## 0.8.0 - 2019-09-04
 ### Improvements
@@ -14,7 +19,7 @@ in a collapsible group.
 - The upper tree is "user-managed", is possible to move observation from the collapsible group to the user group
 and viceversa
 - The search bar width change while the user write
-- redesign of scale indicator
+- Redesign of scale indicator
 - The docked status remain if the context is reset
 - Possibility to store the docked status for future sessions (cookie based)
 ### Solve
