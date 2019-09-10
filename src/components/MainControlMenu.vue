@@ -143,6 +143,16 @@
           </div>
         </q-item>
         -->
+        <q-item>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.interactiveMode') }}</div>
+            </div>
+            <q-item-side right>
+              <q-toggle v-model="interactiveModeModel" color="mc-main"></q-toggle>
+            </q-item-side>
+          </div>
+        </q-item>
         <q-item v-if="!hasContext">
           <div class="mcm-container">
             <div class="klab-menuitem">
@@ -153,23 +163,13 @@
             </q-item-side>
           </div>
         </q-item>
-        <q-item>
+        <q-item v-if="!hasContext">
           <div class="mcm-container">
             <div class="klab-menuitem">
               <div class="klab-item">{{ $t('label.saveDockedStatus') }}</div>
             </div>
             <q-item-side right>
               <q-toggle v-model="saveDockedStatusVar" color="mc-main"></q-toggle>
-            </q-item-side>
-          </div>
-        </q-item>
-        <q-item>
-          <div class="mcm-container">
-            <div class="klab-menuitem">
-              <div class="klab-item">{{ $t('label.interactiveMode') }}</div>
-            </div>
-            <q-item-side right>
-              <q-toggle v-model="interactiveModeModel" color="mc-main"></q-toggle>
             </q-item-side>
           </div>
         </q-item>
