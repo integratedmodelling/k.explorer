@@ -1,8 +1,8 @@
 import Tile from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
-import Stamen from 'ol/source/Stamen';
+// import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
-import BingMaps from 'ol/source/BingMaps';
+// import BingMaps from 'ol/source/BingMaps';
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
@@ -134,6 +134,8 @@ export const Layers = {
     visible: false,
   }),
 
+  /*
+  // Not professional
   STAMEN_WATER_COLOR_LAYER: new Tile({
     name: 'stamen_water_color_layer',
     title: 'Stamen Watercolor',
@@ -163,7 +165,7 @@ export const Layers = {
     type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
-      url: 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}&s=Ga',
+      url: 'http://mt{0-3}.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}',
       attribution: '© 2018 Google, Inc',
     }),
     visible: false,
@@ -187,7 +189,7 @@ export const Layers = {
     type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
-      url: 'https://mt1.google.com/vt/lyrs=t&x={x}&y={y}&z={z}',
+      url: 'https://mt{0-3}.google.com/vt/lyrs=t&x={x}&y={y}&z={z}',
       attribution: '© 2018 Google, Inc',
     }),
     visible: false,
@@ -195,7 +197,7 @@ export const Layers = {
 
   MAPBOX_CALI_TERRAIN: new Tile({
     name: 'mapbox_cali_terrain',
-    title: 'k.LAB Mapbox Cali terrain',
+    title: 'k.LAB Mapbox Terrain',
     type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
@@ -257,7 +259,7 @@ export const Layers = {
     }),
     visible: false
   }),
-  */
+
 
   BING_IMAGINERY: new Tile({
     name: 'bing_imaginery',
@@ -272,6 +274,7 @@ export const Layers = {
     }),
     visible: false,
   }),
+  */
 };
 
 export const DEFAULT_OPTIONS = {
@@ -285,7 +288,7 @@ export const DEFAULT_OPTIONS = {
 export const BASE_LAYERS = {
   layers: [
     Layers.EMPTY_LAYER,
-    Layers.STAMEN_WATER_COLOR_LAYER,
+    // Layers.STAMEN_WATER_COLOR_LAYER,
     Layers.OSM_LAYER,
     // Layers.OPEN_TOPO_MAT,
     // Layers.BING_IMAGINERY,
