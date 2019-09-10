@@ -171,8 +171,8 @@ export default {
       dragMCConfig: {
         handle: undefined,
         resetInitialPos: false,
-        onPositionChange: debounce((positionDiff, absolutePosition) => {
-          this.onDebouncedPositionChanged(absolutePosition);
+        onPositionChange: debounce((positionDiff, absolutePosition, event) => {
+          this.onDebouncedPositionChanged(event);
         }, 100),
         onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
@@ -215,8 +215,9 @@ export default {
         event.evt.stopPropagation();
       }
     },
-    onDebouncedPositionChanged(absolutePosition) {
-      this.askForDocking = !!(this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3));
+    onDebouncedPositionChanged(event) {
+      // this.askForDocking = !!(this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3));
+      this.askForDocking = !!(this.hasContext && this.dragging && event && event.x <= 30);
     },
     hide() {
       this.dragMCConfig.resetInitialPos = false;
