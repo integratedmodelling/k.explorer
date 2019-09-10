@@ -57,7 +57,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS, LEFTMENU_CONSTANTS } from 'shared/Constants';
+import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -103,6 +103,7 @@ export default {
       'searchStart',
       'searchFocus',
       'searchStop',
+      'setSpinner',
     ]),
     getLargeModeWidth() {
       return `${(window.innerWidth || document.body.clientWidth) - LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE}px`;
@@ -144,6 +145,12 @@ export default {
     contextLabel(newValue) {
       if (this.$refs['st-context-text']) {
         this.$refs['st-context-text'].changeText(newValue);
+      }
+    },
+    hasContext(newValue) {
+      if (newValue) {
+        // stop the spinner if we have context from fuzzy search
+        this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: 'KlabSearch' });
       }
     },
   },

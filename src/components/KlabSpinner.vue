@@ -21,6 +21,7 @@ import { colors } from 'quasar';
 import { mapGetters } from 'vuex';
 
 export default {
+  name: 'KlabSpinner',
   props: {
     size: {
       type: Number,

@@ -97,6 +97,13 @@ export function textToRgb(color) {
   return hexToRgb(color);
 }
 
+export function isUpperCase(character) {
+  if (!Number.isNaN(character * 1)) {
+    return false; // is number
+  }
+  return character === character.toUpperCase();
+}
+
 /**
  * Receive an hex value (#), rgb (rgb()) or brand ('primary')
  * Return the correspondent rgb and hex value

@@ -54,7 +54,7 @@
           @selected="selected"
           @show="onAutocompleteShow"
           @hide="onAutocompleteHide"
-          :debounce="200"
+          :debounce="400"
           :min-characters="minimumCharForAutocomplete"
           :max-results="50"
           ref="ks-autocomplete"
@@ -74,6 +74,7 @@ import Vue from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES, CONSTANTS } from 'shared/Constants';
+import { isUpperCase } from 'shared/Utils';
 import KlabAutocomplete from 'components/KlabAutocompleteComponent';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -260,9 +261,12 @@ export default {
           }
           break;
         case 9: // TAB force to select with TAB
+          /*
           if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
             this.setFuzzyMode(!this.fuzzyMode);
-          } else if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
+          }
+          */
+          if (this.suggestionShowed && this.autocompleteEl.keyboardIndex !== -1) {
             this.autocompleteEl.setValue(this.autocompleteEl.results[this.autocompleteEl.keyboardIndex]);
             this.searchHistoryIndex = -1;
           } else if (this.freeText) {
@@ -334,6 +338,9 @@ export default {
             event.preventDefault();
           } else {
             event.preventDefault();
+            if (this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0 && isUpperCase(event.key)) {
+              this.setFuzzyMode(true);
+            }
             this.searchHistoryIndex = -1;
             this.actualSearchString += event.key;
             if (SINGLE_CHARS.indexOf(event.key) !== -1) {
@@ -357,7 +364,7 @@ export default {
         });
       } else {
         this.search(this.actualToken, (results) => {
-          if (results && results.length > 0 && !this.fuzzyMode) {
+          if (results && results.length > 0) {
             this.selected(results[0], false);
           } else {
             this.$q.notify({
@@ -381,6 +388,16 @@ export default {
           matchId: item.id,
           added: true,
         }, this.$store.state.data.session).body);
+        if (this.fuzzyMode) {
+          this.setSpinner({
+            ...SPINNER_CONSTANTS.SPINNER_LOADING,
+            owner: this.$options.name,
+          });
+          this.$nextTick(() => {
+            this.searchEnd({});
+          });
+          return;
+        }
         this.freeText = item.nextTokenClass !== MATCH_TYPES.NEXT_TOKENS.TOKEN;
         this.$nextTick(() => {
           this.checkLargeMode(true);
@@ -477,7 +494,7 @@ export default {
     },
     // ask for token to keylab to obtain possibility
     searchInKLab() {
-      if (this.suggestionShowed) {
+      if (this.suggestionShowed || this.fuzzyMode) {
         return;
       }
       if (this.parenthesisDepth > 0) {
@@ -608,11 +625,13 @@ export default {
         this.searchHistoryEvent(1);
       } else if (char === 'ArrowDown') {
         this.searchHistoryEvent(-1);
-      } else if (char === 'Tab' && this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
-        this.setFuzzyMode(!this.fuzzyMode);
+        // } else if (char === 'Tab' && this.acceptedTokens.length === 0 && this.searchInput.$refs.input.selectionStart === 0) {
       } else if (char === ' ') {
         this.askForSuggestion();
       } else {
+        if (isUpperCase(char)) {
+          this.setFuzzyMode(true);
+        }
         this.actualSearchString = append ? this.actualSearchString + char : char;
         if (SINGLE_CHARS.indexOf(char) !== -1) {
           this.askForSuggestion(char);
@@ -761,25 +780,10 @@ export default {
         this.resetSearchLostChar();
       }
     },
-    /*
-    fuzzyMode() {
-      if (this.fuzzyMode) {
-        this.$q.notify({
-          message: this.$t('messages.fuzzyModeOn'),
-          type: 'info',
-          icon: 'mdi-information',
-          timeout: 1000,
-        });
-      } else {
-        this.$q.notify({
-          message: this.$t('messages.fuzzyModeOff'),
-          type: 'info',
-          icon: 'mdi-information',
-          timeout: 1000,
-        });
-      }
-    },
-    */
+
+  },
+  beforeMount() {
+    this.setFuzzyMode(false);
   },
   mounted() {
     this.searchDiv = this.$refs['ks-container'];
@@ -797,6 +801,12 @@ export default {
       // for docked mode, to check dimension only with the small size
       this.searchDivInitialSize = this.searchDiv.clientWidth;
     });
+  },
+  beforeDestroy() {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = null;
+    }
   },
 };
 </script>
