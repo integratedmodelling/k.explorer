@@ -255,6 +255,9 @@ export default {
           } else if (this.actualSearchString !== '') { // existing actual token so backspace work normally
             event.preventDefault();
             this.actualSearchString = this.actualSearchString.slice(0, -1);
+            if (this.actualSearchString === '') {
+              this.setFuzzyMode(false);
+            }
           } else if (this.actualSearchString === '' && this.actualToken !== '') { // existing actual token, but is a complex suggestion, so everything must be delete
             this.actualToken = '';
             event.preventDefault();
@@ -658,11 +661,13 @@ export default {
       } else if (contextId !== this.searchContextId) {
         console.warn(`Something strange was happened: differents search context ids:\n
         actual: ${this.searchContextId} / received: ${contextId}`);
+        /*
         this.setSpinner({
           ...SPINNER_CONSTANTS.SPINNER_ERROR,
           owner: this.$options.name,
           errorMessage: 'Different search context id',
         });
+        */
         return;
       }
       // is the same request
