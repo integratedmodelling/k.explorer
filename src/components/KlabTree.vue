@@ -120,7 +120,7 @@ import { getAxiosContent, findNodeById, getContextGeometry } from 'shared/Helper
 import { CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
-import KlabQTree from 'components/KlabTreeComponent';
+import KlabQTree from 'components/custom/KlabQTree';
 
 let scrollToTimeout = null;
 

@@ -134,6 +134,7 @@ export default {
     noReportTask: 'Cannot view report,\nwait for task end',
     noReportObservation: 'Report not available,\nno observations',
     noDataflow: 'Dataflow not availble',
+    noDataflowInfo: 'No details',
     dataflowViewer: 'View data flow',
     provenanceViewer: 'View provenance (will be...)',
     undock: 'Undock',
@@ -143,6 +144,7 @@ export default {
     submitInputRequest: 'Submit values',
     displayMainTree: 'Display main tree',
     hideMainTree: 'Hide main tree',
+    rateIt: 'Rate it',
   },
   errors: {
     connectionError: 'Connection error',

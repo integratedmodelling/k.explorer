@@ -75,7 +75,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES, CONSTANTS } from 'shared/Constants';
 import { isUpperCase } from 'shared/Utils';
-import KlabAutocomplete from 'components/KlabAutocompleteComponent';
+import KlabAutocomplete from 'components/custom/KlabQAutocomplete';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const SINGLE_CHARS = '=(<)>';

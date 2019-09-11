@@ -2,7 +2,7 @@
 import { QTree, QSlideTransition, QSpinner, QIcon, QCheckbox } from 'quasar';
 
 export default {
-  name: 'KlabTreeComponent',
+  name: 'KlabQTree',
   extends: QTree,
   props: {
     doubleClickTimeout: {

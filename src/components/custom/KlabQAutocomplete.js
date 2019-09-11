@@ -4,7 +4,7 @@ import { QAutocomplete, QPopover, QItemWrapper, QList, uid, dom } from 'quasar';
 const { width } = dom;
 
 export default {
-  name: 'KAutocomplete',
+  name: 'KlabQAutocomplete',
   extends: QAutocomplete,
   methods: {
     trigger(focus) {
