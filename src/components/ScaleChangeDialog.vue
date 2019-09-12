@@ -30,8 +30,8 @@
     </div>
 
     <template slot="buttons" slot-scope="props">
-      <q-btn color="info" outline label="Cancel" @click="props.cancel" />
-      <q-btn color="info" label="Ok" @click="choose(props.ok)" />
+      <q-btn color="info" outline :label="$t('label.appCancel')" @click="props.cancel"></q-btn>
+      <q-btn color="info" :label="$t('label.appOK')" @click="choose(props.ok)"></q-btn>
     </template>
   </q-dialog>
 </template>
