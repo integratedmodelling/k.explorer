@@ -197,7 +197,23 @@ export const MESSAGES_BUILDERS = {
     {
       nodeId,
       monitorable: false,
+      rating: -1,
       progress: 0,
+      contextId,
+    },
+    session,
+  ),
+
+  DATAFLOW_NODE_RATING: ({ nodeId, contextId, rating, comment = null }, session) => buildMessage(
+    OUT.CLASS_TASKLIFECYCLE,
+    OUT.TYPE_DATAFLOWNODERATING,
+    OUT.PAYLOAD_CLASS_DATAFLOWSTATE,
+    {
+      nodeId,
+      monitorable: false,
+      progress: 0,
+      rating,
+      ...(comment !== null && { comment }),
       contextId,
     },
     session,

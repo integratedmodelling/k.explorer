@@ -51,7 +51,13 @@ const PARSERS = {
   [IN.TYPE_DATAFLOWDOCUMENTATION]: ({ payload }, { dispatch }) => {
     if (payload && payload !== null && payload.dataflowId && payload.htmlDescription) {
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', JSON.stringify(payload, null, 4));
-      dispatch('data/setDataflowInfo', { id: payload.dataflowId, html: payload.htmlDescription }, { root: true });
+      dispatch('data/setDataflowInfo', {
+        id: payload.dataflowId,
+        html: payload.htmlDescription,
+        rateable: payload.rateable,
+        rating: payload.rating,
+        averageRating: payload.averageRating,
+      }, { root: true });
     } else {
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, `Strange payload of dataflow element info received: ${JSON.stringify(payload, null, 4)}`);
     }

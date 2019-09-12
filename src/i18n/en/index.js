@@ -76,6 +76,8 @@ export default {
     IDLAlertTitle: 'Warning!',
     recontextualization: 'Set as context',
     rememberDecision: 'Remember my decision',
+    titleCommentResource: 'Comment on resource',
+    sendComment: 'Send',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -119,6 +121,7 @@ export default {
     treeNoResultUserWaiting: 'Computing...',
     treeNoResultNoUser: 'No observations',
     treeNoMainSummary: 'Other observations',
+    thankComment: 'Comment has been sent',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
@@ -144,7 +147,8 @@ export default {
     submitInputRequest: 'Submit values',
     displayMainTree: 'Display main tree',
     hideMainTree: 'Hide main tree',
-    rateIt: 'Rate it',
+    rateIt: 'Rate resource',
+    commentIt: 'Comment on resource',
   },
   errors: {
     connectionError: 'Connection error',

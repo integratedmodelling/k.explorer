@@ -35,6 +35,7 @@ export const OUT = Object.freeze({
   TYPE_TASKINTERRUPTED: 'TaskInterrupted',
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_DATAFLOWNODEDETAIL: 'DataflowNodeDetail',
+  TYPE_DATAFLOWNODERATING: 'DataflowNodeRating',
   TYPE_CHANGESETTING: 'ChangeSetting',
   TYPE_USERINPUTPROVIDED: 'UserInputProvided',
 

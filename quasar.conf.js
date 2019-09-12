@@ -150,7 +150,6 @@ module.exports = function (ctx) {
         'QTab',
         'QTabPane',
         'QSpinner',
-        'QRating',
       ],
       directives: [
         'Ripple',

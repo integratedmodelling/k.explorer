@@ -7,6 +7,8 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 ## 0.8.1 - ?
+### Add
+- Rating and comment resources is implemented on client side
 ### Improvements
 - Fuzzy search now is linked to overpass query: if the search start with capital letter, the engine search for an answer from OSM and return a context
 - Now the dock action works better 

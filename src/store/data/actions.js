@@ -360,7 +360,7 @@ export default {
     commit('SET_DATAFLOW_STATUS', { id, status });
   },
 
-  setDataflowInfo: ({ commit }, { id, html }) => {
+  setDataflowInfo: ({ commit }, { id, html, rateable, rating, averageRating }) => {
     if (id !== null && id !== '') {
       const splitted = id.split('.');
       const elementId = splitted[splitted.length - 1];
@@ -369,6 +369,9 @@ export default {
         elementId,
         elementTypes,
         html,
+        rateable,
+        rating,
+        averageRating,
       });
     }
   },

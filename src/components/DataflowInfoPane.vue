@@ -13,21 +13,58 @@
     <div v-if="dataflowInfo !== null" id="dip-scroll-container">
       <div class="dip-content" v-html="dataflowInfo.html"></div>
     </div>
-    <div v-if="dataflowInfo !== null" class="dip-rating">
-      <klab-q-rating
-        :max="5"
-        color="white"
-        v-model="rating"
-        customIcon="klab-font klab-elephant"
-        size="18px"
-      ></klab-q-rating>
-      <q-tooltip
-        :offset="[0, 8]"
-        self="top left"
-        anchor="bottom left"
-      >{{ $t('tooltips.rateIt') }}</q-tooltip>
-    </div>
     <div v-else>{{ $t('messages.noDataflowInfo') }}</div>
+    <div v-if="dataflowInfo !== null && dataflowInfo.rateable">
+      <div class="dip-comment">
+        <q-icon
+          size="1.2em"
+          name="mdi-comment"
+          color="grey-8"
+          @click.native="activateComment"
+        >
+          <q-tooltip
+            :offset="[0, 8]"
+            self="top left"
+            anchor="bottom left"
+          >{{ $t('tooltips.commentIt') }}</q-tooltip>
+        </q-icon>
+      </div>
+      <div class="dip-rating">
+        <klab-q-rating
+          :max="5"
+          color="white"
+          v-model="rating"
+          customIcon="klab-font klab-elephant"
+          size="18px"
+        ></klab-q-rating>
+        <q-tooltip
+          :offset="[0, 8]"
+          self="top middle"
+          anchor="bottom middle"
+        >{{ $t('tooltips.rateIt') }}</q-tooltip>
+      </div>
+    </div>
+    <q-dialog
+      v-model="commentOpen"
+      @ok="commentOk"
+      @show="$refs['dpi-comment-input'].focus()"
+      color="info"
+    >
+      <span slot="title">{{ $t('label.titleCommentResource') }}</span>
+      <div slot="body">
+        <q-input
+          v-model="commentContent"
+          ref="dpi-comment-input"
+          type="textarea"
+          color="info"
+        ></q-input>
+      </div>
+
+      <template slot="buttons" slot-scope="props">
+        <q-btn color="info" outline :label="$t('label.appCancel')" @click="props.cancel"></q-btn>
+        <q-btn color="info" :label="$t('label.sendComment')" @click="props.ok"></q-btn>
+      </template>
+    </q-dialog>
   </div>
 </template>
 
@@ -35,6 +72,7 @@
 
 import { mapGetters, mapActions } from 'vuex';
 import SimpleBar from 'simplebar';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabQRating from 'components/custom/KlabQRating';
 
 export default {
@@ -44,25 +82,63 @@ export default {
   },
   data() {
     return {
-      rating: 0,
+      commentOpen: false,
+      commentContent: '',
     };
   },
   computed: {
     ...mapGetters('data', [
       'dataflowInfo',
+      'contextId',
     ]),
     ...mapGetters('view', [
       'mainViewer',
     ]),
+    rating: {
+      set(rating) {
+        this.$store.commit('data/SET_DATAFLOW_INFO', { ...this.dataflowInfo, rating });
+        this.changeDataflowRating();
+      },
+      get() {
+        return this.dataflowInfo !== null ? this.dataflowInfo.rating : -1;
+      },
+    },
   },
   methods: {
     ...mapActions('view', [
       'setLeftMenuState',
       'setLeftMenuContent',
+      'setModalMode',
     ]),
+    activateComment() {
+      this.commentContent = '';
+      this.commentOpen = true;
+    },
+    changeDataflowRating(comment = null) {
+      this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_RATING({
+        nodeId: this.dataflowInfo.elementId,
+        contextId: this.contextId,
+        rating: this.dataflowInfo.rating,
+        comment,
+      }, this.session).body);
+    },
+    commentOk() {
+      this.changeDataflowRating(this.commentContent);
+      this.$q.notify({
+        message: this.$t('messages.thankComment'),
+        type: 'info',
+        icon: 'mdi-information',
+        timeout: 1000,
+      });
+    },
     closePanel() {
       this.setLeftMenuContent(this.mainViewer.leftMenuContent);
       this.setLeftMenuState(this.mainViewer.leftMenuState);
+    },
+  },
+  watch: {
+    commentOpen(newValue) {
+      this.setModalMode(newValue);
     },
   },
   mounted() {
@@ -126,13 +202,25 @@ export default {
           background-color rgba(152, 152, 152, .4)
           p
             margin-bottom .5em
+    .dip-comment
+      position absolute
+      bottom 0
+      height 25px
+      margin-bottom 2px
+      margin-left 8px
+      &:hover
+        cursor pointer
+        i
+          color white !important
+
     .dip-rating
       position absolute
       bottom 0
       right 0
-      heigth 30px
+      height 25px
       margin-bottom 5px
       margin-right 8px
       .q-rating i:not(.active)
-        opacity 0.2
+        color $grey-8
+        opacity 1
 </style>
