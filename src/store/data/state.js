@@ -148,6 +148,11 @@ export default {
     time: false,
   },
   /**
+   * Ir a context is setted, we can ask for a "rescale".
+   * The new scale is stored here until refresh and confirmation
+   */
+  nextScale: null,
+  /**
    * Store of all observation data
    Observatio object: {
     "shapeType",

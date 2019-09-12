@@ -46,6 +46,7 @@ export default {
   data() {
     return {
       resolution: null,
+      oldResolution: null,
       unit: null,
       units: [
         {
@@ -66,6 +67,8 @@ export default {
   computed: {
     ...mapGetters('data', [
       'scaleReference',
+      'nextScale',
+      'hasContext',
       // 'timeReference',
     ]),
     ...mapGetters('view', [
@@ -76,34 +79,50 @@ export default {
         return this.$store.getters['view/isScaleEditing'];
       },
       set(active) {
-        this.setScaleEditing({ active, type: this.scaleEditingType });
+        this.$store.dispatch('view/setScaleEditing', { active, type: this.scaleEditingType });
       },
     },
   },
   methods: {
     ...mapActions('data', [
       'updateScaleReference',
+      'setNextScale',
     ]),
-    ...mapActions('view', [
-      'setScaleEditing',
-    ]),
-    async choose(okFn) {
+    choose(okFn) {
       console.info(`Resolution: ${this.resolution} and unit: ${this.unit}`);
       if (this.resolution === '' || this.resolution <= 0) {
         this.resolutionError = true;
       } else {
-        await okFn();
+        okFn();
         this.resolutionError = false;
-        this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
-          scaleReference: this.scaleReference,
-          ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceResolutionConverted: this.resolution }),
-          ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceUnit: this.unit }),
-          ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeResolution: this.resolution }),
-          ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeUnit: this.unit }),
-        }, this.$store.state.data.session).body);
-        this.updateScaleReference({ type: this.scaleEditingType, resolution: this.resolution, unit: this.unit });
+        if ((this.scaleEditingType === SCALE_TYPE.ST_SPACE
+            && ((this.nextScale === null && (
+              this.resolution === this.scaleReference.spaceResolutionConverted
+              && this.unit === this.scaleReference.spaceUnit))
+              || (this.nextScale !== null && (
+                this.resolution === this.nextScale.spaceResolutionConverted
+                && this.unit === this.nextScale.spaceUnit))))
+          || (this.scaleEditingType === SCALE_TYPE.ST_TIME
+            && ((this.nextScale === null && (
+              this.resolution === this.scaleReference.timeResolution
+              && this.unit === this.scaleReference.timeUnit))
+              || (this.nextScale !== null && (
+                this.resolution === this.nextScale.timeResolution
+                && this.unit === this.nextScale.timeUnit))))) {
+          return;
+        }
+        if (!this.hasContext) {
+          this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
+            scaleReference: this.scaleReference,
+            ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceResolutionConverted: this.resolution }),
+            ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceUnit: this.unit }),
+            ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeResolution: this.resolution }),
+            ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeUnit: this.unit }),
+          }, this.$store.state.data.session).body);
+        }
+        this.updateScaleReference({ type: this.scaleEditingType, resolution: this.resolution, unit: this.unit, next: this.hasContext });
         this.$q.notify({
-          message: this.$t('messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
+          message: this.$t(this.hasContext ? 'messages.updateNextScale' : 'messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
           type: 'info',
           icon: 'mdi-information',
           timeout: 1000,
@@ -111,7 +130,10 @@ export default {
       }
     },
     initValues() {
-      if (this.scaleReference !== null) {
+      if (this.nextScale !== null) {
+        this.resolution = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.nextScale.spaceResolutionConverted : this.nextScale.timeResolution;
+        this.unit = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.nextScale.spaceUnit : this.nextScale.timeUnit;
+      } else if (this.scaleReference !== null) {
         this.resolution = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionConverted : this.scaleReference.timeResolution;
         this.unit = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceUnit : this.scaleReference.timeUnit;
       }

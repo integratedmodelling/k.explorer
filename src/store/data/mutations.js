@@ -1,4 +1,5 @@
 import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
+import { SCALE_TYPE } from 'shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -33,6 +34,7 @@ export default {
     state.dataflowStatuses = [];
     state.dataflowInfo = null;
     state.nodeSelected = null;
+    state.nextScale = null;
     state.crossingIDL = false;
     if (context === null) {
       state.contextsHistory = [];
@@ -275,13 +277,23 @@ export default {
     state.scaleReference = scaleReference;
   },
 
-  UPDATE_SCALE_REFERENCE: (state, { type, resolution, unit }) => {
-    state.scaleReference = {
+  UPDATE_SCALE_REFERENCE: (state, { type, resolution, unit, next = false }) => {
+    const update = {
       ...state.scaleReference,
       [`${type}Resolution`]: resolution,
+      [`${type}ResolutionConverted`]: resolution,
       [`${type}Unit`]: unit,
       [`${type}ResolutionDescription`]: (resolution === 0 ? '' : `${resolution} `) + unit,
     };
+    if (next) {
+      state.nextScale = {
+        ...update,
+        spaceChanged: type === SCALE_TYPE.ST_SPACE,
+        timeChanged: type === SCALE_TYPE.ST_TIME,
+      };
+    } else {
+      state.scaleReference = update;
+    }
   },
 
   SET_SCALE_LOCKED: (state, { scaleType, scaleLocked }) => {

@@ -8,6 +8,7 @@ export default {
     appRetry: 'Retry',
     appNext: 'Next',
     appPrevious: 'Previous',
+    appWarning: 'Warning',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
     klabNoDate: 'No date',
@@ -93,6 +94,7 @@ export default {
     customCopyToClipboard: '{what} copied to clipboard',
     changeScaleResolutionError: 'Resolution must be positive',
     updateScale: 'Updated {type} scale, new value: {resolution} {unit}',
+    updateNextScale: 'New {type} scale have been stored, press refresh to update',
     invalidGeometry: 'Polygon is not valid',
     spatialLocationSent: 'Spatial location sent',
     geolocationWaitingTitle: 'Enable geolocation?',
@@ -122,6 +124,7 @@ export default {
     treeNoResultNoUser: 'No observations',
     treeNoMainSummary: 'Other observations',
     thankComment: 'Comment has been sent',
+    confirmRescaleContext: 'The context will be recreate with new resolution.\nAre you sure?',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
@@ -149,6 +152,7 @@ export default {
     hideMainTree: 'Hide main tree',
     rateIt: 'Rate resource',
     commentIt: 'Comment on resource',
+    refreshScale: 'Refresh context with new scale(s)',
   },
   errors: {
     connectionError: 'Connection error',
