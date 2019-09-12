@@ -37,6 +37,8 @@ export default {
   isDocked: state => state.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,
   hasMainControl: state => state.mainViewer && state.mainViewer.mainControl,
   isMainControlDocked: state => state.mainControlDocked,
+  // indicate if actual viewer admit search
+  admitSearch: state => state.mainViewer !== null && state.mainViewer.hasSearch,
   /**
    * Context layer
    */

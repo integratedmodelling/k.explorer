@@ -134,6 +134,7 @@ export default {
       'isInModalMode',
       'spinnerErrorMessage',
       'isMainControlDocked',
+      'admitSearch',
     ]),
     logVisible() {
       return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
@@ -234,7 +235,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isInModalMode) {
+      if (this.modalVisible || this.isInModalMode || !this.admitSearch) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {

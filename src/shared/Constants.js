@@ -71,30 +71,35 @@ export const VIEWERS = {
     leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,
     leftMenuContent: LEFTMENU_CONSTANTS.DATA_VIEWER_COMPONENT,
     mainControl: true,
+    hasSearch: true,
   },
   DOCKED_DATA_VIEWER: {
     name: 'DataViewer',
     leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED,
     leftMenuContent: LEFTMENU_CONSTANTS.DOCKED_DATA_VIEWER_COMPONENT,
     mainControl: false,
+    hasSearch: true,
   },
   REPORT_VIEWER: {
     name: 'ReportViewer',
     leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
     leftMenuContent: LEFTMENU_CONSTANTS.REPORT_VIEWER_COMPONENT,
     mainControl: false,
+    hasSearch: false,
   },
   DATAFLOW_VIEWER: {
     name: 'DataflowViewer',
     leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
     leftMenuContent: LEFTMENU_CONSTANTS.DATAFLOW_VIEWER_COMPONENT,
     mainControl: false,
+    hasSearch: false,
   },
   PROVENANCE_VIEWER: {
     name: 'ProvenanceViewer',
     leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
     leftMenuContent: LEFTMENU_CONSTANTS.PROVENANCE_VIEWER_COMPONENT,
     mainControl: false,
+    hasSearch: false,
   },
 };
 
