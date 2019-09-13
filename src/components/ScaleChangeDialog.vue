@@ -125,7 +125,7 @@ export default {
           message: this.$t(this.hasContext ? 'messages.updateNextScale' : 'messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
           type: 'info',
           icon: 'mdi-information',
-          timeout: 1000,
+          timeout: 2000,
         });
       }
     },

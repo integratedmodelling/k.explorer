@@ -125,6 +125,7 @@ export default {
     treeNoMainSummary: 'Other observations',
     thankComment: 'Comment has been sent',
     confirmRescaleContext: 'The context will be recreate with new resolution.\nAre you sure?',
+    availableInFuture: 'This feature will be available soon',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
@@ -153,6 +154,7 @@ export default {
     rateIt: 'Rate resource',
     commentIt: 'Comment on resource',
     refreshScale: 'Refresh context with new scale(s)',
+    clickToEdit: 'Click to edit {type} scale',
   },
   errors: {
     connectionError: 'Connection error',

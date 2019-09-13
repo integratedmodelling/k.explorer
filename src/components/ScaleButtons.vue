@@ -1,7 +1,7 @@
 <template>
   <div class="sb-scales">
     <div
-      class="klab-button klab-action"
+      class="klab-button klab-action mdi-next-scale"
     >
       <q-icon
         name="mdi-refresh"
@@ -47,6 +47,7 @@
               :editable="false"
               class="sb-next-scale"
             ></scale-reference>
+            <div class="sb-tooltip">{{ $t('tooltips.clickToEdit', { type: SCALE_TYPE.ST_SPACE }) }}</div>
           </div>
         </q-popover>
       </q-icon>
@@ -57,7 +58,7 @@
       :class="[{ active: showTimeScalePopup }]"
       @mouseover="toggleScalePopup('time', true)"
       @mouseleave="toggleScalePopup('time', false)"
-      @click="scaleEditing = { active: false, type: SCALE_TYPE.ST_TIME }"
+      @click="noTimeScaleChange"
     >
       <q-icon name="mdi-clock" :class="{ 'mdi-next-scale': hasNextScale(SCALE_TYPE.ST_TIME) }">
         <q-popover
@@ -83,6 +84,7 @@
               :use-next="true"
               class="sb-next-scale"
             ></scale-reference>
+            <div class="sb-tooltip">{{ $t('tooltips.clickToEdit', { type: SCALE_TYPE.ST_TIME }) }}</div>
           </div>
         </q-popover>
       </q-icon>
@@ -135,6 +137,7 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
+      'nextScale',
       'hasNextScale',
       'scaleReference',
       'contextId',
@@ -160,24 +163,36 @@ export default {
     },
     rescaleContext() {
       if (this.hasNextScale()) {
+        /*
         this.$q.dialog({
           title: this.$t('label.appWarning'),
           message: this.$t('messages.confirmRescaleContext'),
           ok: this.$t('label.appOK'),
           cancel: this.$t('label.appCancel'),
         }).then(() => {
-          this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
-            scaleReference: this.scaleReference,
-            contextId: this.contextId,
-            ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && { spaceResolutionConverted: this.resolution }),
-            ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && { spaceUnit: this.unit }),
-            ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && { timeResolution: this.resolution }),
-            ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && { timeUnit: this.unit }),
-          }, this.$store.state.data.session).body);
+        */
+        this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
+          scaleReference: this.scaleReference,
+          contextId: this.contextId,
+          ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && { spaceResolutionConverted: this.nextScale.spaceResolutionConverted }),
+          ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && { spaceUnit: this.nextScale.spaceUnit }),
+          ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && { timeResolution: this.nextScale.timeResolution }),
+          ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && { timeUnit: this.nextScale.timeUnit }),
+        }, this.$store.state.data.session).body);
+        /*
         }).catch(() => {
           // nothing to do
         });
+        */
       }
+    },
+    noTimeScaleChange() {
+      this.$q.notify({
+        message: this.$t('messages.availableInFuture'),
+        type: 'info',
+        icon: 'mdi-information',
+        timeout: 1000,
+      });
     },
   },
 };
@@ -186,11 +201,17 @@ export default {
   @import '~variables'
   .mdi-next-scale
     color $main-control-yellow
-    opacity .8
+    opacity .6
     &:hover
       opacity 1
   .sb-scales *
     cursor pointer
   .sb-next-scale
-    background-color $main-control-yellow
+    background-color alpha($main-control-yellow, 0.7)
+  .sb-tooltip
+    text-align center
+    font-size .7em
+    color white
+    background-color $grey-8
+    padding 2px 0
 </style>
