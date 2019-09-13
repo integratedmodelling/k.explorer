@@ -153,26 +153,30 @@
             </q-item-side>
           </div>
         </q-item>
-        <q-item v-if="!hasContext">
-          <div class="mcm-container">
-            <div class="klab-menuitem">
-              <div class="klab-item">{{ $t('label.optionSaveLocation') }}</div>
+        <template v-if="!hasContext">
+          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuSettings') }}</q-list-header>
+          <q-item-separator></q-item-separator>
+          <q-item>
+            <div class="mcm-container">
+              <div class="klab-menuitem">
+                <div class="klab-item">{{ $t('label.optionSaveLocation') }}</div>
+              </div>
+              <q-item-side right>
+                <q-toggle v-model="saveLocationVar" color="mc-main"></q-toggle>
+              </q-item-side>
             </div>
-            <q-item-side right>
-              <q-toggle v-model="saveLocationVar" color="mc-main"></q-toggle>
-            </q-item-side>
-          </div>
-        </q-item>
-        <q-item v-if="!hasContext">
-          <div class="mcm-container">
-            <div class="klab-menuitem">
-              <div class="klab-item">{{ $t('label.saveDockedStatus') }}</div>
+          </q-item>
+          <q-item>
+            <div class="mcm-container">
+              <div class="klab-menuitem">
+                <div class="klab-item">{{ $t('label.saveDockedStatus') }}</div>
+              </div>
+              <q-item-side right>
+                <q-toggle v-model="saveDockedStatusVar" color="mc-main"></q-toggle>
+              </q-item-side>
             </div>
-            <q-item-side right>
-              <q-toggle v-model="saveDockedStatusVar" color="mc-main"></q-toggle>
-            </q-item-side>
-          </div>
-        </q-item>
+          </q-item>
+        </template>
       </q-list>
     </q-popover>
   </q-btn>

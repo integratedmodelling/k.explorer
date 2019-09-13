@@ -38,6 +38,7 @@ export default {
     mcMenuScale: 'Space & time:',
     mcMenuContext: 'Context',
     mcMenuOption: 'Options',
+    mcMenuSettings: 'Settings',
     titleOutputFormat: 'Download observation',
     askForOuputFormat: 'Select format',
     titleChangeScale: 'Change {type} scale',
