@@ -95,7 +95,7 @@ export default {
       return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? `${this.nextScale.spaceResolutionConverted.toFixed(1)} ${this.nextScale.spaceUnit}` : this.scaleReference.spaceResolutionDescription) : this.unit;
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceResolutionDescription : this.scaleReference.spaceResolutionDescription) : this.unit;
     },
     scale() {
       return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceScale : this.scaleReference.spaceScale) : '3'; // this.scaleReference.timeScale;
