@@ -82,6 +82,7 @@
       </div>
     </q-modal>
     <input-request-modal></input-request-modal>
+    <scale-change-dialog></scale-change-dialog>
   </q-page>
 </template>
 
@@ -95,6 +96,7 @@ import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
+import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 
 import { colors, Cookies } from 'quasar';
 import 'ol/ol.css';
@@ -110,6 +112,7 @@ export default {
     DataflowViewer,
     KlabSpinner,
     InputRequestModal,
+    ScaleChangeDialog,
   },
   data() {
     return {

@@ -2,10 +2,10 @@
   <div class="sb-scales">
     <div
       class="klab-button klab-action mdi-next-scale"
+      v-if="hasNextScale()"
     >
       <q-icon
         name="mdi-refresh"
-        v-if="hasNextScale()"
         color="mc-yellow"
         @click.native="rescaleContext"
       >

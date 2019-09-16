@@ -118,7 +118,6 @@
       </q-card-actions>
     </q-card>
     </transition>
-    <scale-change-dialog></scale-change-dialog>
     <transition appear
                 enter-active-class="animated zoomIn"
                 leave-active-class="animated zoomOut">
@@ -142,7 +141,6 @@ import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
-import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
@@ -157,7 +155,6 @@ export default {
     KlabLogPane,
     ScrollingText,
     ScaleButtons,
-    ScaleChangeDialog,
     MainActionsButtons,
     StopActionsButtons,
   },
