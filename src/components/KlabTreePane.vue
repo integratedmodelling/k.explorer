@@ -123,7 +123,7 @@ export default {
     outContainerResized() {
       if (this.isDocked) { // we're docked
         this.outContainerHeight = height(document.getElementById('dmc-tree')) - 24; // removed the detail size
-      } else {
+      } else if (this.$refs['kt-out-container']) {
         this.outContainerHeight = Number.parseFloat(window.getComputedStyle(this.$refs['kt-out-container'], null).getPropertyValue('max-height'));
         this.recalculateTreeHeight();
       }
