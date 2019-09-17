@@ -34,7 +34,7 @@
           :max="5"
           color="white"
           v-model="rating"
-          customIcon="klab-font klab-elephant"
+          customIcon="klab-font klab-im-logo"
           size="18px"
         ></klab-q-rating>
         <q-tooltip
