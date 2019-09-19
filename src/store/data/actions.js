@@ -164,6 +164,7 @@ export default {
       observation.layerOpacity = observation.layerOpacity || 1;
       observation.colormap = observation.colormap || null;
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
+      observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {

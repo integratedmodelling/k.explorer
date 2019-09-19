@@ -131,7 +131,7 @@ export const getNodeFromObservation = (observation) => {
       siblingsCount: observation.siblingsCount,
       parentArtifactId: observation.parentArtifactId,
       tickable: (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0,
-      disabled: observation.empty && (!observation.isContainer || observation.childrenCount === 0),
+      disabled: (observation.empty && (!observation.isContainer || observation.childrenCount === 0)) || observation.singleValue,
       empty: observation.empty, // disabled can change
       actions: observation.actions,
       header: observation.isContainer ? 'folder' : 'default',
@@ -141,6 +141,7 @@ export const getNodeFromObservation = (observation) => {
       exportFormats: observation.exportFormats,
       rootContextId: observation.rootContextId,
       observationType: observation.observationType,
+      noTick: observation.singleValue,
       ...(observation.isContainer && { childrenLoaded: 0 }),
       ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
       parentId,
