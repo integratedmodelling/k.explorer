@@ -395,33 +395,6 @@ export const GEOMETRY_CONSTANTS = {
 };
 
 /**
- * Constants for fron end part only
- */
-export const FRONT_END_CONSTANTS = {
-  COLOR_PRIMARY: 'primary',
-  COLOR_SECONDARY: 'secondary',
-  COLOR_TERTIARY: 'tertiary',
-  COLOR_POSITIVE: 'positive',
-  COLOR_NEGATIVE: 'negative',
-  COLOR_INFO: 'info',
-  COLOR_WARNING: 'warning',
-  COLOR_LIGHT: 'light',
-  COLOR_DARK: 'dark',
-  COLOR_FADED: 'faded',
-};
-
-/*
-export const APP_PARAM_CONSTANTS = {
-  /**
-   * APP params
-   *
-  PARAMS_SHOW: 'notified',
-  PARAMS_SHOW_MAIN: 'only',
-  PARAMS_SHOW_ALL: 'all',
-};
-*/
-
-/**
  * Constants relative to web page
  */
 export const WEB_CONSTANTS = {
@@ -450,11 +423,34 @@ export const WEB_CONSTANTS = {
   COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not setted
 };
 
+export const COLORS = {
+  MAIN_COLOR: 'rgb(17, 170, 187)',
+  MAIN_GREEN: 'rgb(231,255,219)',
+  MAIN_CYAN: 'rgb(228,253,255)',
+  MAIN_YELLOW: 'rgb(255, 195, 0)',
+  MAIN_RED: 'rgb(255, 100, 100)',
+  PRIMARY: '#DA1F26',
+  SECONDARY: '#26A69A',
+  TERTIARY: '#555',
+  NEUTRAL: '#E0E1E2',
+  POSITIVE: '#19A019',
+  NEGATIVE: '#DB2828',
+  INFO: '#1E88CE',
+  WARNING: '#F2C037',
+  PRIMARY_NAME: 'primary',
+  SECONDARY_NAME: 'secondary',
+  TERTIARY_NAME: 'tertiary',
+  POSITIVE_NAME: 'positive',
+  NEGATIVE_NAME: 'negative',
+  INFO_NAME: 'info',
+  WARNING_NAME: 'warning',
+};
+
 export const SPINNER_COLORS = {
-  SPINNER_STOPPED_COLOR: 'rgb(17, 170, 187)', // $main-control-main-color
-  SPINNER_LOADING_COLOR: 'rgb(255, 195, 0)', // $main-control-yellow
-  SPINNER_MC_RED: 'rgb(255, 100, 100)', // $main-control-red
-  SPINNER_ERROR_COLOR: 'negative',
+  SPINNER_STOPPED_COLOR: COLORS.MAIN_COLOR,
+  SPINNER_LOADING_COLOR: COLORS.MAIN_YELLOW,
+  SPINNER_MC_RED: COLORS.MAIN_RED,
+  SPINNER_ERROR_COLOR: COLORS.NEGATIVE_NAME,
 };
 
 export const SPINNER_CONSTANTS = {
@@ -544,7 +540,7 @@ export default {
   OBSERVATION_DEFAULT,
   VALUE_CONSTANTS,
   GEOMETRY_CONSTANTS,
-  FRONT_END_CONSTANTS,
+  COLORS,
   // APP_PARAM_CONSTANTS,
   WEB_CONSTANTS,
   SPINNER_COLORS,

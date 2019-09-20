@@ -1,8 +1,7 @@
+import { COLORS } from 'shared/Constants';
 import Tile from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
-// import Stamen from 'ol/source/Stamen';
 import XYZ from 'ol/source/XYZ';
-// import BingMaps from 'ol/source/BingMaps';
 import Style from 'ol/style/Style';
 import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
@@ -12,6 +11,8 @@ import Feature from 'ol/Feature';
 import Mask from 'ol-ext/filter/Mask';
 import * as control from 'ol/control';
 import { transform, get as getProjection } from 'ol/proj';
+// import Stamen from 'ol/source/Stamen';
+// import BingMaps from 'ol/source/BingMaps';
 
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoiay1sYWIiLCJhIjoiY2prd2d2dWNxMHlvcDNxcDVsY3FncDBydiJ9.zMQE3gu-0qPpkLapVfVhnA';
 const MAPBOX_ATTRIBUTIONS = '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>';
@@ -103,7 +104,7 @@ export const MAP_STYLES = {
   }),
   // { fill, stroke, strokeWidth, scale = 0.3 }
   POINT_OBSERVATION_SVG_PARAM: {
-    fill: 'rgb(238,238,238)',
+    fill: COLORS.MAIN_COLOR, // 'rgb(238,238,238)',
     stroke: 'rgb(51,51,51)',
     strokeWidth: '4',
     scale: 0.3,
