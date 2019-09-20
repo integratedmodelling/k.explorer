@@ -1,5 +1,6 @@
 /* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
 import { findNode, findNodeById } from 'shared/Helpers';
+import { SCALE_TYPE } from 'shared/Constants';
 
 export default {
   /**
@@ -78,6 +79,11 @@ export default {
   },
 
   isScaleLocked: state => state.scaleLocked,
+  nextScale: state => state.nextScale,
+  hasNextScale: state => (type = null) => state.nextScale !== null
+    && (type === null || (type === SCALE_TYPE.ST_SPACE && state.nextScale.spaceChanged)
+      || (type === SCALE_TYPE.ST_SPACE && state.nextScale.spaceChanged)),
+
 
   /**
    * The search results

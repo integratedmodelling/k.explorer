@@ -47,6 +47,10 @@ export default {
       validator: value => [SCALE_TYPE.ST_SPACE, SCALE_TYPE.ST_TIME].indexOf(value) !== -1,
       default: SCALE_TYPE.ST_SPACE,
     },
+    useNext: {
+      type: Boolean,
+      default: false,
+    },
     width: {
       type: String,
       default: '150px',
@@ -79,40 +83,38 @@ export default {
       'scaleReference',
       // 'timeReference',
       'isScaleLocked',
+      'nextScale',
     ]),
     resolution() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionConverted : '';
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceResolutionConverted : this.scaleReference.spaceResolutionConverted) : '';
     },
     unit() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceUnit : moment().year();
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceUnit : this.scaleReference.spaceUnit) : moment().year();
     },
     type() {
       return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : 'YEAR'; // TODO implement different type
     },
     description() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionDescription : this.unit;
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceResolutionDescription : this.scaleReference.spaceResolutionDescription) : this.unit;
     },
     scale() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceScale : '3'; // this.scaleReference.timeScale;
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceScale : this.scaleReference.spaceScale) : '3'; // this.scaleReference.timeScale;
     },
     hasScale() {
-      return this.scaleReference !== null;
+      return this.useNext ? this.nextScale !== null : this.scaleReference !== null;
     },
     scaleEditing: {
       get() {
         return this.$store.getters['view/isScaleEditing'];
       },
       set(active) {
-        this.setScaleEditing({ active, type: this.scaleType });
+        this.$store.dispatch('view/setScaleEditing', { active, type: this.scaleType });
       },
     },
   },
   methods: {
     ...mapActions('data', [
       'setScaleLocked',
-    ]),
-    ...mapActions('view', [
-      'setScaleEditing',
     ]),
     lockScale(event) {
       event.stopPropagation();

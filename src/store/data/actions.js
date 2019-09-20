@@ -164,6 +164,7 @@ export default {
       observation.layerOpacity = observation.layerOpacity || 1;
       observation.colormap = observation.colormap || null;
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
+      observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {
@@ -176,16 +177,45 @@ export default {
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child });
         });
-      } else if (observation.childrenCount > 0) {
-        dispatch('askForChildren', {
-          parentId: observation.id,
-          offset: 0,
-          count: state.childrenToAskFor,
-          total: observation.childrenCount,
-        });
       }
       if (toTree) {
-        commit('ADD_NODE', getNodeFromObservation(observation));
+        const originalNode = getNodeFromObservation(observation);
+        commit('ADD_NODE', originalNode);
+        // if there are children, we put a STUB to force the arrow
+        if (observation.childrenCount > 0 && observation.children.length === 0) { // we have children to ask, create a STUB
+          const { node } = originalNode;
+          commit('ADD_NODE', {
+            node: {
+              ...node,
+              id: `STUB-${node.id}`,
+              observable: '',
+              label: '',
+              children: [],
+              childrenCount: 0,
+              childrenLoaded: 0,
+              siblingsCount: node.childrenCount,
+              parentArtifactId: node.id,
+              tickable: false,
+              disabled: true,
+              empty: true,
+              actions: {},
+              header: 'stub',
+              main: false,
+              isContainer: false,
+              exportFormats: {},
+              observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
+              noTick: true,
+              parentId: node.id,
+            },
+            parentId: node.id,
+          });
+          commit('ADD_LAST', {
+            parentId: node.id,
+            observationId: `STUB-${node.id}`,
+            offsetToAdd: 0,
+            total: node.childrenCount,
+          });
+        }
       }
       dispatch('view/setReloadReport', true, { root: true });
       return resolve();
@@ -386,9 +416,8 @@ export default {
     // commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
   },
 
-  updateScaleReference: ({ commit }, { type, resolution, unit }) => {
-    console.debug(`Update scale reference: ${type}: ${resolution} ${unit}`);
-    commit('UPDATE_SCALE_REFERENCE', { type, resolution, unit });
+  updateScaleReference: ({ commit }, { type, resolution, unit, next = false }) => {
+    commit('UPDATE_SCALE_REFERENCE', { type, resolution, unit, next });
   },
 
   setScaleLocked: ({ commit }, { scaleType, scaleLocked }) => {

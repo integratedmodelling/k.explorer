@@ -27,7 +27,7 @@
         :filterMethod="filterUser"
         :noFilteredResultLabel="isUser ? taskOfContextIsAlive ? $t('messages.treeNoResultUserWaiting') : $t('messages.treeNoResultUser') : $t('messages.treeNoResultNoUser')">
       >
-        <div slot="header-default" slot-scope="prop">
+        <div slot="header-default" slot-scope="prop" :class="{ 'node-disabled': prop.node.disabled && !prop.node.noTick }">
           <span
             :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
@@ -37,11 +37,11 @@
                prop.node.main ? 'node-emphasized' : '',
                hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
                topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : '',
-               isUser ? 'node-user-element' : 'node-tree-element'
+               isUser ? 'node-user-element' : 'node-tree-element',
             ]"
             class="node-element"
             :id="`node-${prop.node.id}`"
-          >{{ prop.node.label }}
+          ><q-icon name="mdi-checkbox-blank-circle" class="node-no-tick" v-if="prop.node.noTick"></q-icon>{{ prop.node.label }}
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
@@ -50,28 +50,43 @@
               class="kt-q-tooltip"
             >{{ clearObservable(prop.node.observable) }}</q-tooltip>
           </span>
+          <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
+            <q-chip
+              class="node-chip"
+              :class="{ 'node-substituible': !prop.node.empty && !prop.node.noTick }"
+              color="white"
+              small
+              dense
+              text-color="grey-7"
+            >{{  prop.node.childrenCount ? prop.node.childrenCount : prop.node.children.length }}</q-chip>
+          </template>
           <q-btn
             round
             flat
             size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
-            :style="{ right: prop.node.children.length > 0 ? '35px' : (typeof prop.node.idx !== 'undefined' ?
-              calculateDownloadRightPosition([prop.node.idx + 1, 'of ', prop.node.siblingsCount]) : '10px') }"
-            v-if="!prop.node.empty"
+            v-if="!prop.node.empty && !prop.node.noTick"
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats)"
           >
           </q-btn>
-          <template v-if="prop.node.children.length > 0">
-            <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.children.length }}</q-chip>
-          </template>
-          <template else>
-            <q-chip v-show="typeof prop.node.idx !== 'undefined'" class="node-chip transparent" small dense text-color="grey-9">
+          <template v-if="typeof prop.node.idx !== 'undefined'">
+            <q-chip
+              class="node-chip transparent"
+              small
+              dense
+              text-color="grey-9"
+              :style="{ right: (prop.node.childrenCount > 0 ?
+                calculateRightPosition([prop.node.childrenCount], '25px') :
+                prop.node.children.length > 0 ?
+                calculateRightPosition([prop.node.children.lengthh], '25px') :
+                 '') }"
+            >
               {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
             </q-chip>
           </template>
         </div>
-        <div slot="header-folder" slot-scope="prop">
+        <div slot="header-folder" slot-scope="prop" :class="{ 'node-disabled': prop.node.disabled && !prop.node.noTick }">
           <span
             :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
@@ -87,12 +102,22 @@
             size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
-            :style="{ right: calculateDownloadRightPosition([prop.node.childrenCount]) }"
-            v-if="prop.node.exportFormats"
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
           >
           </q-btn>
-          <q-chip class="node-chip" color="white" small dense text-color="grey-7">{{ prop.node.childrenCount ? prop.node.childrenCount : prop.node.children.length }}</q-chip>
+          <q-chip
+            class="node-chip"
+            :class="{ 'node-substituible': !prop.node.empty && !prop.node.noTick }"
+            color="white"
+            small
+            dense
+            text-color="grey-7"
+          >{{ prop.node.childrenCount ? prop.node.childrenCount : prop.node.children.length }}</q-chip>
+        </div>
+        <div slot="header-stub" slot-scope="prop" class="node-stub">
+          <span class="node-element node-stub">
+            <q-icon name="mdi-checkbox-blank-circle" class="node-no-tick"></q-icon>{{ $t('messages.loadingChildren') }}
+          </span>
         </div>
       </klab-q-tree>
     </div>
@@ -374,9 +399,10 @@ export default {
         });
       }
     },
-    calculateDownloadRightPosition(words) {
+    calculateRightPosition(words, addTo = '') {
       const length = words.reduce((tot, word) => tot + word.toString().length, 0);
-      return `calc(${length}ch + 28px)`;
+      const add = addTo !== '' ? ` + ${addTo}` : '';
+      return `calc(${length}ch${add})`;
     },
     onDragStart(event, id) {
       event.dataTransfer.setData('id', id);
@@ -425,8 +451,32 @@ export default {
         this.selected = value;
       }
     },
-    expanded(expanded) {
+    expanded(expanded, oldExpanded) {
       this.$store.state.view.treeExpanded = expanded;
+      if (oldExpanded >= expanded) {
+        return;
+      }
+      const { [expanded.length - 1]: selectedId } = expanded;
+      const expandedNode = findNodeById(this.tree, selectedId);
+      if (expandedNode && expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
+        // remove the stub
+        expandedNode.children.splice(0, 1);
+        if (expandedNode.children.length < expandedNode.childrenLoaded && expandedNode.childrenLoaded > 0) { // we have the children, only need to add to tree
+          this.addChildrenToTree({ parent: expandedNode });
+          this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
+            folderId: expandedNode.id,
+            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+          });
+        } else if (expandedNode.children.length === 0) {
+          this.askForChildren({
+            parentId: expandedNode.id,
+            offset: 0,
+            count: this.childrenToAskFor,
+            total: expandedNode.childrenCount,
+            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+          });
+        }
+      }
     },
     selected(selectedId /* , unselectedId */) {
       if (selectedId !== null) {
@@ -592,13 +642,16 @@ export default {
           width 25px
           left -28px
         &:hover
+          .node-substituible
+            display none
           .kt-download
             display block
             &:hover
               background-color #fff
               border none
               color #666
-
+        &.disabled
+          opacity 1 !important
       .q-chip.node-chip
         position absolute
         right 10px
@@ -606,10 +659,13 @@ export default {
         min-width 20px
         top 4px
         text-align center
+        .q-chip-main
+          padding-right 2px
 
       .kt-download
         position absolute
         top 4px
+        right 8px
         display none
         z-index 9999
         color #eee
@@ -628,6 +684,10 @@ export default {
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
+      .node-disabled
+        opacity 0.6 !important
+      .node-no-tick
+        margin-right 5px
       .node-on-top
         text-decoration underline
       .kt-q-tooltip

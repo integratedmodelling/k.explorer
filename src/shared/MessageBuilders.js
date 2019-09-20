@@ -163,12 +163,14 @@ export const MESSAGES_BUILDERS = {
     spaceUnit,
     timeResolutionDescription = '',
     timeUnit = '',
+    contextId = '',
   }, session) => buildMessage(
     OUT.CLASS_USERCONTEXTDEFINITION,
     OUT.TYPE_SCALEDEFINED,
     OUT.PAYLOAD_CLASS_SCALEREFERENCE,
     {
       ...scaleReference,
+      contextId,
       ...(typeof spaceResolutionConverted !== 'undefined' && { spaceResolutionConverted }),
       ...(typeof spaceUnit !== 'undefined' && { spaceUnit }),
       ...(typeof timeResolutionDescription !== 'undefined' && { timeResolutionDescription }),
