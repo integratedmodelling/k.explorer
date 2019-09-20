@@ -177,16 +177,45 @@ export default {
         observation.children.forEach((child) => {
           dispatch('addObservation', { observation: child });
         });
-      } else if (observation.childrenCount > 0) {
-        dispatch('askForChildren', {
-          parentId: observation.id,
-          offset: 0,
-          count: state.childrenToAskFor,
-          total: observation.childrenCount,
-        });
       }
       if (toTree) {
-        commit('ADD_NODE', getNodeFromObservation(observation));
+        const originalNode = getNodeFromObservation(observation);
+        commit('ADD_NODE', originalNode);
+        // if there are children, we put a STUB to force the arrow
+        if (observation.childrenCount > 0 && observation.children.length === 0) { // we have children to ask, create a STUB
+          const { node } = originalNode;
+          commit('ADD_NODE', {
+            node: {
+              ...node,
+              id: `STUB-${node.id}`,
+              observable: '',
+              label: '',
+              children: [],
+              childrenCount: 0,
+              childrenLoaded: 0,
+              siblingsCount: node.childrenCount,
+              parentArtifactId: node.id,
+              tickable: false,
+              disabled: true,
+              empty: true,
+              actions: {},
+              header: 'stub',
+              main: false,
+              isContainer: false,
+              exportFormats: {},
+              observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
+              noTick: true,
+              parentId: node.id,
+            },
+            parentId: node.id,
+          });
+          commit('ADD_LAST', {
+            parentId: node.id,
+            observationId: `STUB-${node.id}`,
+            offsetToAdd: 0,
+            total: node.childrenCount,
+          });
+        }
       }
       dispatch('view/setReloadReport', true, { root: true });
       return resolve();

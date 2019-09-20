@@ -126,6 +126,7 @@ export default {
     treeNoMainSummary: 'Other observations',
     thankComment: 'Comment has been sent',
     confirmRescaleContext: 'The context will be recreate with new resolution.\nAre you sure?',
+    loadingChildren: 'Loading children...',
     availableInFuture: 'This feature will be available soon',
     youHaveGOT: 'Winter is coming',
   },

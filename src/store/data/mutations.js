@@ -184,7 +184,7 @@ export default {
         folder.visible = visible;
       }
     } else {
-      console.warn(`Folder with id ${nodeId} has no elements`);
+      console.info(`Folder with id ${nodeId} has no loaded elements`);
     }
     // set node ticked (for tree view)
     const setNodeTicked = (tree) => {

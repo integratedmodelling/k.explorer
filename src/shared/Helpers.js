@@ -128,6 +128,7 @@ export const getNodeFromObservation = (observation) => {
       viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
       children: [],
       childrenCount: observation.childrenCount,
+      childrenLoaded: 0,
       siblingsCount: observation.siblingsCount,
       parentArtifactId: observation.parentArtifactId,
       tickable: (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0,

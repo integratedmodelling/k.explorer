@@ -114,6 +114,11 @@
             text-color="grey-7"
           >{{ prop.node.childrenCount ? prop.node.childrenCount : prop.node.children.length }}</q-chip>
         </div>
+        <div slot="header-stub" slot-scope="prop" class="node-stub">
+          <span class="node-element node-stub">
+            <q-icon name="mdi-checkbox-blank-circle" class="node-no-tick"></q-icon>{{ $t('messages.loadingChildren') }}
+          </span>
+        </div>
       </klab-q-tree>
     </div>
 
@@ -446,8 +451,32 @@ export default {
         this.selected = value;
       }
     },
-    expanded(expanded) {
+    expanded(expanded, oldExpanded) {
       this.$store.state.view.treeExpanded = expanded;
+      if (oldExpanded >= expanded) {
+        return;
+      }
+      const { [expanded.length - 1]: selectedId } = expanded;
+      const expandedNode = findNodeById(this.tree, selectedId);
+      if (expandedNode && expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
+        // remove the stub
+        expandedNode.children.splice(0, 1);
+        if (expandedNode.children.length < expandedNode.childrenLoaded && expandedNode.childrenLoaded > 0) { // we have the children, only need to add to tree
+          this.addChildrenToTree({ parent: expandedNode });
+          this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
+            folderId: expandedNode.id,
+            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+          });
+        } else if (expandedNode.children.length === 0) {
+          this.askForChildren({
+            parentId: expandedNode.id,
+            offset: 0,
+            count: this.childrenToAskFor,
+            total: expandedNode.childrenCount,
+            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+          });
+        }
+      }
     },
     selected(selectedId /* , unselectedId */) {
       if (selectedId !== null) {
