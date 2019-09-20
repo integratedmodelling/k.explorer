@@ -11,7 +11,10 @@ is not available.
 - Rating and comment resources is implemented on client side
 ### Improvements
 - Fuzzy search now is linked to overpass query: if the search start with capital letter, the engine search for an answer from OSM and return a context
-- Now the dock action works better 
+- Folder lazy loading
+- Now the dock action works better
+- Better visualization of nested folders
+ 
 
 ## 0.8.0 - 2019-09-04
 ### Improvements
