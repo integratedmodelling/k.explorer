@@ -122,6 +122,8 @@ export default {
             contextId: this.context.id,
           }, this.session).body);
         }
+        // this is needed to take the edge up if they go down an element
+        this.modelSource.updateModel();
       }
     },
   },
