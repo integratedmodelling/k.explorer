@@ -517,35 +517,37 @@ export default {
         const { [newValues.length - 1]: selectedId } = newValues;
         // this.selectNode(selectedId);
         const selectedNode = findNodeById(this.tree, selectedId);
-        if (selectedNode.isContainer) {
-          const tickAll = () => {
-            this.setVisibility({
-              node: selectedNode,
-              visible: true,
-            });
-            this.ticked.push(...(selectedNode.children.filter(child => child.parentArtifactId === selectedNode.id).map(child => child.id)));
-          };
-          if (!this.askingForChildren) {
-            if (selectedNode.childrenLoaded < selectedNode.childrenCount) {
-              this.askingForChildren = true;
-              const node = this.lasts.find(l => l.parentId === selectedNode.id);
-              this.askForChildren({
-                parentId: node.parentId,
-                offset: selectedNode.childrenLoaded,
-                count: -1,
-                toTree: false,
+        if (selectedNode !== null) {
+          if (selectedNode.isContainer) {
+            const tickAll = () => {
+              this.setVisibility({
+                node: selectedNode,
                 visible: true,
-                total: selectedNode.childrenCount,
-              }).then(() => {
-                this.askingForChildren = false;
-                tickAll();
               });
-            } else {
-              tickAll();
+              this.ticked.push(...(selectedNode.children.filter(child => child.parentArtifactId === selectedNode.id).map(child => child.id)));
+            };
+            if (!this.askingForChildren) {
+              if (selectedNode.childrenLoaded < selectedNode.childrenCount) {
+                this.askingForChildren = true;
+                const node = this.lasts.find(l => l.parentId === selectedNode.id);
+                this.askForChildren({
+                  parentId: node.parentId,
+                  offset: selectedNode.childrenLoaded,
+                  count: -1,
+                  toTree: false,
+                  visible: true,
+                  total: selectedNode.childrenCount,
+                }).then(() => {
+                  this.askingForChildren = false;
+                  tickAll();
+                });
+              } else {
+                tickAll();
+              }
             }
+          } else {
+            this.setVisibility({ node: selectedNode, visible: true });
           }
-        } else {
-          this.setVisibility({ node: selectedNode, visible: true });
         }
       }
     },
