@@ -129,7 +129,7 @@ export default {
   data() {
     return {
       askForUndocking: false,
-      needHelp: !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START),
+      needHelp: false,
       helpIndex: 0,
       remember: false,
     };
@@ -151,6 +151,14 @@ export default {
       'isMainControlDocked',
       'admitSearch',
     ]),
+    waitingGeolocation: {
+      get() {
+        return this.$store.state.view.waitingGeolocation;
+      },
+      set(waitingGeolocation) {
+        this.$store.state.view.waitingGeolocation = waitingGeolocation;
+      },
+    },
     logVisible() {
       return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
     },
@@ -272,6 +280,7 @@ export default {
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_SPACE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
+    this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
