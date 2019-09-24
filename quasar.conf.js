@@ -150,6 +150,9 @@ module.exports = function (ctx) {
         'QTab',
         'QTabPane',
         'QSpinner',
+        'QCarousel',
+        'QCarouselSlide',
+        'QCarouselControl',
       ],
       directives: [
         'Ripple',

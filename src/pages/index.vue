@@ -48,38 +48,48 @@
     >
       <div class="bg-opaque-white full-height">
         <div class="q-pa-lg" id="gl-container">
-          <h5>{{ $t('messages.needHelpTitle') }}</h5>
-          <p v-html="$t(`messages.needHelp${helpIndex}Text`)"></p>
+          <klab-presentation></klab-presentation>
           <div class="gl-btn-container">
-            <q-btn
-              :label="$t('label.appPrevious')"
-              color="mc-main"
-              :disable="helpIndex === 0"
-              @click="helpIndex -= 1"
-            ></q-btn>
-            <q-btn
-              :label="$t('label.appNext')"
-              color="mc-main"
-              :disable="helpIndex === 3"
-              @click="helpIndex += 1"
-            ></q-btn>
-            <q-btn
-              :label="$t('label.appOK')"
-              color="mc-main"
-              @click="hideHelp"
-            ></q-btn>
-            <q-checkbox
-              v-model="remember"
-              :keep-color="true"
-              color="mc-main"
-              :label="$t('label.rememberDecision')"
-              class="rmd-checkbox"
-              :left-label="true"
-            ></q-checkbox>
+           <!--
+           <q-btn
+             :label="$t('label.appPrevious')"
+             color="mc-main"
+             :disable="helpIndex === 0"
+             @click="helpIndex -= 1"
+           ></q-btn>
+           <q-btn
+             :label="$t('label.appNext')"
+             color="mc-main"
+             :disable="helpIndex === 3"
+             @click="helpIndex += 1"
+           ></q-btn>
+           <div id="gl-page-counter">{{ helpIndex + 1 }}/6</div>
+           <q-btn
+             :label="$t('label.appClose')"
+             color="mc-main"
+             @click="hideHelp"
+           ></q-btn>
+           -->
+           <q-checkbox
+             v-model="remember"
+             :keep-color="true"
+             color="mc-main"
+             :label="$t('label.rememberDecision')"
+             class="rmd-checkbox"
+             :left-label="true"
+           ></q-checkbox>
           </div>
         </div>
-        <div id="gl-page-counter">1/6</div>
       </div>
+      <q-btn
+        icon="mdi-close"
+        class="gl-icon-close-popover"
+        @click="hideHelp"
+        color="grey-8"
+        size="xs"
+        flat
+        round
+      ></q-btn>
     </q-modal>
     <input-request-modal></input-request-modal>
     <scale-change-dialog></scale-change-dialog>
@@ -99,6 +109,7 @@ import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 
 import { colors, Cookies } from 'quasar';
+import KlabPresentation from 'components/KlabPresentation';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
 
@@ -113,6 +124,7 @@ export default {
     KlabSpinner,
     InputRequestModal,
     ScaleChangeDialog,
+    KlabPresentation,
   },
   data() {
     return {
@@ -176,8 +188,7 @@ export default {
     },
     showHelp: {
       get() {
-        return false;
-        // return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
+        return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
       },
       set(needHelp) {
         this.needHelp = needHelp;
@@ -317,9 +328,14 @@ export default {
     z-index 10000
 
   #modal-show-help
+    .gl-icon-close-popover
+      position absolute
+      right 5px
+      top 4px
     #gl-container
       height 100%
       width 100%
+      padding 30px
       position relative
     .gl-msg-content
       width 40vw
@@ -342,6 +358,7 @@ export default {
         right 0
         margin-bottom 15px
         margin-right 15px
+        width 100%
     #gl-page-counter
       position relative
       width 100px
