@@ -667,7 +667,7 @@ export default {
       .kt-download
         position absolute
         top 4px
-        right 8px
+        right 10px
         display none
         z-index 9999
         color #eee
