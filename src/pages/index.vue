@@ -41,56 +41,7 @@
           </div>
       </div>
     </q-modal>
-    <q-modal
-      v-model="showHelp"
-      id="modal-show-help"
-      :content-classes="['gl-msg-content']"
-    >
-      <div class="bg-opaque-white full-height">
-        <div class="q-pa-lg" id="gl-container">
-          <klab-presentation></klab-presentation>
-          <div class="gl-btn-container">
-           <!--
-           <q-btn
-             :label="$t('label.appPrevious')"
-             color="mc-main"
-             :disable="helpIndex === 0"
-             @click="helpIndex -= 1"
-           ></q-btn>
-           <q-btn
-             :label="$t('label.appNext')"
-             color="mc-main"
-             :disable="helpIndex === 3"
-             @click="helpIndex += 1"
-           ></q-btn>
-           <div id="gl-page-counter">{{ helpIndex + 1 }}/6</div>
-           <q-btn
-             :label="$t('label.appClose')"
-             color="mc-main"
-             @click="hideHelp"
-           ></q-btn>
-           -->
-           <q-checkbox
-             v-model="remember"
-             :keep-color="true"
-             color="mc-main"
-             :label="$t('label.rememberDecision')"
-             class="rmd-checkbox"
-             :left-label="true"
-           ></q-checkbox>
-          </div>
-        </div>
-      </div>
-      <q-btn
-        icon="mdi-close"
-        class="gl-icon-close-popover"
-        @click="hideHelp"
-        color="grey-8"
-        size="xs"
-        flat
-        round
-      ></q-btn>
-    </q-modal>
+    <klab-presentation></klab-presentation>
     <input-request-modal></input-request-modal>
     <scale-change-dialog></scale-change-dialog>
   </q-page>
@@ -108,7 +59,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 
-import { colors, Cookies } from 'quasar';
+import { colors } from 'quasar';
 import KlabPresentation from 'components/KlabPresentation';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
@@ -129,9 +80,6 @@ export default {
   data() {
     return {
       askForUndocking: false,
-      needHelp: false,
-      helpIndex: 0,
-      remember: false,
     };
   },
   computed: {
@@ -194,14 +142,6 @@ export default {
         [CONNECTION_CONSTANTS.CONNECTION_ERROR]: false,
       }[this.connectionState];
     },
-    showHelp: {
-      get() {
-        return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
-      },
-      set(needHelp) {
-        this.needHelp = needHelp;
-      },
-    },
   },
   methods: {
     ...mapActions('view', [
@@ -218,19 +158,6 @@ export default {
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
       console.info(`Setted max children as ${minResults}`);
       this.$store.state.data.childrenToAskFor = minResults;
-    },
-    storeNoNeedHelp() {
-      this.needHelp = false;
-      Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
-        expires: 30,
-        path: '/',
-      });
-    },
-    hideHelp() {
-      if (this.remember) {
-        this.storeNoNeedHelp();
-      }
-      this.needHelp = false;
     },
     askForUndockListener(ask) {
       this.askForUndocking = ask;
@@ -280,7 +207,6 @@ export default {
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_SPACE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
-    this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
@@ -335,43 +261,4 @@ export default {
 
   #modal-connection-status.fullscreen
     z-index 10000
-
-  #modal-show-help
-    .gl-icon-close-popover
-      position absolute
-      right 5px
-      top 4px
-    #gl-container
-      height 100%
-      width 100%
-      padding 30px
-      position relative
-    .gl-msg-content
-      width 40vw
-      height 60vh
-      padding 0
-      color rgba(0,0,0,0.7)
-      position relative
-      p
-        padding 20px 0
-    .rmd-checkbox
-      position absolute
-      right 0px
-      bottom -25px
-      font-size 10px
-
-    .gl-msg-content
-      .gl-btn-container
-        position: absolute
-        bottom 30px
-        right 0
-        margin-bottom 15px
-        margin-right 15px
-        width 100%
-    #gl-page-counter
-      position relative
-      width 100px
-      margin 0 auto
-      text-align center
-      bottom 75px
 </style>

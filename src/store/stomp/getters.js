@@ -1,4 +1,4 @@
-import { MESSAGE_TYPES } from 'shared/Constants';
+import { MESSAGE_TYPES, CONNECTION_CONSTANTS } from 'shared/Constants';
 
 export default {
   lastError: (state) => {
@@ -26,6 +26,7 @@ export default {
   queuedMessage: state => (state.queuedMessage),
 
   connectionState: state => (state.connectionState),
+  connectionUp: state => state.connectionState === CONNECTION_CONSTANTS.CONNECTION_UP,
 
   tasks: state => state.tasks,
 
