@@ -7,42 +7,29 @@
     <div class="full-height">
       <div class="kp-help-content full-height">
         <q-carousel
-          class="kl-main-carousel full-height"
-          ref="kl-main-carousel"
+          class="kl-carousel full-height"
+          ref="kl-carousel"
           color="white"
           :quick-nav="true"
-          @slide-trigger="initSecondarySlider"
+          @slide-trigger="initStack"
         >
           <q-carousel-slide
-            class="kl-main-slide full-height"
-            v-for="(slide, index) in slides"
-            :key="`kl-pri-${index}`"
+            class="kl-slide full-height"
+            v-for="(slide, slideIndex) in slides"
+            :key="`kl-slide-${slideIndex}`"
           >
             <div class="kl-main-title" v-html="slide.title"></div>
             <div class="kl-main-content">
-              <q-carousel
-                class="kl-secondary-carousel full-height"
-                ref="kl-secondary-carousel"
-                v-if="slide.slides.length > 0"
-                :autoplay="slide.duration ? slide.duration : true"
-                infinite
-                :animation="false"
-              >
-                <q-carousel-slide
-                  class="kl-secondary-slide full-height"
-                  v-for="(s, index) in slide.slides"
-                  :key="`kl-sec-${index}`"
-                >
-                  <div
-                    class="kl-secondary-content"
-                    :style="{ 'background-image': `url(statics/help/${s.image})` }"
-                  >
-                  </div>
-                  <div class="absolute-bottom kl-secondary-caption">
-                    <div class="q-display-1" v-html="s.text"></div>
-                  </div>
-                </q-carousel-slide>
-              </q-carousel>
+              <klab-stack
+                v-if="slide.stack.layers && slide.stack.layers.length > 0"
+                :owner-index="slideIndex"
+                :layers="slide.stack.layers"
+                :animated="slide.stack.animated"
+                :duration="slide.stack.duration"
+                :autostart="slide.stack.autostart || slideIndex === 0"
+                :infinite="slide.stack.infinite"
+                ref="kl-stack"
+              ></klab-stack>
               <div class="kl-primary-image" :style="{ 'background-image': `url(statics/help/${slide.image})` }" v-else>
               </div>
             </div>
@@ -76,43 +63,54 @@
 import { mapGetters } from 'vuex';
 import { Cookies } from 'quasar';
 import { WEB_CONSTANTS } from 'shared/Constants';
+import KlabStack from 'components/custom/KlabStack.vue';
 
 export default {
   name: 'KlabPresentation',
+  components: { KlabStack },
   data() {
     return {
       slides: [
         {
           title: 'First with a link to <span class="internal-link" rel="0-0">first</span>, <span class="internal-link" rel="0-1">second</span> and <span class="internal-link" rel="0-2">third</span>',
-          slides: [{
-            image: 'slide1.1.jpg',
-            text: 'This is the first first slide',
-          }, {
-            image: 'slide1.2.jpg',
-            text: 'This is the second first slide',
-          }, {
-            image: 'slide1.3.jpg',
-            text: 'This is the third first slide',
-          }],
-          duration: 4000,
+          stack: {
+            layers: [{
+              image: 'slide1.1.jpg',
+              text: 'This is the first first layer',
+            }, {
+              image: 'slide1.2.jpg',
+              text: 'This is the second first layer',
+            }, {
+              image: 'slide1.3.jpg',
+              text: 'This is the third first layer',
+            }],
+            duration: 2000,
+            animated: true,
+            infinite: true,
+          },
         }, {
           title: 'Second',
-          slides: [{
-            image: 'slide2.1.jpg',
-            text: 'This is the second first slide',
-          }, {
-            image: 'slide2.2.jpg',
-            text: 'This is the second second slide',
-          }],
-          duration: 4000,
+          stack: {
+            layers: [{
+              image: 'slide2.1.jpg',
+              text: 'This is the second first layer',
+            }, {
+              image: 'slide2.2.jpg',
+              text: 'This is the second second layer',
+            }],
+            duration: 2000,
+            animated: false,
+            infinite: false,
+          },
         }, {
           title: 'Third',
-          slides: [],
+          stack: [],
           image: 'slide3.jpg',
         },
       ],
       needHelp: false,
       remember: false,
+      topLayer: [],
     };
   },
   computed: {
@@ -144,20 +142,27 @@ export default {
       }
       this.needHelp = false;
     },
-    initSecondarySlider(oldIndex, newIndex) {
-      if (typeof this.$refs['kl-secondary-carousel'][newIndex] !== 'undefined') {
-        this.$refs['kl-secondary-carousel'][newIndex].goToSlide(0);
+    initStack(oldIndex, newIndex) {
+      const oldStack = this.$refs['kl-stack'][oldIndex];
+      if (typeof oldStack !== 'undefined') {
+        oldStack.stopStack();
+      }
+      const newStack = this.$refs['kl-stack'][newIndex];
+      if (typeof newStack !== 'undefined') {
+        newStack.initStack(0);
       }
     },
-    goToMain(slide, index) {
-      let carousel;
+    goTo(slide, index) {
       if (slide === 'main') {
-        carousel = this.$refs['kl-main-carousel'];
+        const carousel = this.$refs['kl-carousel'];
+        if (typeof carousel !== 'undefined') {
+          carousel.goToSlide(index);
+        }
       } else {
-        carousel = this.$refs['kl-secondary-carousel'][slide];
-      }
-      if (typeof carousel !== 'undefined') {
-        carousel.goToSlide(index);
+        const stack = this.$refs['kl-stack'][slide];
+        if (typeof stack !== 'undefined') {
+          stack.goTo(index);
+        }
       }
     },
   },
@@ -168,7 +173,7 @@ export default {
     this.$el.querySelectorAll('.internal-link').forEach((link) => {
       const [slide, index] = link.getAttribute('rel').split('-');
       link.addEventListener('click', () => {
-        this.goToMain(slide, index);
+        this.goTo(parseInt(slide, 10), parseInt(index, 10));
       });
     });
   },
@@ -189,41 +194,38 @@ export default {
     .kp-help-content
       position relative
       background-color white
-      .kl-main-carousel
-        .kl-main-slide
-          height 100%
-          padding 0
-          display flex
-          flex-direction column
-          .kl-main-title
-            height 2em
-            font-size 2em
-            line-height 2em
-            vertical-align middle
-            color white
-            text-align center
-            background-color alpha($main-control-main-color, 85%)
-            margin-bottom 10px
-          .kl-main-content
-            flex auto
-            .kl-secondary-carousel
-              .kl-secondary-slide
-                padding 0
-            .kl-secondary-caption
-              text-align center
-              padding 12px
-              color $grey-4
-              bottom 38px
-              background-color alpha($main-control-main-color, 85%)
-            .kl-primary-image
-            .kl-secondary-content
-              text-align center
-              background-repeat no-repeat
-              background-size contain
-              background-position center
-              height calc(100% - 40px)
-        .q-carousel-quick-nav
+    .kl-carousel
+      .kl-slide
+        height 100%
+        padding 0
+        display flex
+        flex-direction column
+      .kl-main-title
+        height 2em
+        font-size 2em
+        line-height 2em
+        vertical-align middle
+        color white
+        text-align center
+        background-color alpha($main-control-main-color, 85%)
+        margin-bottom 10px
+      .kl-main-content
+        flex auto
+        .kl-secondary-caption
+          text-align center
+          padding 12px
+          color $grey-4
+          bottom 38px
           background-color alpha($main-control-main-color, 85%)
+        .kl-primary-image
+        .kl-secondary-content
+          text-align center
+          background-repeat no-repeat
+          background-size contain
+          background-position center
+          height calc(100% - 40px)
+    .q-carousel-quick-nav
+      background-color alpha($main-control-main-color, 85%)
     .rmd-checkbox
       position absolute
       right 44px
