@@ -9,15 +9,21 @@
       v-for="(layer, layerIndex) in layers"
       :key="`kl-layer-${layerIndex}`"
       :style="`z-index: 10${layers.length - layerIndex}`"
-      :class="{ 'kl-top-layer': selectedLayer === layerIndex }"
+      :class="{ 'kl-top-layer': selectedLayer === layerIndex, 'kl-hide-layer': selectedLayer !== layerIndex }"
     >
       <div
-        class="kl-secondary-content"
+        class="kl-layer-content"
+        :class="[ `kl-image-${layer.imageAlign}` ]"
         :style="{ 'background-image': `url(statics/help/${layer.image})` }"
       >
       </div>
-      <div class="absolute-bottom kl-secondary-caption">
-        <div class="q-display-1" v-html="layer.text"></div>
+      <div
+        class="kl-layer-caption"
+        :class="[ `kl-text-${layer.textPosition}` ]"
+        :style="{ width: layer.textPosition === 'left' || layer.textPosition === 'right' ? layer.textWidth || '40%' : '100%'}"
+      >
+        <div class="kl-caption-title" v-html="layer.title"></div>
+        <div class="kl-caption-text" :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
       </div>
     </div>
   </div>
@@ -96,13 +102,56 @@ export default {
 </script>
 
 <style lang="stylus">
+  @import '~variables'
   .kl-stack
     position relative
+    .kl-layer-caption
+      position absolute
+      padding 12px
+      color $grey-4
+      // text-align center
+      background-color alpha($main-control-main-color, 85%)
+      &.kl-text-bottom
+        bottom 38px
+        left 0
+      &.kl-text-top
+        top 0
+        left 0
+      &.kl-text-left
+        top 0
+        left 0
+        height calc(100% - 40px)
+      &.kl-text-right
+        top 0
+        right 0
+        height calc(100% - 40px)
+      .kl-caption-title
+        font-size 34px
+        color white
+        line-height 40px
+        letter-spacing normal
+        margin 0 0 10px 0
+        text-align center
+      .kl-caption-text
+        font-size 1em
+        color white
+    .kl-layer-content
+      background-repeat no-repeat
+      background-size contain
+      height calc(100% - 40px)
+      &.kl-image-center
+        background-position center
+      &.kl-image-left
+        background-position left
+      &.kl-image-right
+        background-position right
     .kl-layer
       position absolute
+      padding 0
       top 0
       left 0
-      padding 0
       &.kl-top-layer
         z-index 999 !important
+      &.kl-hide-layer
+        visibility hidden
 </style>

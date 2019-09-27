@@ -30,7 +30,7 @@
                 :infinite="slide.stack.infinite"
                 ref="kl-stack"
               ></klab-stack>
-              <div class="kl-primary-image" :style="{ 'background-image': `url(statics/help/${slide.image})` }" v-else>
+              <div class="kl-main-image" :style="{ 'background-image': `url(statics/help/${slide.image})` }" v-else>
               </div>
             </div>
           </q-carousel-slide>
@@ -76,13 +76,24 @@ export default {
           stack: {
             layers: [{
               image: 'slide1.1.jpg',
-              text: 'This is the first first layer',
+              imageAlign: 'left',
+              title: 'Loren',
+              text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porta, nibh eu laoreet dignissim, eros urna accumsan velit, nec ullamcorper lectus massa id ipsum. Donec mattis metus porta metus dapibus, a consectetur mi aliquet. Mauris risus elit, pharetra nec lectus vel, faucibus rhoncus elit. Suspendisse ac ex et sapien fringilla vehicula. In consequat tellus eu lorem scelerisque sodales. In erat erat, fermentum semper pretium sit amet, sagittis id nisi.',
+              textPosition: 'right',
+              textWidth: '200px',
             }, {
               image: 'slide1.2.jpg',
-              text: 'This is the second first layer',
+              imageAlign: 'right',
+              title: 'Ipsum',
+              text: 'Vestibulum pellentesque aliquet mi quis lacinia. Nam dignissim ex efficitur, ultrices lorem vitae, dapibus nisi. Duis vitae mi et ipsum finibus vestibulum ut et libero. Proin fermentum elit a massa feugiat, vitae aliquet nulla dignissim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae',
+              textPosition: 'left',
+              textAlign: 'center',
+              textWidth: '15%',
             }, {
               image: 'slide1.3.jpg',
-              text: 'This is the third first layer',
+              imageAlign: 'center',
+              text: 'Aliquam ac mattis metus. Nulla pulvinar finibus urna nec suscipit. Duis non sem interdum, iaculis erat at, lacinia tortor. Nullam quis nulla et est pulvinar sollicitudin vel quis magna. Suspendisse sed urna odio. Mauris a pretium ante. Etiam pulvinar ipsum nec lectus tincidunt malesuada.',
+              textPosition: 'bottom',
             }],
             duration: 2000,
             animated: true,
@@ -100,7 +111,6 @@ export default {
             }],
             duration: 2000,
             animated: false,
-            infinite: false,
           },
         }, {
           title: 'Third',
@@ -211,14 +221,7 @@ export default {
         margin-bottom 10px
       .kl-main-content
         flex auto
-        .kl-secondary-caption
-          text-align center
-          padding 12px
-          color $grey-4
-          bottom 38px
-          background-color alpha($main-control-main-color, 85%)
-        .kl-primary-image
-        .kl-secondary-content
+        .kl-main-image
           text-align center
           background-repeat no-repeat
           background-size contain
