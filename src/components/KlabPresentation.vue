@@ -8,6 +8,7 @@
       <div class="kp-help-content full-height">
         <q-carousel
           class="kl-main-carousel full-height"
+          ref="kl-main-carousel"
           color="white"
           :quick-nav="true"
           @slide-trigger="initSecondarySlider"
@@ -21,11 +22,11 @@
             <div class="kl-main-content">
               <q-carousel
                 class="kl-secondary-carousel full-height"
+                ref="kl-secondary-carousel"
                 v-if="slide.slides.length > 0"
                 :autoplay="slide.duration ? slide.duration : true"
                 infinite
                 :animation="false"
-                ref="kl-secondary-carousel"
               >
                 <q-carousel-slide
                   class="kl-secondary-slide full-height"
@@ -82,7 +83,7 @@ export default {
     return {
       slides: [
         {
-          title: 'First',
+          title: 'First with a link to <span class="internal-link" rel="0-0">first</span>, <span class="internal-link" rel="0-1">second</span> and <span class="internal-link" rel="0-2">third</span>',
           slides: [{
             image: 'slide1.1.jpg',
             text: 'This is the first first slide',
@@ -148,11 +149,28 @@ export default {
         this.$refs['kl-secondary-carousel'][newIndex].goToSlide(0);
       }
     },
+    goToMain(slide, index) {
+      let carousel;
+      if (slide === 'main') {
+        carousel = this.$refs['kl-main-carousel'];
+      } else {
+        carousel = this.$refs['kl-secondary-carousel'][slide];
+      }
+      if (typeof carousel !== 'undefined') {
+        carousel.goToSlide(index);
+      }
+    },
   },
   watch: {},
   mounted() {
     this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
     this.remember = !this.needHelp;
+    this.$el.querySelectorAll('.internal-link').forEach((link) => {
+      const [slide, index] = link.getAttribute('rel').split('-');
+      link.addEventListener('click', () => {
+        this.goToMain(slide, index);
+      });
+    });
   },
 };
 </script>
@@ -191,12 +209,12 @@ export default {
             .kl-secondary-carousel
               .kl-secondary-slide
                 padding 0
-                .kl-secondary-caption
-                  text-align center
-                  padding 12px
-                  color $grey-4
-                  bottom 38px
-                  background-color alpha($main-control-main-color, 85%)
+            .kl-secondary-caption
+              text-align center
+              padding 12px
+              color $grey-4
+              bottom 38px
+              background-color alpha($main-control-main-color, 85%)
             .kl-primary-image
             .kl-secondary-content
               text-align center
