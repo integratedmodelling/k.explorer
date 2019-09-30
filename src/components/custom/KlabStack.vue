@@ -34,19 +34,33 @@
         :disable="!hasPrevious"
         color="mc-main"
         text-color="white"
-        icon="keyboard_arrow_left"
+        size="sm"
+        icon="mdi-chevron-left"
         round flat dense
+        :title="$t('label.appPrevious')"
       ></q-btn>
-      <span class="ks-navigation-page">{{ selectedLayer + 1 }}/{{ layers.length }}</span>
       <q-btn
         id="ks-next"
         @click="next"
         :disable="!hasNext"
         color="mc-main"
         text-color="white"
-        icon="keyboard_arrow_right"
+        icon="mdi-chevron-right"
+        size="sm"
         round flat dense
+        :title="$t('label.appNext')"
       ></q-btn>
+      <q-btn
+        id="ks-play-stop"
+        @click="animation === null ? playStack() : stopStack()"
+        color="mc-main"
+        text-color="white"
+        size="sm"
+        :icon="animation === null ? 'mdi-play' : 'mdi-pause'"
+        round flat dense
+        :title="animation === null ? $t('label.appPlay') : $t('label.appPause')"
+      ></q-btn>
+      <span class="ks-navigation-page">{{ selectedLayer + 1 }}/{{ layers.length }}</span>
     </div>
   </div>
 </template>
@@ -80,7 +94,7 @@ export default {
       this.selectedLayer = 0;
       this.stopStack();
       if (this.animated) {
-        this.setAnimation(this.layers[0].duration || this.duration);
+        this.playStack();
       }
     },
     stopStack() {
@@ -89,11 +103,14 @@ export default {
         this.animation = null;
       }
     },
+    playStack() {
+      this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
+    },
     goTo(index, animate = false) {
       this.stopStack();
       this.selectedLayer = index;
       if (animate) {
-        this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
+        this.playStack();
       }
     },
     hasNext() {
@@ -127,7 +144,7 @@ export default {
         }
         if (this.animated) {
           // next animation
-          this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
+          this.playStack();
         }
         // console.log(`${self.ownerIndex}: ${self.selectedLayer} of ${self.layers.length}`);
       }, duration);
@@ -152,7 +169,7 @@ export default {
       // text-align center
       background-color alpha($main-control-main-color, 85%)
       &.ks-text-bottom
-        bottom 45px
+        bottom 44px
         left 0
       &.ks-text-top
         top 0
@@ -160,11 +177,11 @@ export default {
       &.ks-text-left
         top 0
         left 0
-        // height calc(100% - 45px)
+        height calc(100% - 44px)
       &.ks-text-right
         top 0
         right 0
-        // height calc(100% - 45px)
+        height calc(100% - 44px)
       .ks-caption-title
         font-size 34px
         color white
@@ -178,7 +195,7 @@ export default {
     .ks-layer-content
       background-repeat no-repeat
       background-size contain
-      height calc(100% - 45px)
+      height calc(100% - 44px)
       &.ks-image-center
         background-position center
       &.ks-image-left
@@ -198,23 +215,21 @@ export default {
     .ks-navigation
       width auto
       position absolute
-      bottom 45px
-      margin 0px 0
+      bottom 44px
       right 0
       z-index 10000
-      line-height 39px
       vertical-align middle
       opacity 0.2
       transition opacity .5s
-      padding 0 5px
       border-radius 5px
-      background-color $main-control-main-color
+      padding 2px
       .ks-navigation-page
-        padding-top 5px
         text-align center
         display inline-block
         color white
-        padding 0 10px
+        font-size .8em
+        padding 0 5px
       &:hover
         opacity 1;
+        background-color background-color alpha($main-control-main-color, 85%)
 </style>

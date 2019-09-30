@@ -9,6 +9,8 @@ export default {
     appNext: 'Next',
     appPrevious: 'Previous',
     appWarning: 'Warning',
+    appPlay: 'Play',
+    appPause: 'Pause',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
     klabNoDate: 'No date',
