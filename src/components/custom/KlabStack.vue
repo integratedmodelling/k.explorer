@@ -118,7 +118,7 @@ export default {
       // text-align center
       background-color alpha($main-control-main-color, 85%)
       &.kl-text-bottom
-        bottom 38px
+        bottom 45px
         left 0
       &.kl-text-top
         top 0
@@ -126,11 +126,11 @@ export default {
       &.kl-text-left
         top 0
         left 0
-        height calc(100% - 40px)
+        // height calc(100% - 45px)
       &.kl-text-right
         top 0
         right 0
-        height calc(100% - 40px)
+        // height calc(100% - 45px)
       .kl-caption-title
         font-size 34px
         color white
@@ -144,7 +144,7 @@ export default {
     .kl-layer-content
       background-repeat no-repeat
       background-size contain
-      height calc(100% - 40px)
+      height calc(100% - 45px)
       &.kl-image-center
         background-position center
       &.kl-image-left

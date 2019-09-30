@@ -78,7 +78,7 @@ import { mapGetters } from 'vuex';
 import { Cookies } from 'quasar';
 import { WEB_CONSTANTS } from 'shared/Constants';
 import KlabStack from 'components/custom/KlabStack.vue';
-import slides from 'shared/slides.js';
+import slides from 'shared/Slides.js';
 
 export default {
   name: 'KlabPresentation',
@@ -199,7 +199,7 @@ export default {
     .internal-link
       cursor pointer
       &:hover
-        font-weight bolde
+        color $main-control-yellow
     .q-carousel-quick-nav
       background-color alpha($main-control-main-color, 85%)
     .rmd-checkbox
