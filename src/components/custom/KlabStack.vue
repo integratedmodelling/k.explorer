@@ -10,20 +10,21 @@
       :key="`kl-layer-${layerIndex}`"
       :style="`z-index: 10${layers.length - layerIndex}`"
       :class="{ 'kl-top-layer': selectedLayer === layerIndex, 'kl-hide-layer': selectedLayer !== layerIndex }"
+      @click="next"
     >
       <div
         class="kl-layer-content"
-        :class="[ `kl-image-${layer.imageAlign}` ]"
+        :class="[ `kl-image-${layer.imageAlign || 'center'}` ]"
         :style="{ 'background-image': `url(statics/help/${layer.image})` }"
       >
       </div>
       <div
         class="kl-layer-caption"
-        :class="[ `kl-text-${layer.textPosition}` ]"
+        :class="[ `kl-text-${layer.textPosition || 'bottom'}` ]"
         :style="{ width: layer.textPosition === 'left' || layer.textPosition === 'right' ? layer.textWidth || '40%' : '100%'}"
       >
-        <div class="kl-caption-title" v-html="layer.title"></div>
-        <div class="kl-caption-text" :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
+        <div class="kl-caption-title" v-if="layer.title" v-html="layer.title"></div>
+        <div class="kl-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
       </div>
     </div>
   </div>
@@ -37,31 +38,20 @@ export default {
       type: Number,
       required: true,
     },
-    layers: {
-      type: Array,
+    stack: {
+      type: Object,
       required: true,
-    },
-    animated: {
-      type: Boolean,
-      default: true,
-    },
-    autostart: {
-      type: Boolean,
-      default: false,
-    },
-    duration: {
-      type: Number,
-      default: 5000, // as QCarousel
-    },
-    infinite: {
-      type: Boolean,
-      default: true,
     },
   },
   data() {
     return {
       selectedLayer: 0,
       animation: null,
+      layers: this.stack.layers,
+      animated: this.stack.animated || true,
+      autostart: this.stack.animated || this.ownerIndex === 0,
+      duration: this.stack.animated || 5000,
+      infinite: this.stack.animated || true,
     };
   },
   methods: {
@@ -78,21 +68,32 @@ export default {
         this.animation = null;
       }
     },
-    goTo(index) {
+    goTo(index, animate = false) {
       this.stopStack();
       this.selectedLayer = index;
+      if (animate) {
+        this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
+      }
+    },
+    next() {
+      if (this.selectedLayer < this.layers.length - 1) {
+        this.goTo(this.selectedLayer + 1);
+      } else if (this.infinite) {
+        this.goTo(0);
+      }
     },
     setAnimation(duration) {
-      const self = this;
       this.animation = setTimeout(() => {
-        if (self.selectedLayer < self.layers.length - 1) {
-          self.selectedLayer += 1;
-        } else if (self.infinite) {
-          self.selectedLayer = 0;
+        if (this.selectedLayer < this.layers.length - 1) {
+          this.selectedLayer += 1;
+        } else if (this.infinite) {
+          this.selectedLayer = 0;
+        } else {
+          return; // we stop generating animation if is not infinite
         }
         if (this.animated) {
           // next animation
-          self.setAnimation(self.layers[self.selectedLayer].duration || this.duration);
+          this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
         }
         // console.log(`${self.ownerIndex}: ${self.selectedLayer} of ${self.layers.length}`);
       }, duration);

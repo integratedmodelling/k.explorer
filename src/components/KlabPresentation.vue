@@ -18,22 +18,36 @@
             v-for="(slide, slideIndex) in slides"
             :key="`kl-slide-${slideIndex}`"
           >
-            <div class="kl-main-title" v-html="slide.title"></div>
+            <div class="kl-main-title" v-if='slide.title' v-html="slide.title"></div>
             <div class="kl-main-content">
               <klab-stack
                 v-if="slide.stack.layers && slide.stack.layers.length > 0"
                 :owner-index="slideIndex"
-                :layers="slide.stack.layers"
-                :animated="slide.stack.animated"
-                :duration="slide.stack.duration"
-                :autostart="slide.stack.autostart || slideIndex === 0"
-                :infinite="slide.stack.infinite"
+                :stack="slide.stack"
                 ref="kl-stack"
               ></klab-stack>
               <div class="kl-main-image" :style="{ 'background-image': `url(statics/help/${slide.image})` }" v-else>
               </div>
             </div>
           </q-carousel-slide>
+          <q-carousel-control slot="control-nav" slot-scope="carousel" :offset="[5, 2]">
+            <q-btn
+              @click="carousel.previous"
+              :disable="!carousel.canGoToPrevious"
+              color="mc-main" text-color="white"
+              icon="keyboard_arrow_left"
+              round dense flat
+              class="q-mr-sm"
+            ></q-btn>
+            <q-btn
+              @click="carousel.next"
+              :disable="!carousel.canGoToNext"
+              color="mc-main"
+              text-color="white"
+              icon="keyboard_arrow_right"
+              round dense flat
+            ></q-btn>
+          </q-carousel-control>
         </q-carousel>
       </div>
       <div class="kp-btn-container">
@@ -64,66 +78,18 @@ import { mapGetters } from 'vuex';
 import { Cookies } from 'quasar';
 import { WEB_CONSTANTS } from 'shared/Constants';
 import KlabStack from 'components/custom/KlabStack.vue';
+import slides from 'shared/slides.js';
 
 export default {
   name: 'KlabPresentation',
   components: { KlabStack },
   data() {
     return {
-      slides: [
-        {
-          title: 'First with a link to <span class="internal-link" rel="0-0">first</span>, <span class="internal-link" rel="0-1">second</span> and <span class="internal-link" rel="0-2">third</span>',
-          stack: {
-            layers: [{
-              image: 'slide1.1.jpg',
-              imageAlign: 'left',
-              title: 'Loren',
-              text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas porta, nibh eu laoreet dignissim, eros urna accumsan velit, nec ullamcorper lectus massa id ipsum. Donec mattis metus porta metus dapibus, a consectetur mi aliquet. Mauris risus elit, pharetra nec lectus vel, faucibus rhoncus elit. Suspendisse ac ex et sapien fringilla vehicula. In consequat tellus eu lorem scelerisque sodales. In erat erat, fermentum semper pretium sit amet, sagittis id nisi.',
-              textPosition: 'right',
-              textWidth: '200px',
-              duration: 1000,
-            }, {
-              image: 'slide1.2.jpg',
-              imageAlign: 'right',
-              title: 'Ipsum',
-              text: 'Vestibulum pellentesque aliquet mi quis lacinia. Nam dignissim ex efficitur, ultrices lorem vitae, dapibus nisi. Duis vitae mi et ipsum finibus vestibulum ut et libero. Proin fermentum elit a massa feugiat, vitae aliquet nulla dignissim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae',
-              textPosition: 'left',
-              textAlign: 'center',
-              textWidth: '15%',
-              duration: 5000,
-            }, {
-              image: 'slide1.3.jpg',
-              imageAlign: 'center',
-              text: 'Aliquam ac mattis metus. Nulla pulvinar finibus urna nec suscipit. Duis non sem interdum, iaculis erat at, lacinia tortor. Nullam quis nulla et est pulvinar sollicitudin vel quis magna. Suspendisse sed urna odio. Mauris a pretium ante. Etiam pulvinar ipsum nec lectus tincidunt malesuada.',
-              textPosition: 'bottom',
-              duration: 2000,
-            }],
-            duration: 10000,
-            animated: true,
-            infinite: true,
-          },
-        }, {
-          title: 'Second',
-          stack: {
-            layers: [{
-              image: 'slide2.1.jpg',
-              text: 'This is the second first layer',
-            }, {
-              image: 'slide2.2.jpg',
-              text: 'This is the second second layer',
-            }],
-            duration: 2000,
-            animated: false,
-          },
-        }, {
-          title: 'Third',
-          stack: [],
-          image: 'slide3.jpg',
-        },
-      ],
+      slides,
       needHelp: false,
       remember: false,
       topLayer: [],
+      modal: false,
     };
   },
   computed: {
