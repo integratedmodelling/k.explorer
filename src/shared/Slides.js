@@ -31,7 +31,7 @@ export default [
       layers: [{
         image: 'demo11.gif',
         imageAlign: 'center',
-        text: 'Search for a georgaphical context',
+        text: 'Search for a geographical context',
         textPosition: 'bottom',
         duration: 7200,
       }, {
@@ -54,7 +54,7 @@ export default [
       infinite: false,
     },
   }, {
-    title: 'Setting the Context',
+    title: '3 Ways to choose the context:  <span class="internal-link" rel="1-0">Search</span>, <span class="internal-link" rel="1-1">Draw</span> and <span class="internal-link" rel="1-2">Zoom In and Out</span>',
     stack: {
       layers: [{
         image: 'searchC.gif',
