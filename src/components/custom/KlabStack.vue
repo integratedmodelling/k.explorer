@@ -69,28 +69,33 @@ export default {
       this.selectedLayer = 0;
       this.stopStack();
       if (this.animated) {
-        const self = this;
-        this.animation = setInterval(() => {
-          if (self.selectedLayer < self.layers.length - 1) {
-            self.selectedLayer += 1;
-          } else if (self.infinite) {
-            self.selectedLayer = 0;
-          } else {
-            clearInterval(self.animation);
-          }
-          // console.log(`${self.ownerIndex}: ${self.selectedLayer} of ${self.layers.length}`);
-        }, this.duration);
+        this.setAnimation(this.layers[0].duration || this.duration);
       }
     },
     stopStack() {
       if (this.animation !== null) {
-        clearInterval(this.animation);
+        clearTimeout(this.animation);
         this.animation = null;
       }
     },
     goTo(index) {
       this.stopStack();
       this.selectedLayer = index;
+    },
+    setAnimation(duration) {
+      const self = this;
+      this.animation = setTimeout(() => {
+        if (self.selectedLayer < self.layers.length - 1) {
+          self.selectedLayer += 1;
+        } else if (self.infinite) {
+          self.selectedLayer = 0;
+        }
+        if (this.animated) {
+          // next animation
+          self.setAnimation(self.layers[self.selectedLayer].duration || this.duration);
+        }
+        // console.log(`${self.ownerIndex}: ${self.selectedLayer} of ${self.layers.length}`);
+      }, duration);
     },
   },
   mounted() {
