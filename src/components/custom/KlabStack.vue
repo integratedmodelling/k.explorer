@@ -1,31 +1,52 @@
 <template>
   <div
-    class="kl-stack full-height"
-    ref="kl-stack"
+    class="ks-stack full-height"
+    ref="ks-stack"
     v-if="layers.length > 0"
   >
     <div
-      class="kl-layer fit"
+      class="ks-layer fit"
       v-for="(layer, layerIndex) in layers"
-      :key="`kl-layer-${layerIndex}`"
+      :key="`ks-layer-${layerIndex}`"
       :style="`z-index: 10${layers.length - layerIndex}`"
-      :class="{ 'kl-top-layer': selectedLayer === layerIndex, 'kl-hide-layer': selectedLayer !== layerIndex }"
+      :class="{ 'ks-top-layer': selectedLayer === layerIndex, 'ks-hide-layer': selectedLayer !== layerIndex }"
       @click="next"
     >
       <div
-        class="kl-layer-content"
-        :class="[ `kl-image-${layer.imageAlign || 'center'}` ]"
+        class="ks-layer-content"
+        :class="[ `ks-image-${layer.imageAlign || 'center'}` ]"
         :style="{ 'background-image': `url(statics/help/${layer.image})` }"
       >
       </div>
       <div
-        class="kl-layer-caption"
-        :class="[ `kl-text-${layer.textPosition || 'bottom'}` ]"
+        class="ks-layer-caption"
+        :class="[ `ks-text-${layer.textPosition || 'bottom'}` ]"
         :style="{ width: layer.textPosition === 'left' || layer.textPosition === 'right' ? layer.textWidth || '40%' : '100%'}"
       >
-        <div class="kl-caption-title" v-if="layer.title" v-html="layer.title"></div>
-        <div class="kl-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
+        <div class="ks-caption-title" v-if="layer.title" v-html="layer.title"></div>
+        <div class="ks-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
       </div>
+    </div>
+    <div class="ks-navigation">
+      <q-btn
+        id="ks-prev"
+        @click="previous"
+        :disable="!hasPrevious"
+        color="mc-main"
+        text-color="white"
+        icon="keyboard_arrow_left"
+        round flat dense
+      ></q-btn>
+      <span class="ks-navigation-page">{{ selectedLayer + 1 }}/{{ layers.length }}</span>
+      <q-btn
+        id="ks-next"
+        @click="next"
+        :disable="!hasNext"
+        color="mc-main"
+        text-color="white"
+        icon="keyboard_arrow_right"
+        round flat dense
+      ></q-btn>
     </div>
   </div>
 </template>
@@ -49,9 +70,9 @@ export default {
       animation: null,
       layers: this.stack.layers,
       animated: this.stack.animated || true,
-      autostart: this.stack.animated || this.ownerIndex === 0,
-      duration: this.stack.animated || 5000,
-      infinite: this.stack.animated || true,
+      autostart: this.stack.autostart || this.ownerIndex === 0,
+      duration: this.stack.duration || 5000,
+      infinite: this.stack.infinite || true,
     };
   },
   methods: {
@@ -75,11 +96,24 @@ export default {
         this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
       }
     },
+    hasNext() {
+      return this.selectedLayer < this.layers.length - 1 || this.infinite;
+    },
     next() {
       if (this.selectedLayer < this.layers.length - 1) {
         this.goTo(this.selectedLayer + 1);
       } else if (this.infinite) {
         this.goTo(0);
+      }
+    },
+    hasPrevious() {
+      return this.selectedLayer > 0 || this.infinite;
+    },
+    previous() {
+      if (this.selectedLayer > 0) {
+        this.goTo(this.selectedLayer - 1);
+      } else if (this.infinite) {
+        this.goTo(this.layers.length - 1);
       }
     },
     setAnimation(duration) {
@@ -109,55 +143,78 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .kl-stack
+  .ks-stack
     position relative
-    .kl-layer-caption
+    .ks-layer-caption
       position absolute
       padding 12px
       color $grey-4
       // text-align center
       background-color alpha($main-control-main-color, 85%)
-      &.kl-text-bottom
+      &.ks-text-bottom
         bottom 45px
         left 0
-      &.kl-text-top
+      &.ks-text-top
         top 0
         left 0
-      &.kl-text-left
+      &.ks-text-left
         top 0
         left 0
         // height calc(100% - 45px)
-      &.kl-text-right
+      &.ks-text-right
         top 0
         right 0
         // height calc(100% - 45px)
-      .kl-caption-title
+      .ks-caption-title
         font-size 34px
         color white
         line-height 40px
         letter-spacing normal
         margin 0 0 10px 0
         text-align center
-      .kl-caption-text
+      .ks-caption-text
         font-size 1em
         color white
-    .kl-layer-content
+    .ks-layer-content
       background-repeat no-repeat
       background-size contain
       height calc(100% - 45px)
-      &.kl-image-center
+      &.ks-image-center
         background-position center
-      &.kl-image-left
+      &.ks-image-left
         background-position left
-      &.kl-image-right
+      &.ks-image-right
         background-position right
-    .kl-layer
+    .ks-layer
       position absolute
       padding 0
       top 0
       left 0
-      &.kl-top-layer
+      &.ks-top-layer
         z-index 999 !important
-      &.kl-hide-layer
+      &.ks-hide-layer
         visibility hidden
+
+    .ks-navigation
+      width auto
+      position absolute
+      bottom 45px
+      margin 0px 0
+      right 0
+      z-index 10000
+      line-height 39px
+      vertical-align middle
+      opacity 0.2
+      transition opacity .5s
+      padding 0 5px
+      border-radius 5px
+      background-color $main-control-main-color
+      .ks-navigation-page
+        padding-top 5px
+        text-align center
+        display inline-block
+        color white
+        padding 0 10px
+      &:hover
+        opacity 1;
 </style>

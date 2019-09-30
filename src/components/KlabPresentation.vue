@@ -30,6 +30,7 @@
               </div>
             </div>
           </q-carousel-slide>
+          <!--
           <q-carousel-control slot="control-nav" slot-scope="carousel" :offset="[5, 2]">
             <q-btn
               @click="carousel.previous"
@@ -48,6 +49,7 @@
               round dense flat
             ></q-btn>
           </q-carousel-control>
+          -->
         </q-carousel>
       </div>
       <div class="kp-btn-container">
