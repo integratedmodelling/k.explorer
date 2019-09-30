@@ -134,16 +134,13 @@ export default {
       }
     },
     goTo(slide, index) {
-      if (slide === 'main') {
-        const carousel = this.$refs['kl-carousel'];
-        if (typeof carousel !== 'undefined') {
-          carousel.goToSlide(index);
-        }
-      } else {
-        const stack = this.$refs['kl-stack'][slide];
-        if (typeof stack !== 'undefined') {
-          stack.goTo(index);
-        }
+      const carousel = this.$refs['kl-carousel'];
+      if (typeof carousel !== 'undefined') {
+        carousel.goToSlide(slide);
+      }
+      const stack = this.$refs['kl-stack'][slide];
+      if (typeof stack !== 'undefined') {
+        stack.goTo(index);
       }
     },
   },

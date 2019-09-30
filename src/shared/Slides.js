@@ -26,7 +26,7 @@
 
 export default [
   {
-    title: 'Welcome to Aries <i class="klab-font klab-aries-logo"></i><span class="internal-link" rel="0-0">set a context</span>, <span class="internal-link" rel="0-1">search</span> and <span class="internal-link" rel="0-2">see the results</span>',
+    title: 'Welcome to <i class="klab-font klab-aries-logo"></i>ries. <span class="internal-link" rel="0-0"> Set a context</span>, <span class="internal-link" rel="0-1">search</span> and <span class="internal-link" rel="0-2">see the results</span>',
     stack: {
       layers: [{
         image: 'demo11.gif',

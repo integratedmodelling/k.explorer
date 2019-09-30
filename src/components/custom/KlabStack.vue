@@ -14,6 +14,7 @@
     >
       <div
         class="ks-layer-content"
+        :id="`ks-image-${ownerIndex}-${layerIndex}`"
         :class="[ `ks-image-${layer.imageAlign || 'center'}` ]"
         :style="{ 'background-image': `url(statics/help/${layer.image})` }"
       >
@@ -27,7 +28,7 @@
         <div class="ks-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
       </div>
     </div>
-    <div class="ks-navigation">
+    <div class="ks-navigation" :class="{ 'ks-navigation-transparent': animation !== null }">
       <q-btn
         id="ks-prev"
         @click="previous"
@@ -134,6 +135,7 @@ export default {
       }
     },
     setAnimation(duration) {
+      document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`).src = `${this.layers[this.selectedLayer].image}?a=${Date.now()}`;
       this.animation = setTimeout(() => {
         if (this.selectedLayer < this.layers.length - 1) {
           this.selectedLayer += 1;
@@ -219,10 +221,11 @@ export default {
       right 0
       z-index 10000
       vertical-align middle
-      opacity 0.2
       transition opacity .5s
       border-radius 5px
       padding 2px
+      &.ks-navigation-transparent
+        opacity 0.2
       .ks-navigation-page
         text-align center
         display inline-block
