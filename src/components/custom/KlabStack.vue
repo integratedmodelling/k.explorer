@@ -48,6 +48,7 @@
       <q-btn
         id="ks-play-stop"
         @click="animation === null ? playStack() : stopStack()"
+        :disable="!hasNext"
         text-color="grey-8"
         :icon="animation === null ? 'mdi-play' : 'mdi-pause'"
         round flat dense
@@ -74,6 +75,10 @@ export default {
       type: Number,
       required: true,
     },
+    maxOwnerIndex: {
+      type: Number,
+      required: true,
+    },
     stack: {
       type: Object,
       required: true,
@@ -89,6 +94,14 @@ export default {
       duration: this.stack.duration || 5000,
       infinite: typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false,
     };
+  },
+  computed: {
+    hasPrevious() {
+      return this.selectedLayer > 0 || this.ownerIndex > 0 || this.infinite;
+    },
+    hasNext() {
+      return this.selectedLayer < this.layers.length - 1 || this.ownerIndex < this.maxOwnerIndex - 1 || this.infinite;
+    },
   },
   methods: {
     initStack() {
@@ -123,9 +136,6 @@ export default {
         this.playStack();
       }
     },
-    hasNext() {
-      return this.selectedLayer < this.layers.length - 1 || this.infinite;
-    },
     next() {
       if (this.selectedLayer < this.layers.length - 1) {
         this.goTo(this.selectedLayer + 1);
@@ -136,9 +146,6 @@ export default {
         return false;
       }
       return true;
-    },
-    hasPrevious() {
-      return this.selectedLayer > 0 || this.infinite;
     },
     previous() {
       if (this.selectedLayer > 0) {

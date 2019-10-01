@@ -23,6 +23,7 @@
               <klab-stack
                 v-if="slide.stack.layers && slide.stack.layers.length > 0"
                 :owner-index="slideIndex"
+                :maxOwnerIndex="slides.length"
                 :stack="slide.stack"
                 ref="kp-stack"
                 @stackend="stackEnd"
