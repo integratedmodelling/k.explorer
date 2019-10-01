@@ -2,42 +2,41 @@
   <q-modal
     v-model="showHelp"
     id="modal-show-help"
-    :content-classes="['kp-help-container','q-pa-xl']"
+    :content-classes="['kp-help-container']"
   >
-    <div class="full-height">
+    <div class="kp-help-inner">
       <div class="kp-help-content full-height">
         <q-carousel
-          class="kl-carousel full-height"
-          ref="kl-carousel"
+          class="kp-carousel full-height"
+          ref="kp-carousel"
           color="white"
-          :quick-nav="true"
+          no-swipe
           @slide-trigger="initStack"
         >
           <q-carousel-slide
-            class="kl-slide full-height"
+            class="kp-slide full-height"
             v-for="(slide, slideIndex) in slides"
-            :key="`kl-slide-${slideIndex}`"
+            :key="`kp-slide-${slideIndex}`"
           >
-            <div class="kl-main-title" v-if='slide.title' v-html="slide.title"></div>
-            <div class="kl-main-content">
+            <div class="kp-main-title" v-if='slide.title' v-html="slide.title"></div>
+            <div class="kp-main-content">
               <klab-stack
                 v-if="slide.stack.layers && slide.stack.layers.length > 0"
                 :owner-index="slideIndex"
                 :stack="slide.stack"
-                ref="kl-stack"
+                ref="kp-stack"
+                @stackend="stackEnd"
               ></klab-stack>
-              <div class="kl-main-image" :style="{ 'background-image': `url(statics/help/${slide.image})` }" v-else>
-              </div>
+              <div v-else>No slides</div>
             </div>
           </q-carousel-slide>
-          <!--
-          <q-carousel-control slot="control-nav" slot-scope="carousel" :offset="[5, 2]">
+          <q-carousel-control slot="control-nav" slot-scope="carousel" :offset="[8, 5]" position="bottom-right">
             <q-btn
               @click="carousel.previous"
               :disable="!carousel.canGoToPrevious"
               color="mc-main" text-color="white"
-              icon="keyboard_arrow_left"
-              round dense flat
+              :label="$t('label.appPrevious')"
+              flat dense
               class="q-mr-sm"
             ></q-btn>
             <q-btn
@@ -45,20 +44,35 @@
               :disable="!carousel.canGoToNext"
               color="mc-main"
               text-color="white"
-              icon="keyboard_arrow_right"
-              round dense flat
+              :label="$t('label.appNext')"
+              flat dense
             ></q-btn>
           </q-carousel-control>
-          -->
         </q-carousel>
+      </div>
+      <div class="kp-navigation">
+        <div
+          v-for="(slide, slideIndex) in slides"
+          :key="`kp-nav-${slideIndex}`"
+          class="kp-nav-number"
+          :class="{ 'kp-nav-current': currentSlide === slideIndex }"
+          @click="goTo(slideIndex, 0)"
+        >{{ slideIndex + 1 }}
+          <q-tooltip
+            v-html="slide.title"
+            :offset="[0, 8]"
+            self="top middle"
+            anchor="bottom middle"
+          ></q-tooltip>
+        </div>
       </div>
       <div class="kp-btn-container">
         <q-checkbox
           v-model="remember"
           :keep-color="true"
-          color="mc-main"
+          color="grey-8"
           :label="$t('label.rememberDecision')"
-          class="rmd-checkbox"
+          class="kp-checkbox"
           :left-label="true"
         ></q-checkbox>
       </div>
@@ -67,10 +81,12 @@
         class="kp-icon-close-popover"
         @click="hideHelp"
         color="grey-8"
-        size="xs"
+        size="sm"
+        :title="$t('label.appClose')"
         flat
         round
       ></q-btn>
+
     </div>
   </q-modal>
 </template>
@@ -78,7 +94,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { Cookies } from 'quasar';
-import { WEB_CONSTANTS } from 'shared/Constants';
+import { WEB_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabStack from 'components/custom/KlabStack.vue';
 import slides from 'shared/Slides.js';
 
@@ -92,6 +108,7 @@ export default {
       remember: false,
       topLayer: [],
       modal: false,
+      carouselEl: undefined,
     };
   },
   computed: {
@@ -101,6 +118,9 @@ export default {
     ...mapGetters('view', [
       'isInModalMode',
     ]),
+    currentSlide() {
+      return this.carouselEl ? this.carouselEl.slide : -1;
+    },
     waitingGeolocation() {
       return this.$store.state.view.waitingGeolocation;
     },
@@ -115,36 +135,52 @@ export default {
   },
   methods: {
     hideHelp() {
-      if (this.remember && !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START)) {
+      if (this.remember) {
         Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
           expires: 30,
           path: '/',
         });
+      } else {
+        Cookies.remove(WEB_CONSTANTS.COOKIE_HELP_ON_START);
       }
       this.needHelp = false;
     },
     initStack(oldIndex, newIndex) {
-      const oldStack = this.$refs['kl-stack'][oldIndex];
+      const oldStack = this.$refs['kp-stack'][oldIndex];
       if (typeof oldStack !== 'undefined') {
         oldStack.stopStack();
       }
-      const newStack = this.$refs['kl-stack'][newIndex];
+      const newStack = this.$refs['kp-stack'][newIndex];
       if (typeof newStack !== 'undefined') {
         newStack.initStack(0);
       }
     },
     goTo(slide, index) {
-      const carousel = this.$refs['kl-carousel'];
+      const carousel = this.$refs['kp-carousel'];
       if (typeof carousel !== 'undefined') {
         carousel.goToSlide(slide);
       }
-      const stack = this.$refs['kl-stack'][slide];
+      const stack = this.$refs['kp-stack'][slide];
       if (typeof stack !== 'undefined') {
         stack.goTo(index);
       }
     },
+    helpNeededEvent() {
+      this.needHelp = true;
+    },
+    stackEnd({ index, direction }) {
+      if (direction > 0 && index < this.slides.length - 1) {
+        this.goTo(index + 1, 0);
+      } else if (direction < 0 && index > 0) {
+        this.goTo(index - 1, 'last');
+      }
+    },
   },
-  watch: {},
+  watch: {
+    showHelp(newValue) {
+      this.$store.state.view.helpShown = newValue;
+    },
+  },
   mounted() {
     this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
     this.remember = !this.needHelp;
@@ -154,6 +190,11 @@ export default {
         this.goTo(parseInt(slide, 10), parseInt(index, 10));
       });
     });
+    this.carouselEl = this.$refs['kp-carousel'];
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
   },
 };
 </script>
@@ -161,50 +202,85 @@ export default {
 <style lang="stylus">
   @import '~variables'
   .kp-help-container
-    width 60vw
-    height 80vh
-    // color rgba(0,0,0,0.7)
-    position relative
-    .kp-icon-close-popover
-      position absolute
-      right 5px
-      top 4px
+    position: relative;
+    width: 60vw;
+    min-width: 220px;
+    color $grey-8
+    overflow hidden
+    &:before
+      display block
+      content "";
+      width 100%
+      padding-top (2 / 3) * 100%
+    > .kp-help-inner
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
     .kp-help-content
       position relative
       background-color white
-    .kl-carousel
-      .kl-slide
-        height 100%
+
+    .kp-carousel
+      .kp-slide
         padding 0
         display flex
         flex-direction column
-      .kl-main-title
-        height 2em
-        font-size 2em
-        line-height 2em
-        vertical-align middle
-        color white
+      .kp-main-title
+        font-size 1.8em
+        line-height 1.8em
         text-align center
-        background-color alpha($main-control-main-color, 85%)
-        margin-bottom 10px
-      .kl-main-content
+        padding 10px 0
+        border-bottom 1px solid $grey-4
+      .kp-main-content
         flex auto
-        .kl-main-image
+        .kp-main-image
           text-align center
           background-repeat no-repeat
           background-size contain
           background-position center
           height calc(100% - 40px)
+    .kp-navigation
+      position absolute
+      bottom 0
+      padding 10px
+      vertical-align middle
+      width 100%
+      border-top 1px solid $grey-4
+      .kp-nav-number
+        display inline-block
+        height 30px
+        width 30px
+        line-height 30px
+        vertical-align middle
+        color white
+        text-align center
+        padding 0
+        cursor pointer
+        border-radius 20px
+        margin-left 5px
+        background-color alpha($grey-8, 0.4)
+        opacity .7
+        z-index 10000
+        &:hover
+        &.kp-nav-current
+          opacity 1
+          background-color alpha($grey-8, 0.7)
+
     .internal-link
       cursor pointer
       &:hover
         color $main-control-yellow
-    .q-carousel-quick-nav
-      background-color alpha($main-control-main-color, 85%)
-    .rmd-checkbox
+
+    .kp-icon-close-popover
       position absolute
-      right 44px
-      bottom 25px
+      right 5px
+      top 4px
+    .kp-checkbox
+      position absolute
+      right 20px
+      bottom 10px
       font-size 10px
-      width 100%
+
 </style>

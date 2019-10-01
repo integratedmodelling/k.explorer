@@ -41,6 +41,8 @@ export default {
     mcMenuContext: 'Context',
     mcMenuOption: 'Options',
     mcMenuSettings: 'Settings',
+    mcMenuHelp: 'Help',
+    showTutorial: 'Show tutorial',
     titleOutputFormat: 'Download observation',
     askForOuputFormat: 'Select format',
     titleChangeScale: 'Change {type} scale',

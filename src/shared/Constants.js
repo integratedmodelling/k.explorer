@@ -508,6 +508,7 @@ export const CUSTOM_EVENTS = {
   VIEWER_CLOSED: 'viewerclosed',
   OBSERVATION_INFO_CLOSED: 'observationinfoclosed', // when the observation info panel is close, I must close any mapinfo
   SEND_REGION_OF_INTEREST: 'sendregionofinterest', // when scale is unlocked, we need to refresh region of interest
+  NEED_TUTORIAL: 'needtutorial',
 };
 
 export const SCALE_TYPE = {
