@@ -36,7 +36,7 @@ export default [
     stack: {
       layers: [{
         image: {
-          url: 'sample1.1.png',
+          url: 'img11.gif',
           alt: 'Other thing here',
           // hAlign: 'right',
           // vAlign: 'top',
@@ -45,8 +45,8 @@ export default [
           // style: { border: '1px solid yellow' },
 
         },
-        title: 'This is a title',
-        text: '<ul><li>Search for a georgaphical context</li><li>Search for a georgaphical context</li><li>Search for a georgaphical context</li></ul>',
+        title: 'Set a Context',
+        // text: '<ul><li>Search for a geographical context</li><li>Search for a geographical context</li><li>Search for a geographical context</li></ul>',
         textAlign: 'center',
         textDiv: {
           hAlign: 'center',
@@ -54,12 +54,12 @@ export default [
           // position: { left: '0', bottom: '0' },
           // width: '100%',
           // height: '100px',
-          style: { 'background-color': 'green' },
+          // style: { 'background-color': 'green' },
         },
         duration: 4000,
       }, {
         image: {
-          url: 'sample1.2.png',
+          url: 'img12.gif',
           alt: 'Other thing here',
           // hAlign: 'center',
           // vAlign: 'middle',
@@ -69,12 +69,12 @@ export default [
           // style: { border: '1px solid #000' },
 
         },
-        title: '',
-        text: 'Search for a georgaphical context',
+        title: 'Observe a concept',
+        text: '',
         textAlign: 'center',
         textDiv: {
-          // hAlign: 'center',
-          // vAlign: 'middle',
+          hAlign: 'center',
+          vAlign: 'bottom',
           // position: { left: '0', bottom: '0' },
           // width: '100px',
           // height: '100px',
@@ -83,7 +83,7 @@ export default [
         duration: 4000,
       }, {
         image: {
-          url: 'sample1.3.png',
+          url: 'img13.gif',
           alt: 'Other thing here',
           // hAlign: 'center',
           // vAlign: 'middle',
@@ -93,108 +93,12 @@ export default [
           // style: { border: '1px solid #000' },
 
         },
-        title: '',
-        text: 'Search for a georgaphical context',
+        title: 'See results',
+        text: '',
         textAlign: 'center',
         textDiv: {
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-        },
-        duration: 4000,
-      }, {
-        image: {
-          url: 'sample2.1.png',
-          alt: 'Other thing here',
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-
-        },
-        title: '',
-        text: 'Ask the elephant to observe a concept in the current context',
-        textAlign: 'center',
-        textDiv: {
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-        },
-        duration: 4000,
-      }, {
-        image: {
-          url: 'sample2.2.png',
-          alt: 'Other thing here',
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-
-        },
-        title: '',
-        text: 'Ask the elephant to observe a concept in the current context',
-        textAlign: 'center',
-        textDiv: {
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-        },
-        duration: 4000,
-      }, {
-        image: {
-          url: 'sample2.3.png',
-          alt: 'Other thing here',
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-
-        },
-        title: '',
-        text: 'Ask the elephant to observe a concept in the current context',
-        textAlign: 'center',
-        textDiv: {
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-        },
-        duration: 4000,
-      }, {
-        image: {
-          url: 'sample3.1.png',
-          alt: 'Other thing here',
-          // hAlign: 'center',
-          // vAlign: 'middle',
-          // position: { left: '0', bottom: '0' },
-          // width: '100px',
-          // height: '100px',
-          // style: { border: '1px solid #000' },
-
-        },
-        title: '',
-        text: 'Ask the elephant to observe a concept in the current context',
-        textAlign: 'center',
-        textDiv: {
-          // hAlign: 'center',
-          // vAlign: 'middle',
+          hAlign: 'center',
+          vAlign: 'bottom',
           // position: { left: '0', bottom: '0' },
           // width: '100px',
           // height: '100px',
@@ -211,7 +115,7 @@ export default [
     stack: {
       layers: [{
         image: {
-          url: 'searchCM.gif',
+          url: 'img21.gif',
           alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
@@ -221,21 +125,21 @@ export default [
           // style: { border: '1px solid #000' },
 
         },
-        title: '',
-        text: 'Search for a region',
+        title: 'Search for a region',
+        text: '',
         textAlign: 'center',
         textDiv: {
           // hAlign: 'center',
           vAlign: 'bottom',
           // position: { left: '0', bottom: '0' },
-          width: '100%',
+          // width: '100%',
           // height: '100px',
           style: { 'border-top': '1px solid #000' },
         },
         duration: 2800,
       }, {
         image: {
-          url: 'drawCM.gif',
+          url: 'img22.gif',
           alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
@@ -245,32 +149,32 @@ export default [
           // style: { border: '1px solid #000' },
 
         },
-        title: '',
-        text: 'Draw a geographical context',
+        title: 'Draw a geographical context',
+        text: '',
         textAlign: 'center',
         textDiv: {
           // hAlign: 'center',
           vAlign: 'bottom',
           // position: { left: '0', bottom: '0' },
-          width: '100%',
+          // width: '100%',
           // height: '100px',
           style: { 'border-top': '1px solid #000' },
         },
         duration: 5600,
       }, {
         image: {
-          url: 'NavigateC.gif',
+          url: 'img23.gif',
           alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
-          width: '80%',
+          // width: '80%',
           // height: '100px',
           // style: { border: '1px solid #000' },
 
         },
-        title: '',
-        text: 'Move around and zoom in and out to set your geographical context',
+        title: 'Move around and zoom to set your geographical context',
+        text: '',
         textAlign: 'center',
         textDiv: {
           // hAlign: 'center',
@@ -291,7 +195,7 @@ export default [
     stack: {
       layers: [{
         image: {
-          url: 'sample3.1.png',
+          url: 'img31.gif',
           alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
@@ -301,8 +205,32 @@ export default [
           // style: { border: '1px solid #000' },
 
         },
-        title: '',
-        text: 'The last of last',
+        title: 'You can type your queries in the search bar',
+        text: '',
+        textAlign: 'center',
+        textDiv: {
+          // hAlign: 'center',
+          vAlign: 'bottom',
+          // position: { left: '0', bottom: '0' },
+          width: '100%',
+          // height: '100px',
+          // style: { border: '1px solid #000' },
+        },
+        duration: 2800,
+      }, {
+        image: {
+          url: 'img32.gif',
+          alt: 'Put something here',
+          // hAlign: 'center',
+          // vAlign: 'middle',
+          // position: { left: '0', bottom: '0' },
+          // width: '150%',
+          // height: '100px',
+          // style: { border: '1px solid #000' },
+
+        },
+        title: 'or press space bar to select predefined queries',
+        text: '',
         textAlign: 'center',
         textDiv: {
           // hAlign: 'center',
