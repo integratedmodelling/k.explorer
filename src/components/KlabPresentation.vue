@@ -59,18 +59,20 @@
         </div>
         <div class="kp-nav-tooltip" :class="{ visible: tooltipTitle !== '' }" v-html="tooltipTitle"></div>
         <div class="kp-navigation">
-          <div
-            v-for="(slide, slideIndex) in slides"
-            :key="`kp-nav-${slideIndex}`"
-            class="kp-nav-container"
-            @click="goTo(slideIndex, 0)"
-            @mouseover="showTitle(slide.title)"
-            @mouseleave="showTitle('')"
-          >
+          <div class="kp-nav-container">
             <div
-              class="kp-nav-number"
-              :class="{ 'kp-nav-current': currentSlide === slideIndex }"
-            >{{ slideIndex + 1 }}</div>
+              v-for="(slide, slideIndex) in slides"
+              :key="`kp-nav-${slideIndex}`"
+              class="kp-navnumber-container"
+              @click="goTo(slideIndex, 0)"
+              @mouseover="showTitle(slide.title)"
+              @mouseleave="showTitle('')"
+            >
+              <div
+                class="kp-nav-number"
+                :class="{ 'kp-nav-current': currentSlide === slideIndex }"
+              >{{ slideIndex + 1 }}</div>
+            </div>
           </div>
         </div>
         <div class="kp-btn-container">
@@ -334,10 +336,10 @@ export default {
       bottom 0
       padding 10px 10px 10px 15px
       vertical-align middle
-      width 100%
-      border-top 1px solid $grey-4
+      // width 100%
+      // border-top 1px solid $grey-4
       background-color white
-      .kp-nav-container
+      .kp-navnumber-container
         padding-left 3px
         position relative
         float left

@@ -289,13 +289,11 @@ export default {
       right 0
       z-index 10000
       vertical-align middle
-      transition opacity .5s
-      border-radius 5px
-      padding 2px
+      transition opacity .3s
       height 40px
+      border-bottom 1px solid $grey-3;
       &.ks-navigation-transparent
         opacity 0.6
       &:hover
         opacity 1;
-        background-color background-color alpha($main-control-main-color, 85%)
 </style>
