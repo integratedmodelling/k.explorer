@@ -1,95 +1,102 @@
 <template>
-  <q-modal
-    v-model="showHelp"
-    id="modal-show-help"
-    :content-classes="['kp-help-container']"
-  >
-    <div class="kp-help-inner">
-      <div class="kp-help-content full-height">
-        <q-carousel
-          class="kp-carousel full-height"
-          ref="kp-carousel"
-          color="white"
-          no-swipe
-          @slide-trigger="initStack"
-        >
-          <q-carousel-slide
-            class="kp-slide full-height"
-            v-for="(slide, slideIndex) in slides"
-            :key="`kp-slide-${slideIndex}`"
+  <div class="modal fullscreen" id="modal-show-help" v-show="showHelp">
+    <div class="modal-backdrop absolute-full"></div>
+    <div
+      class="kp-help-container"
+      ref="kp-help-container"
+      :style="{
+         width: `${modalSize.w}px`,
+         height: `${modalSize.h}px`,
+         transform: `translate(-50%, -50%) scale(${scale}, ${scale}) !important`}">
+      <div class="kp-help-inner" ref="kp-help-inner">
+        <div class="kp-help-content full-height">
+          <q-carousel
+            class="kp-carousel full-height"
+            ref="kp-carousel"
+            color="white"
+            no-swipe
+            @slide-trigger="initStack"
           >
-            <div class="kp-main-title" v-if='slide.title' v-html="slide.title"></div>
-            <div class="kp-main-content">
-              <klab-stack
-                v-if="slide.stack.layers && slide.stack.layers.length > 0"
-                :owner-index="slideIndex"
-                :maxOwnerIndex="slides.length"
-                :stack="slide.stack"
-                ref="kp-stack"
-                @stackend="stackEnd"
-              ></klab-stack>
-              <div v-else>No slides</div>
-            </div>
-          </q-carousel-slide>
-          <q-carousel-control slot="control-nav" slot-scope="carousel" :offset="[8, 5]" position="bottom-right">
-            <q-btn
-              @click="carousel.previous"
-              :disable="!carousel.canGoToPrevious"
-              color="mc-main" text-color="white"
-              :label="$t('label.appPrevious')"
-              flat dense
-              class="q-mr-sm"
-            ></q-btn>
-            <q-btn
-              @click="carousel.next"
-              :disable="!carousel.canGoToNext"
-              color="mc-main"
-              text-color="white"
-              :label="$t('label.appNext')"
-              flat dense
-            ></q-btn>
-          </q-carousel-control>
-        </q-carousel>
-      </div>
-      <div class="kp-navigation">
-        <div
-          v-for="(slide, slideIndex) in slides"
-          :key="`kp-nav-${slideIndex}`"
-          class="kp-nav-number"
-          :class="{ 'kp-nav-current': currentSlide === slideIndex }"
-          @click="goTo(slideIndex, 0)"
-        >{{ slideIndex + 1 }}
-          <q-tooltip
-            v-html="slide.title"
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          ></q-tooltip>
+            <q-carousel-slide
+              class="kp-slide full-height"
+              v-for="(slide, slideIndex) in slides"
+              :key="`kp-slide-${slideIndex}`"
+            >
+              <div class="kp-main-content">
+                <klab-stack
+                  v-if="slide.stack.layers && slide.stack.layers.length > 0"
+                  :owner-index="slideIndex"
+                  :maxOwnerIndex="slides.length"
+                  :stack="slide.stack"
+                  ref="kp-stack"
+                  @stackend="stackEnd"
+                ></klab-stack>
+                <div v-else>No slides</div>
+                <div class="kp-main-title" v-if='slide.title' v-html="slide.title"></div>
+              </div>
+            </q-carousel-slide>
+            <!--
+            <q-carousel-control slot="control-nav" slot-scope="carousel" :offset="[8, 5]" position="bottom-right">
+              <q-btn
+                @click="carousel.previous"
+                :disable="!carousel.canGoToPrevious"
+                color="mc-main" text-color="white"
+                :label="$t('label.appPrevious')"
+                flat dense
+                class="q-mr-sm"
+              ></q-btn>
+              <q-btn
+                @click="carousel.next"
+                :disable="!carousel.canGoToNext"
+                color="mc-main"
+                text-color="white"
+                :label="$t('label.appNext')"
+                flat dense
+              ></q-btn>
+            </q-carousel-control>
+            -->
+          </q-carousel>
         </div>
-      </div>
-      <div class="kp-btn-container">
-        <q-checkbox
-          v-model="remember"
-          :keep-color="true"
+        <div class="kp-nav-tooltip" :class="{ visible: tooltipTitle !== '' }" v-html="tooltipTitle"></div>
+        <div class="kp-navigation">
+          <div
+            v-for="(slide, slideIndex) in slides"
+            :key="`kp-nav-${slideIndex}`"
+            class="kp-nav-container"
+            @click="goTo(slideIndex, 0)"
+            @mouseover="showTitle(slide.title)"
+            @mouseleave="showTitle('')"
+          >
+            <div
+              class="kp-nav-number"
+              :class="{ 'kp-nav-current': currentSlide === slideIndex }"
+            >{{ slideIndex + 1 }}</div>
+          </div>
+        </div>
+        <div class="kp-btn-container">
+          <q-checkbox
+            v-model="remember"
+            :keep-color="true"
+            color="grey-8"
+            :label="$t('label.rememberDecision')"
+            class="kp-checkbox"
+            :left-label="true"
+          ></q-checkbox>
+        </div>
+        <q-btn
+          icon="mdi-close-circle-outline"
+          class="kp-icon-close-popover"
+          @click="hideHelp"
           color="grey-8"
-          :label="$t('label.rememberDecision')"
-          class="kp-checkbox"
-          :left-label="true"
-        ></q-checkbox>
+          size="md"
+          :title="$t('label.appClose')"
+          round
+          flat
+        ></q-btn>
       </div>
-      <q-btn
-        icon="mdi-close"
-        class="kp-icon-close-popover"
-        @click="hideHelp"
-        color="grey-8"
-        size="sm"
-        :title="$t('label.appClose')"
-        flat
-        round
-      ></q-btn>
-
     </div>
-  </q-modal>
+    <q-resize-observable @resize="onResize"></q-resize-observable>
+  </div>
 </template>
 
 <script>
@@ -98,6 +105,9 @@ import { Cookies } from 'quasar';
 import { WEB_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabStack from 'components/custom/KlabStack.vue';
 import slides from 'shared/Slides.js';
+
+
+// const { height, width } = dom;
 
 export default {
   name: 'KlabPresentation',
@@ -110,6 +120,10 @@ export default {
       topLayer: [],
       modal: false,
       carouselEl: undefined,
+      initialSize: undefined,
+      scale: 1,
+      modalSize: { w: 1024, h: 768 },
+      tooltipTitle: '',
     };
   },
   computed: {
@@ -176,6 +190,32 @@ export default {
         this.goTo(index - 1, 'last');
       }
     },
+    onResize() {
+      if (typeof this.initialSize === 'undefined') {
+        // const wrapper = this.$refs['kp-help-container'];
+        const initWidth = window.innerWidth; // width(wrapper);
+        const initHeight = window.innerHeight; // height(wrapper);
+        this.initialSize = { width: initWidth, height: initHeight };
+      }
+      this.scale = Math.min(
+        window.innerWidth / this.initialSize.width,
+        window.innerHeight / this.initialSize.height,
+      );
+      if (this.scale === 1) {
+        const width = window.innerWidth * 80 / 100;
+        const calcHeight = width / 4 * 3;
+        const height = window.innerHeight * 80 / 100;
+        const calcWidth = height / 3 * 4;
+        if (width < calcWidth) {
+          this.modalSize = { w: width, h: calcHeight };
+        } else {
+          this.modalSize = { w: calcWidth, h: height };
+        }
+      }
+    },
+    showTitle(title) {
+      this.tooltipTitle = title;
+    },
   },
   watch: {
     showHelp(newValue) {
@@ -204,21 +244,28 @@ export default {
   @import '~variables'
   .kp-help-container
     position: relative;
-    width: 60vw;
-    min-width: 220px;
+    top 50%
+    left 50%
     color $grey-8
     overflow hidden
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
+    transition: all 0.2s ease-in-out;
+    border-radius: 3px;
+
     &:before
       display block
       content "";
       width 100%
-      padding-top (2 / 3) * 100%
+      height 100%
+      padding-top 2 / 3 * 100
+
     > .kp-help-inner
       position: absolute;
       top: 0;
       right: 0;
       bottom: 0;
       left: 0;
+
     .kp-help-content
       position relative
       background-color white
@@ -228,12 +275,6 @@ export default {
         padding 0
         display flex
         flex-direction column
-      .kp-main-title
-        font-size 1.8em
-        line-height 1.8em
-        text-align center
-        padding 10px 0
-        border-bottom 1px solid $grey-4
       .kp-main-content
         flex auto
         .kp-main-image
@@ -242,15 +283,44 @@ export default {
           background-size contain
           background-position center
           height calc(100% - 40px)
+    .kp-main-title
+    .kp-nav-tooltip
+      position absolute
+      bottom 0
+      vertical-align middle
+      font-size 20px
+      line-height 50px
+      height 50px
+      text-align center
+      width 80%
+      margin-left 10%
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    .kp-nav-tooltip
+      background-color white
+      transition opacity .3s
+      opacity 0
+      &.visible
+        opacity 1
     .kp-navigation
       position absolute
       bottom 0
-      padding 10px
+      padding 10px 10px 10px 15px
       vertical-align middle
       width 100%
       border-top 1px solid $grey-4
+      background-color white
+      .kp-nav-container
+        padding-left 3px
+        position relative
+        float left
+        &:hover
+          .kp-nav-number
+          .kp-nav-current
+            opacity 1
+            background-color alpha($grey-8, 0.7)
       .kp-nav-number
-        display inline-block
         height 30px
         width 30px
         line-height 30px
@@ -260,7 +330,6 @@ export default {
         padding 0
         cursor pointer
         border-radius 20px
-        margin-left 5px
         background-color alpha($grey-8, 0.4)
         opacity .7
         z-index 10000
@@ -276,8 +345,14 @@ export default {
 
     .kp-icon-close-popover
       position absolute
-      right 5px
-      top 4px
+      top 0
+      right 2px
+      width: 22px;
+      height: 22px;
+      .q-focus-helper
+        opacity 0
+      &:hover .mdi-close-circle-outline:before
+        content '\F159'
     .kp-checkbox
       position absolute
       right 20px

@@ -93,6 +93,8 @@ export default {
       autostart: typeof this.stack.autostart !== 'undefined' ? this.stack.autostart : this.ownerIndex === 0,
       duration: this.stack.duration || 5000,
       infinite: typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false,
+      initialSize: {},
+      scale: 1,
     };
   },
   computed: {
@@ -202,10 +204,10 @@ export default {
   @import '~variables'
   .ks-stack-container
     position relative
-    height 100%
+    height calc(100% - 20px)
+    margin 20px 20px 0
     .ks-layer
       position absolute
-      padding 0
       top 0
       left 0
       bottom 90px
@@ -220,15 +222,14 @@ export default {
       padding 12px
       width auto
       height auto
-      font-size 1.2em
       color $grey-8
       .ks-caption-title
-        font-size 1.4em
+        font-size 32px
         letter-spacing normal
         margin 0 0 10px 0
         text-align center
       .ks-caption-text
-        font-size 1em
+        font-size 18px
 
     .ks-layer-image
       position absolute
