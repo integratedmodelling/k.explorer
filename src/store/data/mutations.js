@@ -52,10 +52,10 @@ export default {
   STORE_CONTEXT: (state, context) => {
     const exists = state.contextsHistory.find(ctxt => ctxt.id === context.id);
     if (typeof exists === 'undefined') {
-      console.log(`Added new context in store with id ${context.id}`);
+      console.debug(`Added new context in store with id ${context.id}`);
       state.contextsHistory.push(context);
     } else {
-      console.log(`Context with id ${context.id} yet exists in contextHistory`);
+      console.debug(`Context with id ${context.id} yet exists in contextHistory`);
     }
   },
 

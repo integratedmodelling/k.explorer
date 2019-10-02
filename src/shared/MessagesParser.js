@@ -164,7 +164,7 @@ export const parseAndExecute = ({ body }, context = null) => {
     dispatch('view/addToKlabLog', parsedBody, { root: true });
   }
   if (!Object.prototype.hasOwnProperty.call(PARSERS, parsedBody.type)) {
-    console.log(`Unknown parser ${parsedBody.type}`); // : return payload`);
+    console.warn(`Unknown parser ${parsedBody.type}`); // : return payload`);
     return false; // parsedBody.payload;
   }
   return PARSERS[parsedBody.type](parsedBody, context);

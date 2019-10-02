@@ -295,7 +295,6 @@ export default {
       // this.draggableElement.classList.remove('vuela');
     },
     largeMode(newValue, oldValue) {
-      console.log(`newValue: ${newValue}, oldValue: ${oldValue}`);
       if (this.hasContext) {
         return;
       }

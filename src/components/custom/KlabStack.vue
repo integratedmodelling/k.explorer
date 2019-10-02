@@ -7,7 +7,9 @@
     <div
       class="ks-layer"
       v-for="(layer, layerIndex) in layers"
+      ref="ks-layer"
       :key="`ks-layer-${layerIndex}`"
+      :id="`ks-layer-${ownerIndex}-${layerIndex}`"
       :style="`z-index: 10${layers.length - layerIndex}`"
       :class="{ 'ks-top-layer': selectedLayer === layerIndex, 'ks-hide-layer': selectedLayer !== layerIndex }"
       @click="next"
@@ -22,7 +24,12 @@
         :alt="layer.image.alt || layer.title || layer.text"
         :title="layer.image.alt || layer.title || layer.text"
         :id="`ks-image-${ownerIndex}-${layerIndex}`"
-        :style="{ width: layer.image.width || 'auto', height: layer.image.height || 'auto' }"
+        :style="{
+          width: layer.image.width || 'auto',
+          height: layer.image.height || 'auto',
+          'max-width': imgMaxSize.width,
+          'max-height': imgMaxSize.height,
+        }"
       />
       </div>
       <div
@@ -95,6 +102,7 @@ export default {
       infinite: typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false,
       initialSize: {},
       scale: 1,
+      imgMaxSize: { width: '100%', height: '100%' },
     };
   },
   computed: {
@@ -103,6 +111,9 @@ export default {
     },
     hasNext() {
       return this.selectedLayer < this.layers.length - 1 || this.ownerIndex < this.maxOwnerIndex - 1 || this.infinite;
+    },
+    helpShown() {
+      return this.$store.state.view.helpShown;
     },
   },
   methods: {
@@ -178,18 +189,29 @@ export default {
       if (typeof element === 'undefined') {
         return {};
       }
-      return {
+      const style = {
         ...element.position,
         ...element.style,
         ...(element.width && { width: element.width }),
         ...(element.height && { height: element.height }),
       };
+      return style;
     },
     elementClasses(element) {
       if (typeof element === 'undefined') {
         return [];
       }
       return !element.position ? [`ks-${element.hAlign || 'center'}`, `ks-${element.vAlign || 'middle'}`] : [];
+    },
+  },
+  watch: {
+    helpShown(newValue) {
+      if (newValue) {
+        const layer = this.$refs['ks-layer'][0];
+        const width = `${layer.clientWidth}px`;
+        const height = `${layer.clientHeight}px`;
+        this.imgMaxSize = { width, height };
+      }
     },
   },
   mounted() {
