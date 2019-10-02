@@ -1,11 +1,11 @@
 <template>
   <div
-    class="ks-stack full-height"
-    ref="ks-stack"
+    class="ks-stack-container"
+    ref="ks-stack-container"
     v-if="layers.length > 0"
   >
     <div
-      class="ks-layer fit"
+      class="ks-layer"
       v-for="(layer, layerIndex) in layers"
       :key="`ks-layer-${layerIndex}`"
       :style="`z-index: 10${layers.length - layerIndex}`"
@@ -13,16 +13,23 @@
       @click="next"
     >
       <div
-        class="ks-layer-content"
+        v-if="layer.image"
+        class="ks-layer-image"
+        :class="elementClasses(layer.image)"
+        :style="elementStyle(layer.image)"
+      ><img
+        :src="`statics/help/${layer.image.url}`"
+        :alt="layer.image.alt || layer.title || layer.text"
+        :title="layer.image.alt || layer.title || layer.text"
         :id="`ks-image-${ownerIndex}-${layerIndex}`"
-        :class="[ `ks-image-${layer.imageAlign || 'center'}` ]"
-        :style="{ 'background-image': `url(statics/help/${layer.image})` }"
-      >
+        :style="{ width: layer.image.width || 'auto', height: layer.image.height || 'auto' }"
+      />
       </div>
       <div
+        v-if="layer.title || layer.text"
         class="ks-layer-caption"
-        :class="[ `ks-text-${layer.textPosition || 'bottom'}` ]"
-        :style="{ width: layer.textPosition === 'left' || layer.textPosition === 'right' ? layer.textWidth || '40%' : '100%'}"
+        :class="elementClasses(layer.textDiv)"
+        :style="elementStyle(layer.textDiv)"
       >
         <div class="ks-caption-title" v-if="layer.title" v-html="layer.title"></div>
         <div class="ks-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
@@ -33,35 +40,29 @@
         id="ks-prev"
         @click="previous"
         :disable="!hasPrevious"
-        color="mc-main"
-        text-color="white"
-        size="sm"
+        text-color="grey-8"
         icon="mdi-chevron-left"
         round flat dense
         :title="$t('label.appPrevious')"
       ></q-btn>
       <q-btn
-        id="ks-next"
-        @click="next"
-        :disable="!hasNext"
-        color="mc-main"
-        text-color="white"
-        icon="mdi-chevron-right"
-        size="sm"
-        round flat dense
-        :title="$t('label.appNext')"
-      ></q-btn>
-      <q-btn
         id="ks-play-stop"
         @click="animation === null ? playStack() : stopStack()"
-        color="mc-main"
-        text-color="white"
-        size="sm"
+        :disable="!hasNext"
+        text-color="grey-8"
         :icon="animation === null ? 'mdi-play' : 'mdi-pause'"
         round flat dense
         :title="animation === null ? $t('label.appPlay') : $t('label.appPause')"
       ></q-btn>
-      <span class="ks-navigation-page">{{ selectedLayer + 1 }}/{{ layers.length }}</span>
+      <q-btn
+        id="ks-next"
+        @click="next"
+        :disable="!hasNext"
+        text-color="grey-8"
+        icon="mdi-chevron-right"
+        round flat dense
+        :title="$t('label.appNext')"
+      ></q-btn>
     </div>
   </div>
 </template>
@@ -71,6 +72,10 @@ export default {
   name: 'KlabStack',
   props: {
     ownerIndex: {
+      type: Number,
+      required: true,
+    },
+    maxOwnerIndex: {
       type: Number,
       required: true,
     },
@@ -84,11 +89,19 @@ export default {
       selectedLayer: 0,
       animation: null,
       layers: this.stack.layers,
-      animated: this.stack.animated || true,
-      autostart: this.stack.autostart || this.ownerIndex === 0,
+      animated: typeof this.stack.animated !== 'undefined' ? this.stack.animated : false,
+      autostart: typeof this.stack.autostart !== 'undefined' ? this.stack.autostart : this.ownerIndex === 0,
       duration: this.stack.duration || 5000,
-      infinite: this.stack.infinite || true,
+      infinite: typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false,
     };
+  },
+  computed: {
+    hasPrevious() {
+      return this.selectedLayer > 0 || this.ownerIndex > 0 || this.infinite;
+    },
+    hasNext() {
+      return this.selectedLayer < this.layers.length - 1 || this.ownerIndex < this.maxOwnerIndex - 1 || this.infinite;
+    },
   },
   methods: {
     initStack() {
@@ -102,54 +115,79 @@ export default {
       if (this.animation !== null) {
         clearTimeout(this.animation);
         this.animation = null;
+        this.animated = false;
       }
     },
     playStack() {
+      const layer = this.layers[this.selectedLayer];
+      if (layer.image && layer.image.url.indexOf('.gif') !== -1) {
+        // reset gif
+        document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`).src = this.getImage(this.layers[this.selectedLayer]);
+      }
+      this.animated = true;
       this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
     },
-    goTo(index, animate = false) {
-      this.stopStack();
+    goTo(index) {
+      if (index === 'last') {
+        index = this.layers.length - 1;
+      }
       this.selectedLayer = index;
-      if (animate) {
+      if (this.animated) {
         this.playStack();
       }
-    },
-    hasNext() {
-      return this.selectedLayer < this.layers.length - 1 || this.infinite;
     },
     next() {
       if (this.selectedLayer < this.layers.length - 1) {
         this.goTo(this.selectedLayer + 1);
       } else if (this.infinite) {
         this.goTo(0);
+      } else {
+        this.$emit('stackend', { index: this.ownerIndex, direction: 1 });
+        return false;
       }
-    },
-    hasPrevious() {
-      return this.selectedLayer > 0 || this.infinite;
+      return true;
     },
     previous() {
       if (this.selectedLayer > 0) {
         this.goTo(this.selectedLayer - 1);
       } else if (this.infinite) {
         this.goTo(this.layers.length - 1);
+      } else {
+        this.$emit('stackend', { index: this.ownerIndex, direction: -1 });
       }
     },
     setAnimation(duration) {
-      document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`).src = `${this.layers[this.selectedLayer].image}?a=${Date.now()}`;
+      if (this.stack.layers.length <= 1) {
+        return; // no amimation for one frame
+      }
+      const self = this;
+      if (this.animation !== null) {
+        clearTimeout(this.animation);
+      }
       this.animation = setTimeout(() => {
-        if (this.selectedLayer < this.layers.length - 1) {
-          this.selectedLayer += 1;
-        } else if (this.infinite) {
-          this.selectedLayer = 0;
-        } else {
-          return; // we stop generating animation if is not infinite
-        }
-        if (this.animated) {
-          // next animation
-          this.playStack();
-        }
+        self.next();
         // console.log(`${self.ownerIndex}: ${self.selectedLayer} of ${self.layers.length}`);
       }, duration);
+    },
+    getImage(layer) {
+      return layer.image ? `statics/help/${layer.image.url}?a=${Date.now()}` : '';
+    },
+    elementStyle(element) {
+      if (typeof element === 'undefined') {
+        return {};
+      }
+      return {
+        ...element.position,
+        ...element.style,
+        ...(element.width && { width: element.width }),
+        ...(element.height && { height: element.height }),
+      };
+    },
+    elementClasses(element) {
+      if (typeof element === 'undefined') {
+        return [];
+      }
+      return !element.position ? [`ks-${element.hAlign || 'center'}`, `ks-${element.vAlign || 'middle'}`] : [];
     },
   },
   mounted() {
@@ -162,76 +200,76 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .ks-stack
+  .ks-stack-container
     position relative
-    .ks-layer-caption
-      position absolute
-      padding 12px
-      color $grey-4
-      // text-align center
-      background-color alpha($main-control-main-color, 85%)
-      &.ks-text-bottom
-        bottom 44px
-        left 0
-      &.ks-text-top
-        top 0
-        left 0
-      &.ks-text-left
-        top 0
-        left 0
-        height calc(100% - 44px)
-      &.ks-text-right
-        top 0
-        right 0
-        height calc(100% - 44px)
-      .ks-caption-title
-        font-size 34px
-        color white
-        line-height 40px
-        letter-spacing normal
-        margin 0 0 10px 0
-        text-align center
-      .ks-caption-text
-        font-size 1em
-        color white
-    .ks-layer-content
-      background-repeat no-repeat
-      background-size contain
-      height calc(100% - 44px)
-      &.ks-image-center
-        background-position center
-      &.ks-image-left
-        background-position left
-      &.ks-image-right
-        background-position right
+    height 100%
     .ks-layer
       position absolute
       padding 0
       top 0
       left 0
+      bottom 90px
+      right 0
+      opacity 0
+      transition opacity .5s ease-in-out
       &.ks-top-layer
         z-index 999 !important
-      &.ks-hide-layer
-        visibility hidden
+        opacity 1
+    .ks-layer-caption
+      position absolute
+      padding 12px
+      width auto
+      height auto
+      font-size 1.2em
+      color $grey-8
+      .ks-caption-title
+        font-size 1.4em
+        letter-spacing normal
+        margin 0 0 10px 0
+        text-align center
+      .ks-caption-text
+        font-size 1em
+
+    .ks-layer-image
+      position absolute
+      max-width 100%
+      max-height 100%
+      img
+        width auto
+        height auto
+        max-width 100%
+        max-height 100%
+    .ks-middle
+      top 50%
+      transform translateY(-50%)
+      &.ks-center
+        transform translate(-50%, -50%)
+    .ks-center
+      left 50%
+      transform translateX(-50%)
+    .ks-top
+      top 0
+    .ks-bottom
+      bottom 0
+    .ks-left
+      left 0
+    .ks-right
+      right 0
 
     .ks-navigation
-      width auto
+      width 100%
+      text-align center
       position absolute
-      bottom 44px
+      bottom 50px
       right 0
       z-index 10000
       vertical-align middle
       transition opacity .5s
       border-radius 5px
       padding 2px
+      height 40px
       &.ks-navigation-transparent
-        opacity 0.2
-      .ks-navigation-page
-        text-align center
-        display inline-block
-        color white
-        font-size .8em
-        padding 0 5px
+        opacity 0.6
       &:hover
         opacity 1;
         background-color background-color alpha($main-control-main-color, 85%)

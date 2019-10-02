@@ -98,6 +98,7 @@ export default {
       'spinnerErrorMessage',
       'isMainControlDocked',
       'admitSearch',
+      'isHelpShown',
     ]),
     waitingGeolocation: {
       get() {
@@ -184,7 +185,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isInModalMode || !this.admitSearch) {
+      if (this.modalVisible || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {

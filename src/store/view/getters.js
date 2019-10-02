@@ -113,6 +113,7 @@ export default {
   inputRequests: state => state.inputRequests,
   hasInputRequests: state => state.inputRequests.length !== 0,
   isInModalMode: state => state.modalMode,
+  isHelpShown: state => state.helpShown,
   fuzzyMode: state => state.fuzzyMode,
   largeMode: state => state.largeMode,
 };
