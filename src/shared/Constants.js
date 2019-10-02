@@ -527,6 +527,13 @@ export const SETTING_NAMES = {
   LOCK_TIME: 'LockTime',
 };
 
+export const HELP_CONSTANTS = {
+  DEFAULT_MODAL_SIZE: { width: 1024, height: 768 },
+  DEFAULT_PROPORTIONS: { width: 4, height: 3 },
+  DEFAULT_WIDTH_PERCENTAGE: 80,
+  DEFAULT_HEIGHT_PERCENTAGE: 80,
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,
@@ -551,4 +558,5 @@ export default {
   CUSTOM_EVENTS,
   SCALE_TYPE,
   SETTING_NAMES,
+  HELP_CONSTANTS,
 };

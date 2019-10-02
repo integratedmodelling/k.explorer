@@ -5,8 +5,8 @@
       class="kp-help-container"
       ref="kp-help-container"
       :style="{
-         width: `${modalSize.w}px`,
-         height: `${modalSize.h}px`,
+         width: `${modalSize.width}px`,
+         height: `${modalSize.height}px`,
          transform: `translate(-50%, -50%) scale(${scale}, ${scale}) !important`}">
       <div class="kp-help-inner" ref="kp-help-inner">
         <div class="kp-help-content full-height">
@@ -100,9 +100,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { Cookies } from 'quasar';
-import { WEB_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
+import { WEB_CONSTANTS, CUSTOM_EVENTS, HELP_CONSTANTS } from 'shared/Constants';
 import KlabStack from 'components/custom/KlabStack.vue';
 import slides from 'shared/Slides.js';
 
@@ -122,7 +122,6 @@ export default {
       carouselEl: undefined,
       initialSize: undefined,
       scale: 1,
-      modalSize: { w: 1024, h: 768 },
       tooltipTitle: '',
     };
   },
@@ -132,6 +131,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'isInModalMode',
+      'modalSize',
     ]),
     currentSlide() {
       return this.carouselEl ? this.carouselEl.slide : -1;
@@ -149,6 +149,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setModalSize',
+    ]),
     hideHelp() {
       if (this.remember) {
         Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
@@ -202,14 +205,14 @@ export default {
         window.innerHeight / this.initialSize.height,
       );
       if (this.scale === 1) {
-        const width = window.innerWidth * 80 / 100;
-        const calcHeight = width / 4 * 3;
-        const height = window.innerHeight * 80 / 100;
-        const calcWidth = height / 3 * 4;
+        const width = window.innerWidth * HELP_CONSTANTS.DEFAULT_WIDTH_PERCENTAGE / 100;
+        const calcHeight = width / HELP_CONSTANTS.DEFAULT_PROPORTIONS.width * HELP_CONSTANTS.DEFAULT_PROPORTIONS.height;
+        const height = window.innerHeight * HELP_CONSTANTS.DEFAULT_HEIGHT_PERCENTAGE / 100;
+        const calcWidth = height / HELP_CONSTANTS.DEFAULT_PROPORTIONS.height * HELP_CONSTANTS.DEFAULT_PROPORTIONS.width;
         if (width < calcWidth) {
-          this.modalSize = { w: width, h: calcHeight };
+          this.setModalSize({ width, height: calcHeight });
         } else {
-          this.modalSize = { w: calcWidth, h: height };
+          this.setModalSize({ width: calcWidth, height });
         }
       }
     },
@@ -251,7 +254,8 @@ export default {
     box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
     transition: all 0.2s ease-in-out;
     border-radius: 3px;
-
+    min-width 640px
+    min-height 480px
     &:before
       display block
       content "";

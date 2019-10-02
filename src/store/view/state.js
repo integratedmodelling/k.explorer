@@ -1,7 +1,7 @@
 /**
  * State of view
  */
-import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS } from '../../shared/Constants';
+import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
 
 export default {
   /**
@@ -166,6 +166,7 @@ export default {
   inputRequests: [],
   waitingGeolocation: true,
   helpShown: false,
+  modalSize: HELP_CONSTANTS.DEFAULT_MODAL_SIZE,
   fuzzyMode: false, // search with free text
   largeMode: 0, // search bar steps 0: normal; >0: larger
 };

@@ -112,8 +112,8 @@ export default {
     hasNext() {
       return this.selectedLayer < this.layers.length - 1 || this.ownerIndex < this.maxOwnerIndex - 1 || this.infinite;
     },
-    helpShown() {
-      return this.$store.state.view.helpShown;
+    modalSize() {
+      return this.$store.state.view.modalSize;
     },
   },
   methods: {
@@ -205,13 +205,13 @@ export default {
     },
   },
   watch: {
-    helpShown(newValue) {
-      if (newValue) {
+    modalSize() {
+      setTimeout(() => {
         const layer = this.$refs['ks-layer'][0];
         const width = `${layer.clientWidth}px`;
         const height = `${layer.clientHeight}px`;
         this.imgMaxSize = { width, height };
-      }
+      }, 200); // wait for animation
     },
   },
   mounted() {

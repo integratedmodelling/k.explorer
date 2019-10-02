@@ -294,7 +294,7 @@ export default {
       });
       // this.draggableElement.classList.remove('vuela');
     },
-    largeMode(newValue, oldValue) {
+    largeMode() {
       if (this.hasContext) {
         return;
       }
