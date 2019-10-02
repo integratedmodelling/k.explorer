@@ -43,6 +43,7 @@ export default {
     mcMenuSettings: 'Settings',
     mcMenuHelp: 'Help',
     showTutorial: 'Show tutorial',
+    refreshSize: 'Refresh window size',
     titleOutputFormat: 'Download observation',
     askForOuputFormat: 'Select format',
     titleChangeScale: 'Change {type} scale',

@@ -236,6 +236,7 @@ export default {
       right 0
       opacity 0
       transition opacity .5s ease-in-out
+      overflow hidden
       &.ks-top-layer
         z-index 999 !important
         opacity 1
@@ -257,6 +258,7 @@ export default {
       position absolute
       max-width 100%
       max-height 100%
+      overflow hidden
       img
         width auto
         height auto

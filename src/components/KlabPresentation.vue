@@ -84,6 +84,17 @@
           ></q-checkbox>
         </div>
         <q-btn
+          v-show="scale !== 1"
+          icon="mdi-refresh"
+          class="kp-icon-refresh-size"
+          @click="refreshSize"
+          color="mc-main"
+          size="md"
+          :title="$t('label.refreshSize')"
+          round
+          flat
+        ></q-btn>
+        <q-btn
           icon="mdi-close-circle-outline"
           class="kp-icon-close-popover"
           @click="hideHelp"
@@ -95,7 +106,6 @@
         ></q-btn>
       </div>
     </div>
-    <q-resize-observable @resize="onResize"></q-resize-observable>
   </div>
 </template>
 
@@ -193,28 +203,37 @@ export default {
         this.goTo(index - 1, 'last');
       }
     },
+    refreshSize() {
+      this.initialSize = undefined;
+      this.onResize();
+    },
     onResize() {
-      if (typeof this.initialSize === 'undefined') {
-        // const wrapper = this.$refs['kp-help-container'];
-        const initWidth = window.innerWidth; // width(wrapper);
-        const initHeight = window.innerHeight; // height(wrapper);
-        this.initialSize = { width: initWidth, height: initHeight };
-      }
-      this.scale = Math.min(
-        window.innerWidth / this.initialSize.width,
-        window.innerHeight / this.initialSize.height,
-      );
-      if (this.scale === 1) {
-        const width = window.innerWidth * HELP_CONSTANTS.DEFAULT_WIDTH_PERCENTAGE / 100;
-        const calcHeight = width / HELP_CONSTANTS.DEFAULT_PROPORTIONS.width * HELP_CONSTANTS.DEFAULT_PROPORTIONS.height;
-        const height = window.innerHeight * HELP_CONSTANTS.DEFAULT_HEIGHT_PERCENTAGE / 100;
-        const calcWidth = height / HELP_CONSTANTS.DEFAULT_PROPORTIONS.height * HELP_CONSTANTS.DEFAULT_PROPORTIONS.width;
-        if (width < calcWidth) {
-          this.setModalSize({ width, height: calcHeight });
-        } else {
-          this.setModalSize({ width: calcWidth, height });
+      const self = this;
+      setTimeout(() => {
+        if (typeof self.initialSize === 'undefined') {
+          const initWidth = window.innerWidth;
+          const initHeight = window.innerHeight;
+          self.initialSize = { width: initWidth, height: initHeight };
         }
-      }
+        self.scale = Math.min(
+          window.innerWidth / self.initialSize.width,
+          window.innerHeight / self.initialSize.height,
+        );
+        if (self.scale === 1) {
+          const width = window.innerWidth * HELP_CONSTANTS.DEFAULT_WIDTH_PERCENTAGE / 100;
+          const calcHeight = width / HELP_CONSTANTS.DEFAULT_PROPORTIONS.width * HELP_CONSTANTS.DEFAULT_PROPORTIONS.height;
+          const height = window.innerHeight * HELP_CONSTANTS.DEFAULT_HEIGHT_PERCENTAGE / 100;
+          const calcWidth = height / HELP_CONSTANTS.DEFAULT_PROPORTIONS.height * HELP_CONSTANTS.DEFAULT_PROPORTIONS.width;
+          if (width < calcWidth) {
+            self.setModalSize({ width, height: calcHeight });
+          } else {
+            self.setModalSize({ width: calcWidth, height });
+          }
+          // } else {
+          //   this.initialSize = undefined;
+          //   this.onResize();
+        }
+      }, 500);
     },
     showTitle(title) {
       this.tooltipTitle = title;
@@ -236,9 +255,12 @@ export default {
     });
     this.carouselEl = this.$refs['kp-carousel'];
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
+    window.addEventListener('resize', this.onResize);
+    this.onResize();
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
+    window.removeEventListener('', this.onResize);
   },
 };
 </script>
@@ -254,8 +276,8 @@ export default {
     box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
     transition: all 0.2s ease-in-out;
     border-radius: 3px;
-    min-width 640px
-    min-height 480px
+    min-width 320px
+    min-height 240px
     &:before
       display block
       content "";
@@ -348,6 +370,7 @@ export default {
         color $main-control-yellow
 
     .kp-icon-close-popover
+    .kp-icon-refresh-size
       position absolute
       top 0
       right 2px
@@ -357,6 +380,10 @@ export default {
         opacity 0
       &:hover .mdi-close-circle-outline:before
         content '\F159'
+    .kp-icon-refresh-size
+      right 24px
+      &:hover
+        color $main-control-main-color !important
     .kp-checkbox
       position absolute
       right 20px
