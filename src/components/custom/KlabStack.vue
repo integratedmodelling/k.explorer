@@ -7,7 +7,9 @@
     <div
       class="ks-layer"
       v-for="(layer, layerIndex) in layers"
+      ref="ks-layer"
       :key="`ks-layer-${layerIndex}`"
+      :id="`ks-layer-${ownerIndex}-${layerIndex}`"
       :style="`z-index: 10${layers.length - layerIndex}`"
       :class="{ 'ks-top-layer': selectedLayer === layerIndex, 'ks-hide-layer': selectedLayer !== layerIndex }"
       @click="next"
@@ -22,7 +24,12 @@
         :alt="layer.image.alt || layer.title || layer.text"
         :title="layer.image.alt || layer.title || layer.text"
         :id="`ks-image-${ownerIndex}-${layerIndex}`"
-        :style="{ width: layer.image.width || 'auto', height: layer.image.height || 'auto' }"
+        :style="{
+          width: layer.image.width || 'auto',
+          height: layer.image.height || 'auto',
+          'max-width': imgMaxSize.width,
+          'max-height': imgMaxSize.height,
+        }"
       />
       </div>
       <div
@@ -93,6 +100,9 @@ export default {
       autostart: typeof this.stack.autostart !== 'undefined' ? this.stack.autostart : this.ownerIndex === 0,
       duration: this.stack.duration || 5000,
       infinite: typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false,
+      initialSize: {},
+      scale: 1,
+      imgMaxSize: { width: '100%', height: '100%' },
     };
   },
   computed: {
@@ -101,6 +111,9 @@ export default {
     },
     hasNext() {
       return this.selectedLayer < this.layers.length - 1 || this.ownerIndex < this.maxOwnerIndex - 1 || this.infinite;
+    },
+    modalSize() {
+      return this.$store.state.view.modalSize;
     },
   },
   methods: {
@@ -176,18 +189,29 @@ export default {
       if (typeof element === 'undefined') {
         return {};
       }
-      return {
+      const style = {
         ...element.position,
         ...element.style,
         ...(element.width && { width: element.width }),
         ...(element.height && { height: element.height }),
       };
+      return style;
     },
     elementClasses(element) {
       if (typeof element === 'undefined') {
         return [];
       }
       return !element.position ? [`ks-${element.hAlign || 'center'}`, `ks-${element.vAlign || 'middle'}`] : [];
+    },
+  },
+  watch: {
+    modalSize() {
+      setTimeout(() => {
+        const layer = this.$refs['ks-layer'][0];
+        const width = `${layer.clientWidth}px`;
+        const height = `${layer.clientHeight}px`;
+        this.imgMaxSize = { width, height };
+      }, 200); // wait for animation
     },
   },
   mounted() {
@@ -202,16 +226,17 @@ export default {
   @import '~variables'
   .ks-stack-container
     position relative
-    height 100%
+    height calc(100% - 20px)
+    margin 20px 20px 0
     .ks-layer
       position absolute
-      padding 0
       top 0
       left 0
       bottom 90px
       right 0
       opacity 0
       transition opacity .5s ease-in-out
+      overflow hidden
       &.ks-top-layer
         z-index 999 !important
         opacity 1
@@ -220,20 +245,20 @@ export default {
       padding 12px
       width auto
       height auto
-      font-size 1.2em
       color $grey-8
       .ks-caption-title
-        font-size 1.4em
+        font-size 32px
         letter-spacing normal
         margin 0 0 10px 0
         text-align center
       .ks-caption-text
-        font-size 1em
+        font-size 18px
 
     .ks-layer-image
       position absolute
       max-width 100%
       max-height 100%
+      overflow hidden
       img
         width auto
         height auto
@@ -264,13 +289,11 @@ export default {
       right 0
       z-index 10000
       vertical-align middle
-      transition opacity .5s
-      border-radius 5px
-      padding 2px
+      transition opacity .3s
       height 40px
+      border-bottom 1px solid $grey-3;
       &.ks-navigation-transparent
         opacity 0.6
       &:hover
         opacity 1;
-        background-color background-color alpha($main-control-main-color, 85%)
 </style>

@@ -300,6 +300,9 @@ export default {
     }
   },
 
+  SET_MODAL_SIZE: (state, { width, height }) => {
+    state.modalSize = { width, height };
+  },
   SET_FUZZY_MODE: (state, fuzzyMode) => {
     state.fuzzyMode = fuzzyMode;
   },
