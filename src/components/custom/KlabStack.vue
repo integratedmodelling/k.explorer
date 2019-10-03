@@ -62,6 +62,15 @@
         :title="animation === null ? $t('label.appPlay') : $t('label.appPause')"
       ></q-btn>
       <q-btn
+        id="ks-replay"
+        @click="refreshLayer(layers[selectedLayer])"
+        :disable="!isGif"
+        text-color="grey-8"
+        icon="mdi-reload"
+        round flat dense
+        :title="$t('label.appReplay')"
+      ></q-btn>
+      <q-btn
         id="ks-next"
         @click="next"
         :disable="!hasNext"
@@ -90,6 +99,10 @@ export default {
       type: Object,
       required: true,
     },
+    onTop: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -102,7 +115,7 @@ export default {
       infinite: typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false,
       initialSize: {},
       scale: 1,
-      imgMaxSize: { width: '100%', height: '100%' },
+      imgMaxSize: { width: 'auto', height: 'auto' },
     };
   },
   computed: {
@@ -115,14 +128,28 @@ export default {
     modalSize() {
       return this.$store.state.view.modalSize;
     },
+    isGif() {
+      const layer = this.layers[this.selectedLayer];
+      return (!!layer && layer.image && layer.image.url.endsWith('.gif'));
+    },
   },
   methods: {
     initStack() {
       this.selectedLayer = 0;
       this.stopStack();
-      if (this.animated) {
+      this.animated = typeof this.stack.animated !== 'undefined' ? this.stack.animated : false;
+      if (this.animated && this.onTop) {
         this.playStack();
       }
+    },
+    playStack() {
+      const layer = this.layers[this.selectedLayer];
+      this.animated = true;
+      if (layer.image && layer.image.url.indexOf('.gif') !== -1) {
+        // reset gif
+        this.reloadGif(layer);
+      }
+      this.setAnimation(layer.duration || this.duration);
     },
     stopStack() {
       if (this.animation !== null) {
@@ -131,14 +158,13 @@ export default {
         this.animated = false;
       }
     },
-    playStack() {
-      const layer = this.layers[this.selectedLayer];
-      if (layer.image && layer.image.url.indexOf('.gif') !== -1) {
-        // reset gif
-        document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`).src = this.getImage(this.layers[this.selectedLayer]);
+    refreshLayer(layer) {
+      if (this.animated) {
+        this.stopStack();
+        this.playStack();
+      } else {
+        this.reloadGif(layer);
       }
-      this.animated = true;
-      this.setAnimation(this.layers[this.selectedLayer].duration || this.duration);
     },
     goTo(index) {
       if (index === 'last') {
@@ -169,6 +195,9 @@ export default {
         this.$emit('stackend', { index: this.ownerIndex, direction: -1 });
       }
     },
+    reloadGif(layer) {
+      document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`).src = this.getImage(layer);
+    },
     setAnimation(duration) {
       if (this.stack.layers.length <= 1) {
         return; // no amimation for one frame
@@ -176,6 +205,7 @@ export default {
       const self = this;
       if (this.animation !== null) {
         clearTimeout(this.animation);
+        this.animation = null;
       }
       this.animation = setTimeout(() => {
         self.next();
@@ -206,12 +236,19 @@ export default {
   },
   watch: {
     modalSize() {
-      setTimeout(() => {
-        const layer = this.$refs['ks-layer'][0];
-        const width = `${layer.clientWidth}px`;
-        const height = `${layer.clientHeight}px`;
-        this.imgMaxSize = { width, height };
-      }, 200); // wait for animation
+      this.$nextTick(() => {
+        setTimeout(() => {
+          const layer = this.$refs['ks-layer'][0];
+          const width = `${layer.clientWidth}px`;
+          const height = `${layer.clientHeight}px`;
+          this.imgMaxSize = { width, height };
+        }, 200); // wait for animation
+      });
+    },
+    onTop(newValue) {
+      if (newValue) {
+        this.initStack();
+      }
     },
   },
   mounted() {
@@ -253,17 +290,12 @@ export default {
         text-align center
       .ks-caption-text
         font-size 18px
-
     .ks-layer-image
       position absolute
-      max-width 100%
-      max-height 100%
       overflow hidden
       img
         width auto
         height auto
-        max-width 100%
-        max-height 100%
     .ks-middle
       top 50%
       transform translateY(-50%)

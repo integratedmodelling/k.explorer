@@ -28,6 +28,7 @@
                   :owner-index="slideIndex"
                   :maxOwnerIndex="slides.length"
                   :stack="slide.stack"
+                  :on-top="currentSlide === slideIndex"
                   ref="kp-stack"
                   @stackend="stackEnd"
                 ></klab-stack>
@@ -182,7 +183,7 @@ export default {
       }
       const newStack = this.$refs['kp-stack'][newIndex];
       if (typeof newStack !== 'undefined') {
-        newStack.initStack(0);
+        newStack.initStack();
       }
     },
     goTo(slide, index) {
@@ -190,10 +191,12 @@ export default {
       if (typeof carousel !== 'undefined') {
         carousel.goToSlide(slide);
       }
-      const stack = this.$refs['kp-stack'][slide];
-      if (typeof stack !== 'undefined') {
-        stack.goTo(index);
-      }
+      this.$nextTick(() => {
+        const stack = this.$refs['kp-stack'][slide];
+        if (typeof stack !== 'undefined') {
+          stack.goTo(index);
+        }
+      });
     },
     helpNeededEvent() {
       this.needHelp = true;

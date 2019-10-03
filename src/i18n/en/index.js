@@ -10,6 +10,7 @@ export default {
     appPrevious: 'Previous',
     appWarning: 'Warning',
     appPlay: 'Play',
+    appReplay: 'Replay',
     appPause: 'Pause',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
