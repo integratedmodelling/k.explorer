@@ -374,7 +374,7 @@ export default {
     .kp-icon-close-popover
     .kp-icon-refresh-size
       position absolute
-      top 0
+      top 2px
       right 2px
       width: 22px;
       height: 22px;
