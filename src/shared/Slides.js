@@ -37,7 +37,7 @@ export default [
       layers: [{
         image: {
           url: 'img11.gif',
-          alt: 'Other thing here',
+          // alt: 'Other thing here',
           // hAlign: 'right',
           // vAlign: 'top',
           // position: { left: '20px', bottom: '10em' },
@@ -60,7 +60,7 @@ export default [
       }, {
         image: {
           url: 'img12.gif',
-          alt: 'Other thing here',
+          // alt: 'Other thing here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
@@ -84,7 +84,7 @@ export default [
       }, {
         image: {
           url: 'img13.gif',
-          alt: 'Other thing here',
+          // alt: 'Other thing here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
@@ -116,7 +116,7 @@ export default [
       layers: [{
         image: {
           url: 'img21.gif',
-          alt: 'Put something here',
+          // alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
@@ -140,7 +140,7 @@ export default [
       }, {
         image: {
           url: 'img22.gif',
-          alt: 'Put something here',
+          // alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
@@ -164,7 +164,7 @@ export default [
       }, {
         image: {
           url: 'img23.gif',
-          alt: 'Put something here',
+          // alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
@@ -196,7 +196,7 @@ export default [
       layers: [{
         image: {
           url: 'img31.gif',
-          alt: 'Put something here',
+          // alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
@@ -220,7 +220,7 @@ export default [
       }, {
         image: {
           url: 'img32.gif',
-          alt: 'Put something here',
+          // alt: 'Put something here',
           // hAlign: 'center',
           // vAlign: 'middle',
           // position: { left: '0', bottom: '0' },
