@@ -56,7 +56,7 @@ export default [
           // height: '100px',
           // style: { 'background-color': 'green' },
         },
-        duration: 4000,
+        duration: 9900,
       }, {
         image: {
           url: 'img12.gif',
@@ -80,7 +80,7 @@ export default [
           // height: '100px',
           // style: { border: '1px solid #000' },
         },
-        duration: 4000,
+        duration: 12600,
       }, {
         image: {
           url: 'img13.gif',
@@ -104,7 +104,7 @@ export default [
           // height: '100px',
           // style: { border: '1px solid #000' },
         },
-        duration: 4000,
+        duration: 4500,
       }],
       duration: 10000,
       animated: false,
@@ -136,7 +136,7 @@ export default [
           // height: '100px',
           style: { 'border-top': '1px solid #000' },
         },
-        duration: 2800,
+        duration: 9900,
       }, {
         image: {
           url: 'img22.gif',
@@ -160,7 +160,7 @@ export default [
           // height: '100px',
           style: { 'border-top': '1px solid #000' },
         },
-        duration: 5600,
+        duration: 10800,
       }, {
         image: {
           url: 'img23.gif',
@@ -184,7 +184,7 @@ export default [
           // height: '100px',
           style: { 'border-top': '1px solid #000' },
         },
-        duration: 8800,
+        duration: 5600,
       }],
       duration: 2000,
       animated: false,
@@ -216,7 +216,7 @@ export default [
           // height: '100px',
           // style: { border: '1px solid #000' },
         },
-        duration: 2800,
+        duration: 3600,
       }, {
         image: {
           url: 'img32.gif',
@@ -240,7 +240,7 @@ export default [
           // height: '100px',
           // style: { border: '1px solid #000' },
         },
-        duration: 2800,
+        duration: 8800,
       }],
       duration: 2000,
       animated: false,
