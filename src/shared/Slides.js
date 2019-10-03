@@ -107,7 +107,7 @@ export default [
         duration: 4500,
       }],
       duration: 10000,
-      animated: false,
+      animated: true,
       infinite: false,
     },
   }, {
@@ -187,11 +187,11 @@ export default [
         duration: 5600,
       }],
       duration: 2000,
-      animated: false,
+      animated: true,
       infinite: false,
     },
   }, {
-    title: 'Third',
+    title: 'Search in k.LAB',
     stack: {
       layers: [{
         image: {
@@ -243,7 +243,7 @@ export default [
         duration: 8800,
       }],
       duration: 2000,
-      animated: false,
+      animated: true,
       infinite: false,
     },
   },
