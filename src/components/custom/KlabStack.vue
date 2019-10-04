@@ -256,6 +256,13 @@ export default {
       this.initStack();
     }
   },
+  updated() {
+    this.layers = this.stack.layers;
+    this.animated = typeof this.stack.animated !== 'undefined' ? this.stack.animated : false;
+    this.autostart = typeof this.stack.autostart !== 'undefined' ? this.stack.autostart : this.ownerIndex === 0;
+    this.duration = this.stack.duration || 5000;
+    this.infinite = typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false;
+  },
 };
 </script>
 
@@ -263,8 +270,8 @@ export default {
   @import '~variables'
   .ks-stack-container
     position relative
-    height calc(100% - 20px)
-    margin 20px 20px 0
+    height calc(100% - 30px)
+    margin 30px 20px 0
     .ks-layer
       position absolute
       top 0

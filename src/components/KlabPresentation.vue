@@ -10,6 +10,18 @@
          transform: `translate(-50%, -50%) scale(${scale}, ${scale}) !important`}">
       <div class="kp-help-inner" ref="kp-help-inner">
         <div class="kp-help-content full-height">
+          <div class="kp-help-titlebar">
+            <div
+              class="kp-link"
+              v-for="(presentation, index) in presentations"
+              :key="`kp-pres-${index}`"
+              :id="`kp-pres-${index}`"
+              :class="{ 'kp-link-current': index === activeSectionIndex }"
+              @click="index === activeSectionIndex ? false : loadPresentation(index)"
+            >
+              <span>{{ presentation.linkTitle }}</span>
+            </div>
+          </div>
           <q-carousel
             class="kp-carousel full-height"
             ref="kp-carousel"
@@ -19,14 +31,14 @@
           >
             <q-carousel-slide
               class="kp-slide full-height"
-              v-for="(slide, slideIndex) in slides"
+              v-for="(slide, slideIndex) in activePresentation"
               :key="`kp-slide-${slideIndex}`"
             >
               <div class="kp-main-content">
                 <klab-stack
                   v-if="slide.stack.layers && slide.stack.layers.length > 0"
                   :owner-index="slideIndex"
-                  :maxOwnerIndex="slides.length"
+                  :maxOwnerIndex="activePresentation.length"
                   :stack="slide.stack"
                   :on-top="currentSlide === slideIndex"
                   ref="kp-stack"
@@ -62,7 +74,7 @@
         <div class="kp-navigation">
           <div class="kp-nav-container">
             <div
-              v-for="(slide, slideIndex) in slides"
+              v-for="(slide, slideIndex) in activePresentation"
               :key="`kp-nav-${slideIndex}`"
               class="kp-navnumber-container"
               @click="goTo(slideIndex, 0)"
@@ -108,6 +120,7 @@
           flat
         ></q-btn>
       </div>
+      <div class="kp-help-inner modal-backdrop" v-if="typeof initialSize === 'undefined' || activeSectionIndex === -1"><q-spinner class="fixed-center" color="mc-yellow" :size="40"></q-spinner></div>
     </div>
   </div>
 </template>
@@ -117,9 +130,13 @@ import { mapGetters, mapActions } from 'vuex';
 import { Cookies } from 'quasar';
 import { WEB_CONSTANTS, CUSTOM_EVENTS, HELP_CONSTANTS } from 'shared/Constants';
 import KlabStack from 'components/custom/KlabStack.vue';
-import slides from 'shared/Slides.js';
+// import { axiosInstance } from 'plugins/axios';
+// import slides from 'shared/Slides.js';
+// import Vue from 'vue';
+// import VueJsonp from 'vue-jsonp';
+import jsonp from 'jsonp';
 
-
+// Vue.use(VueJsonp);
 // const { height, width } = dom;
 
 export default {
@@ -127,7 +144,9 @@ export default {
   components: { KlabStack },
   data() {
     return {
-      slides,
+      presentations: [],
+      presentationsLoading: false,
+      activeSectionIndex: -1,
       needHelp: false,
       remember: false,
       topLayer: [],
@@ -136,6 +155,7 @@ export default {
       initialSize: undefined,
       scale: 1,
       tooltipTitle: '',
+      activePresentation: [],
     };
   },
   computed: {
@@ -202,7 +222,7 @@ export default {
       this.needHelp = true;
     },
     stackEnd({ index, direction }) {
-      if (direction > 0 && index < this.slides.length - 1) {
+      if (direction > 0 && index < this.activePresentation.length - 1) {
         this.goTo(index + 1, 0);
       } else if (direction < 0 && index > 0) {
         this.goTo(index - 1, 'last');
@@ -243,25 +263,77 @@ export default {
     showTitle(title) {
       this.tooltipTitle = title;
     },
+    loadPresentation(presentationIndex) {
+      if (this.presentations[presentationIndex]) {
+        this.activePresentation = this.presentations[presentationIndex].slides;
+        this.activeSectionIndex = presentationIndex;
+      }
+      this.$el.querySelectorAll('.internal-link').forEach((link) => {
+        const [slide, index] = link.getAttribute('rel').split('-');
+        link.addEventListener('click', () => {
+          this.goTo(parseInt(slide, 10), parseInt(index, 10));
+        });
+      });
+      this.carouselEl = this.$refs['kp-carousel'];
+      this.onResize();
+    },
   },
   watch: {
     showHelp(newValue) {
       this.$store.state.view.helpShown = newValue;
     },
+    presentationsLoading(newValue) {
+      if (!newValue) {
+        this.loadPresentation(0);
+      }
+    },
+  },
+  created() {
+    const self = this;
+    this.presentationsLoading = true;
+    jsonp(HELP_CONSTANTS.DEFAULT_HELP_BASE_URL, { param: 'callback' }, (err, data) => {
+      if (err) {
+        console.error(err.message);
+        this.presentationsLoading = false;
+      } else {
+        const config = data;
+        if (config && config.length > 0) {
+          config.forEach((sec, index) => {
+            jsonp(`${HELP_CONSTANTS.DEFAULT_HELP_BASE_URL}?sec=${sec.id}`, { param: 'callback' }, (sectionError, sectionData) => {
+              if (sectionError) {
+                console.error(sectionError.message);
+              } else {
+                self.presentations.push({
+                  id: sec.id,
+                  linkTitle: sec.name,
+                  linkDescription: sec.description,
+                  slides: sectionData,
+                });
+              }
+              if (index === config.length - 1) {
+                this.presentationsLoading = false;
+              }
+            });
+          });
+        }
+      }
+    });
   },
   mounted() {
+    // const self = this;
+    /*
+    this.$jsonp('http://www.integratedmodelling.org/downloads/slides.js', { callbackName: 'slides' }).then((data) => {
+      self.slides = data;
+    }).catch((err) => {
+      console.error(err);
+    });
+    */
+    // load configuration and donwnload content
+
     this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
     this.remember = !this.needHelp;
-    this.$el.querySelectorAll('.internal-link').forEach((link) => {
-      const [slide, index] = link.getAttribute('rel').split('-');
-      link.addEventListener('click', () => {
-        this.goTo(parseInt(slide, 10), parseInt(index, 10));
-      });
-    });
-    this.carouselEl = this.$refs['kp-carousel'];
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
     window.addEventListener('resize', this.onResize);
-    this.onResize();
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
@@ -300,6 +372,24 @@ export default {
     .kp-help-content
       position relative
       background-color white
+    .kp-help-titlebar
+      position absolute
+      width 100%
+      height 25px
+      padding 8px 0 0 20px
+      z-index: 100000;
+      .kp-link
+        font-size 11px
+        color $grey-8
+        cursor pointer
+        float left
+        padding 0 10px 0 0
+        &:hover:not(.kp-link-current)
+          text-decoration underline
+          color $main-control-main-color
+      .kp-link-current
+        cursor default
+        text-decoration underline
 
     .kp-carousel
       .kp-slide
@@ -377,10 +467,11 @@ export default {
     .kp-icon-close-popover
     .kp-icon-refresh-size
       position absolute
-      top 2px
+      top 1px
       right 2px
       width: 22px;
       height: 22px;
+      z-index 200000
       .q-focus-helper
         opacity 0
       &:hover .mdi-close-circle-outline:before

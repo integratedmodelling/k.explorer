@@ -103,7 +103,6 @@ export default {
     updateScale: 'Updated {type} scale, new value: {resolution} {unit}',
     updateNextScale: 'New {type} scale have been stored, press refresh to update',
     invalidGeometry: 'Polygon is not valid',
-    spatialLocationSent: 'Spatial location sent',
     geolocationWaitingTitle: 'Enable geolocation?',
     geolocationWaitingText: '<em>k.Explorer</em> can detect your current location to initialize the geographical viewer.<br />In order to do so, <em>you need to authorize geolocation</em>.<br />This is merely for your convenience and <em>does not affect operation</em>.<br />Your choice will be remembered and can be changed at any time.',
     geolocationErrorPermissionDenied: 'Geolocation has not been authorized',
