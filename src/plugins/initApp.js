@@ -1,5 +1,6 @@
 import { WEB_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
 import { MAP_CONSTANTS, DEFAULT_OPTIONS } from 'shared/MapConstants';
+import { axiosInstance } from 'plugins/axios';
 import { Cookies, colors } from 'quasar';
 import Vue from 'vue';
 
@@ -96,6 +97,23 @@ export default ({ store }) => {
   } else {
     store.state.view.helpBaseUrl = HELP_CONSTANTS.DEFAULT_HELP_BASE_URL;
   }
+
+  /**
+   * Capabilities
+   */
+  axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}/capabilities`, {}).then(({ data: capabilities }) => {
+    if (typeof capabilities === 'object') {
+      if (Object.keys(capabilities).length === 0) {
+        throw Error('Capabilities are empty, check it');
+      }
+      store.state.view.capabilities = capabilities;
+    } else {
+      throw Error('Error asking for capabilities: no data');
+    }
+  })
+    .catch((error) => {
+      console.error(`Error trying to retrieve capabilities: ${error}`);
+    });
 };
 
 export { eventBus };
