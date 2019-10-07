@@ -1,4 +1,4 @@
-import { WEB_CONSTANTS } from 'shared/Constants';
+import { WEB_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
 import { MAP_CONSTANTS, DEFAULT_OPTIONS } from 'shared/MapConstants';
 import { Cookies, colors } from 'quasar';
 import Vue from 'vue';
@@ -87,6 +87,15 @@ export default ({ store }) => {
     warning: '#F2C037',
   };
   */
+  /**
+   * local help
+   */
+  const localHelp = urlParams.get(WEB_CONSTANTS.PARAMS_LOCAL_HELP);
+  if (localHelp) {
+    store.state.view.helpBaseUrl = `http://${localHelp}`;
+  } else {
+    store.state.view.helpBaseUrl = HELP_CONSTANTS.DEFAULT_HELP_BASE_URL;
+  }
 };
 
 export { eventBus };

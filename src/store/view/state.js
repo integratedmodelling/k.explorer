@@ -169,4 +169,5 @@ export default {
   modalSize: HELP_CONSTANTS.DEFAULT_MODAL_SIZE,
   fuzzyMode: false, // search with free text
   largeMode: 0, // search bar steps 0: normal; >0: larger
+  helpBaseUrl: null,
 };

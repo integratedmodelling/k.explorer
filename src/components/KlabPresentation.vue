@@ -37,7 +37,7 @@
               <div class="kp-main-content">
                 <klab-stack
                   v-if="slide.stack.layers && slide.stack.layers.length > 0"
-                  :presentation-id="presentations[activeSectionIndex].id"
+                  :presentation="presentations[activeSectionIndex]"
                   :owner-index="slideIndex"
                   :maxOwnerIndex="activePresentation.length"
                   :stack="slide.stack"
@@ -157,6 +157,7 @@ export default {
       scale: 1,
       tooltipTitle: '',
       activePresentation: [],
+      url: undefined,
     };
   },
   computed: {
@@ -167,6 +168,9 @@ export default {
       'isInModalMode',
       'modalSize',
     ]),
+    helpBaseUrl() {
+      return this.$store.state.view.helpBaseUrl;
+    },
     currentSlide() {
       return this.carouselEl ? this.carouselEl.slide : -1;
     },
@@ -295,7 +299,7 @@ export default {
   created() {
     const self = this;
     this.presentationsLoading = true;
-    jsonp(HELP_CONSTANTS.DEFAULT_HELP_BASE_URL, { param: 'callback' }, (err, data) => {
+    jsonp(`${this.helpBaseUrl}/index.php`, { param: 'callback' }, (err, data) => {
       if (err) {
         console.error(err.message);
         this.presentationsLoading = false;
@@ -303,12 +307,13 @@ export default {
         const config = data;
         if (config && config.length > 0) {
           config.forEach((sec, index) => {
-            jsonp(`${HELP_CONSTANTS.DEFAULT_HELP_BASE_URL}?sec=${sec.id}`, { param: 'callback' }, (sectionError, sectionData) => {
+            jsonp(`${this.helpBaseUrl}/index.php?sec=${sec.id}`, { param: 'callback' }, (sectionError, sectionData) => {
               if (sectionError) {
                 console.error(sectionError.message);
               } else {
                 self.presentations.push({
                   id: sec.id,
+                  baseFolder: sec.baseFolder,
                   linkTitle: sec.name,
                   linkDescription: sec.description,
                   slides: sectionData,
@@ -336,11 +341,11 @@ export default {
 
     this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
     this.remember = !this.needHelp;
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_HELP, this.helpNeededEvent);
     window.addEventListener('resize', this.onResize);
   },
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
+    this.$eventBus.$off(CUSTOM_EVENTS.NEED_HELP, this.helpNeededEvent);
     window.removeEventListener('resize', this.onResize);
   },
 };

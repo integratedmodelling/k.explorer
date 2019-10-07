@@ -408,6 +408,7 @@ export const WEB_CONSTANTS = {
   PARAMS_LOG: 'log',
   PARAMS_LOG_HIDDEN: 'hidden',
   PARAMS_LOG_VISIBLE: 'visible',
+  PARAMS_LOCAL_HELP: 'localhelp',
   /**
    * Cookies name
    */
@@ -508,7 +509,7 @@ export const CUSTOM_EVENTS = {
   VIEWER_CLOSED: 'viewerclosed',
   OBSERVATION_INFO_CLOSED: 'observationinfoclosed', // when the observation info panel is close, I must close any mapinfo
   SEND_REGION_OF_INTEREST: 'sendregionofinterest', // when scale is unlocked, we need to refresh region of interest
-  NEED_TUTORIAL: 'needtutorial',
+  NEED_HELP: 'needhelp',
 };
 
 export const SCALE_TYPE = {
@@ -532,7 +533,7 @@ export const HELP_CONSTANTS = {
   DEFAULT_PROPORTIONS: { width: 4, height: 3 },
   DEFAULT_WIDTH_PERCENTAGE: 80,
   DEFAULT_HEIGHT_PERCENTAGE: 80,
-  DEFAULT_HELP_BASE_URL: 'http://www.integratedmodelling.org/klab/help/index.php',
+  DEFAULT_HELP_BASE_URL: 'http://www.integratedmodelling.org/klab/help',
 };
 
 export default {

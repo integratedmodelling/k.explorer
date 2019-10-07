@@ -44,6 +44,7 @@ export default {
     mcMenuSettings: 'Settings',
     mcMenuHelp: 'Help',
     showTutorial: 'Show tutorial',
+    showHelp: 'Show help',
     refreshSize: 'Refresh window size',
     titleOutputFormat: 'Download observation',
     askForOuputFormat: 'Select format',
