@@ -294,8 +294,7 @@ export default {
       });
       // this.draggableElement.classList.remove('vuela');
     },
-    largeMode(newValue, oldValue) {
-      console.log(`newValue: ${newValue}, oldValue: ${oldValue}`);
+    largeMode() {
       if (this.hasContext) {
         return;
       }

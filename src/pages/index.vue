@@ -41,46 +41,7 @@
           </div>
       </div>
     </q-modal>
-    <q-modal
-      v-model="showHelp"
-      id="modal-show-help"
-      :content-classes="['gl-msg-content']"
-    >
-      <div class="bg-opaque-white full-height">
-        <div class="q-pa-lg" id="gl-container">
-          <h5>{{ $t('messages.needHelpTitle') }}</h5>
-          <p v-html="$t(`messages.needHelp${helpIndex}Text`)"></p>
-          <div class="gl-btn-container">
-            <q-btn
-              :label="$t('label.appPrevious')"
-              color="mc-main"
-              :disable="helpIndex === 0"
-              @click="helpIndex -= 1"
-            ></q-btn>
-            <q-btn
-              :label="$t('label.appNext')"
-              color="mc-main"
-              :disable="helpIndex === 3"
-              @click="helpIndex += 1"
-            ></q-btn>
-            <q-btn
-              :label="$t('label.appOK')"
-              color="mc-main"
-              @click="hideHelp"
-            ></q-btn>
-            <q-checkbox
-              v-model="remember"
-              :keep-color="true"
-              color="mc-main"
-              :label="$t('label.rememberDecision')"
-              class="rmd-checkbox"
-              :left-label="true"
-            ></q-checkbox>
-          </div>
-        </div>
-        <div id="gl-page-counter">1/6</div>
-      </div>
-    </q-modal>
+    <klab-presentation></klab-presentation>
     <input-request-modal></input-request-modal>
     <scale-change-dialog></scale-change-dialog>
   </q-page>
@@ -98,7 +59,8 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 
-import { colors, Cookies } from 'quasar';
+import { colors } from 'quasar';
+import KlabPresentation from 'components/KlabPresentation';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
 
@@ -113,13 +75,11 @@ export default {
     KlabSpinner,
     InputRequestModal,
     ScaleChangeDialog,
+    KlabPresentation,
   },
   data() {
     return {
       askForUndocking: false,
-      needHelp: !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START),
-      helpIndex: 0,
-      remember: false,
     };
   },
   computed: {
@@ -138,7 +98,16 @@ export default {
       'spinnerErrorMessage',
       'isMainControlDocked',
       'admitSearch',
+      'isHelpShown',
     ]),
+    waitingGeolocation: {
+      get() {
+        return this.$store.state.view.waitingGeolocation;
+      },
+      set(waitingGeolocation) {
+        this.$store.state.view.waitingGeolocation = waitingGeolocation;
+      },
+    },
     logVisible() {
       return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
     },
@@ -174,15 +143,6 @@ export default {
         [CONNECTION_CONSTANTS.CONNECTION_ERROR]: false,
       }[this.connectionState];
     },
-    showHelp: {
-      get() {
-        return false;
-        // return !this.modalVisible && !this.waitingGeolocation && this.needHelp;
-      },
-      set(needHelp) {
-        this.needHelp = needHelp;
-      },
-    },
   },
   methods: {
     ...mapActions('view', [
@@ -199,19 +159,6 @@ export default {
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
       console.info(`Setted max children as ${minResults}`);
       this.$store.state.data.childrenToAskFor = minResults;
-    },
-    storeNoNeedHelp() {
-      this.needHelp = false;
-      Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
-        expires: 30,
-        path: '/',
-      });
-    },
-    hideHelp() {
-      if (this.remember) {
-        this.storeNoNeedHelp();
-      }
-      this.needHelp = false;
     },
     askForUndockListener(ask) {
       this.askForUndocking = ask;
@@ -238,7 +185,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isInModalMode || !this.admitSearch) {
+      if (this.modalVisible || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {
@@ -315,37 +262,4 @@ export default {
 
   #modal-connection-status.fullscreen
     z-index 10000
-
-  #modal-show-help
-    #gl-container
-      height 100%
-      width 100%
-      position relative
-    .gl-msg-content
-      width 40vw
-      height 60vh
-      padding 0
-      color rgba(0,0,0,0.7)
-      position relative
-      p
-        padding 20px 0
-    .rmd-checkbox
-      position absolute
-      right 0px
-      bottom -25px
-      font-size 10px
-
-    .gl-msg-content
-      .gl-btn-container
-        position: absolute
-        bottom 30px
-        right 0
-        margin-bottom 15px
-        margin-right 15px
-    #gl-page-counter
-      position relative
-      width 100px
-      margin 0 auto
-      text-align center
-      bottom 75px
 </style>

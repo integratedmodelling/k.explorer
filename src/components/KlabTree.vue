@@ -273,7 +273,7 @@ export default {
       }
     },
     askForAction(observationId, actionId) {
-      console.log(`Will ask for ${actionId} of observation ${observationId}`);
+      console.debug(`Will ask for ${actionId} of observation ${observationId}`);
       if (actionId === 0) { // is ricontextualization
         const observation = this.observations.find(o => o.id === observationId);
         if (observation && observation !== null) {
@@ -436,7 +436,7 @@ export default {
           console.warn(`Strange dropped node ${event.dataTransfer.getData('id')}`);
         }
       } else {
-        console.log('Self dropped');
+        console.debug('Self dropped');
       }
       this.dragStart = false;
       this.dragEnter = 0;

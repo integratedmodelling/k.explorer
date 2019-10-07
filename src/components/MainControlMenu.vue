@@ -176,6 +176,16 @@
               </q-item-side>
             </div>
           </q-item>
+          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuHelp') }}</q-list-header>
+          <q-item-separator></q-item-separator>
+          <q-item>
+            <div class="mcm-container">
+              <div class="klab-menuitem klab-clickable" @click="askTutorial">
+                <div class="klab-item klab-font klab-im-logo klab-icon"></div>
+                <div class="klab-item klab-text klab-only-text">{{ $t('label.showTutorial') }}</div>
+              </div>
+            </div>
+          </q-item>
         </template>
       </q-list>
     </q-popover>
@@ -356,6 +366,10 @@ export default {
       if (!this.isDrawMode) {
         this.closeMenuPopups();
       }
+    },
+    askTutorial() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_TUTORIAL);
+      this.closeMenuPopups();
     },
   },
   watch: {
