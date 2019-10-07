@@ -289,9 +289,12 @@ export default {
   watch: {
     showHelp(newValue) {
       this.$store.state.view.helpShown = newValue;
+      if (newValue && !this.presentationsLoading) {
+        this.loadPresentation(0);
+      }
     },
     presentationsLoading(newValue) {
-      if (!newValue) {
+      if (!newValue && this.showHelp) {
         this.loadPresentation(0);
       }
     },
