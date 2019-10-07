@@ -37,6 +37,7 @@
               <div class="kp-main-content">
                 <klab-stack
                   v-if="slide.stack.layers && slide.stack.layers.length > 0"
+                  :presentation-id="presentations[activeSectionIndex].id"
                   :owner-index="slideIndex"
                   :maxOwnerIndex="activePresentation.length"
                   :stack="slide.stack"
@@ -268,14 +269,17 @@ export default {
         this.activePresentation = this.presentations[presentationIndex].slides;
         this.activeSectionIndex = presentationIndex;
       }
-      this.$el.querySelectorAll('.internal-link').forEach((link) => {
-        const [slide, index] = link.getAttribute('rel').split('-');
-        link.addEventListener('click', () => {
-          this.goTo(parseInt(slide, 10), parseInt(index, 10));
+      this.$nextTick(() => {
+        this.carouselEl = this.$refs['kp-carousel'];
+        this.carouselEl.goToSlide(0);
+        this.$el.querySelectorAll('.internal-link').forEach((link) => {
+          const [slide, index] = link.getAttribute('rel').split('-');
+          link.addEventListener('click', () => {
+            this.goTo(parseInt(slide, 10), parseInt(index, 10));
+          });
         });
+        this.onResize();
       });
-      this.carouselEl = this.$refs['kp-carousel'];
-      this.onResize();
     },
   },
   watch: {
@@ -337,7 +341,7 @@ export default {
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.NEED_TUTORIAL, this.helpNeededEvent);
-    window.removeEventListener('', this.onResize);
+    window.removeEventListener('resize', this.onResize);
   },
 };
 </script>

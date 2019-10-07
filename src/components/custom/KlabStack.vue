@@ -87,6 +87,10 @@
 export default {
   name: 'KlabStack',
   props: {
+    presentationId: {
+      type: String,
+      required: true,
+    },
     ownerIndex: {
       type: Number,
       required: true,
@@ -149,7 +153,6 @@ export default {
         // reset gif
         this.reloadGif(layer);
       }
-      this.setAnimation(layer.duration || this.duration);
     },
     stopStack() {
       if (this.animation !== null) {
@@ -196,7 +199,10 @@ export default {
       }
     },
     reloadGif(layer) {
-      document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`).src = this.getImage(layer);
+      const img = document.getElementById(`ks-image-${this.ownerIndex}-${this.selectedLayer}`);
+      if (img) {
+        img.src = this.getImage(layer);
+      }
     },
     setAnimation(duration) {
       if (this.stack.layers.length <= 1) {
@@ -235,6 +241,15 @@ export default {
     },
   },
   watch: {
+    presentationId() {
+      // totally new stack
+      this.layers = this.stack.layers;
+      this.animated = typeof this.stack.animated !== 'undefined' ? this.stack.animated : false;
+      this.autostart = typeof this.stack.autostart !== 'undefined' ? this.stack.autostart : this.ownerIndex === 0;
+      this.duration = this.stack.duration || 5000;
+      this.infinite = typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false;
+      this.initStack();
+    },
     modalSize() {
       this.$nextTick(() => {
         setTimeout(() => {
@@ -255,13 +270,6 @@ export default {
     if (this.autostart) {
       this.initStack();
     }
-  },
-  updated() {
-    this.layers = this.stack.layers;
-    this.animated = typeof this.stack.animated !== 'undefined' ? this.stack.animated : false;
-    this.autostart = typeof this.stack.autostart !== 'undefined' ? this.stack.autostart : this.ownerIndex === 0;
-    this.duration = this.stack.duration || 5000;
-    this.infinite = typeof this.stack.infinite !== 'undefined' ? this.stack.infinite : false;
   },
 };
 </script>
@@ -290,6 +298,8 @@ export default {
       width auto
       height auto
       color $grey-8
+      max-height 100%
+      overflow auto
       .ks-caption-title
         font-size 32px
         letter-spacing normal
@@ -311,6 +321,7 @@ export default {
     .ks-center
       left 50%
       transform translateX(-50%)
+      width 100%
     .ks-top
       top 0
     .ks-bottom
