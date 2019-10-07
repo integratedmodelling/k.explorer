@@ -156,6 +156,7 @@ export default {
         // reset gif
         this.reloadGif(layer);
       }
+      this.setAnimation(layer.duration || this.duration);
     },
     stopStack() {
       if (this.animation !== null) {
