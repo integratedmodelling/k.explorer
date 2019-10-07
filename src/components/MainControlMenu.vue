@@ -182,7 +182,7 @@
             <div class="mcm-container">
               <div class="klab-menuitem klab-clickable" @click="askTutorial">
                 <div class="klab-item klab-font klab-im-logo klab-icon"></div>
-                <div class="klab-item klab-text klab-only-text">{{ $t('label.showTutorial') }}</div>
+                <div class="klab-item klab-text klab-only-text">{{ $t('label.showHelp') }}</div>
               </div>
             </div>
           </q-item>
@@ -368,7 +368,7 @@ export default {
       }
     },
     askTutorial() {
-      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_TUTORIAL);
+      this.$eventBus.$emit(CUSTOM_EVENTS.NEED_HELP);
       this.closeMenuPopups();
     },
   },

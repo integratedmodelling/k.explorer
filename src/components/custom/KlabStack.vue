@@ -20,7 +20,7 @@
         :class="elementClasses(layer.image)"
         :style="elementStyle(layer.image)"
       ><img
-        :src="`statics/help/${layer.image.url}`"
+        :src="getImage(layer)"
         :alt="layer.image.alt || layer.title || layer.text"
         :title="layer.image.alt || layer.title || layer.text"
         :id="`ks-image-${ownerIndex}-${layerIndex}`"
@@ -87,8 +87,8 @@
 export default {
   name: 'KlabStack',
   props: {
-    presentationId: {
-      type: String,
+    presentation: {
+      type: Object,
       required: true,
     },
     ownerIndex: {
@@ -135,6 +135,9 @@ export default {
     isGif() {
       const layer = this.layers[this.selectedLayer];
       return (!!layer && layer.image && layer.image.url.endsWith('.gif'));
+    },
+    helpBaseUrl() {
+      return this.$store.state.view.helpBaseUrl;
     },
   },
   methods: {
@@ -219,7 +222,7 @@ export default {
       }, duration);
     },
     getImage(layer) {
-      return layer.image ? `statics/help/${layer.image.url}?a=${Date.now()}` : '';
+      return layer.image ? `${this.helpBaseUrl}/${this.presentation.baseFolder}/${layer.image.url}` : '';
     },
     elementStyle(element) {
       if (typeof element === 'undefined') {
@@ -241,7 +244,7 @@ export default {
     },
   },
   watch: {
-    presentationId() {
+    presentation() {
       // totally new stack
       this.layers = this.stack.layers;
       this.animated = typeof this.stack.animated !== 'undefined' ? this.stack.animated : false;
@@ -321,7 +324,8 @@ export default {
     .ks-center
       left 50%
       transform translateX(-50%)
-      width 100%
+      &:not(.ks-layer-image)
+        width 100%
     .ks-top
       top 0
     .ks-bottom
