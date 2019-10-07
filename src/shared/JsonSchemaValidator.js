@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { axiosInstance } from 'plugins/axios';
 import Djv from 'djv';
 
 /**
@@ -22,7 +22,6 @@ export default class {
     this.initialized = false;
     this.url = url;
     this.initTimeout = null;
-    this.axios = axios.create();
     console.debug('Load schema(s) on creation');
     // Better way will be not start until a connection exists?
     // wait 2 seconds for server to end starting
@@ -61,18 +60,7 @@ export default class {
    */
   init(url = this.url) {
     if (!this.initialized) {
-      this.axios.get(url, {
-        transformRequest: [
-          (data, headers) => {
-            // we need to delete because we inherited it
-            // the problem is with Spring JSESSION cookie, it seems
-            // better to do this that change a lot of things to
-            // stop spring to generate its session id
-            delete headers.common.Authorization;
-            return data;
-          },
-        ],
-      })
+      axiosInstance.get(url, {})
         .then(({ data }) => {
           if (typeof data === 'object') {
             if (Object.keys(data).length === 0) {

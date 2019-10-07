@@ -285,4 +285,9 @@ export default {
    * indicate if we are crossing IDL, so we cannot make observation
    */
   crossingIDL: false,
+
+  /**
+   * Contain the capabilities returned from engine
+   */
+  capabilities: {},
 };
