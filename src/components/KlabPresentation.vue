@@ -191,14 +191,6 @@ export default {
       'setModalSize',
     ]),
     hideHelp() {
-      if (this.remember) {
-        Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
-          expires: 30,
-          path: '/',
-        });
-      } else {
-        Cookies.remove(WEB_CONSTANTS.COOKIE_HELP_ON_START);
-      }
       this.needHelp = false;
     },
     initStack(oldIndex, newIndex) {
@@ -296,6 +288,16 @@ export default {
     presentationsLoading(newValue) {
       if (!newValue && this.showHelp) {
         this.loadPresentation(0);
+      }
+    },
+    remember(newValue) {
+      if (newValue) {
+        Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
+          expires: 30,
+          path: '/',
+        });
+      } else {
+        Cookies.remove(WEB_CONSTANTS.COOKIE_HELP_ON_START);
       }
     },
   },
