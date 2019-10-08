@@ -38,8 +38,8 @@
         :class="elementClasses(layer.textDiv)"
         :style="elementStyle(layer.textDiv)"
       >
-        <div class="ks-caption-title" v-if="layer.title" v-html="layer.title"></div>
-        <div class="ks-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="layer.text"></div>
+        <div class="ks-caption-title" v-if="layer.title" v-html="rewriteImageUrl(layer.title)"></div>
+        <div class="ks-caption-text" v-if="layer.text"  :style="{ 'text-align': layer.textAlign || 'left' }" v-html="rewriteImageUrl(layer.text)"></div>
       </div>
     </div>
     <div class="ks-navigation" :class="{ 'ks-navigation-transparent': animation !== null }">
@@ -139,6 +139,9 @@ export default {
     helpBaseUrl() {
       return this.$store.state.view.helpBaseUrl;
     },
+    baseUrl() {
+      return `${this.helpBaseUrl}/${this.presentation.baseFolder}`;
+    },
   },
   methods: {
     initStack() {
@@ -223,7 +226,13 @@ export default {
       }, duration);
     },
     getImage(layer) {
-      return layer.image ? `${this.helpBaseUrl}/${this.presentation.baseFolder}/${layer.image.url}` : '';
+      return layer.image ? `${this.baseUrl}/${layer.image.url}` : '';
+    },
+    rewriteImageUrl(html) {
+      if (html && html.length > 0 && html.indexOf('<img') !== -1) {
+        return html.replace(/src="/g, `src="${this.baseUrl}/`);
+      }
+      return html;
     },
     elementStyle(element) {
       if (typeof element === 'undefined') {
