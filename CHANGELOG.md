@@ -9,6 +9,7 @@ is not available.
 ## 0.8.1 - ?
 ### Add
 - Rating and comment resources is implemented on client side
+- Help
 ### Improvements
 - Fuzzy search now is linked to overpass query: if the search start with capital letter, the engine search for an answer from OSM and return a context
 - Folder lazy loading
