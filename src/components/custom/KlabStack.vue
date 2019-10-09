@@ -316,7 +316,7 @@ export default {
       .ks-caption-title
         font-size 32px
         letter-spacing normal
-        margin 0 0 10px 0
+        margin 0 0 1em
         text-align center
       .ks-caption-text
         font-size 18px
