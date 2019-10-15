@@ -186,6 +186,10 @@
               </div>
             </div>
           </q-item>
+          <q-item-separator></q-item-separator>
+          <q-item>
+            <div class="klab-version">Version: {{ $store.state.data.packageVersion }}/ Build {{ $store.state.data.packageBuild }}</div>
+          </q-item>
         </template>
       </q-list>
     </q-popover>
@@ -440,4 +444,11 @@ export default {
     &:hover
       cursor pointer
       color $grey-10
+
+  .klab-version
+    font-size 10px
+    width 100%
+    text-align right
+    color $grey-6
+
 </style>

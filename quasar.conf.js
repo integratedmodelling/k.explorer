@@ -1,5 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
+const fs = require('fs');
+
+const packageJson = fs.readFileSync('./package.json');
+const version = JSON.parse(packageJson).version || 0;
+const build = fs.readFileSync('./build', 'utf8');
 
 function extendTypescriptToWebpack(cfg) {
   // added the type-script supports
@@ -43,6 +48,8 @@ module.exports = function (ctx) {
             WS_BASE_URL: JSON.stringify(''),
             STOMP_CLIENT_DEBUG: false,
           },
+        PACKAGE_VERSION: JSON.stringify(version),
+        PACKAGE_BUILD: JSON.stringify(build),
         ENGINE_URL: JSON.stringify('/modeler'),
         ENGINE_SHARED: JSON.stringify('/modeler/shared/'),
         WS_URL: JSON.stringify('/modeler/message'),

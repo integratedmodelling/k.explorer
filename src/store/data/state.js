@@ -290,4 +290,10 @@ export default {
    * Contain the capabilities returned from engine
    */
   capabilities: {},
+
+  /**
+   * Version
+   */
+  packageVersion: process.env.PACKAGE_VERSION || '0',
+  packageBuild: process.env.PACKAGE_BUILD || '0',
 };
