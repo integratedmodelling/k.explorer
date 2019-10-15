@@ -226,7 +226,7 @@ export default {
       }, duration);
     },
     getImage(layer) {
-      return layer.image ? `${this.baseUrl}/${layer.image.url}` : '';
+      return layer.image ? `${this.baseUrl}/${layer.image.url}?t=${Math.random()}` : '';
     },
     rewriteImageUrl(html) {
       if (html && html.length > 0 && html.indexOf('<img') !== -1) {

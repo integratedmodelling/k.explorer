@@ -533,7 +533,7 @@ export const HELP_CONSTANTS = {
   DEFAULT_PROPORTIONS: { width: 4, height: 3 },
   DEFAULT_WIDTH_PERCENTAGE: 80,
   DEFAULT_HEIGHT_PERCENTAGE: 80,
-  DEFAULT_HELP_BASE_URL: 'http://www.integratedmodelling.org/klab/help',
+  DEFAULT_HELP_BASE_URL: 'http://www.integratedmodelling.org/statics/help',
 };
 
 export default {
