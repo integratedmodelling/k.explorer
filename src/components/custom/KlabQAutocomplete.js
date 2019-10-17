@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle,one-var,prefer-destructuring,no-undef,prefer-template,no-void,arrow-parens,space-before-function-paren,quote-props,semi,indent,comma-dangle,object-curly-newline,no-unused-expressions */
-import { QAutocomplete, QPopover, QItemWrapper, QList, uid, dom } from 'quasar';
+import { QAutocomplete, QPopover, QList, uid, dom } from 'quasar';
+import QItemWrapper from './QItemWrapper';
 
 const { width } = dom;
 
@@ -101,7 +102,8 @@ export default {
           'class': {
             'q-select-highlight': this.keyboardIndex === index,
             'cursor-pointer': !result.disable,
-            'text-faded': result.disable
+            'text-faded': result.disable,
+            'ka-separator': result.separator
           },
           props: { cfg: result },
           nativeOn: {

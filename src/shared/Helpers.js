@@ -435,6 +435,23 @@ export async function getLayerObject(observation, { viewport = null /* , project
   return vectorLayer;
 }
 
+export const getStateIcon = (state) => {
+  switch (state) {
+    case 'FORTHCOMING':
+      return { icon: 'mdi-airplane-landing', tooltip: 'forthcoming' };
+    case 'EXPERIMENTAL':
+      return { icon: 'mdi-flask-outline', tooltip: 'experimental' };
+    case 'NEW':
+      return { icon: 'mdi-new-box', tooltip: 'new' };
+    case 'STABLE':
+      return { icon: 'mdi-information', tooltip: 'stable' };
+    case 'BETA':
+      return { icon: 'mdi-radioactive', tooltip: 'beta' };
+    default:
+      return {};
+  }
+};
+
 const Helpers = {
   isRasterObservation,
   pushElementInFixedQueue,
@@ -445,6 +462,7 @@ const Helpers = {
   getContextGeometry,
   getAxiosContent,
   getLayerObject,
+  getStateIcon,
 };
 
 export { Helpers };

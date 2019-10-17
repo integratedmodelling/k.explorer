@@ -4,65 +4,65 @@
   >
     <div id="ks-internal-container" style="position: relative">
       <div
-      v-for="(token, index) in acceptedTokens"
-      :key="token.index"
-      :class="[
-        'ks-tokens-accepted',
-        'ks-tokens',
-        'bg-semantic-elements',
-        token.selected ? 'selected' : '',
-        'text-'+token.leftColor,
-      ]"
-      :style="{ 'border-color': token.selected ? token.rgb : 'transparent' }"
-      :ref="'token-'+token.index"
-      :tabindex="index"
-      @focus="onTokenFocus(token,$event)"
-      @blur="onTokenFocus(token,$event)"
-      @keydown="onKeyPressedOnToken"
-      @touchstart="handleTouch($event, null, deleteLastToken)"
-    >{{ token.value }}
-      <q-tooltip
-        :delay="500"
-        :offset="[0, 15]"
-        self="top left"
-        anchor="bottom left"
-      >
-        <span v-if="token.sublabel.length > 0">{{ token.sublabel }}</span>
-        <span v-else>{{ $t('label.noTokenDescription') }}</span>
-      </q-tooltip>
-    </div>
-      <div class="ks-tokens" :class="[fuzzyMode ? 'ks-tokens-fuzzy' : 'ks-tokens-klab']">
-      <q-input
-        :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchIsFocused ? 'ks-search-focused' : '']"
-        :autofocus="true"
-        v-model="actualToken"
-        :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
-        size="20"
-        id="ks-search-input"
-        ref="ks-search-input"
-        :tabindex="acceptedTokens.length"
-        :hide-underline="true"
-        @focus="onInputFocus(true)"
-        @blur="onInputFocus(false)"
-        @keydown="onKeyPressedOnSearchInput"
-        @keyup.esc="searchEnd({})"
-        @contextmenu.native.prevent
-        @touchstart.native="handleTouch($event, null, searchInKLab)"
-      >
-        <klab-autocomplete
-          @search="autocompleteSearch"
-          @selected="selected"
-          @show="onAutocompleteShow"
-          @hide="onAutocompleteHide"
-          :debounce="400"
-          :min-characters="minimumCharForAutocomplete"
-          :max-results="50"
-          ref="ks-autocomplete"
-          id="ks-autocomplete"
-          :class="[ notChrome() ? 'not-chrome' : '']"
-        ></klab-autocomplete>
-      </q-input>
-    </div>
+        v-for="(token, index) in acceptedTokens"
+        :key="token.index"
+        :class="[
+          'ks-tokens-accepted',
+          'ks-tokens',
+          'bg-semantic-elements',
+          token.selected ? 'selected' : '',
+          'text-'+token.leftColor,
+        ]"
+        :style="{ 'border-color': token.selected ? token.rgb : 'transparent' }"
+        :ref="'token-'+token.index"
+        :tabindex="index"
+        @focus="onTokenFocus(token,$event)"
+        @blur="onTokenFocus(token,$event)"
+        @keydown="onKeyPressedOnToken"
+        @touchstart="handleTouch($event, null, deleteLastToken)"
+      >{{ token.value }}
+        <q-tooltip
+          :delay="500"
+          :offset="[0, 15]"
+          self="top left"
+          anchor="bottom left"
+        >
+          <span v-if="token.sublabel.length > 0">{{ token.sublabel }}</span>
+          <span v-else>{{ $t('label.noTokenDescription') }}</span>
+        </q-tooltip>
+      </div>
+        <div class="ks-tokens" :class="[fuzzyMode ? 'ks-tokens-fuzzy' : 'ks-tokens-klab']">
+        <q-input
+          :class="[ fuzzyMode ? 'ks-fuzzy' : '', searchIsFocused ? 'ks-search-focused' : '']"
+          :autofocus="true"
+          v-model="actualToken"
+          :placeholder="fuzzyMode ? $t('label.fuzzySearchPlaceholder') : $t('label.searchPlaceholder')"
+          size="20"
+          id="ks-search-input"
+          ref="ks-search-input"
+          :tabindex="acceptedTokens.length"
+          :hide-underline="true"
+          @focus="onInputFocus(true)"
+          @blur="onInputFocus(false)"
+          @keydown="onKeyPressedOnSearchInput"
+          @keyup.esc="searchEnd({})"
+          @contextmenu.native.prevent
+          @touchstart.native="handleTouch($event, null, searchInKLab)"
+        >
+          <klab-autocomplete
+            @search="autocompleteSearch"
+            @selected="selected"
+            @show="onAutocompleteShow"
+            @hide="onAutocompleteHide"
+            :debounce="400"
+            :min-characters="minimumCharForAutocomplete"
+            :max-results="50"
+            ref="ks-autocomplete"
+            id="ks-autocomplete"
+            :class="[ notChrome() ? 'not-chrome' : '']"
+          ></klab-autocomplete>
+        </q-input>
+      </div>
     </div>
   </div>
 </template>
@@ -75,6 +75,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { MATCH_TYPES, SEMANTIC_TYPES, SPINNER_CONSTANTS, SEARCH_MODES, CONSTANTS } from 'shared/Constants';
 import { isUpperCase } from 'shared/Utils';
+import { getStateIcon } from 'shared/Helpers';
 import KlabAutocomplete from 'components/custom/KlabQAutocomplete';
 import HandleTouch from 'shared/HandleTouchMixin';
 
@@ -723,14 +724,17 @@ export default {
             rgb: desc.rgb,
             selected: false,
             disable: true,
+            separator: true,
           });
         } else {
+          const state = match.state ? match.state : null;
+          const stateIcon = state !== null ? getStateIcon(match.state) : null;
           results.push({
             value: match.name,
             label: match.name,
             labelLines: 1,
             sublabel: match.description,
-            sublabelLines: 1,
+            sublabelLines: 4,
             letter: desc.symbol,
             leftInverted: true,
             leftColor: desc.color,
@@ -739,7 +743,18 @@ export default {
             index: this.acceptedTokens.length + 1,
             matchIndex: match.index,
             selected: false,
+            disable: match.state && match.state === 'FORTHCOMING',
+            separator: false,
             nextTokenClass: match.nextTokenClass,
+            ...(stateIcon !== null && {
+              rightIcon: stateIcon.icon,
+              rightTextColor: `state-${stateIcon.tooltip}`,
+              rightTooltip: {
+                state: stateIcon.tooltip,
+                title: match.name,
+                content: match.extendedDescription || match.description,
+              },
+            }),
             // stamp: `${index + 1}/${totMatches}`, TODO is useless?
           });
         }
@@ -807,6 +822,12 @@ export default {
       this.searchDivInitialSize = this.searchDiv.clientWidth;
     });
   },
+  updated() {
+    const icons = document.querySelectorAll('#ks-autocomplete .q-item-side-right');
+    icons.forEach((element) => {
+      element.setAttribute('title', 'lalala');
+    });
+  },
   beforeDestroy() {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
@@ -856,11 +877,12 @@ export default {
     scrollbar-width: thin;
     .q-item
       &.text-faded
+        color #333
+      &.ka-separator
         padding 8px 16px 5px 16px
         min-height 0
         font-size 0.8em
-        color #333
-        border-bottom 1px solid #ccc
+        border-bottom 1px solid #e0e0e0
         &.q-select-highlight
           background-color transparent
 
@@ -894,6 +916,52 @@ export default {
     &.ks-fuzzy
       background-color: $main-control-green;
       transition background-color 0.8s
+
+   #ks-autocomplete
+    .q-item-side.q-item-section.q-item-side-left
+       align-self start
+    .q-item-sublabel
+      font-size 80%
+    .text-faded .q-item-section
+      font-size 1rem
+
+  .kl-model-desc-container
+    width 400px
+    background-color white
+    color $grey-8
+    border 1px solid $grey-4
+    padding 10px
+    .kl-model-desc-title
+      float left
+      padding 5px 0
+      font-size larger
+      margin-bottom 5px
+    .kl-model-desc-state
+      float right
+      display inline-block
+      padding 4px
+      border-radius 4px
+      color white
+    .kl-model-desc-content
+      padding 10px 0
+      clear both
+      border-top 1px solid $grey-4
+
+
+  /*
+  #ks-autocomplete
+    .q-item-side
+      min-width 0
+      .text-orange-6
+        // animation glow 1s ease-in-out infinite alternate
+        // text-shadow 0 0 0 #FF0000
+
+  @keyframes glow
+    from
+      text-shadow 0 0 10px #fff, 5px 5px 5px rgba(206,89,55,0)
+    to
+      text-shadow 0 0 0 #fff
+*/
 
 
 </style>
