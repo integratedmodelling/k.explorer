@@ -10,9 +10,8 @@
       ref="ks-layer"
       :key="`ks-layer-${layerIndex}`"
       :id="`ks-layer-${ownerIndex}-${layerIndex}`"
-      :style="`z-index: 10${layers.length - layerIndex}`"
+      :style="{ 'z-index': selectedLayer === layerIndex ? 9999 : layers.length - layerIndex }"
       :class="{ 'ks-top-layer': selectedLayer === layerIndex, 'ks-hide-layer': selectedLayer !== layerIndex }"
-      @click="next"
     >
       <div
         v-if="layer.image"
@@ -305,6 +304,8 @@ export default {
       &.ks-top-layer
         z-index 999 !important
         opacity 1
+    li
+      padding-bottom 10px
     .ks-layer-caption
       position absolute
       padding 12px
