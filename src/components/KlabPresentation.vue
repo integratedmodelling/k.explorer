@@ -311,7 +311,9 @@ export default {
       } else {
         const config = data;
         if (config && config.length > 0) {
+          let counter = 0;
           config.forEach((sec, index) => {
+            counter += 1;
             jsonp(`${this.helpBaseUrl}/index.php?sec=${sec.id}`, { param: 'callback' }, (sectionError, sectionData) => {
               if (sectionError) {
                 console.error(sectionError.message);
@@ -322,10 +324,13 @@ export default {
                   linkTitle: sec.name,
                   linkDescription: sec.description,
                   slides: sectionData,
+                  index,
                 });
               }
-              if (index === config.length - 1) {
+              counter -= 1;
+              if (counter === 0) {
                 this.presentationsLoading = false;
+                this.presentations.sort((p1, p2) => p1.index - p2.index);
               }
             });
           });

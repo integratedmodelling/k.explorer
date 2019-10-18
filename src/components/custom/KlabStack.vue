@@ -212,7 +212,7 @@ export default {
       }
     },
     setAnimation(duration) {
-      if (this.stack.layers.length <= 1) {
+      if (!this.hasNext) {
         return; // no amimation for one frame
       }
       const self = this;

@@ -444,7 +444,7 @@ export const getStateIcon = (state) => {
     case 'NEW':
       return { icon: 'mdi-new-box', tooltip: 'new' };
     case 'STABLE':
-      return { icon: 'mdi-information', tooltip: 'stable' };
+      return { icon: 'mdi-check-circle-outline', tooltip: 'stable' };
     case 'BETA':
       return { icon: 'mdi-radioactive', tooltip: 'beta' };
     default:
