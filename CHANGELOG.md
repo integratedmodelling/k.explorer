@@ -6,7 +6,7 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
-## 0.8.1 - ?
+## 0.9.0 - 2019-10-18
 ### Add
 - Rating and comment resources is implemented on client side
 - Help
