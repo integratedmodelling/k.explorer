@@ -315,12 +315,12 @@ export default {
       max-height 100%
       overflow auto
       .ks-caption-title
-        font-size 32px
+        font-size 24px
         letter-spacing normal
-        margin 0 0 1em
+        margin 0 0
         text-align center
       .ks-caption-text
-        font-size 18px
+        font-size 16px
     .ks-layer-image
       position absolute
       overflow hidden
@@ -361,4 +361,12 @@ export default {
         opacity 0.6
       &:hover
         opacity 1;
+
+    @media (min-width: 1600px)
+      .ks-caption-title
+        font-size 32px !important
+        margin 0 0 1em !important
+      .ks-caption-text
+        font-size 18px !important
+
 </style>

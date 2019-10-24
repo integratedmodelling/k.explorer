@@ -531,8 +531,8 @@ export const SETTING_NAMES = {
 export const HELP_CONSTANTS = {
   DEFAULT_MODAL_SIZE: { width: 1024, height: 768 },
   DEFAULT_PROPORTIONS: { width: 4, height: 3 },
-  DEFAULT_WIDTH_PERCENTAGE: 80,
-  DEFAULT_HEIGHT_PERCENTAGE: 80,
+  DEFAULT_WIDTH_PERCENTAGE: 90,
+  DEFAULT_HEIGHT_PERCENTAGE: 90,
   DEFAULT_HELP_BASE_URL: 'http://www.integratedmodelling.org/statics/help',
 };
 
