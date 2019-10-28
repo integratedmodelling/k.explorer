@@ -219,8 +219,12 @@ export default {
       this.needHelp = true;
     },
     stackEnd({ index, direction }) {
-      if (direction > 0 && index < this.activePresentation.length - 1) {
-        this.goTo(index + 1, 0);
+      if (direction > 0) {
+        if (index < this.activePresentation.length - 1) {
+          this.goTo(index + 1, 0);
+        } else {
+          this.goTo(0, 0);
+        }
       } else if (direction < 0 && index > 0) {
         this.goTo(index - 1, 'last');
       }

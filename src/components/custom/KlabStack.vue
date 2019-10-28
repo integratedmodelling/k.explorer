@@ -189,6 +189,7 @@ export default {
         this.goTo(this.selectedLayer + 1);
       } else if (this.infinite) {
         this.goTo(0);
+        this.$emit('stackend', { index: this.ownerIndex, direction: 1 });
       } else {
         this.$emit('stackend', { index: this.ownerIndex, direction: 1 });
         return false;
