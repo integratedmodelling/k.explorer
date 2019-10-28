@@ -34,7 +34,7 @@
           :with-edge="true"
           ref="st-context-text"
           :hover-active="true"
-          :initial-text="contextLabel === null ? $t('label.noContextPlaceholder') : contextLabel"
+          :initial-text="mainContextLabel === null ? $t('label.noContextPlaceholder') : mainContextLabel"
           :placeholder-style="!hasContext"
         >
         </scrolling-text>
@@ -80,6 +80,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'contextLabel',
+      'contextCustomLabel',
       'isScaleLocked',
     ]),
     ...mapGetters('view', [
@@ -95,6 +96,9 @@ export default {
     ]),
     isDocked() {
       return !this.hasMainControl;
+    },
+    mainContextLabel() {
+      return this.contextCustomLabel ? this.contextCustomLabel : this.contextLabel;
     },
   },
   methods: {
@@ -142,7 +146,7 @@ export default {
       }
       this.$refs['st-status-text'].changeText(newValue, this.statusTextsLength * 5);
     },
-    contextLabel(newValue) {
+    mainContextLabel(newValue) {
       if (this.$refs['st-context-text']) {
         this.$refs['st-context-text'].changeText(newValue);
       }

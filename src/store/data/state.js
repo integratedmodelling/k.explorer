@@ -80,6 +80,7 @@ export default {
    *
    */
   contexts: new Stack(),
+  contextCustomLabel: null,
 
   /**
    * Contain scale info

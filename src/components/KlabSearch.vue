@@ -144,6 +144,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('data', [
+      'setContextCustomLabel',
+    ]),
     ...mapActions('view', [
       'searchStop',
       'setSpinner',
@@ -393,6 +396,7 @@ export default {
           added: true,
         }, this.$store.state.data.session).body);
         if (this.fuzzyMode) {
+          this.setContextCustomLabel(this.$t('messages.fuzzyModeContext'));
           this.setSpinner({
             ...SPINNER_CONSTANTS.SPINNER_LOADING,
             owner: this.$options.name,
@@ -483,12 +487,16 @@ export default {
         owner: this.$options.name,
       });
       this.doneFunc = done;
+      // we clear timeout of previous searches
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+      }
       this.searchTimeout = setTimeout(() => {
         this.setSpinner({
           ...SPINNER_CONSTANTS.SPINNER_ERROR,
           owner: this.$options.name,
           errorMessage: this.$t('errors.searchTimeout'),
-          time: 2,
+          time: this.fuzzyMode ? 5 : 2, // if fuzzy, more time
           then: {
             ...SPINNER_CONSTANTS.SPINNER_STOPPED,
           },
@@ -681,13 +689,8 @@ export default {
         }
         this.result = newResult;
       } else {
-        console.warn(`Result discarded for bad request id:\n
-        actual: ${this.searchRequestId} / received: ${requestId}\n`);
-        this.setSpinner({
-          ...SPINNER_CONSTANTS.SPINNER_ERROR,
-          owner: this.$options.name,
-          errorMessage: 'Different search request id',
-        });
+        console.warn(`Result discarded for bad request id: actual: ${this.searchRequestId} / received: ${requestId}\n`);
+        // Is not necessary to inform user
         return;
       }
       const { matches, error, errorMessage, parenthesisDepth, last } = this.result;

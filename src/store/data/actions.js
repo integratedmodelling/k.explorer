@@ -137,6 +137,10 @@ export default {
     });
   }),
 
+  setContextCustomLabel: ({ commit }, contextCustomLabel) => {
+    commit('SET_CONTEXT_CUSTOM_LABEL', contextCustomLabel);
+  },
+
   addObservation: ({ commit, state, dispatch }, {
     observation,
     toTree = true,

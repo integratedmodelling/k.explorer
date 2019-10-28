@@ -50,6 +50,7 @@ export default {
   hasContext: (state, getters) => getters.context !== null,
 
   contextLabel: (state, getters) => (getters.context !== null ? getters.context.label : null),
+  contextCustomLabel: state => (state.contextCustomLabel !== null ? state.contextCustomLabel : null),
   contextsLabels: (state, getters) => (getters.context !== null ? state.contexts.map(ctxt => ({ label: ctxt.label, contextId: ctxt.id })) : []),
 
   contextId: (state, getters) => (getters.context !== null ? getters.context.id : null),

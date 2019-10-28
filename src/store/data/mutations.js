@@ -36,6 +36,7 @@ export default {
     state.nodeSelected = null;
     state.nextScale = null;
     state.crossingIDL = false;
+    state.contextCustomLabel = null;
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {
@@ -43,6 +44,9 @@ export default {
     }
   },
 
+  SET_CONTEXT_CUSTOM_LABEL(state, contextCustomLabel = null) {
+    state.contextCustomLabel = contextCustomLabel;
+  },
 
   WAITING_FOR_RESET(state, contextId) {
     // if null, no context will be load

@@ -128,6 +128,7 @@ export default {
     thankComment: 'Comment has been sent',
     confirmRescaleContext: 'The context will be recreate with new resolution.\nAre you sure?',
     loadingChildren: 'Loading children...',
+    fuzzyModeContext: 'Retrieving shape',
     availableInFuture: 'This feature will be available soon',
     youHaveGOT: 'Winter is coming',
   },
