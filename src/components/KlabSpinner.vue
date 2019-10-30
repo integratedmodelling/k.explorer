@@ -6,7 +6,7 @@
            xlink:href="~assets/klab-spinner.svg">
     </image>
     <circle
-      id="spinner-circle"
+      class="spinner-circle"
       cx="0"
       cy="-90"
       :r="ball"
@@ -80,10 +80,10 @@ export default {
 
 <style scoped lang="stylus">
 @import '~variables'
-#spinner-circle {
+.spinner-circle {
   fill: $primary;
 }
-#spinner-circle.moving {
+.spinner-circle.moving {
   animation: spin 2s cubic-bezier(0.445, 0.050, 0.550, 0.950) infinite;
   animation-delay: 0.4s
 }

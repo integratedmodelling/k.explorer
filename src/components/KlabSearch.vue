@@ -396,7 +396,7 @@ export default {
           added: true,
         }, this.$store.state.data.session).body);
         if (this.fuzzyMode) {
-          this.setContextCustomLabel(this.$t('messages.fuzzyModeContext'));
+          this.setContextCustomLabel(this.$t('messages.waitingLocation', { location: item.label }));
           this.setSpinner({
             ...SPINNER_CONSTANTS.SPINNER_LOADING,
             owner: this.$options.name,
@@ -534,6 +534,7 @@ export default {
           searchContextId: null, // this.searchContextId, -> we don't want delete it for search history
         }, this.$store.state.data.session).body);
         const searchText = this.acceptedTokens.map(token => token.label).join(' ');
+        this.setContextCustomLabel(this.$t('messages.waitingObservationInit', { observation: searchText }));
         this.$q.notify({
           message: this.$t('label.askForObservation', { urn: searchText }),
           type: 'info',
