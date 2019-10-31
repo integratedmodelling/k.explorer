@@ -98,7 +98,7 @@ export default {
       return !this.hasMainControl;
     },
     mainContextLabel() {
-      return this.contextCustomLabel ? this.contextCustomLabel : this.contextLabel;
+      return this.contextLabel ? this.contextLabel : this.contextCustomLabel;
     },
   },
   methods: {
