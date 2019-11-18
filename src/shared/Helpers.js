@@ -109,8 +109,8 @@ export const findNodeById = (tree, key = null) => findNode(tree, key, (node, nee
  * @param observation
  */
 export const getNodeFromObservation = (observation) => {
-  const hasContainer = observation.parentArtifactId !== null;
-  const parentId = hasContainer ? observation.parentArtifactId :  observation.parentId;
+  const hasContainer = observation.parentArtifactId !== null || (observation.parentId !== null && observation.rootContextId !== observation.parentId);
+  const parentId = observation.parentArtifactId !== null ? observation.parentArtifactId :  observation.parentId;
   let userNode = observation.main;
   if (!userNode && hasContainer) {
     const parent = findNodeById(store.getters['data/tree'], parentId);
