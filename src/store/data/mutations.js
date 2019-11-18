@@ -254,13 +254,13 @@ export default {
     const lastIdx = state.lasts.findIndex(l => parentId === l.parentId);
     if (lastIdx !== -1) {
       const last = state.lasts[lastIdx];
-      if (last.offset + offsetToAdd + 1 >= last.total) {
+      if (last.offset + offsetToAdd >= last.total) {
         state.lasts.splice(lastIdx, 1);
-        console.info(`Delete folder ${parentId}`);
+        console.info(`Folder ${parentId} fully loaded`);
       } else {
         last.observationId = observationId;
         last.offset += offsetToAdd;
-        console.info(`Change folder ${parentId}. Now offset is ${last.offset} `);
+        console.info(`Loaded more elements in folder ${parentId}. New offset is ${last.offset} `);
       }
     } else {
       if (offsetToAdd + 1 === total) {
