@@ -41,7 +41,10 @@
             ]"
             class="node-element"
             :id="`node-${prop.node.id}`"
-          ><q-icon name="mdi-checkbox-blank-circle" class="node-no-tick" v-if="prop.node.noTick"></q-icon>{{ prop.node.label }}
+          >
+            <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
+            <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
+            {{ prop.node.label }}<q-icon name="mdi-sync" v-if="prop.node.dynamic" color="mc-green" class="node-icon"></q-icon>
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
@@ -49,6 +52,7 @@
               anchor="top left"
               class="kt-q-tooltip"
             >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+
           </span>
           <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
             <q-chip
@@ -177,6 +181,7 @@ export default {
       showPopover: null,
       dragStart: false,
       dragEnter: 0,
+      OBSERVATION_CONSTANTS,
     };
   },
   computed: {
@@ -692,6 +697,9 @@ export default {
         margin-right 5px
       .node-on-top
         text-decoration underline
+      .node-icon
+        display inline
+        padding-left 5px
       .kt-q-tooltip
         background-color #333
       .q-tree-node-link

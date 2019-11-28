@@ -107,6 +107,7 @@ export default {
       switch (observation.observationType) {
         case OBSERVATION_CONSTANTS.TYPE_GROUP:
         case OBSERVATION_CONSTANTS.TYPE_VIEW:
+        case OBSERVATION_CONSTANTS.TYPE_PROCESS:
           viewerType = null;
           break;
         case OBSERVATION_CONSTANTS.TYPE_STATE:
@@ -158,7 +159,6 @@ export default {
           ({ label } = observation);
           break;
         case OBSERVATION_CONSTANTS.TYPE_EVENT:
-        case OBSERVATION_CONSTANTS.TYPE_PROCESS:
           viewerType = VIEWER_COMPONENTS.VIEW_UNKNOWN;
           break;
         default:

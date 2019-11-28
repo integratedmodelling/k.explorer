@@ -226,6 +226,10 @@ export default {
     return null;
   }),
 
+  addModificationEvent: ({ commit }, modificationEvent) => {
+    commit('ADD_MODIFICATION_EVENT', modificationEvent);
+  },
+
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
     parentId,
     total,

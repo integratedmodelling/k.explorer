@@ -31,6 +31,11 @@ export default {
   observationsOfViewer: state => viewerIdx => state.observations.filter(observation => observation.viewerIdx === viewerIdx),
 
   hasObservations: state => state.observations.length !== 0,
+  visibleObservations: state => state.observations.filter(observation => observation.visible),
+
+  modificationEvents: state => state.modificationEvents,
+  modificationEventsOfObservation: state => id => state.modificationEvents.find(e => e.id === id),
+  modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
 
   dataflow: state => state.dataflow,
   hasDataflow: state => state.dataflow !== null,

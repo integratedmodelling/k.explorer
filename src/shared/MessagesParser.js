@@ -120,6 +120,10 @@ const PARSERS = {
       );
     }
   },
+  [IN.TYPE_MODIFIEDOBSERVATION]: ({ payload: modificationEvent }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Received a modification event');
+    dispatch('data/addModificationEvent', modificationEvent, { root: true });
+  },
   [IN.TYPE_QUERYRESULT]: ({ payload: results }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received search results', JSON.stringify(results));
     dispatch('data/storeSearchResult', results, { root: true });

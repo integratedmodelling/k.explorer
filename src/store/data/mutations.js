@@ -90,6 +90,21 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
+  ADD_MODIFICATION_EVENT: (state, modificationEvent) => {
+    const context = state.contexts.peek();
+    if (context && context.id === modificationEvent.contextId) {
+      const node = findNodeById(state.tree, modificationEvent.id);
+      if (node) {
+        node.dynamic = true;
+        state.modificationEvents.push(modificationEvent);
+      } else {
+        console.warn(`Received a modification event but there is no observation with id ${modificationEvent.id}`);
+      }
+    } else {
+      console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
+    }
+  },
+
   /**
    * Add node to tree
    * @param node

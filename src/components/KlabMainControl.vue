@@ -115,6 +115,7 @@
             anchor="bottom middle"
           >{{ $t('tooltips.observers') }}</q-tooltip>
         </div>
+        <observations-timeline class="mc-timeline"></observations-timeline>
       </q-card-actions>
     </q-card>
     </transition>
@@ -128,7 +129,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-// import { Draggable } from 'draggable-vue-directive';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS, CONSTANTS } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
@@ -141,6 +141,7 @@ import KlabTreePane from 'components/KlabTreePane.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
+import ObservationsTimeline from 'components/ObservationsTimeline.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
@@ -157,6 +158,7 @@ export default {
     ScaleButtons,
     MainActionsButtons,
     StopActionsButtons,
+    ObservationsTimeline,
   },
   directives: {
     Draggable,
@@ -492,4 +494,8 @@ export default {
         padding 3px 0 0 0
         margin 0 2px
 
+    .mc-timeline
+      position absolute
+      right 0
+      margin 6px 11px 0
 </style>

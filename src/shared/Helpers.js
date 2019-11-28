@@ -14,6 +14,7 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
+import { OBSERVATION_CONSTANTS } from './Constants';
 
 const WKTInstance = new WKT();
 
@@ -124,6 +125,7 @@ export const getNodeFromObservation = (observation) => {
       label: observation.literalValue || observation.label,
       observable: observation.observable,
       type: observation.shapeType,
+      dynamic: false, // used if we receive some modification event
       viewerIdx: observation.viewerIdx,
       viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
       children: [],
@@ -132,7 +134,7 @@ export const getNodeFromObservation = (observation) => {
       siblingsCount: observation.siblingsCount,
       parentArtifactId: observation.parentArtifactId,
       tickable: (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0,
-      disabled: (observation.empty && (!observation.isContainer || observation.childrenCount === 0)) || observation.singleValue,
+      disabled: (observation.empty && (!observation.isContainer || observation.childrenCount === 0)) || observation.singleValue || observation.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS,
       empty: observation.empty, // disabled can change
       actions: observation.actions,
       header: observation.isContainer ? 'folder' : 'default',
@@ -142,7 +144,7 @@ export const getNodeFromObservation = (observation) => {
       exportFormats: observation.exportFormats,
       rootContextId: observation.rootContextId,
       observationType: observation.observationType,
-      noTick: observation.singleValue,
+      noTick: observation.singleValue || observation.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS,
       ...(observation.isContainer && { childrenLoaded: 0 }),
       ...(observation.siblingsCount && { siblingsCount: observation.siblingsCount }),
       parentId,

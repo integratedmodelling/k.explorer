@@ -219,6 +219,24 @@ export default {
   observations: [],
 
   /**
+   * Modification Events
+   * {
+   *  "id": modified observation id,
+   *  "contextId",
+   *  "timestamp": in ms,
+   *  "newAttributes": value | null,
+   *  "newScale": value | null,
+   *  "newName": value | null,
+   *  "newSemantics": value | null,
+   *  "newSize": integer,
+   *  "newMainStatus": true | false,
+   *  "newValues": true | false,
+   *  "terminated": true | false (is the observation terminated?)
+   * }
+   */
+  modificationEvents: [],
+
+  /**
    * The dataflow of context as JSON ELK object
    */
   dataflow: null,
