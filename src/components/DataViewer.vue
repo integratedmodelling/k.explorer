@@ -42,6 +42,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import MapViewer from 'components/MapViewer.vue';
 import GraphViewer from 'components/GraphViewer.vue';
+import UnknownViewer from 'components/UnknownViewer.vue';
 import { capitalizeFirstLetter } from 'shared/Utils';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 
@@ -51,6 +52,7 @@ export default {
   components: {
     MapViewer,
     GraphViewer,
+    UnknownViewer,
   },
   computed: {
     ...mapGetters('view', [

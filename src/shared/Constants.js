@@ -133,7 +133,7 @@ export const VIEWER_COMPONENTS = {
   },
   VIEW_UNKNOWN: {
     component: 'UnknownViewer',
-    label: 'Unknown',
+    label: 'Under construction',
     hideable: false,
     forceNew: false,
   },
