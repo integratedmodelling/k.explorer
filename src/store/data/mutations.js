@@ -105,6 +105,10 @@ export default {
     }
   },
 
+  SET_TIMESTAMP: (state, timestamp) => {
+    state.timestamp = timestamp;
+  },
+
   /**
    * Add node to tree
    * @param node

@@ -1,6 +1,9 @@
 <template>
   <div class="ot-container row">
-    <div class="ot-date ot-date-start col">S
+    <div
+      class="ot-date ot-date-start col"
+      @click="setTimestamp(scaleReference.start)"
+    >S
       <q-tooltip
         :offset="[0, 8]"
         self="top middle"
@@ -11,31 +14,40 @@
     <div class="ot-timeline-container col">
       <div
         class="ot-timeline"
-        @mouseenter="activateTimeline"
+        ref="ot-timeline"
         @mousemove="moveOnTimeline"
+        @mouseenter="timelineActivated = true"
+        @mouseleave="timelineActivated = false"
         @click="askForPosition"
-        @mouseleave="deactivateTimeline"
-        :class="{ 'ot-clickable': visibleObservations.length > 0}"
       >
         <div
           v-for="(modification) in visibleEvents"
           :key="`${modification.id}-${modification.timestamp}`"
           class="ot-modification"
-          :style="calculatePosition(modification.timestamp)"
+          :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 10px)` }"
         >
           <q-icon name="mdi-power-on" class="ot-position" color="grey-7"></q-icon>
         </div>
+        <div
+          class="ot-actual-time"
+          v-if="timestamp !== -1"
+          :style="{ left: `${calculatePosition(timestamp)}px` }">
+        </div>
+        <q-tooltip
+          :offset="[0, 15]"
+          self="top middle"
+          anchor="bottom middle"
+          v-html="timelineDate"
+          class="ot-date-tooltip"
+          :delay="300"
+        ></q-tooltip>
       </div>
-      <q-progress :percentage="timelinePosition" height="2px" color="mc-main" />
-      <q-tooltip
-        :offset="[0, 8]"
-        self="top middle"
-        anchor="bottom middle"
-        :delay="0"
-        v-html="timelineDate"
-      ></q-tooltip>
+      <q-progress :percentage="timelineProgress" height="2px" color="mc-main" />
     </div>
-    <div class="ot-date ot-date-end col">E
+    <div
+      class="ot-date ot-date-end col"
+      @click="setTimestamp(scaleReference.end)"
+    >E
       <q-tooltip
         :offset="[0, 8]"
         self="top middle"
@@ -47,10 +59,9 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
 import { debounce } from 'quasar';
-import { CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'ObservationsTimeline',
@@ -58,25 +69,29 @@ export default {
     return {
       timelineActivated: false,
       timelinePosition: 0,
+      timelineProgress: 0,
       moveOnTimelineFunction: debounce((event) => {
         if (this.timelineActivated) {
           this.timelineDate = this.formatDate(this.getDateFromPosition(event));
         }
-      }, 200),
+      }, 300),
       timelineDate: null,
+      timelineWidth: undefined,
+      timelineLeft: undefined,
     };
   },
   computed: {
     ...mapGetters('data', [
       'scaleReference',
       'modificationEvents',
+      'timestamp',
       'visibleObservations',
     ]),
     startDate() {
-      return this.scaleReference !== null ? this.formatDate(this.momentStart) : '';
+      return this.scaleReference !== null ? this.formatDate(this.scaleReference.start) : '';
     },
     endDate() {
-      return this.scaleReference !== null ? this.formatDate(this.momentEnd) : '';
+      return this.scaleReference !== null ? this.formatDate(this.scaleReference.end) : '';
     },
     visibleEvents() {
       const ids = this.visibleObservations.map(o => o.id);
@@ -84,48 +99,49 @@ export default {
     },
   },
   methods: {
+    ...mapActions('data', [
+      'setTimestamp',
+    ]),
     formatDate(date) {
       if (date === null) {
         return '';
       }
       const momentDate = moment(date);
-      return `<div class="ot-tooltip-date">${momentDate.format('L')}<br />${momentDate.format('HH:mm:ss:SSS')}</div>`;
+      return `<div class="ot-date-tooltip-content">${momentDate.format('L')}<br />${momentDate.format('HH:mm:ss:SSS')}</div>`;
     },
     activateTimeline() {
       this.timelineActivated = true;
     },
     deactivateTimeline() {
       this.timelineActivated = false;
-      this.timelineDate = null;
     },
     calculatePosition(timestamp) {
-      const position = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
-      return { left: `calc(${position}% - 10px)` };
+      const timelineWidth = this.$refs['ot-timeline'].clientWidth;
+      const position = (timestamp - this.scaleReference.start) * timelineWidth / (this.scaleReference.end - this.scaleReference.start);
+      // console.log(`Return position ${position} from date ${timestamp} (${moment(timestamp).format('L')} ${moment(timestamp).format('HH:mm:ss:SSS')}) with total ${this.timelineWidth}`);
+      return position;
     },
     moveOnTimeline(event) {
       this.moveOnTimelineFunction(event);
     },
     getDateFromPosition(event) {
-      const rect = event.srcElement.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      return Math.round(this.scaleReference.start + (x * (this.scaleReference.end - this.scaleReference.start) / rect.width));
+      const timeline = this.$refs['ot-timeline'];
+      const timelineWidth = timeline.clientWidth;
+      const x = event.clientX - timeline.getBoundingClientRect().left;
+      const date = this.scaleReference.start + (x * (this.scaleReference.end - this.scaleReference.start) / timelineWidth);
+      // console.log(`Return date ${date} (${moment(date).format('L')} ${moment(date).format('HH:mm:ss:SSS')}) from position ${x} with total ${this.timelineWidth}`);
+      return date;
       // this.timelinePosition = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
     },
     askForPosition(event) {
-      if (this.visibleObservations.length > 0) {
-        const date = this.getDateFromPosition(event);
-        this.$eventBus.$emit(CUSTOM_EVENTS.OBSERVATION_BY_TIME, { timestamp: date });
-      } else {
-        this.$q.notify({
-          message: 'No observations selected',
-          type: 'warning',
-          icon: 'mdi-information',
-          timeout: 1000,
-        });
-      }
+      this.setTimestamp(this.getDateFromPosition(event));
     },
   },
   watch: {
+  },
+  mounted() {
+    this.timelineDate = this.startTime;
+    moment.locale(window.navigator.userLanguage || window.navigator.language);
   },
 };
 </script>
@@ -150,17 +166,23 @@ export default {
       &.ot-date-start
         border-top-left-radius 2px
         border-bottom-left-radius 2px
+        cursor pointer
       &.ot-date-end
         border-top-right-radius 2px
         border-bottom-right-radius 2px
+        cursor pointer
     .ot-timeline-container
       border-top 1px solid #777
       border-bottom 1px solid #777
+      .ot-actual-time
+        width 2px
+        height 14px
+        background-color $main-control-yellow
+        position absolute
       .ot-timeline
         height 12px
         position relative
-        &.ot-clickable
-          cursor pointer
+        cursor pointer
         .ot-modification
           width 16px
           height 10px
@@ -168,6 +190,8 @@ export default {
           text-align center
           .ot-position
             font-size 10px
-  .ot-tooltip-date
-    text-align center
+  .ot-date-tooltip
+    width 100px
+    .ot-date-tooltip-content
+      text-align center
 </style>

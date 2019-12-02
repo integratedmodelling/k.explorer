@@ -230,6 +230,10 @@ export default {
     commit('ADD_MODIFICATION_EVENT', modificationEvent);
   },
 
+  setTimestamp: ({ commit }, timestamp) => {
+    commit('SET_TIMESTAMP', timestamp);
+  },
+
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
     parentId,
     total,

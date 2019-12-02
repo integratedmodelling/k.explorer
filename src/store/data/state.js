@@ -237,6 +237,11 @@ export default {
   modificationEvents: [],
 
   /**
+   * Indicate the selected timestamp, need to retrieve the correct observations layer
+   */
+  timestamp: -1,
+
+  /**
    * The dataflow of context as JSON ELK object
    */
   dataflow: null,

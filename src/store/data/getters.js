@@ -37,6 +37,8 @@ export default {
   modificationEventsOfObservation: state => id => state.modificationEvents.find(e => e.id === id),
   modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
 
+  timestamp: state => state.timestamp,
+
   dataflow: state => state.dataflow,
   hasDataflow: state => state.dataflow !== null,
 
