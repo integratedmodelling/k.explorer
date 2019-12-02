@@ -50,7 +50,7 @@
 import { mapGetters } from 'vuex';
 import moment from 'moment';
 import { debounce } from 'quasar';
-import { axiosInstance } from 'plugins/axios';
+import { CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'ObservationsTimeline',
@@ -114,16 +114,7 @@ export default {
     askForPosition(event) {
       if (this.visibleObservations.length > 0) {
         const date = this.getDateFromPosition(event);
-        this.visibleObservations.forEach((observation) => {
-          axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${observation.id}`, {
-            params: {
-              childLevel: 0,
-            },
-          }).then(({ data }) => {
-            console.log(date);
-            console.dir(data);
-          });
-        });
+        this.$eventBus.$emit(CUSTOM_EVENTS.OBSERVATION_BY_TIME, { timestamp: date });
       } else {
         this.$q.notify({
           message: 'No observations selected',
@@ -135,9 +126,6 @@ export default {
     },
   },
   watch: {
-    visibleObservations() {
-      console.warn(this.visibleObservations.length);
-    },
   },
 };
 </script>
@@ -145,20 +133,20 @@ export default {
 <style lang="stylus">
   @import '~variables'
   .ot-container
-    width 80%
+    width 100%
     .ot-date
-      min-width 15px
-      max-width 15px
-      height 15px
-      line-height 15px
+      min-width 16px
+      max-width 16px
+      height 16px
+      line-height 16px
       vertical-align middle
       background-color #777
-      color #fff
+      color $grey-2
       text-align center
-      padding 0
       margin 0
       font-weight 200
-      font-size .8em
+      font-size 12px
+      padding-top 0
       &.ot-date-start
         border-top-left-radius 2px
         border-bottom-left-radius 2px
@@ -169,12 +157,12 @@ export default {
       border-top 1px solid #777
       border-bottom 1px solid #777
       .ot-timeline
-        height 10px
+        height 12px
         position relative
         &.ot-clickable
           cursor pointer
         .ot-modification
-          width 15px
+          width 16px
           height 10px
           position absolute
           text-align center

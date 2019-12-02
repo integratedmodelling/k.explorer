@@ -262,23 +262,27 @@ export default {
       }
     },
 
-    findExistingLayerById(observationId) {
+    findExistingLayerById(observationId, timestamp = null) {
       if (this.layers && this.layers !== null) {
+        let id = observationId;
+        if (timestamp !== null) {
+          id += `T${timestamp}`;
+        }
         const layerArray = this.layers.getArray();
-        return layerArray.find(layer => layer.get('id') === observationId);
+        return layerArray.find(layer => layer.get('id') === id);
       }
       return null;
     },
 
-    async findLayerById(observation) {
-      const found = this.findExistingLayerById(observation.id);
+    async findLayerById(observation, timestamp = null) {
+      const found = this.findExistingLayerById(observation.id, timestamp);
       if (typeof found !== 'undefined' && found !== null) {
         return found;
       }
       // need to create new layer
       try {
-        console.debug(`Creating layer: ${observation.label}`);
-        const layer = await getLayerObject(observation, { projection: this.proj /* , viewport: this.contextViewport */});
+        console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
+        const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
         this.zIndexCounter += 1;
         observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
         layer.setZIndex(observation.zIndex);
@@ -332,11 +336,11 @@ export default {
       }
     },
 
-    drawObservations() {
+    drawObservations(timestamp = null) {
       if (this.observations && this.observations.length > 0) {
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
-            this.findLayerById(observation).then((layer) => {
+            this.findLayerById(observation, timestamp).then((layer) => {
               if (layer !== null) {
                 layer.setVisible(observation.visible);
                 layer.setOpacity(observation.layerOpacity);
@@ -498,6 +502,9 @@ export default {
     sendRegionOfInterestListener() {
       this.sendRegionOfInterest();
     },
+    loadObservationByTime({ timestamp = null }) {
+      this.drawObservations(timestamp);
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -509,7 +516,7 @@ export default {
     },
     observations: {
       handler() {
-        this.drawObservations(false);
+        this.drawObservations();
       },
       deep: true,
     },
@@ -669,11 +676,13 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_BY_TIME, this.loadObservationByTime);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$off(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$off(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.OBSERVATION_BY_TIME, this.loadObservationByTime);
   },
 };
 </script>

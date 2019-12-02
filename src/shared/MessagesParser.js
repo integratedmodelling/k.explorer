@@ -153,6 +153,9 @@ const PARSERS = {
   [IN.TYPE_ERROR]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, message);
   },
+  [IN.TYPE_USERPROJECTOPENED]: (context, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project opened in k.Modeler');
+  },
 };
 
 /**

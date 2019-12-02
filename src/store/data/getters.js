@@ -70,7 +70,7 @@ export default {
   },
 
   contextReloaded: (state, getters) => getters.context !== null && typeof getters.context.restored !== 'undefined' && getters.context.restored,
-
+  contextHasTime: (state, getters) => getters.context !== null && getters.context.scaleReference && getters.context.scaleReference.end !== 0,
 
   /**
    * The session, very important accessing it using getter

@@ -77,6 +77,7 @@ export const IN = Object.freeze({
   TYPE_RESETCONTEXT: 'ResetContext',
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_USERINPUTREQUESTED: 'UserInputRequested',
+  TYPE_USERPROJECTOPENED: 'UserProjectOpened',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',

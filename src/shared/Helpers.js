@@ -279,7 +279,7 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
  * @param viewport not used for now. If not setted, for now is the double of height/width of browser
  * @return layer
  */
-export async function getLayerObject(observation, { viewport = null /* , projection = null */ }) {
+export async function getLayerObject(observation, { viewport = null, timestamp = null /* , projection = null */ }) {
   // const { geometryTypes } = observation;
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
@@ -343,6 +343,7 @@ export async function getLayerObject(observation, { viewport = null /* , project
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
             viewport,
+            ...(timestamp !== null && { locator: `T1(1){time=${timestamp}}` }),
           },
           responseType: 'blob',
         })
@@ -401,8 +402,12 @@ export async function getLayerObject(observation, { viewport = null /* , project
           });
       },
     });
+    let observationId = observation.id;
+    if (timestamp !== null) {
+      observationId += `T${timestamp}`;
+    }
     return new ImageLayer({
-      id: observation.id,
+      id: observationId,
       source,
     });
   }

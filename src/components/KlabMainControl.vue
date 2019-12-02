@@ -115,7 +115,7 @@
             anchor="bottom middle"
           >{{ $t('tooltips.observers') }}</q-tooltip>
         </div>
-        <observations-timeline class="mc-timeline"></observations-timeline>
+        <observations-timeline class="mc-timeline" v-if="contextHasTime"></observations-timeline>
       </q-card-actions>
     </q-card>
     </transition>
@@ -190,6 +190,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'hasContext',
+      'contextHasTime',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -495,7 +496,8 @@ export default {
         margin 0 2px
 
     .mc-timeline
+      width 84%
       position absolute
-      right 0
-      margin 6px 11px 0
+      right 10px
+      bottom 9px
 </style>
