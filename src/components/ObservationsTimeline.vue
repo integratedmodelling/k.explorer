@@ -2,7 +2,7 @@
   <div class="ot-container row">
     <div
       class="ot-date ot-date-start col"
-      @click="setTimestamp(scaleReference.start)"
+      @click="changeTimestamp(scaleReference.start)"
     >S
       <q-tooltip
         :offset="[0, 8]"
@@ -18,7 +18,7 @@
         @mousemove="moveOnTimeline"
         @mouseenter="timelineActivated = true"
         @mouseleave="timelineActivated = false"
-        @click="askForPosition"
+        @click="changeTimestamp(getDateFromPosition($event))"
       >
         <div
           v-for="(modification) in visibleEvents"
@@ -46,7 +46,7 @@
     </div>
     <div
       class="ot-date ot-date-end col"
-      @click="setTimestamp(scaleReference.end)"
+      @click="changeTimestamp(scaleReference.end)"
     >E
       <q-tooltip
         :offset="[0, 8]"
@@ -110,15 +110,12 @@ export default {
       const momentDate = moment(date);
       return `<div class="ot-date-tooltip-content">${momentDate.format('L')}<br />${momentDate.format('HH:mm:ss:SSS')}</div>`;
     },
-    activateTimeline() {
-      this.timelineActivated = true;
-    },
-    deactivateTimeline() {
-      this.timelineActivated = false;
-    },
     calculatePosition(timestamp) {
-      const timelineWidth = this.$refs['ot-timeline'].clientWidth;
-      const position = (timestamp - this.scaleReference.start) * timelineWidth / (this.scaleReference.end - this.scaleReference.start);
+      const timeline = this.$refs['ot-timeline'];
+      if (!timeline) {
+        return 0;
+      }
+      const position = (timestamp - this.scaleReference.start) * timeline.clientWidth / (this.scaleReference.end - this.scaleReference.start);
       // console.log(`Return position ${position} from date ${timestamp} (${moment(timestamp).format('L')} ${moment(timestamp).format('HH:mm:ss:SSS')}) with total ${this.timelineWidth}`);
       return position;
     },
@@ -127,6 +124,9 @@ export default {
     },
     getDateFromPosition(event) {
       const timeline = this.$refs['ot-timeline'];
+      if (!timeline) {
+        return 0;
+      }
       const timelineWidth = timeline.clientWidth;
       const x = event.clientX - timeline.getBoundingClientRect().left;
       const date = this.scaleReference.start + (x * (this.scaleReference.end - this.scaleReference.start) / timelineWidth);
@@ -134,8 +134,8 @@ export default {
       return date;
       // this.timelinePosition = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
     },
-    askForPosition(event) {
-      const date = this.getDateFromPosition(event);
+    changeTimestamp(date) {
+      this.visibleTimestamp = date;
       const reduce = this.modificationEvents.reduce((result, me) => {
         const diff = date - me.timestamp;
         if (diff <= 0) {
@@ -145,14 +145,11 @@ export default {
           return me.timestamp;
         }
         return result;
-      }, -1);
+      }, this.scaleReference.start);
       this.setTimestamp(reduce);
     },
   },
   watch: {
-    timestamp() {
-      this.visibleTimestamp = this.timestamp;
-    },
   },
   mounted() {
     this.timelineDate = this.startTime;

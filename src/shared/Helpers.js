@@ -338,7 +338,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
       url,
       style: MAP_STYLES.POLYGON_OBSERVATION_STYLE,
       imageLoadFunction: (imageWrapper, src) => {
-        store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: src }, { root: true });
+        store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: `${src}${timestamp}` }, { root: true });
         axiosInstance.get(src, {
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -354,7 +354,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
               reader.onload = () => {
                 const image = imageWrapper.getImage();
                 image.src = reader.result;
-                store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: src }, { root: true });
+                store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
@@ -386,7 +386,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
               reader.onerror = (error) => {
                 store.dispatch('view/setSpinner', {
                   ...SPINNER_CONSTANTS.SPINNER_ERROR,
-                  owner: src,
+                  owner: `${src}${timestamp}`,
                   errorMessage: error,
                 }, { root: true });
               };
