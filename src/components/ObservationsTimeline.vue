@@ -31,7 +31,7 @@
         <div
           class="ot-actual-time"
           v-if="timestamp !== -1"
-          :style="{ left: `${calculatePosition(timestamp)}px` }">
+          :style="{ left: `${calculatePosition(visibleTimestamp)}px` }">
         </div>
         <q-tooltip
           :offset="[0, 15]"
@@ -78,6 +78,7 @@ export default {
       timelineDate: null,
       timelineWidth: undefined,
       timelineLeft: undefined,
+      visibleTimestamp: -1,
     };
   },
   computed: {
@@ -134,13 +135,28 @@ export default {
       // this.timelinePosition = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
     },
     askForPosition(event) {
-      this.setTimestamp(this.getDateFromPosition(event));
+      const date = this.getDateFromPosition(event);
+      const reduce = this.modificationEvents.reduce((result, me) => {
+        const diff = date - me.timestamp;
+        if (diff <= 0) {
+          return result;
+        }
+        if (result === -1 || diff < result) {
+          return me.timestamp;
+        }
+        return result;
+      }, -1);
+      this.setTimestamp(reduce);
     },
   },
   watch: {
+    timestamp() {
+      this.visibleTimestamp = this.timestamp;
+    },
   },
   mounted() {
     this.timelineDate = this.startTime;
+    this.visibleTimestamp = this.timestamp;
     moment.locale(window.navigator.userLanguage || window.navigator.language);
   },
 };

@@ -159,6 +159,7 @@ export default {
       'contextId',
       'contextLabel',
       'session',
+      'timestamp',
     ]),
     ...mapGetters('view', [
       'contextGeometry',
@@ -262,32 +263,43 @@ export default {
       }
     },
 
-    findExistingLayerById(observationId, timestamp = null) {
+    findExistingLayerById(observationId) {
       if (this.layers && this.layers !== null) {
-        let id = observationId;
-        if (timestamp !== null) {
-          id += `T${timestamp}`;
-        }
         const layerArray = this.layers.getArray();
-        return layerArray.find(layer => layer.get('id') === id);
+        return layerArray.filter((layer) => {
+          console.dir(layer);
+          if (layer.get('id') === null) {
+            return observationId === null;
+          }
+          return layer.get('id').startsWith(observationId);
+        });
       }
-      return null;
+      return [];
     },
 
-    async findLayerById(observation, timestamp = null) {
-      const found = this.findExistingLayerById(observation.id, timestamp);
-      if (typeof found !== 'undefined' && found !== null) {
-        return found;
+    async findLayerById(observation, timestamp = -1) {
+      const founds = this.findExistingLayerById(observation.id);
+      if (founds.length > 0) {
+        const id = `${observation.id}T${timestamp}`;
+        const layer = founds.find(l => l.get('id') === id);
+        if (layer) {
+          return { founds, layer };
+        }
       }
       // need to create new layer
       try {
         console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
         const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
-        this.zIndexCounter += 1;
-        observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
-        layer.setZIndex(observation.zIndex);
+        if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
+          layer.setZIndex(observation.zIndex);
+        } else {
+          this.zIndexCounter += 1;
+          observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
+          layer.setZIndex(observation.zIndex);
+        }
         this.layers.push(layer);
-        return layer;
+        founds.push(layer);
+        return { founds, layer };
       } catch (error) {
         console.error(error.message);
         this.$q.notify({
@@ -336,13 +348,24 @@ export default {
       }
     },
 
-    drawObservations(timestamp = null) {
+    drawObservations() {
       if (this.observations && this.observations.length > 0) {
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
-            this.findLayerById(observation, timestamp).then((layer) => {
-              if (layer !== null) {
-                layer.setVisible(observation.visible);
+            this.findLayerById(observation, this.timestamp).then((layers) => {
+              if (layers !== null) {
+                const { founds, layer } = layers;
+                if (founds.length > 0) {
+                  founds.forEach((f) => {
+                    if (observation.visible && f.get('id') === `${observation.id}T${this.timestamp}`) {
+                      f.setVisible(true);
+                    } else {
+                      f.setVisible(false);
+                    }
+                  });
+                } else {
+                  layer.setVisible(observation.visible);
+                }
                 layer.setOpacity(observation.layerOpacity);
                 if (observation.top) {
                   layer.setZIndex(observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1));
@@ -502,9 +525,6 @@ export default {
     sendRegionOfInterestListener() {
       this.sendRegionOfInterest();
     },
-    loadObservationByTime({ timestamp = null }) {
-      this.drawObservations(timestamp);
-    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -519,6 +539,9 @@ export default {
         this.drawObservations();
       },
       deep: true,
+    },
+    timestamp() {
+      this.drawObservations();
     },
     center() {
       this.view.setCenter(this.center);
@@ -676,13 +699,11 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
-    this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_BY_TIME, this.loadObservationByTime);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$off(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$off(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
-    this.$eventBus.$off(CUSTOM_EVENTS.OBSERVATION_BY_TIME, this.loadObservationByTime);
   },
 };
 </script>
