@@ -147,6 +147,7 @@ export default {
   treeTicked: [],
   treeExpanded: [],
   topLayer: null,
+  loadingLayers: [],
   /**
    * true if we are editing the scale. Need for no intercept events
    */

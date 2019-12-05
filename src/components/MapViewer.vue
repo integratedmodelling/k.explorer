@@ -525,7 +525,7 @@ export default {
         } else {
           topLayerId = this.topLayer.id;
         }
-        const layerSelected = this.findExistingLayerById(topLayerId);
+        const layerSelected = this.findExistingLayerById(topLayerId)[0];
         const clonedLayer = new ImageLayer({
           id: `cl_${topLayerId}`,
           source: layerSelected.getSource(),
@@ -533,7 +533,7 @@ export default {
         this.setMapSelection({
           pixelSelected: coordinate,
           layerSelected: clonedLayer,
-          ...(!this.exploreMode && { observationId: this.topLayer.id }),
+          ...(!this.exploreMode && { observationId: this.topLayer.id.substring(0, this.topLayer.id.indexOf('T')) }),
           locked,
         });
       } else {

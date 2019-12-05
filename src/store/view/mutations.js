@@ -34,6 +34,16 @@ export default {
     state.topLayer = null;
   },
 
+  SET_LOADING_LAYERS: (state, { loading, observationId }) => {
+    const index = state.loadingLayers.indexOf(observationId);
+    if (loading) {
+      if (index === -1) {
+        state.loadingLayers.push(observationId);
+      }
+    } else if (index !== -1) {
+      state.loadingLayers.splice(index, 1);
+    }
+  },
   /**
    * Set the main viewer in index page
    * @param viewer the viewer component name

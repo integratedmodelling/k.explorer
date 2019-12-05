@@ -44,7 +44,7 @@
           >
             <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
-            {{ prop.node.label }}<q-icon name="mdi-sync" v-if="prop.node.dynamic" color="mc-green" class="node-icon"></q-icon>
+            {{ prop.node.label }}<q-icon name="mdi-sync" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': isLoadingLayer(prop.node.id) }"></q-icon>
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
@@ -200,6 +200,7 @@ export default {
       'observationInfo',
       'hasObservationInfo',
       'topLayerId',
+      'isLoadingLayer',
     ]),
     ...mapState('view', [
       'treeSelected',
@@ -448,6 +449,7 @@ export default {
     },
   },
   watch: {
+
     tree() {
       this.treeSizeChangeListener();
     },
@@ -700,6 +702,9 @@ export default {
       .node-icon
         display inline
         padding-left 5px
+      .node-icon-time
+        position relative
+        right -5px
       .kt-q-tooltip
         background-color #333
       .q-tree-node-link
