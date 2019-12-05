@@ -160,6 +160,8 @@ export default {
       'contextLabel',
       'session',
       'timestamp',
+      'scaleReference',
+      'modificationEventsOfObservation',
     ]),
     ...mapGetters('view', [
       'contextGeometry',
@@ -267,7 +269,6 @@ export default {
       if (this.layers && this.layers !== null) {
         const layerArray = this.layers.getArray();
         return layerArray.filter((layer) => {
-          console.dir(layer);
           if (layer.get('id') === null) {
             return observationId === null;
           }
@@ -275,6 +276,27 @@ export default {
         });
       }
       return [];
+    },
+
+    findModificationTimestamp(observationId, timestamp) {
+      if (timestamp !== -1) {
+        // find the fist step of this observation
+        const modifications = this.modificationEventsOfObservation(observationId);
+        if (modifications.length > 0) {
+          return modifications.reduce((result, me) => {
+            const diff = timestamp - me.timestamp;
+            if (diff <= 0) {
+              return result;
+            }
+            if (result === -1 || diff < result) {
+              return me.timestamp;
+            }
+            return result;
+          }, this.scaleReference.start);
+        }
+        return -1;
+      }
+      return -1;
     },
 
     async findLayerById(observation, timestamp = -1) {
@@ -293,7 +315,7 @@ export default {
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
         } else {
-          this.zIndexCounter += 1;
+          this.zIndexCounter += 2;
           observation.zIndex = this.zIndexCounter + observation.zIndexOffset;
           layer.setZIndex(observation.zIndex);
         }
@@ -352,36 +374,66 @@ export default {
       if (this.observations && this.observations.length > 0) {
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
-            this.findLayerById(observation, this.timestamp).then((layers) => {
+            const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
+            this.findLayerById(observation, timestamp).then((layers) => {
               if (layers !== null) {
                 const { founds, layer } = layers;
-                if (founds.length > 0) {
-                  founds.forEach((f) => {
-                    if (observation.visible && f.get('id') === `${observation.id}T${this.timestamp}`) {
-                      f.setVisible(true);
-                    } else {
-                      f.setVisible(false);
-                    }
-                  });
-                } else {
-                  layer.setVisible(observation.visible);
-                }
                 layer.setOpacity(observation.layerOpacity);
+                let { zIndex } = observation;
                 if (observation.top) {
-                  layer.setZIndex(observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1));
-                } else {
-                  layer.setZIndex(observation.zIndex);
+                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1);
                 }
+                layer.setZIndex(zIndex);
                 if (
                   (observation.visible && observation.top)
                   && isRasterObservation(observation) // is RASTER...
                   && observation.dataSummary.histogram.length > 0 // and has values
-                  && (this.topLayer === null || this.topLayer.id !== observation.id)
+                  && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
                 ) {
-                  this.setTopLayer({ id: observation.id, desc: observation.label });
+                  this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
                 } else if ((!observation.visible || !observation.top)
-                  && this.topLayer !== null && this.topLayer.id === observation.id) {
+                  && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
                   this.setTopLayer(null);
+                }
+                if (founds.length > 0) {
+                  if (observation.visible) {
+                    founds.forEach((f) => {
+                      if (f.get('id') === `${observation.id}T${timestamp}`) {
+                        f.setZIndex(zIndex + 1);
+                        f.setVisible(true);
+                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
+                        f.setZIndex(zIndex);
+                      }
+                    });
+                    // }
+                    /*
+                    const visibleLayer = founds.find(f => f.get('id') === `${observation.id}T${this.timestamp}`);
+                    // console.warn(`Show ${visibleLayer.get('id')} with T: ${this.timestamp}: visible layer visible: ${visibleLayer.getVisible()}`);
+                    // console.dir(observation.tsImages);
+                    visibleLayer.setVisible(true);
+                    founds.forEach((f) => {
+                      console.warn(`${f.get('id')} visibility: ${f.getVisible()}`);
+                    });
+                    if (observation.tsImages.indexOf(`T${this.timestamp}`) !== -1) {
+                      founds.forEach((f) => {
+                        if (f.get('id') !== `${observation.id}T${this.timestamp}`) {
+                          f.setZIndex(0);
+                          this.$nextTick(() => {
+                            f.setVisible(false);
+                            // console.warn(`Hide ${f.get('id')} with T: ${this.timestamp}: visible layer visible: ${visibleLayer.getVisible()}`);
+                            // console.dir(observation.tsImages);
+                          });
+                        }
+                        console.warn(`${f.get('id')} visibility: ${f.getVisible()}`);
+                      });
+                    }
+                    */
+                  } else { // no visibility
+                    founds.forEach((f) => { f.setVisible(false); });
+                  }
+                } else {
+                  console.log(`No multiple layer for observation ${observation.id}, refreshing`);
+                  layer.setVisible(observation.visible);
                 }
               }
             });
@@ -469,7 +521,7 @@ export default {
         }
         let topLayerId;
         if (this.exploreMode) {
-          topLayerId = this.observationInfo.id;
+          topLayerId = `${this.observationInfo.id}T${this.findModificationTimestamp(this.observationInfo.id, this.timestamp)}`;
         } else {
           topLayerId = this.topLayer.id;
         }

@@ -136,17 +136,7 @@ export default {
     },
     changeTimestamp(date) {
       this.visibleTimestamp = date;
-      const reduce = this.modificationEvents.reduce((result, me) => {
-        const diff = date - me.timestamp;
-        if (diff <= 0) {
-          return result;
-        }
-        if (result === -1 || diff < result) {
-          return me.timestamp;
-        }
-        return result;
-      }, this.scaleReference.start);
-      this.setTimestamp(reduce);
+      this.setTimestamp(date);
     },
   },
   watch: {

@@ -355,6 +355,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                 const image = imageWrapper.getImage();
                 image.src = reader.result;
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
+                observation.tsImages.push(`T${timestamp}`);
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {

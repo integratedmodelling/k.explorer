@@ -34,7 +34,7 @@ export default {
   visibleObservations: state => state.observations.filter(observation => observation.visible),
 
   modificationEvents: state => state.modificationEvents,
-  modificationEventsOfObservation: state => id => state.modificationEvents.find(e => e.id === id),
+  modificationEventsOfObservation: state => id => state.modificationEvents.filter(e => e.id === id),
   modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
 
   timestamp: state => state.timestamp,
