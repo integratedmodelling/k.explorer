@@ -110,7 +110,7 @@ export default {
       position relative
       max-height "calc(100% - %s)" % $docked-padding
     &.dmc-large-mode.full-height
-      height "calc(100% -  %s)" % ($docked-search-height) !important
+      height "calc(100% -  %s)" % ($docked-search-height + $docked-timeline-height) !important
     #dmc-tree
       // not selectable
       user-select none
