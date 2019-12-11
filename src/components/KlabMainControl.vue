@@ -138,10 +138,10 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearchBar from 'components/KlabSearchBar.vue';
 import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
 import KlabTreePane from 'components/KlabTreePane.vue';
+import ObservationsTimeline from 'components/ObservationsTimeline.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
-import ObservationsTimeline from 'components/ObservationsTimeline.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;

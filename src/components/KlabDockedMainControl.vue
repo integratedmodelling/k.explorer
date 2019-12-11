@@ -9,6 +9,7 @@
       ref="klab-search-bar-docked"
       v-draggable="dragMCConfig"
     ></klab-search-bar>
+    <observations-timeline class="dmc-timeline" v-if="contextHasTime"></observations-timeline>
     <div
       id="dmc-tree"
       class="q-card-main full-height"
@@ -25,6 +26,7 @@ import { debounce, dom } from 'quasar';
 import KlabSearchBar from 'components/KlabSearchBar';
 import KlabBreadcrumbs from 'components/KlabBreadcrumbs';
 import KlabTreePane from 'components/KlabTreePane.vue';
+import ObservationsTimeline from 'components/ObservationsTimeline.vue';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
@@ -34,8 +36,9 @@ export default {
   name: 'KlabDockedMainControl',
   components: {
     KlabSearchBar,
-    KlabTreePane,
     KlabBreadcrumbs,
+    ObservationsTimeline,
+    KlabTreePane,
   },
   directives: {
     Draggable,
@@ -57,6 +60,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'contextHasTime',
+    ]),
     ...mapGetters('view', [
       'largeMode',
     ]),
@@ -107,12 +113,12 @@ export default {
       height "calc(100% -  %s)" % ($docked-search-height) !important
     #dmc-tree
       // not selectable
-      user-select: none;
-      -khtml-user-select: none;
-      -o-user-select: none;
-      -moz-user-select: -moz-none;
-      -webkit-user-select: none;
-      background-color: rgba(119,119,119,0.65);
+      user-select none
+      -khtml-user-select none
+      -o-user-select none
+      -moz-user-select -moz-none
+      -webkit-user-select none
+      background-color rgba(119,119,119,0.65)
       overflow hidden
       #klab-tree-pane
         height 100%
