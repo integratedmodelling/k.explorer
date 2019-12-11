@@ -116,7 +116,7 @@ export const getNodeFromObservation = (observation) => {
   if (!userNode && hasContainer) {
     const parent = findNodeById(store.getters['data/tree'], parentId);
     if (parent !== null) {
-      userNode = userNode || parent.main || parent.userNode;
+      userNode = userNode || parent.userNode; // || parent.main;
     }
   }
   return {
@@ -340,6 +340,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
       imageLoadFunction: (imageWrapper, src) => {
         store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: `${src}${timestamp}` }, { root: true });
         store.dispatch('view/setLoadingLayers', { loading: true, observationId: observation.id });
+        // console.time('loading image');
         axiosInstance.get(src, {
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -355,6 +356,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
               reader.onload = () => {
                 const image = imageWrapper.getImage();
                 image.src = reader.result;
+                // console.timeEnd('loading image');
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 observation.tsImages.push(`T${timestamp}`);
                 store.dispatch('view/setLoadingLayers', { loading: false, observationId: observation.id });
