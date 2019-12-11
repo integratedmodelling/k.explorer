@@ -116,7 +116,7 @@ export const getNodeFromObservation = (observation) => {
   if (!userNode && hasContainer) {
     const parent = findNodeById(store.getters['data/tree'], parentId);
     if (parent !== null) {
-      userNode = userNode || parent.main || parent.userNode;
+      userNode = userNode || parent.userNode; // || parent.main;
     }
   }
   return {
