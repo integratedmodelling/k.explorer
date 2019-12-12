@@ -496,8 +496,8 @@ export default {
         margin 0 2px
 
     .mc-timeline
-      width 84%
+      width calc(100% - 136px)
       position absolute
-      right 10px
-      bottom 9px
+      left 68px
+      bottom 7px
 </style>

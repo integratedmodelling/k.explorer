@@ -3,13 +3,15 @@
     <div
       class="ot-date ot-date-start col"
       @click="changeTimestamp(scaleReference.start)"
-    >S
+    ><!--
       <q-tooltip
         :offset="[0, 8]"
         self="top middle"
         anchor="bottom middle"
         v-html="startDate"
       ></q-tooltip>
+      -->
+      <div class="ot-date-text">{{ startDate }}</div>
     </div>
     <div class="ot-timeline-container col">
       <div
@@ -42,18 +44,21 @@
           :delay="300"
         ></q-tooltip>
       </div>
-      <q-progress :percentage="timelineProgress" height="2px" color="mc-main" />
+      <!-- <q-progress :percentage="timelineProgress" height="2px" color="mc-main" /> -->
     </div>
     <div
       class="ot-date ot-date-end col"
       @click="changeTimestamp(scaleReference.end)"
-    >E
+    >
+      <!--
       <q-tooltip
         :offset="[0, 8]"
         self="top middle"
         anchor="bottom middle"
         v-html="endDate"
       ></q-tooltip>
+      -->
+      <div class="ot-date-text">{{ endDate }}</div>
     </div>
   </div>
 </template>
@@ -89,10 +94,10 @@ export default {
       'visibleObservations',
     ]),
     startDate() {
-      return this.scaleReference !== null ? this.formatDate(this.scaleReference.start) : '';
+      return this.scaleReference !== null ? this.formatDate(this.scaleReference.start, true) : '';
     },
     endDate() {
-      return this.scaleReference !== null ? this.formatDate(this.scaleReference.end) : '';
+      return this.scaleReference !== null ? this.formatDate(this.scaleReference.end, true) : '';
     },
     visibleEvents() {
       const ids = this.visibleObservations.map(o => o.id);
@@ -103,11 +108,14 @@ export default {
     ...mapActions('data', [
       'setTimestamp',
     ]),
-    formatDate(date) {
+    formatDate(date, isStartOrEnd = false) {
       if (date === null) {
         return '';
       }
       const momentDate = moment(date);
+      if (isStartOrEnd) {
+        return momentDate.format('DD MMM YYYY');
+      }
       return `<div class="ot-date-tooltip-content">${momentDate.format('L')}<br />${momentDate.format('HH:mm:ss:SSS')}</div>`;
     },
     calculatePosition(timestamp) {
@@ -154,10 +162,10 @@ export default {
   .ot-container
     width 100%
     .ot-date
-      min-width 16px
-      max-width 16px
-      height 16px
-      line-height 16px
+      min-width 20px
+      max-width 20px
+      height 20px
+      line-height 20px
       vertical-align middle
       background-color #777
       color $grey-2
@@ -166,25 +174,35 @@ export default {
       font-weight 200
       font-size 12px
       padding-top 0
-      &.ot-date-start
+      border-radius 10px
+      &.ot-date-selected.ot-date-start
         border-top-left-radius 2px
         border-bottom-left-radius 2px
         cursor pointer
-      &.ot-date-end
+      &.ot-date-selected.ot-date-end
         border-top-right-radius 2px
         border-bottom-right-radius 2px
         cursor pointer
+      .ot-date-text
+        font-size 9px
+        position absolute
+        color #fff
+        top -7px
+        left 20px
+        font-weight 300
+        letter-spacing 2px
     .ot-timeline-container
-      border-top 1px solid #777
-      border-bottom 1px solid #777
       .ot-actual-time
         width 2px
         height 14px
         background-color $main-control-yellow
         position absolute
       .ot-timeline
-        height 12px
+        height 5px
+        margin 0 -2px
+        background-color #777
         position relative
+        top 8px
         cursor pointer
         .ot-modification
           width 16px
