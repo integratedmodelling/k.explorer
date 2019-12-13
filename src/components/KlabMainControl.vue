@@ -116,6 +116,45 @@
           >{{ $t('tooltips.observers') }}</q-tooltip>
         </div>
         <observations-timeline class="mc-timeline" v-if="contextHasTime"></observations-timeline>
+        <div class="klab-bottom-right-actions">
+          <div class="klab-button klab-action">
+            <div class="klab-font klab-im-logo float-left" @click.prevent="paletteOpen = !paletteOpen"></div>
+            <q-icon name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
+          </div>
+          <q-tooltip
+            :offset="[0, 8]"
+            self="top middle"
+            anchor="bottom middle"
+          >{{ $t('tooltips.palette') }}</q-tooltip>
+          <!--
+          <q-btn-dropdown
+            color="grey-6"
+            dense
+            size="sm"
+            v-model="paletteOpen"
+            flat
+          >
+            <q-list>
+              <q-item>
+                <q-item-main>
+                  <q-item-tile label>{{ $t('messages.availableInFuture') }}</q-item-tile>
+                </q-item-main>
+              </q-item>
+            </q-list>
+
+          </q-btn-dropdown>
+
+
+          <div class="klab-button klab-action">
+            <div class="klab-item klab-font klab-aries-logo klab-icon"></div>
+            <q-tooltip
+              :offset="[0, 8]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('tooltips.unknown') }}</q-tooltip>
+          </div>
+          -->
+        </div>
       </q-card-actions>
     </q-card>
     </transition>
@@ -185,6 +224,7 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       centeredLeft: this.defaultLeft,
+      paletteOpen: false,
     };
   },
   computed: {
@@ -287,6 +327,9 @@ export default {
     },
   },
   watch: {
+    paletteOpen() {
+      console.log(`Palette open: ${this.paletteOpen}`);
+    },
     hasContext() {
       this.setLargeMode(0); // reset large mode
       this.$nextTick(() => {
@@ -496,8 +539,18 @@ export default {
         margin 0 2px
 
     .mc-timeline
-      width calc(100% - 136px)
+      width calc(100% - 200px)
       position absolute
-      left 68px
-      bottom 7px
+      left 100px
+      bottom 9px
+
+    .klab-bottom-right-actions
+      position absolute
+      right 6px
+      .klab-button.klab-action
+        border-radius 4px
+        margin 3px 0 0 0
+        padding 2px 5px 3px !important
+        &:hover
+          background-color rgba(135, 135, 135, .2)
 </style>

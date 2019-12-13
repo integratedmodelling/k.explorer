@@ -106,6 +106,10 @@ export default {
     }
   },
 
+  SET_MODIFICATIONS_TASK: (state, task) => {
+    state.modificationsTask = task;
+  },
+
   SET_TIMESTAMP: (state, timestamp) => {
     state.timestamp = timestamp;
   },

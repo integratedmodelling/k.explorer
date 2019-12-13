@@ -235,6 +235,7 @@ export default {
    * }
    */
   modificationEvents: [],
+  modificationsTask: null,
 
   /**
    * Indicate the selected timestamp, need to retrieve the correct observations layer

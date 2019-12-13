@@ -227,8 +227,15 @@ export default {
     return null;
   }),
 
-  addModificationEvent: ({ commit }, modificationEvent) => {
+  addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
     commit('ADD_MODIFICATION_EVENT', modificationEvent);
+    if (state.modificationsTask === null) {
+      dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
+    }
+  },
+
+  setModificationsTask({ commit }, task = null) {
+    commit('SET_MODIFICATIONS_TASK', task);
   },
 
   setTimestamp: ({ commit }, timestamp) => {

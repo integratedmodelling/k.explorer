@@ -36,6 +36,7 @@ export default {
   modificationEvents: state => state.modificationEvents,
   modificationEventsOfObservation: state => id => state.modificationEvents.filter(e => e.id === id),
   modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
+  modificationsTask: state => state.modificationsTask,
 
   timestamp: state => state.timestamp,
 

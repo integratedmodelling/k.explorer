@@ -2,20 +2,20 @@
   <div class="ot-container row">
     <div
       class="ot-date ot-date-start col"
-      @click="changeTimestamp(scaleReference.start)"
-    ><!--
-      <q-tooltip
+      :class="{ 'ot-date-loaded': loadedTime > 0 }"
+      @click.self="changeTimestamp(scaleReference.start)"
+    ><q-tooltip
         :offset="[0, 8]"
         self="top middle"
         anchor="bottom middle"
-        v-html="startDate"
+        v-html="formatDate(scaleReference.start)"
       ></q-tooltip>
-      -->
-      <div class="ot-date-text">{{ startDate }}</div>
+      <div class="ot-date-text" v-show="visibleEvents.length === 0">{{ startDate }}</div>
     </div>
     <div class="ot-timeline-container col">
       <div
         class="ot-timeline"
+        :class="{ 'ot-active-timeline': visibleEvents.length > 0 }"
         ref="ot-timeline"
         @mousemove="moveOnTimeline"
         @mouseenter="timelineActivated = true"
@@ -28,12 +28,13 @@
           class="ot-modification"
           :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 10px)` }"
         >
-          <q-icon name="mdi-power-on" class="ot-position" color="grey-7"></q-icon>
+          <q-icon name="mdi-power-on" class="ot-position" color="grey-4"></q-icon>
         </div>
+        <div class="ot-loaded-time" :style="{ width: `calc(${calculatePosition(loadedTime)}px - 2px)` }"></div>
         <div
           class="ot-actual-time"
           v-if="timestamp !== -1"
-          :style="{ left: `${calculatePosition(visibleTimestamp)}px` }">
+          :style="{ left: `calc(${calculatePosition(visibleTimestamp)}px - 4px)` }">
         </div>
         <q-tooltip
           :offset="[0, 15]"
@@ -48,17 +49,15 @@
     </div>
     <div
       class="ot-date ot-date-end col"
-      @click="changeTimestamp(scaleReference.end)"
-    >
-      <!--
-      <q-tooltip
+      @click.self="changeTimestamp(scaleReference.end)"
+      :class="{ 'ot-date-loaded': loadedTime === scaleReference.end }"
+    ><q-tooltip
         :offset="[0, 8]"
         self="top middle"
         anchor="bottom middle"
-        v-html="endDate"
+        v-html="formatDate(scaleReference.end)"
       ></q-tooltip>
-      -->
-      <div class="ot-date-text">{{ endDate }}</div>
+      <div class="ot-date-text" v-show="visibleEvents.length === 0">{{ endDate }}</div>
     </div>
   </div>
 </template>
@@ -84,6 +83,7 @@ export default {
       timelineWidth: undefined,
       timelineLeft: undefined,
       visibleTimestamp: -1,
+      loadedTime: 0,
     };
   },
   computed: {
@@ -92,6 +92,10 @@ export default {
       'modificationEvents',
       'timestamp',
       'visibleObservations',
+      'modificationsTask',
+    ]),
+    ...mapGetters('stomp', [
+      'tasks',
     ]),
     startDate() {
       return this.scaleReference !== null ? this.formatDate(this.scaleReference.start, true) : '';
@@ -107,6 +111,7 @@ export default {
   methods: {
     ...mapActions('data', [
       'setTimestamp',
+      'setModificationsTask',
     ]),
     formatDate(date, isStartOrEnd = false) {
       if (date === null) {
@@ -148,6 +153,20 @@ export default {
     },
   },
   watch: {
+    modificationEvents(newValue) {
+      if (newValue.length > 0) {
+        this.loadedTime = newValue[newValue.length - 1].timestamp;
+      }
+    },
+    tasks(newValue) {
+      if (newValue.length > 0 && this.modificationsTask) {
+        const task = newValue.find(t => t.id === this.modificationsTask.id);
+        if (task && !task.alive) {
+          this.loadedTime = this.scaleReference.end;
+          this.setModificationsTask(null);
+        }
+      }
+    },
   },
   mounted() {
     this.timelineDate = this.startTime;
@@ -159,58 +178,90 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  $timeline-balls-size = 14px
   .ot-container
     width 100%
     .ot-date
-      min-width 20px
-      max-width 20px
-      height 20px
-      line-height 20px
+      min-width $timeline-balls-size
+      max-width $timeline-balls-size
+      height $timeline-balls-size
+      line-height $timeline-balls-size
       vertical-align middle
-      background-color #777
+      background-color #666
       color $grey-2
       text-align center
       margin 0
       font-weight 200
       font-size 12px
       padding-top 0
-      border-radius 10px
-      &.ot-date-selected.ot-date-start
-        border-top-left-radius 2px
-        border-bottom-left-radius 2px
-        cursor pointer
-      &.ot-date-selected.ot-date-end
-        border-top-right-radius 2px
-        border-bottom-right-radius 2px
-        cursor pointer
+      border-radius ($timeline-balls-size / 2)
+      cursor pointer
+      z-index 100
+      &.ot-date-loaded
+        background-color #777
+      &.ot-date-fill
+        background-color $grey-5
+      &.ot-date-start
+        &.ot-date-selected
+          border-top-left-radius 2px
+          border-bottom-left-radius 2px
+          cursor pointer
+        .ot-date-text
+          left $timeline-balls-size
+      &.ot-date-end
+        &.ot-date-selected
+          border-top-right-radius 2px
+          border-bottom-right-radius 2px
+          cursor pointer
+        .ot-date-text
+          right $timeline-balls-size
       .ot-date-text
-        font-size 9px
+        font-size 8px
         position absolute
-        color #fff
         top -7px
-        left 20px
-        font-weight 300
-        letter-spacing 2px
+        color #fff
+        font-weight 400
+        letter-spacing 1px
+        cursor default
     .ot-timeline-container
+      .ot-loaded-time
+        height 5px
+        margin-left 2px
+        background-color #777
+        position absolute
       .ot-actual-time
         width 2px
-        height 14px
+        height 5px
+        margin-left 4px
         background-color $main-control-yellow
         position absolute
+        z-index 2000
       .ot-timeline
         height 5px
         margin 0 -2px
-        background-color #777
+        background-color #666
         position relative
-        top 8px
+        top ($timeline-balls-size / 2) - 2
         cursor pointer
+        &.ot-active-timeline
+          height $timeline-balls-size
+          top ($timeline-balls-size / 2)
+          margin 0 -($timeline-balls-size / 2)
+          background-color #666
+          .ot-loaded-time
+          .ot-actual-time
+            height $timeline-balls-size
         .ot-modification
+          z-index 100
           width 16px
-          height 10px
+          height 8px
           position absolute
+          top -4px
           text-align center
           .ot-position
-            font-size 10px
+            font-size 8px
+
+
   .ot-date-tooltip
     width 100px
     .ot-date-tooltip-content
