@@ -198,7 +198,7 @@ export default {
       cursor pointer
       z-index 100
       &.ot-date-loaded
-        background-color #777
+        background-color #999
       &.ot-date-fill
         background-color $grey-5
       &.ot-date-start
@@ -227,7 +227,7 @@ export default {
       .ot-loaded-time
         height 5px
         margin-left 2px
-        background-color #777
+        background-color #999
         position absolute
       .ot-actual-time
         width 2px

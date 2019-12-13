@@ -257,17 +257,18 @@ export default {
     commit('SET_OBSERVATION_INFO', observation);
   },
 
-  setMapSelection: ({ commit, state }, { pixelSelected, layerSelected = null, observationId = null, locked = false }) => {
+  setMapSelection: ({ commit, state }, { pixelSelected, timestamp = -1, layerSelected = null, observationId = null, locked = false }) => {
     if (pixelSelected !== null) {
       if (observationId === null) {
         observationId = state.observationInfo.id;
       }
       const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
+      const time = timestamp !== -1 ? `T1(1){time=${timestamp.toFixed(0)}}` : '';
       getAxiosContent(`pv_${observationId}`, url, {
         params: {
           format: 'SCALAR',
-          locator: `S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
+          locator: `${time}S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
         },
       }, (response, callback) => {
         let value = 'No value';

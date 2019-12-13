@@ -532,6 +532,7 @@ export default {
         });
         this.setMapSelection({
           pixelSelected: coordinate,
+          timestamp: this.timestamp,
           layerSelected: clonedLayer,
           ...(!this.exploreMode && { observationId: this.topLayer.id.substring(0, this.topLayer.id.indexOf('T')) }),
           locked,
