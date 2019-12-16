@@ -191,6 +191,7 @@ export default {
       'contextReloaded',
       'contextId',
       'observations',
+      'modificationEventsOfObservation',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -217,6 +218,7 @@ export default {
       'addChildrenToTree',
       'setContext',
       'changeTreeOfNode',
+      'setTimestamp',
     ]),
     ...mapActions('view', [
       'setSpinner',
@@ -370,6 +372,9 @@ export default {
           const geometry = await getContextGeometry(observation);
           this.fitMap(node, meta, geometry);
         }
+      }
+      if (this.modificationEventsOfObservation(node.id).length > 0) {
+        this.setTimestamp(-1);
       }
     },
     fitMap(node, meta, geometry = null) {

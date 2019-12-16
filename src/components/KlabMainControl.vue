@@ -542,7 +542,7 @@ export default {
       width calc(100% - 200px)
       position absolute
       left 100px
-      bottom 9px
+      bottom 8px
 
     .klab-bottom-right-actions
       position absolute
