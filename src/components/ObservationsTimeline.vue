@@ -7,14 +7,14 @@
       <div
         class="ot-date ot-date-start col"
         :class="{ 'ot-date-loaded': loadedTime > 0 }"
-        @click.self="changeTimestamp(scaleReference.start)"
+        @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
+        @dblclick="onDblClick($event, () => { setTimestamp(timestamp === -1 ? scaleReference.start : -1); })"
       >
         <q-icon
           name="mdi-circle-medium"
-          v-if="timestamp === -1 && visibleEvents.length === 0"
+          v-if="timestamp === -1"
           class="ot-time-origin"
           color="mc-main"
-          @click.prevent
         ></q-icon>
         <q-tooltip
           :offset="[0, 8]"
@@ -29,6 +29,7 @@
     <div
       class="ot-timeline-container col"
       ref="ot-timeline-container"
+      :class="{ 'ot-timeline-with-time': timestamp !== -1 }"
     >
       <div
         class="ot-timeline"
@@ -42,7 +43,7 @@
           v-for="(modification) in visibleEvents"
           :key="`${modification.id}-${modification.timestamp}`"
           class="ot-modification-container"
-          :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 10px)` }"
+          :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 9px)` }"
         >
           <div class="ot-modification"></div>
         </div>
@@ -88,9 +89,11 @@
 import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
 import { debounce } from 'quasar';
+import DoubleClickMixin from 'shared/DoubleClickMixin';
 
 export default {
   name: 'ObservationsTimeline',
+  mixins: [DoubleClickMixin],
   data() {
     return {
       timelineActivated: false,
@@ -164,7 +167,12 @@ export default {
       }
       const timelineWidth = timeline.clientWidth;
       const x = event.clientX - timeline.getBoundingClientRect().left;
-      const date = this.scaleReference.start + (x * (this.scaleReference.end - this.scaleReference.start) / timelineWidth);
+      let date = this.scaleReference.start + (x * (this.scaleReference.end - this.scaleReference.start) / timelineWidth);
+      if (date > this.scaleReference.end) {
+        date = this.scaleReference.end;
+      } else if (date < this.scaleReference.start) {
+        date = this.scaleReference.start;
+      }
       // console.log(`Return date ${date} (${moment(date).format('L')} ${moment(date).format('HH:mm:ss:SSS')}) from position ${x} with total ${this.timelineWidth}`);
       return date;
       // this.timelinePosition = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
@@ -202,8 +210,9 @@ export default {
   @import '~variables'
   $timeline-balls-size = 16px
   $timeline-small-size = 6px
-  $timeline-empty-color = #444
-  $timeline-loaded-color = #666
+  $timeline-modification-size = 6px
+  $timeline-empty-color = #555
+  $timeline-loaded-color = #777
   $timeline-fill-color = #888
   .ot-container
     width 100%
@@ -236,7 +245,7 @@ export default {
       font-size 8px
       position absolute
       top -4px
-      color #fff
+      color #888
       font-weight 400
       letter-spacing 1px
       padding 0
@@ -251,15 +260,15 @@ export default {
         .ot-modification-container
           z-index 10000
           width $timeline-balls-size * 2
-          height ($timeline-balls-size / 2)
+          height $timeline-modification-size
           position absolute
-          top ($timeline-balls-size / 2)
+          top $timeline-balls-size - $timeline-modification-size
           .ot-modification
             height 100%
             width 1px
             margin-left 1px
-            border-left 1px solid #444
-            border-right 1px solid #888
+            border-left 1px solid #666
+            border-right 1px solid #aaa
         .ot-actual-time
           width 2px
           height $timeline-small-size
@@ -267,6 +276,7 @@ export default {
           position absolute
           margin-right 4px
           top 0
+          z-index 10001
         .ot-loaded-time
           height $timeline-small-size
           left -2px
@@ -274,13 +284,17 @@ export default {
           position relative
           top 0
     &.ot-active-timeline
+      // .ot-timeline-with-time .ot-modification
+      //   border-right-color $main-control-main-color !important
       .ot-date-start
         border-top-right-radius 0
         border-bottom-right-radius 0
+        border-right 1px solid #444
         cursor pointer
       .ot-date-end
         border-top-left-radius 0
         border-bottom-left-radius 0
+        border-left 1px solid #444
         cursor pointer
       .ot-timeline
         height $timeline-balls-size

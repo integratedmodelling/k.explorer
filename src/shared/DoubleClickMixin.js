@@ -13,6 +13,7 @@ export default {
 
   methods: {
     onClick(event, callback) {
+      console.log('Click');
       this.timer = setTimeout(() => {
         if (!this.prevent) {
           callback(event);
@@ -20,11 +21,11 @@ export default {
         this.prevent = false;
       }, this.delay);
     },
-    dblClick(event, callback) {
+    onDblClick(event, callback) {
+      console.log('Double click');
       clearTimeout(this.timer);
       this.prevent = true;
       callback(event);
     },
   },
 };
-
