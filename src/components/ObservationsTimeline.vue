@@ -39,11 +39,12 @@
         @mouseleave="timelineActivated = false"
         @click="changeTimestamp(getDateFromPosition($event))"
       >
+        <div class="ot-timeline-viewer" v-show="visibleEvents.length > 0"></div>
         <div
           v-for="(modification) in visibleEvents"
           :key="`${modification.id}-${modification.timestamp}`"
           class="ot-modification-container"
-          :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 9px)` }"
+          :style="{ left: `calc(${calculatePosition(modification.timestamp)}px)` }"
         >
           <div class="ot-modification"></div>
         </div>
@@ -54,7 +55,7 @@
         <div
           class="ot-actual-time"
           v-if="timestamp !== -1"
-          :style="{ left: `calc(${calculatePosition(visibleTimestamp)}px - ${timestamp === scaleReference.end ? '2' : '0'}px)` }">
+          :style="{ left: `calc(${calculatePosition(visibleTimestamp)}px + ${timestamp === scaleReference.end ? '0' : '1'}px)` }">
         </div>
 
         <q-tooltip
@@ -153,7 +154,7 @@ export default {
       if (!timeline) {
         return 0;
       }
-      const position = (timestamp - this.scaleReference.start) * timeline.clientWidth / (this.scaleReference.end - this.scaleReference.start);
+      const position = (timestamp - this.scaleReference.start) * (timeline.clientWidth) / (this.scaleReference.end - this.scaleReference.start);
       // console.log(`Return position ${position} from date ${timestamp} (${moment(timestamp).format('L')} ${moment(timestamp).format('HH:mm:ss:SSS')}) with total ${this.timelineWidth}`);
       return position;
     },
@@ -161,7 +162,7 @@ export default {
       this.moveOnTimelineFunction(event);
     },
     getDateFromPosition(event) {
-      const timeline = this.$refs['ot-timeline'];
+      const timeline = this.$refs['ot-timeline-container'];
       if (!timeline) {
         return 0;
       }
@@ -211,9 +212,11 @@ export default {
   $timeline-balls-size = 16px
   $timeline-small-size = 6px
   $timeline-modification-size = 6px
+  $timeline-viewer-size = 10px
   $timeline-empty-color = #555
   $timeline-loaded-color = #777
   $timeline-fill-color = #888
+  $timeline-viewer-color = #666
   .ot-container
     width 100%
     position relative
@@ -229,7 +232,6 @@ export default {
       border-radius ($timeline-balls-size / 2)
       cursor pointer
       position relative
-      z-index 100
       &.ot-date-loaded
         background-color $timeline-loaded-color
       &.ot-date-fill
@@ -257,17 +259,19 @@ export default {
         position relative
         top ($timeline-balls-size / 2) - ($timeline-small-size / 2)
         cursor pointer
+        margin 0 -2px
+        padding 0 2px
         .ot-modification-container
           z-index 10000
           width $timeline-balls-size * 2
           height $timeline-modification-size
           position absolute
-          top $timeline-balls-size - $timeline-modification-size
+          top $timeline-viewer-size - ($timeline-modification-size / 2)
           .ot-modification
             height 100%
             width 1px
             margin-left 1px
-            border-left 1px solid #666
+            border-left 1px solid #555
             border-right 1px solid #aaa
         .ot-actual-time
           width 2px
@@ -289,21 +293,28 @@ export default {
       .ot-date-start
         border-top-right-radius 0
         border-bottom-right-radius 0
-        border-right 1px solid #444
         cursor pointer
       .ot-date-end
         border-top-left-radius 0
         border-bottom-left-radius 0
-        border-left 1px solid #444
         cursor pointer
       .ot-timeline
         height $timeline-balls-size
         width 100%
         top 0
+        .ot-timeline-viewer
+          height $timeline-viewer-size
+          background-color $timeline-viewer-color
+          border-radius 2px
+          width 100%
+          position absolute
+          top (($timeline-balls-size - $timeline-viewer-size) / 2)
+          z-index 9000
         .ot-loaded-time
           height $timeline-balls-size
         .ot-actual-time
-          height $timeline-balls-size
+          height $timeline-viewer-size
+          top (($timeline-balls-size - $timeline-viewer-size) / 2)
   .ot-date-tooltip
     width 100px
     .ot-date-tooltip-content

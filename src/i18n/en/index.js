@@ -160,7 +160,7 @@ export default {
     commentIt: 'Comment on resource',
     refreshScale: 'Refresh context with new scale(s)',
     clickToEdit: 'Click to edit {type} scale',
-    palette: 'Palette',
+    palette: 'No palette',
     unknown: 'To be decided',
     // startDate: '{date}</br>Click to reset timestamp',
   },
