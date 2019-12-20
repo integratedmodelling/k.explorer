@@ -265,7 +265,7 @@ export default {
       .q-icon
         vertical-align baseline !important
     .ot-time
-      width calc(100% - $timeline-player-width)
+      width "calc(100% - %s)" % $timeline-player-width
       position relative
       .ot-date
         min-width $timeline-balls-size
