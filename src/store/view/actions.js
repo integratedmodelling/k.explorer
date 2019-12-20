@@ -56,6 +56,7 @@ export default {
     commit('SET_LEFTMENU_STATE', viewer.leftMenuState);
     commit('SET_MAIN_VIEWER', viewer);
     commit('RESET_MAIN_DATA_VIEWER', null);
+    commit('SET_MAP_SELECTION', CONSTANTS.EMPTY_MAP_SELECTION);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
