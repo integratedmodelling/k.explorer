@@ -251,20 +251,21 @@ export default {
   $timeline-small-size = 6px
   $timeline-modification-size = 6px
   $timeline-viewer-size = 10px
+  $timeline-player-width = 20px
   $timeline-empty-color = #555
   $timeline-loaded-color = #777
   $timeline-fill-color = #888
   $timeline-viewer-color = #666
   .ot-container
     .ot-player
-      width $timeline-balls-size
+      width $timeline-player-width
       height $timeline-balls-size
       line-height $timeline-balls-size
       float left
       .q-icon
         vertical-align baseline !important
     .ot-time
-      width calc(100% - $timeline-balls-size)
+      width calc(100% - $timeline-player-width)
       position relative
       .ot-date
         min-width $timeline-balls-size
