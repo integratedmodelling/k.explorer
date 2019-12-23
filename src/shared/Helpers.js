@@ -238,6 +238,36 @@ export async function getContextGeometry(contextObservation) {
   return geometry;
 }
 
+/**
+ * Rewrite axios error as object with status, message and original
+ * @param axiosError an error returned from axios catch
+ * @return { status, message, axiosError: original error }
+ */
+export function getError(axiosError) {
+  if (axiosError.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    return {
+      status: axiosError.response.data.status || axiosError.response.status, // if blob we don't have a valid data object
+      message: axiosError.response.data.message || axiosError.response.data || (axiosError.response.statusText !== '' ? axiosError.response.statusText : 'Unknown'),
+      axiosError,
+    };
+  } if (axiosError.request) {
+    // The request was made but no response was received
+    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+    // http.ClientRequest in node.js
+    return {
+      status: axiosError.request.status,
+      message: axiosError.message,
+      axiosError,
+    };
+  }
+  return {
+    status: 'UNKNOWN',
+    message: axiosError.message,
+    axiosError,
+  };
+}
 
 /**
  * Useful to call a REST action
@@ -259,10 +289,15 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
       }
     })
     .catch((error) => {
+      const errorObject = getError(error);
+      let errorMessage = null;
+      if (errorObject != null) {
+        errorMessage = errorObject.message;
+      }
       store.dispatch('view/setSpinner', {
         ...SPINNER_CONSTANTS.SPINNER_ERROR,
         owner: uid,
-        errorMessage: error,
+        errorMessage,
       }, { root: true });
       if (errorCallback !== null) {
         errorCallback(error);
@@ -471,6 +506,7 @@ const Helpers = {
   getAxiosContent,
   getLayerObject,
   getStateIcon,
+  getError,
 };
 
 export { Helpers };
