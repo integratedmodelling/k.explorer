@@ -3,22 +3,21 @@
     class="ot-container"
     :class="{ 'ot-active-timeline': visibleEvents.length > 0 }"
   >
-    <div class="ot-player">
+    <div class="ot-player" v-if="visibleEvents.length > 0">
       <q-icon
         :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
         :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
         :class="{ 'cursor-pointer': timestamp < scaleReference.end }"
-        v-if="visibleEvents.length !== 0"
         @click.native="timestamp < scaleReference.end > 0 && run($event)"
       ></q-icon>
     </div>
-    <div class="ot-time row">
+    <div class="ot-time row" :class="{ 'ot-time-full': visibleEvents.length === 0 }">
       <div class="ot-date-container">
         <div
           class="ot-date ot-date-start col"
           :class="{ 'ot-date-loaded': loadedTime > 0 }"
           @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
-          @dblclick="onDblClick($event, () => { changeTimestamp(timestamp === -1 ? scaleReference.start : -1); })"
+          @dblclick="onDblClick($event, dblClick)"
         >
           <q-icon
             name="mdi-circle-medium"
@@ -83,7 +82,6 @@
             class="ot-date-tooltip"
             :delay="300"
           ></q-tooltip>
-          <!-- <q-progress :percentage="timelineProgress" height="2px" color="mc-main" /> -->
         </div>
       </div>
       <div class="ot-date-container">
@@ -116,8 +114,6 @@ export default {
   data() {
     return {
       timelineActivated: false,
-      timelinePosition: 0,
-      timelineProgress: 0,
       moveOnTimelineFunction: debounce((event) => {
         if (this.timelineActivated) {
           this.timelineDate = this.formatDate(this.getDateFromPosition(event));
@@ -138,6 +134,7 @@ export default {
       'timestamp',
       'visibleObservations',
       'modificationsTask',
+      'hasContext',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -158,6 +155,11 @@ export default {
       'setTimestamp',
       'setModificationsTask',
     ]),
+    dblClick() {
+      console.warn(`Old imestamp ${this.timestamp}`);
+      this.changeTimestamp(-1);
+      console.warn(`New timestamp ${this.timestamp}`);
+    },
     formatDate(date, isStartOrEnd = false) {
       if (date === null) {
         return '';
@@ -174,7 +176,6 @@ export default {
         return 0;
       }
       const position = (timestamp - this.scaleReference.start) * (timeline.clientWidth) / (this.scaleReference.end - this.scaleReference.start);
-      // console.log(`Return position ${position} from date ${timestamp} (${moment(timestamp).format('L')} ${moment(timestamp).format('HH:mm:ss:SSS')}) with total ${this.timelineWidth}`);
       return position;
     },
     moveOnTimeline(event) {
@@ -193,9 +194,7 @@ export default {
       } else if (date < this.scaleReference.start) {
         date = this.scaleReference.start;
       }
-      // console.log(`Return date ${date} (${moment(date).format('L')} ${moment(date).format('HH:mm:ss:SSS')}) from position ${x} with total ${this.timelineWidth}`);
       return date;
-      // this.timelinePosition = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
     },
     changeTimestamp(date) {
       if (date > this.scaleReference.end) {
@@ -249,6 +248,9 @@ export default {
     this.visibleTimestamp = this.timestamp;
     moment.locale(window.navigator.userLanguage || window.navigator.language);
   },
+  destroyed() {
+    clearInterval(this.playTimer);
+  },
 };
 </script>
 
@@ -274,6 +276,8 @@ export default {
     .ot-time
       width "calc(100% - %s)" % $timeline-player-width
       position relative
+      &.ot-time-full
+        left ($timeline-player-width / 2)
       .ot-date
         min-width $timeline-balls-size
         max-width $timeline-balls-size
