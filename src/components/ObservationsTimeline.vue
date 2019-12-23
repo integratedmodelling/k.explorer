@@ -6,9 +6,10 @@
     <div class="ot-player">
       <q-icon
         :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
-        :color="visibleEvents.length !== 0 ? 'mc-main' : 'grey-7'"
-        :class="{ 'cursor-pointer': visibleEvents.length !== 0 }"
-        @click.native="visibleEvents.length > 0 && run($event)"
+        :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
+        :class="{ 'cursor-pointer': timestamp < scaleReference.end }"
+        v-if="visibleEvents.length !== 0"
+        @click.native="timestamp < scaleReference.end > 0 && run($event)"
       ></q-icon>
     </div>
     <div class="ot-time row">
@@ -197,8 +198,13 @@ export default {
       // this.timelinePosition = (timestamp - this.scaleReference.start) * 100 / (this.scaleReference.end - this.scaleReference.start);
     },
     changeTimestamp(date) {
-      this.visibleTimestamp = date;
-      this.setTimestamp(date);
+      if (date > this.scaleReference.end) {
+        this.visibleTimestamp = this.scaleReference.end;
+        this.setTimestamp(this.scaleReference.end);
+      } else {
+        this.visibleTimestamp = date;
+        this.setTimestamp(date);
+      }
     },
     run() {
       if (this.playTimer !== null) {
@@ -211,11 +217,12 @@ export default {
         const day = 24 * 60 * 60 * 1000;
         this.playTimer = setInterval(() => {
           this.$nextTick(() => {
-            this.changeTimestamp(this.timestamp + (day));
-            if (this.timestamp > this.scaleReference.end) {
+            if (this.timestamp >= this.scaleReference.end) {
               clearInterval(this.playTimer);
               this.playTimer = null;
+              return;
             }
+            this.changeTimestamp(this.timestamp + (day));
           });
         }, 100);
       }
