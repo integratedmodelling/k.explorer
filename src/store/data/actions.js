@@ -242,6 +242,10 @@ export default {
     commit('SET_TIMESTAMP', timestamp);
   },
 
+  setScheduling: ({ commit }, scheduling) => {
+    commit('SET_SCHEDULING', scheduling);
+  },
+
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
     parentId,
     total,

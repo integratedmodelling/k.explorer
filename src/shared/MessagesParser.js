@@ -140,6 +140,14 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received input request', message.payload);
     dispatch('view/inputRequest', message, { root: true });
   },
+  [IN.TYPE_SCHEDULINGSTARTED]: ({ payload: scheduling }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling started', JSON.stringify(scheduling));
+    dispatch('data/setScheduling', scheduling, { root: true });
+  },
+  [IN.TYPE_SCHEDULINGFINISHED]: ({ payload: scheduling }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling finished', JSON.stringify(scheduling));
+    dispatch('data/setScheduling', scheduling, { root: true });
+  },
   // k.LAB log messages
   [IN.TYPE_DEBUG]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, message);

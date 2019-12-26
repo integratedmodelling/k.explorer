@@ -415,6 +415,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                         colors: cmcol,
                         labels: cmlab,
                         type: 'MODRAMP',
+                        ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
                       };
                     } else {
                       observation.colormap = colormap;

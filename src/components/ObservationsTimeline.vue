@@ -17,7 +17,7 @@
           class="ot-date ot-date-start col"
           :class="{ 'ot-date-loaded': loadedTime > 0 }"
           @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
-          @dblclick="onDblClick($event, dblClick)"
+          @dblclick="onDblClick($event, () => { changeTimestamp(-1); })"
         >
           <q-icon
             name="mdi-circle-medium"
@@ -155,11 +155,6 @@ export default {
       'setTimestamp',
       'setModificationsTask',
     ]),
-    dblClick() {
-      console.warn(`Old imestamp ${this.timestamp}`);
-      this.changeTimestamp(-1);
-      console.warn(`New timestamp ${this.timestamp}`);
-    },
     formatDate(date, isStartOrEnd = false) {
       if (date === null) {
         return '';
@@ -213,7 +208,13 @@ export default {
         if (this.timestamp === -1) {
           this.changeTimestamp(this.scaleReference.start);
         }
-        const day = 24 * 60 * 60 * 1000;
+        // const step = 24 * 60 * 60 * 1000;
+
+        // TODO check
+        const step = this.scaleReference.schedulingResolution || 24 * 60 * 60 * 1000;
+        const steps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
+        const interval = Math.max(60000 / steps, 100);
+        console.info(`Step: ${step}; Steps: ${steps}; Interval: ${interval}`);
         this.playTimer = setInterval(() => {
           this.$nextTick(() => {
             if (this.timestamp >= this.scaleReference.end) {
@@ -221,9 +222,9 @@ export default {
               this.playTimer = null;
               return;
             }
-            this.changeTimestamp(this.timestamp + (day));
+            this.changeTimestamp(this.timestamp + (step));
           });
-        }, 100);
+        }, interval);
       }
     },
   },

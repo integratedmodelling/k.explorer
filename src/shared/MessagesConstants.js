@@ -78,6 +78,8 @@ export const IN = Object.freeze({
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_USERINPUTREQUESTED: 'UserInputRequested',
   TYPE_USERPROJECTOPENED: 'UserProjectOpened',
+  TYPE_SCHEDULINGSTARTED: 'SchedulingStarted',
+  TYPE_SCHEDULINGFINISHED: 'SchedulingFinished',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -94,5 +96,6 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_SEARCHRESPONSE: 'SearchResponse',
   PAYLOAD_CLASS_SCALEREFERENCE: 'ScaleReference',
   PAYLOAD_CLASS_USERINPUTREQUEST: 'UserInputRequest',
+  PAYLOAD_CLASS_SCHEDULERNOTIFICATION: 'SchedulerNotification',
   PAYLOAD_CLASS_EMPTY: 'String',
 });

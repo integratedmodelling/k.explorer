@@ -114,6 +114,18 @@ export default {
     state.timestamp = timestamp;
   },
 
+  SET_SCHEDULING: (state, scheduling) => {
+    if (state.scaleReference !== null) {
+      if (scheduling.type === 'STARTED') {
+        state.scaleReference.schedulingType = 'STARTED';
+        state.scaleReference.schedulingResolution = scheduling.resolution;
+      } else {
+        state.scaleReference.schedulingType = 'FINISHED';
+      }
+    } else {
+      console.warn('Try to set scheduling but no scaleReference');
+    }
+  },
   /**
    * Add node to tree
    * @param node
