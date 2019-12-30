@@ -107,6 +107,7 @@ import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
 import { debounce } from 'quasar';
 import DoubleClickMixin from 'shared/DoubleClickMixin';
+import { TIMES, CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'ObservationsTimeline',
@@ -213,8 +214,8 @@ export default {
         // TODO check
         const step = this.scaleReference.schedulingResolution || 24 * 60 * 60 * 1000;
         const steps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
-        const interval = Math.max(60000 / steps, 100);
-        console.info(`Step: ${step}; Steps: ${steps}; Interval: ${interval}`);
+        // const interval = Math.max(60000 / steps, 100);
+        console.info(`Step: ${step}; Steps: ${steps}; Interval: ${this.interval}`);
         this.playTimer = setInterval(() => {
           this.$nextTick(() => {
             if (this.timestamp >= this.scaleReference.end) {
@@ -224,12 +225,28 @@ export default {
             }
             this.changeTimestamp(this.timestamp + (step));
           });
-        }, interval);
+        }, this.interval);
+      }
+    },
+    calculateInterval() {
+      if (this.scaleReference && this.scaleReference.schedulingResolution) {
+        // const step = this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP;
+        const steps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
+        const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth); // assume 1ms por px in Enrico computer
+        this.interval = timeToLoad;
+        if (this.interval * steps < TIMES.MIN_PLAY_TIME) {
+          this.interval = TIMES.MIN_PLAY_TIME / steps;
+        } else if (this.interval > TIMES.MAX_PLAY_TIME) {
+          this.interval = TIMES.MAX_PLAY_TIME / steps;
+        }
+      } else {
+        this.interval = TIMES.DEFAULT_INTERVAL;
       }
     },
   },
   watch: {
     modificationEvents(newValue) {
+      this.calculateInterval();
       if (newValue.length > 0) {
         this.loadedTime = newValue[newValue.length - 1].timestamp;
       }
@@ -248,6 +265,10 @@ export default {
     this.timelineDate = this.startTime;
     this.visibleTimestamp = this.timestamp;
     moment.locale(window.navigator.userLanguage || window.navigator.language);
+    this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.calculateInterval);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.calculateInterval);
   },
   destroyed() {
     clearInterval(this.playTimer);
