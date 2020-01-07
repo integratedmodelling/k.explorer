@@ -59,7 +59,7 @@
           </div>
           <div
             class="ot-loaded-time"
-            :style="{ width: `calc(${calculatePosition(loadedTime)}px + 4px)` }"
+            :style="{ width: `calc(${calculatePosition(loadedTime)}px + 6px)` }"
           ></div>
           <!--
           <div
@@ -126,6 +126,7 @@ export default {
       visibleTimestamp: -1,
       loadedTime: 0,
       playTimer: null,
+      interval: undefined,
     };
   },
   computed: {
@@ -209,44 +210,61 @@ export default {
         if (this.timestamp === -1) {
           this.changeTimestamp(this.scaleReference.start);
         }
-        // const step = 24 * 60 * 60 * 1000;
-
-        // TODO check
-        const step = this.scaleReference.schedulingResolution || 24 * 60 * 60 * 1000;
-        const steps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
-        // const interval = Math.max(60000 / steps, 100);
-        console.info(`Step: ${step}; Steps: ${steps}; Interval: ${this.interval}`);
+        let toLoad = this.timestamp + this.interval.buffer;
         this.playTimer = setInterval(() => {
+          // this.$nextTick(() => {
+          this.changeTimestamp(this.timestamp + (this.interval.step));
           this.$nextTick(() => {
             if (this.timestamp >= this.scaleReference.end) {
               clearInterval(this.playTimer);
               this.playTimer = null;
               return;
             }
-            this.changeTimestamp(this.timestamp + (step));
+            if (this.timestamp > toLoad - this.scaleReference.schedulingResolution && this.timestamp <= this.scaleReference.end) {
+              toLoad = this.timestamp + this.interval.buffer;
+              this.$eventBus.$emit(CUSTOM_EVENTS.NEED_LAYER_BUFFER, toLoad);
+            }
           });
-        }, this.interval);
+          // });
+        }, this.interval.interval);
+        this.$eventBus.$emit(CUSTOM_EVENTS.NEED_LAYER_BUFFER, toLoad);
       }
     },
     calculateInterval() {
       if (this.scaleReference && this.scaleReference.schedulingResolution) {
-        // const step = this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP;
+        const step = this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP;
         const steps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
         const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth); // assume 1ms por px in Enrico computer
-        this.interval = timeToLoad;
-        if (this.interval * steps < TIMES.MIN_PLAY_TIME) {
-          this.interval = TIMES.MIN_PLAY_TIME / steps;
-        } else if (this.interval > TIMES.MAX_PLAY_TIME) {
-          this.interval = TIMES.MAX_PLAY_TIME / steps;
+        const buffer = (this.scaleReference.end - this.scaleReference.start) / 4;
+        let interval = timeToLoad;
+        if (interval * steps < TIMES.MIN_PLAY_TIME) {
+          interval = TIMES.MIN_PLAY_TIME / steps;
+        } else if (interval > TIMES.MAX_PLAY_TIME) {
+          interval = TIMES.MAX_PLAY_TIME / steps;
         }
-      } else {
-        this.interval = TIMES.DEFAULT_INTERVAL;
+        this.interval = { step, steps, interval, buffer };
+        console.info(`Step: ${this.interval.step}; Steps: ${this.interval.steps}; Interval: ${this.interval.interval}; Buffer: ${this.interval.buffer}`);
+        /*
+        const step = this.scaleReference.schedulingResolution > TIMES.DEFAULT_STEP ? this.scaleReference.schedulingResolution / TIMES.DEFAULT_STEP : this.scaleReference.schedulingResolution;
+        const steps = (this.scaleReference.end - this.scaleReference.start) / step;
+        const realSteps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
+        const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth) * realSteps; // assume 1ms por px in Enrico computer
+        let interval = timeToLoad / steps;
+        if (interval * steps < TIMES.MIN_PLAY_TIME) {
+          interval = TIMES.MIN_PLAY_TIME / steps;
+        } else if (interval > TIMES.MAX_PLAY_TIME) {
+          interval = TIMES.MAX_PLAY_TIME / steps;
+        }
+        this.interval = { step, steps, interval };
+        */
       }
     },
   },
   watch: {
     modificationEvents(newValue) {
-      this.calculateInterval();
+      if (!this.interval) {
+        this.calculateInterval();
+      }
       if (newValue.length > 0) {
         this.loadedTime = newValue[newValue.length - 1].timestamp;
       }
@@ -383,11 +401,12 @@ export default {
           height $timeline-balls-size
           width 100%
           top 0
+          margin 0
           .ot-timeline-viewer
             height $timeline-viewer-size
             background-color $timeline-viewer-color
             border-radius 2px
-            width 100%
+            width calc(100% - 2px)
             position absolute
             top (($timeline-balls-size - $timeline-viewer-size) / 2)
             z-index 9000

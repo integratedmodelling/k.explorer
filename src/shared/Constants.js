@@ -511,6 +511,7 @@ export const CUSTOM_EVENTS = {
   SEND_REGION_OF_INTEREST: 'sendregionofinterest', // when scale is unlocked, we need to refresh region of interest
   NEED_HELP: 'needhelp',
   OBSERVATION_BY_TIME: 'observationbytime',
+  NEED_LAYER_BUFFER: 'needlayerbuffer',
 };
 
 export const SCALE_TYPE = {

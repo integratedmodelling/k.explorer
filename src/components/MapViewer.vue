@@ -62,7 +62,7 @@
 
 
 <script>
-/* eslint-disable object-shorthand,space-before-function-paren,no-unused-vars */
+/* eslint-disable no-underscore-dangle,object-shorthand,space-before-function-paren,no-unused-vars */
 
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
@@ -148,6 +148,7 @@ export default {
       uploadProgress: null,
       storedZoom: null,
       clicksOnMap: 0,
+      bufferingLayers: false,
     };
   },
   computed: {
@@ -161,6 +162,7 @@ export default {
       'session',
       'timestamp',
       'scaleReference',
+      'modificationEvents',
       'modificationEventsOfObservation',
     ]),
     ...mapGetters('view', [
@@ -299,7 +301,7 @@ export default {
       return -1;
     },
 
-    async findLayerById(observation, timestamp = -1) {
+    async findLayerById({ observation, timestamp = -1 }) {
       const founds = this.findExistingLayerById(observation.id);
       if (founds.length > 0) {
         const id = `${observation.id}T${timestamp}`;
@@ -331,6 +333,28 @@ export default {
           timeout: 3000,
         });
         return null;
+      }
+    },
+
+    bufferLayerImages(buffer) {
+      if (this.modificationEvents.length > 0 && !this.bufferingLayers) {
+        const ml = this.modificationEvents.length;
+        for (let i = 0; i < ml; i++) {
+          this.bufferingLayers = true;
+          if (this.modificationEvents[i].timestamp <= buffer) {
+            const observation = this.observations.find(obs => obs.id === this.modificationEvents[i].id);
+            if (observation) {
+              this.findLayerById({ observation, timestamp: this.modificationEvents[i].timestamp }).then(({ layer }) => {
+                if (layer.getSource().image_ && layer.getSource().image_.state === 0) {
+                  layer.getSource().image_.load();
+                }
+              });
+            }
+          } else {
+            break;
+          }
+        }
+        this.bufferingLayers = false;
       }
     },
 
@@ -375,7 +399,7 @@ export default {
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
-            this.findLayerById(observation, timestamp).then((layers) => {
+            this.findLayerById({ observation, timestamp }).then((layers) => {
               if (layers !== null) {
                 const { founds, layer } = layers;
                 layer.setOpacity(observation.layerOpacity);
@@ -578,6 +602,9 @@ export default {
     sendRegionOfInterestListener() {
       this.sendRegionOfInterest();
     },
+    imageBufferListener() {
+
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -752,11 +779,13 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.NEED_LAYER_BUFFER, this.bufferLayerImages);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$off(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$off(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.NEED_LAYER_BUFFER, this.bufferLayerImages);
   },
 };
 </script>
