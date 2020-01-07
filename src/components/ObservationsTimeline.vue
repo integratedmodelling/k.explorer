@@ -53,7 +53,7 @@
             v-for="(modification) in visibleEvents"
             :key="`${modification.id}-${modification.timestamp}`"
             class="ot-modification-container"
-            :style="{ left: `calc(${calculatePosition(modification.timestamp)}px)` }"
+            :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 1px)` }"
           >
             <div class="ot-modification"></div>
           </div>
@@ -172,7 +172,7 @@ export default {
       if (!timeline) {
         return 0;
       }
-      const position = (timestamp - this.scaleReference.start) * (timeline.clientWidth) / (this.scaleReference.end - this.scaleReference.start);
+      const position = Math.floor((timestamp - this.scaleReference.start) * (timeline.clientWidth) / (this.scaleReference.end - this.scaleReference.start));
       return position;
     },
     moveOnTimeline(event) {
@@ -213,7 +213,7 @@ export default {
         let toLoad = this.timestamp + this.interval.buffer;
         this.playTimer = setInterval(() => {
           // this.$nextTick(() => {
-          this.changeTimestamp(this.timestamp + (this.interval.step));
+          this.changeTimestamp(Math.floor(this.timestamp + this.interval.step));
           this.$nextTick(() => {
             if (this.timestamp >= this.scaleReference.end) {
               clearInterval(this.playTimer);
