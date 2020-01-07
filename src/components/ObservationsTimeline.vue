@@ -232,11 +232,16 @@ export default {
     },
     calculateInterval() {
       if (this.scaleReference && this.scaleReference.schedulingResolution) {
-        const step = this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP;
-        const steps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
+        let divider = 1;
+        const position = this.calculatePosition(this.scaleReference.start + this.scaleReference.schedulingResolution);
+        if (position > 1) {
+          divider = position;
+        }
+        const step = (this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP) / divider;
+        const steps = (this.scaleReference.end - this.scaleReference.start) / step;
         const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth); // assume 1ms por px in Enrico computer
         const buffer = (this.scaleReference.end - this.scaleReference.start) / 4;
-        let interval = timeToLoad;
+        let interval = timeToLoad / divider;
         if (interval * steps < TIMES.MIN_PLAY_TIME) {
           interval = TIMES.MIN_PLAY_TIME / steps;
         } else if (interval > TIMES.MAX_PLAY_TIME) {
@@ -244,19 +249,6 @@ export default {
         }
         this.interval = { step, steps, interval, buffer };
         console.info(`Step: ${this.interval.step}; Steps: ${this.interval.steps}; Interval: ${this.interval.interval}; Buffer: ${this.interval.buffer}`);
-        /*
-        const step = this.scaleReference.schedulingResolution > TIMES.DEFAULT_STEP ? this.scaleReference.schedulingResolution / TIMES.DEFAULT_STEP : this.scaleReference.schedulingResolution;
-        const steps = (this.scaleReference.end - this.scaleReference.start) / step;
-        const realSteps = (this.scaleReference.end - this.scaleReference.start) / this.scaleReference.schedulingResolution;
-        const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth) * realSteps; // assume 1ms por px in Enrico computer
-        let interval = timeToLoad / steps;
-        if (interval * steps < TIMES.MIN_PLAY_TIME) {
-          interval = TIMES.MIN_PLAY_TIME / steps;
-        } else if (interval > TIMES.MAX_PLAY_TIME) {
-          interval = TIMES.MAX_PLAY_TIME / steps;
-        }
-        this.interval = { step, steps, interval };
-        */
       }
     },
   },
