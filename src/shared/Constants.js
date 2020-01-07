@@ -511,11 +511,20 @@ export const CUSTOM_EVENTS = {
   SEND_REGION_OF_INTEREST: 'sendregionofinterest', // when scale is unlocked, we need to refresh region of interest
   NEED_HELP: 'needhelp',
   OBSERVATION_BY_TIME: 'observationbytime',
+  NEED_LAYER_BUFFER: 'needlayerbuffer',
 };
 
 export const SCALE_TYPE = {
   ST_SPACE: 'space',
   ST_TIME: 'time',
+};
+
+export const TIMES = {
+  DEFAULT_STEP: 24 * 60 * 60 * 1000,
+  DEFAULT_INTERVAL: 100,
+  PIXEL_TIME_MULTIPLIER: 1,
+  MIN_PLAY_TIME: 60 * 1000, // 1 minute
+  MAX_PLAY_TIME: 2 * 60 * 1000, // 2 minutes
 };
 
 export const SEARCH_MODES = {
@@ -560,6 +569,7 @@ export default {
   DATAFLOW_STATUS,
   CUSTOM_EVENTS,
   SCALE_TYPE,
+  TIMES,
   SETTING_NAMES,
   HELP_CONSTANTS,
 };

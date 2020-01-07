@@ -389,9 +389,9 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
               const reader = new FileReader();
               reader.readAsDataURL(response.data);
               reader.onload = () => {
+                // console.timeEnd('loading image');
                 const image = imageWrapper.getImage();
                 image.src = reader.result;
-                // console.timeEnd('loading image');
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 observation.tsImages.push(`T${timestamp}`);
                 store.dispatch('view/setLoadingLayers', { loading: false, observationId: observation.id });

@@ -151,4 +151,7 @@ export default {
         background-color #333
       &[open]
         border-bottom 1px solid #333
+
+    .dmc-timeline
+      padding 9px 8px 9px 0
 </style>

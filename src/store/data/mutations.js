@@ -37,6 +37,7 @@ export default {
     state.nextScale = null;
     state.crossingIDL = false;
     state.contextCustomLabel = null;
+    state.modificationEvents = [];
     state.timestamp = -1;
     if (context === null) {
       state.contextsHistory = [];
