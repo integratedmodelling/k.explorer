@@ -199,6 +199,11 @@ export default {
     margin 0 4%
 
   #klab-tree-pane
+    user-select none
+    -khtml-user-select none
+    -o-user-select none
+    -moz-user-select -moz-none
+    -webkit-user-select none
     details
       padding 6px 0 10px 10px
       background-color #7d7d7d

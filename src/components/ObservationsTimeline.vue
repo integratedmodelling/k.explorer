@@ -341,6 +341,11 @@ export default {
         font-weight 400
         letter-spacing 1px
         padding 0
+        user-select none
+        -khtml-user-select none
+        -o-user-select none
+        -moz-user-select -moz-none
+        -webkit-user-select none
       .ot-timeline-container
         .ot-timeline
           height $timeline-small-size

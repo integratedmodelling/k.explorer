@@ -390,11 +390,6 @@ export default {
       cursor move
       transition background-color 0.8s
     .q-card // no selection permitted
-      user-select: none;
-      -khtml-user-select: none;
-      -o-user-select: none;
-      -moz-user-select: -moz-none;
-      -webkit-user-select: none;
       overflow auto
       width $main-control-width
       transition width .5s
