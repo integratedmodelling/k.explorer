@@ -352,6 +352,8 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
     featureProjection: isRaster ? dataProjection : MAP_CONSTANTS.PROJ_EPSG_3857,
   });
 
+  const id = `${observation.id}T${timestamp}`;
+
   // check if the layer is a raster
   if (isRaster) {
     // z-index offset = 0, raster is down
@@ -444,7 +446,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
       },
     });
     return new ImageLayer({
-      id: `${observation.id}T${timestamp}`,
+      id,
       source,
     });
   }
@@ -465,11 +467,11 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
   const feature = new Feature({
     geometry,
     name: observation.label,
-    id: observation.id,
+    id,
   });
 
   const vectorLayer = new VectorLayer({
-    id: observation.id,
+    id,
     source: new SourceVector({
       features: [feature],
     }),
