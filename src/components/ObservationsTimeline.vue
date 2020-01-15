@@ -210,7 +210,7 @@ export default {
         if (this.timestamp === -1) {
           this.changeTimestamp(this.scaleReference.start);
         }
-        let toLoad = this.timestamp + this.interval.buffer;
+        let toLoad = { start: this.timestamp, stop: this.timestamp + this.interval.buffer };
         this.playTimer = setInterval(() => {
           // this.$nextTick(() => {
           this.changeTimestamp(Math.floor(this.timestamp + this.interval.step));
@@ -220,8 +220,9 @@ export default {
               this.playTimer = null;
               return;
             }
-            if (this.timestamp > toLoad - this.scaleReference.schedulingResolution && this.timestamp <= this.scaleReference.end) {
-              toLoad = this.timestamp + this.interval.buffer;
+            // console.warn(`Timestamp:${this.timestamp};toLoad.start:${toLoad.start};toLoad.stop:${toLoad.stop};LIMIT:${toLoad.stop - this.scaleReference.schedulingResolution};this.scaleReference.schedulingResolution:${this.scaleReference.schedulingResolution};this.scaleReference.end:${this.scaleReference.end}`);
+            if (this.timestamp > toLoad.stop - this.interval.step && this.timestamp <= this.scaleReference.end) {
+              toLoad = { start: this.timestamp, stop: this.timestamp + this.interval.buffer };
               this.$eventBus.$emit(CUSTOM_EVENTS.NEED_LAYER_BUFFER, toLoad);
             }
           });
