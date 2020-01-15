@@ -68,7 +68,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
-import { createMarker } from 'shared/Utils';
+import { createMarker, findDifference } from 'shared/Utils';
 import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -149,6 +149,7 @@ export default {
       storedZoom: null,
       clicksOnMap: 0,
       bufferingLayers: false,
+      lastModificationLoaded: null,
     };
   },
   computed: {
@@ -283,7 +284,7 @@ export default {
     findModificationTimestamp(observationId, timestamp) {
       if (timestamp !== -1) {
         // find the fist step of this observation
-        const modifications = this.modificationEventsOfObservation(observationId);
+        const modifications = observationId === null ? this.modificationEvents : this.modificationEventsOfObservation(observationId);
         if (modifications.length > 0) {
           return modifications.reduce((result, me) => {
             const diff = timestamp - me.timestamp;
@@ -337,24 +338,31 @@ export default {
     },
 
     bufferLayerImages(buffer) {
-      if (this.modificationEvents.length > 0 && !this.bufferingLayers) {
-        const ml = this.modificationEvents.length;
-        for (let i = 0; i < ml; i++) {
-          this.bufferingLayers = true;
-          if (this.modificationEvents[i].timestamp <= buffer) {
-            const observation = this.observations.find(obs => obs.id === this.modificationEvents[i].id);
-            if (observation) {
-              this.findLayerById({ observation, timestamp: this.modificationEvents[i].timestamp }).then(({ layer }) => {
-                if (layer.getSource().image_ && layer.getSource().image_.state === 0) {
-                  layer.getSource().image_.load();
-                }
-              });
-            }
-          } else {
-            break;
+      console.debug(`Ask preload from ${buffer.start} to ${buffer.stop}`);
+      const modifications = this.modificationEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
+      const mtll = modifications.length;
+      if (mtll > 0) {
+        const loadImage = (index) => {
+          // if (modifications[index].timestamp <= buffer) {
+          const observation = this.observations.find(obs => obs.id === modifications[index].id);
+          if (observation) {
+            this.findLayerById({ observation, timestamp: modifications[index].timestamp }).then(({ layer }) => {
+              const image = layer.getSource().image_;
+              if (image && image.state === 0) {
+                image.load();
+                layer.getSource().on('imageloadend', ({ image: loadedImage }) => {
+                  if (++index < mtll) {
+                    loadImage(index);
+                  }
+                });
+              } else if (++index < mtll) {
+                loadImage(index);
+              }
+            });
           }
-        }
-        this.bufferingLayers = false;
+          // }
+        };
+        loadImage(0);
       }
     },
 
@@ -456,7 +464,7 @@ export default {
                     founds.forEach((f) => { f.setVisible(false); });
                   }
                 } else {
-                  console.log(`No multiple layer for observation ${observation.id}, refreshing`);
+                  console.debug(`No multiple layer for observation ${observation.id}, refreshing`);
                   layer.setVisible(observation.visible);
                 }
               }
@@ -615,13 +623,62 @@ export default {
       this.movedWithContext = false;
     },
     observations: {
-      handler() {
+      handler(/* newValue, oldValue */) {
+        /*
+        let redraw = false;
+        if (newValue.length !== 0 && newValue.length === oldValue.length) {
+          const check = function(objectA, objectB) {
+            // Create arrays of property names
+            const differences = [];
+            const a = objectA;
+            const b = objectB;
+            const aProps = Object.getOwnPropertyNames(a);
+
+            for (let i = 0; i < aProps.length; i++) {
+              if (aProps[i] !== '__ob__') {
+                const propName = aProps[i];
+
+                // If values of same property are not equal,
+                // objects are not equivalent
+                if (a[propName]) {
+                  if (typeof a[propName] === 'object') {
+                    differences.push(...check(a[propName], b[propName]));
+                  } else if (a[propName] !== b[propName]) {
+                    differences.push(propName);
+                  }
+                }
+              }
+            }
+
+
+            // If we made it this far, objects
+            // are considered equivalent
+            return differences;
+          };
+          const nvl = newValue.length;
+          for (let i = 0; i < nvl; i++) {
+            const diff = check(newValue[i], oldValue[i]);
+            if (diff.length > 0) {
+              console.warn('Observation changes: new/old');
+              console.dir(diff);
+              redraw = true;
+            }
+          }
+        }
+        if (redraw) {
+          this.drawObservations();
+        }
+        */
         this.drawObservations();
       },
       deep: true,
     },
-    timestamp() {
-      this.drawObservations();
+    timestamp(newValue) {
+      const modificationTimestamp = this.findModificationTimestamp(null, newValue);
+      if (modificationTimestamp !== this.lastModificationLoaded) {
+        this.lastModificationLoaded = modificationTimestamp;
+        this.drawObservations();
+      }
     },
     center() {
       this.view.setCenter(this.center);

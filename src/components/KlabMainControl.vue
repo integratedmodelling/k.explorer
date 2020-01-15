@@ -327,9 +327,11 @@ export default {
     },
   },
   watch: {
+    /*
     paletteOpen() {
       console.log(`Palette open: ${this.paletteOpen}`);
     },
+    */
     hasContext() {
       this.setLargeMode(0); // reset large mode
       this.$nextTick(() => {

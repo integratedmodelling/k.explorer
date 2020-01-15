@@ -398,7 +398,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                 observation.tsImages.push(`T${timestamp}`);
                 store.dispatch('view/setLoadingLayers', { loading: false, observationId: observation.id });
                 // load colormap if necesary
-                getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP' } }, (colormapResponse, colormapCallback) => {
+                getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP', ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
                     const colormap = colormapResponse.data;
                     if (colormap.type === 'RAMP' && colormap.colors.length > 1 && colormap.colors.length < 256) {
@@ -417,7 +417,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                         colors: cmcol,
                         labels: cmlab,
                         type: 'MODRAMP',
-                        ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+                        // ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
                       };
                     } else {
                       observation.colormap = colormap;
