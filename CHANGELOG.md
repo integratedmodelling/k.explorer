@@ -6,11 +6,18 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
-## 10.0.0 - 2020-01-14
+## 10.0.0 - 2020-01-15
 ## Added
-- Time implementation
+- Time implementation:
+  - click on timeline, show observation at this time
+  - click on left/right corner go to start/end time
+  - double click on left corner go to time -1
+  - click on play, start running time
+- Time viewer on bottom left corner
 ### Improvements
 - Partial label on search bar showing things (f.e. when a shape is being loaded)
+- If main tree has some observation visible, the detail pane not close
+- Text in log pane is selectable
 ### Solve
 - Nested folder of primary tree are not shows
 
