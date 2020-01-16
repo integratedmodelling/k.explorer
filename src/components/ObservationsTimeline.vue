@@ -99,6 +99,11 @@
         <div class="ot-date-text" v-show="visibleEvents.length === 0">{{ endDate }}</div>
       </div>
     </div>
+    <div
+      class="ot-now"
+      :class="{ 'ot-hidden': visibleEvents.length === 0, 'ot-active': visibleEvents.length > 0, 'ot-running': playTimer !== null }"
+      v-html="formatDate(timestamp, false, true)"
+    ></div>
   </div>
 </template>
 
@@ -157,7 +162,7 @@ export default {
       'setTimestamp',
       'setModificationsTask',
     ]),
-    formatDate(date, isStartOrEnd = false) {
+    formatDate(date, isStartOrEnd = false, oneLine = false) {
       if (date === null) {
         return '';
       }
@@ -165,7 +170,7 @@ export default {
       if (isStartOrEnd) {
         return momentDate.format('DD MMM YYYY');
       }
-      return `<div class="ot-date-tooltip-content">${momentDate.format('L')}<br />${momentDate.format('HH:mm:ss:SSS')}</div>`;
+      return `<div class="ot-date-tooltip-content">${momentDate.format('L')}${oneLine ? ' - ' : '<br />'}${momentDate.format('HH:mm:ss:SSS')}</div>`;
     },
     calculatePosition(timestamp) {
       const timeline = this.$refs['ot-timeline-container'];
@@ -269,6 +274,12 @@ export default {
           this.loadedTime = this.scaleReference.end;
           this.setModificationsTask(null);
         }
+      }
+    },
+    visibleEvents() {
+      if (this.visibleEvents.length === 0 && this.playTimer !== null) {
+        clearInterval(this.playTimer);
+        this.playTimer = null;
       }
     },
   },
@@ -417,4 +428,29 @@ export default {
     width 100px
     .ot-date-tooltip-content
       text-align center
+  .ot-now
+    transition opacity .3s ease-in-out
+    opacity 0.5
+    font-size 12px
+    line-height 24px
+    vertical-align middle
+    text-align center
+    color rgba(50, 50, 50, 0.8)
+    background-color rgba(255, 255, 255, .8)
+    border-top 1px solid rgb(255, 255, 255)
+    border-right 1px solid rgb(255, 255, 255)
+    border-top-right-radius 4px
+    width 160px
+    height 24px
+    position fixed
+    bottom 0
+    left 0 // calc(50% - 90px)
+    &.ot-hidden
+      opacity 0
+    &.ot-active
+      opacity 1
+    &.ot-running
+      background-color alpha($main-control-cyan, .7)
+      border-top 1px solid $main-control-cyan
+      border-right 1px solid $main-control-cyan
 </style>
