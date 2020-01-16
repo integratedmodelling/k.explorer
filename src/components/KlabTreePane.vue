@@ -19,7 +19,7 @@
             :style="{ 'max-height': userTreeMaxHeight ? `${userTreeMaxHeight}px` : false }"
           >
           </klab-tree>
-          <details id="kt-tree-details" :open="taskOfContextIsAlive" v-show="treeHasVisibleNodes">
+          <details id="kt-tree-details" :open="taskOfContextIsAlive || mainTreeHasNodes(true) || detailsOpen" v-show="mainTreeHasNodes()">
             <summary>
               <q-icon name="mdi-dots-horizontal" id="ktp-main-tree-arrow">
                 <q-tooltip
@@ -87,7 +87,7 @@ export default {
       'userTree',
       'treeNode',
       'hasTree',
-      'treeHasVisibleNodes',
+      'mainTreeHasNodes',
       'hasContext',
     ]),
     ...mapGetters('stomp', [
@@ -131,7 +131,7 @@ export default {
     },
     recalculateTreeHeight() {
       this.$nextTick(() => {
-        this.userTreeMaxHeight = this.treeHasVisibleNodes ? this.outContainerHeight / 2 : this.outContainerHeight;
+        this.userTreeMaxHeight = this.mainTreeHasNodes() ? this.outContainerHeight / 2 : this.outContainerHeight;
         const userTreeEL = document.getElementById('kt-user-tree');
         if (userTreeEL && this.outContainerHeight) {
           this.userTreeHeight = height(userTreeEL);
