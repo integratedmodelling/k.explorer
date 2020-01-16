@@ -14,12 +14,12 @@ export default {
 
   hasTree: state => state.tree.length > 0,
 
-  treeHasVisibleNodes: state => findNode(state.tree, '', (node) => {
-    if (!node.userNode) {
-      return true;
+  mainTreeHasNodes: state => (visible = false) => findNode(state.tree, '', (node) => {
+    if (!node.userNode && (!visible || node.ticked)) {
+      return node;
     }
     return null;
-  }),
+  }) !== null,
 
   userTree: state => state.userTree,
 

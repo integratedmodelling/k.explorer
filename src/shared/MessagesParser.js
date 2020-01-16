@@ -121,7 +121,7 @@ const PARSERS = {
     }
   },
   [IN.TYPE_MODIFIEDOBSERVATION]: ({ payload: modificationEvent }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Received a modification event');
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Received a modification event: ${JSON.stringify(modificationEvent, null, 2)}`);
     dispatch('data/addModificationEvent', modificationEvent, { root: true });
   },
   [IN.TYPE_QUERYRESULT]: ({ payload: results }, { dispatch }) => {
@@ -163,6 +163,9 @@ const PARSERS = {
   },
   [IN.TYPE_USERPROJECTOPENED]: (context, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project opened in k.Modeler');
+  },
+  [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Network status received: ${JSON.stringify(message, null, 4)}`);
   },
 };
 
