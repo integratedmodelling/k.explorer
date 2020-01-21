@@ -541,9 +541,8 @@ export default {
             if (!this.askingForChildren) {
               if (selectedNode.childrenLoaded < selectedNode.childrenCount) {
                 this.askingForChildren = true;
-                const node = this.lasts.find(l => l.parentId === selectedNode.id);
                 this.askForChildren({
-                  parentId: node.parentId,
+                  parentId: selectedNode.id,
                   offset: selectedNode.childrenLoaded,
                   count: -1,
                   toTree: false,
