@@ -188,37 +188,7 @@ export default {
         // if there are children, we put a STUB to force the arrow
         if (observation.childrenCount > 0 && observation.children.length === 0) { // we have children to ask, create a STUB
           const { node } = originalNode;
-          commit('ADD_NODE', {
-            node: {
-              ...node,
-              id: `STUB-${node.id}`,
-              observable: '',
-              label: '',
-              children: [],
-              childrenCount: 0,
-              childrenLoaded: 0,
-              siblingsCount: node.childrenCount,
-              parentArtifactId: node.id,
-              tickable: false,
-              disabled: true,
-              empty: true,
-              actions: {},
-              header: 'stub',
-              main: false,
-              isContainer: false,
-              exportFormats: {},
-              observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
-              noTick: true,
-              parentId: node.id,
-            },
-            parentId: node.id,
-          });
-          commit('ADD_LAST', {
-            parentId: node.id,
-            observationId: `STUB-${node.id}`,
-            offsetToAdd: 0,
-            total: node.childrenCount,
-          });
+          dispatch('addStub', node);
         }
       }
       dispatch('view/setReloadReport', true, { root: true });
@@ -226,6 +196,40 @@ export default {
     });
     return null;
   }),
+
+  addStub: ({ commit }, node) => {
+    commit('ADD_NODE', {
+      node: {
+        ...node,
+        id: `STUB-${node.id}`,
+        observable: '',
+        label: '',
+        children: [],
+        childrenCount: 0,
+        childrenLoaded: 0,
+        siblingsCount: node.childrenCount,
+        parentArtifactId: node.id,
+        tickable: false,
+        disabled: true,
+        empty: true,
+        actions: {},
+        header: 'stub',
+        main: false,
+        isContainer: false,
+        exportFormats: {},
+        observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
+        noTick: true,
+        parentId: node.id,
+      },
+      parentId: node.id,
+    });
+    commit('ADD_LAST', {
+      parentId: node.id,
+      observationId: `STUB-${node.id}`,
+      offsetToAdd: 0,
+      total: node.childrenCount,
+    });
+  },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
     commit('ADD_MODIFICATION_EVENT', modificationEvent);
@@ -305,7 +309,7 @@ export default {
   /**
    * If we load children but we don't add to tree, we use the loaded observation to create the nodes
    */
-  addChildrenToTree({ commit, state }, {
+  addChildrenToTree({ dispatch, commit, state }, {
     parent,
     count = state.childrenToAskFor,
   }) {
@@ -315,7 +319,12 @@ export default {
       const offset = parent.children.length;
       for (let i = offset, n = 0; i < total && n < count; i++, n++) {
         const child = parentObservations[i];
-        commit('ADD_NODE', getNodeFromObservation(child));
+        const originalNode = getNodeFromObservation(child);
+        commit('ADD_NODE', originalNode);
+        // if there are children, we put a STUB to force the arrow
+        if (child.childrenCount > 0 && child.children.length === 0) { // we have children to ask, create a STUB
+          dispatch('addStub', originalNode.node);
+        }
         if (n === count - 1 || i === total - 1) {
           commit('ADD_LAST', {
             parentId: parent.id,
