@@ -99,11 +99,14 @@
         <div class="ot-date-text" v-show="visibleEvents.length === 0">{{ endDate }}</div>
       </div>
     </div>
-    <div
-      class="ot-now"
-      :class="{ 'ot-hidden': visibleEvents.length === 0, 'ot-active': visibleEvents.length > 0, 'ot-running': playTimer !== null }"
-      v-html="formatDate(timestamp, false, true)"
-    ></div>
+    <transition name="fade">
+      <div
+        class="ot-now"
+        v-show="visibleEvents.length > 0"
+        :class="{ 'ot-active': visibleEvents.length > 0, 'ot-running': playTimer !== null }"
+        v-html="formatDate(timestamp, false, true)"
+      ></div>
+    </transition>
   </div>
 </template>
 
@@ -429,8 +432,6 @@ export default {
     .ot-date-tooltip-content
       text-align center
   .ot-now
-    transition opacity .3s ease-in-out
-    opacity 0.5
     font-size 12px
     line-height 24px
     vertical-align middle
@@ -445,12 +446,15 @@ export default {
     position fixed
     bottom 0
     left 0 // calc(50% - 90px)
-    &.ot-hidden
-      opacity 0
-    &.ot-active
-      opacity 1
     &.ot-running
       background-color alpha($main-control-cyan, .7)
       border-top 1px solid $main-control-cyan
       border-right 1px solid $main-control-cyan
+
+  .fade-enter-active, .fade-leave-active
+    transition opacity .3s
+
+  .fade-enter, .fade-leave-to
+    opacity: 0
+
 </style>
