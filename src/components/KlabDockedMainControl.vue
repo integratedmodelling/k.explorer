@@ -9,7 +9,6 @@
       ref="klab-search-bar-docked"
       v-draggable="dragMCConfig"
     ></klab-search-bar>
-    <observations-timeline class="dmc-timeline" v-if="contextHasTime"></observations-timeline>
     <div
       id="dmc-tree"
       class="q-card-main full-height"
@@ -17,6 +16,7 @@
     >
       <klab-tree-pane></klab-tree-pane>
     </div>
+    <observations-timeline class="dmc-timeline" v-if="contextHasTime"></observations-timeline>
   </div>
 </template>
 
@@ -105,12 +105,11 @@ export default {
 <style lang="stylus">
   @import '~variables'
   #dmc-container
+    &.full-height
+      height "calc(100% -  %s)" % ($docked-search-height + $docked-timeline-height) !important
     #kt-out-container
       height 100%
       position relative
-      max-height "calc(100% - %s)" % $docked-padding
-    &.dmc-large-mode.full-height
-      height "calc(100% -  %s)" % ($docked-search-height + $docked-timeline-height) !important
     #dmc-tree
       // not selectable
       user-select none
@@ -153,5 +152,9 @@ export default {
         border-bottom 1px solid #333
 
     .dmc-timeline
+      width calc(512px - 240px)
+      // background-color
       padding 9px 8px 9px 0
+      //position absolute
+      //bottom 0
 </style>

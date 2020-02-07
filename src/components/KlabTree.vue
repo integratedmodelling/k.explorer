@@ -139,7 +139,7 @@
         </template>
       </q-list>
     </q-context-menu>
-
+    <q-resize-observable @resize="$emit('resized')"></q-resize-observable>
   </div>
 </template>
 

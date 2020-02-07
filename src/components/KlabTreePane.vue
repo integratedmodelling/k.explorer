@@ -11,14 +11,17 @@
             'with-splitter': hasObservationInfo,
           }">
           <q-resize-observable @resize="outContainerResized"></q-resize-observable>
-          <klab-tree
-            ref="kt-user-tree"
-            id="kt-user-tree"
-            :tree="userTree"
-            :is-user="true"
-            :style="{ 'max-height': userTreeMaxHeight ? `${userTreeMaxHeight}px` : false }"
-          >
-          </klab-tree>
+          <template>
+            <klab-tree
+              ref="kt-user-tree"
+              id="kt-user-tree"
+              :tree="userTree"
+              :is-user="true"
+              :style="{ 'max-height': userTreeMaxHeight ? `${userTreeMaxHeight}px` : false }"
+              @resized="recalculateTreeHeight"
+            >
+            </klab-tree>
+          </template>
           <details id="kt-tree-details" :open="taskOfContextIsAlive || mainTreeHasNodes(true) || detailsOpen" v-show="mainTreeHasNodes()">
             <summary>
               <q-icon name="mdi-dots-horizontal" id="ktp-main-tree-arrow">
@@ -35,6 +38,7 @@
               :tree="tree"
               :is-user="false"
               :style="{ 'max-height': treeHeight ? `${treeHeight}px` : false }"
+              @resized="recalculateTreeHeight"
             >
             </klab-tree>
           </details>
@@ -122,10 +126,9 @@ export default {
     },
     outContainerResized() {
       if (this.isDocked) { // we're docked
-        this.outContainerHeight = height(document.getElementById('dmc-tree')) - 24; // removed the detail size
+        this.outContainerHeight = height(document.getElementById('dmc-tree')) + 24; // removed the detail size
       } else if (this.$refs['kt-out-container']) {
         this.outContainerHeight = Number.parseFloat(window.getComputedStyle(this.$refs['kt-out-container'], null).getPropertyValue('max-height'));
-        this.recalculateTreeHeight();
       }
       this.recalculateTreeHeight();
     },
@@ -135,7 +138,7 @@ export default {
         const userTreeEL = document.getElementById('kt-user-tree');
         if (userTreeEL && this.outContainerHeight) {
           this.userTreeHeight = height(userTreeEL);
-          this.treeHeight = this.outContainerHeight - this.userTreeHeight - 20;
+          this.treeHeight = this.outContainerHeight - this.userTreeHeight; // - 20;
         }
       });
     },
