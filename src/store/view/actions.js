@@ -336,4 +336,8 @@ export default {
   setLargeMode: ({ commit }, largeMode) => {
     commit('SET_LARGE_MODE', largeMode);
   },
+
+  setTimeRunning: ({ commit }, timeRunning) => {
+    commit('SET_TIME_RUNNING', timeRunning);
+  },
 };

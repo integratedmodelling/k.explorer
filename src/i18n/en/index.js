@@ -87,6 +87,7 @@ export default {
     rememberDecision: 'Don\'t show again',
     titleCommentResource: 'Comment on resource',
     sendComment: 'Send',
+    noTimeSet: 'Initial state',
   },
   messages: {
     connectionClosed: 'Connection closed',

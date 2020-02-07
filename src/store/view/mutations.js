@@ -330,4 +330,8 @@ export default {
     }
     state.largeMode = largeMode;
   },
+
+  SET_TIME_RUNNING: (state, timeRunning) => {
+    state.timeRunning = timeRunning;
+  },
 };
