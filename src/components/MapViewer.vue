@@ -858,7 +858,7 @@ export default {
       margin 0
       border 1px solid #999
       border-radius 4px
-      background-color rgba(119,119,119,0.5)
+      background-color $main-control-grey-alpha
       color white
   .map-selection-marker
     font-size 28px
