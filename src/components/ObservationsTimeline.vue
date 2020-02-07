@@ -1,5 +1,5 @@
 <template>
-  <div class="ot-wrapper" :class="{ 'ot-no-timestamp': timestamp === -1 }">
+  <div class="ot-wrapper" :class="{ 'ot-no-timestamp': modificationEvents.length === 0 || timestamp === -1 }">
     <div
       class="ot-container"
       :class="{ 'ot-active-timeline': visibleEvents.length > 0, 'ot-docked': isMainControlDocked,  }"
@@ -9,14 +9,14 @@
           :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
           :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
           :class="{ 'cursor-pointer': timestamp < scaleReference.end }"
-          @click.native="timestamp < scaleReference.end > 0 && run($event)"
+          @click.native="timestamp < scaleReference.end && run($event)"
         ></q-icon>
       </div>
       <div class="ot-time row" :class="{ 'ot-time-full': visibleEvents.length === 0 }">
         <div class="ot-date-container">
           <div
             class="ot-date ot-date-start col"
-            :class="{ 'ot-date-loaded': loadedTime > 0 }"
+            :class="{ 'ot-with-modifications': modificationEvents.length !== 0 ,'ot-date-loaded': loadedTime > 0 }"
             @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
             @dblclick="onDblClick($event, () => { changeTimestamp(-1); })"
           >
@@ -27,6 +27,7 @@
               color="mc-main"
             ></q-icon>
             <q-tooltip
+              v-if="modificationEvents.length !== 0"
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
@@ -43,6 +44,7 @@
         >
           <div
             class="ot-timeline"
+            :class="{ 'ot-with-modifications': modificationEvents.length !== 0 }"
             ref="ot-timeline"
             @mousemove="moveOnTimeline"
             @mouseenter="timelineActivated = true"
@@ -76,6 +78,7 @@
             </div>
 
             <q-tooltip
+              v-if="modificationEvents.length !== 0"
               :offset="[0, 15]"
               self="top middle"
               anchor="bottom middle"
@@ -91,6 +94,7 @@
             @click.self="changeTimestamp(scaleReference.end)"
             :class="{ 'ot-date-loaded': loadedTime === scaleReference.end }"
           ><q-tooltip
+            v-if="modificationEvents.length !== 0"
             :offset="[0, 8]"
             self="top middle"
             anchor="bottom middle"
@@ -207,6 +211,9 @@ export default {
       return date;
     },
     changeTimestamp(date) {
+      if (this.modificationEvents.length === 0) {
+        return;
+      }
       if (date > this.scaleReference.end) {
         this.visibleTimestamp = this.scaleReference.end;
         this.setTimestamp(this.scaleReference.end);
@@ -327,7 +334,7 @@ export default {
   $timeline-viewer-color = #666
   .ot-wrapper
     width 100%
-    &.ot-no-timestamp .ot-container
+    &.ot-no-timestamp .ot-container.ot-docked
       width calc(100% - 5px)
       // padding: 0 "calc(50% - %s / 2)" % ($leftmenu-content-width - $timestampViewerWidth);
     &:not(.ot-no-timestamp) .ot-container.ot-docked
@@ -357,8 +364,10 @@ export default {
         vertical-align middle
         background-color $timeline-empty-color
         border-radius ($timeline-balls-size / 2)
-        cursor pointer
         position relative
+        cursor default
+        &.ot-with-modifications
+          cursor pointer
         &.ot-date-loaded
           background-color $timeline-loaded-color
         &.ot-date-fill
@@ -390,9 +399,10 @@ export default {
           background-color $timeline-empty-color
           position relative
           top ($timeline-balls-size / 2) - ($timeline-small-size / 2)
-          cursor pointer
           margin 0 -2px
           padding 0 2px
+          &.ot-with-modifications
+            cursor pointer
           .ot-modification-container
             z-index 10000
             width $timeline-balls-size * 2
