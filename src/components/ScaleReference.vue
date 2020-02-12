@@ -81,7 +81,6 @@ export default {
   computed: {
     ...mapGetters('data', [
       'scaleReference',
-      // 'timeReference',
       'isScaleLocked',
       'nextScale',
     ]),
@@ -201,6 +200,7 @@ export default {
         margin-left calc(50% - 10px)
   .modal-scroll
     overflow hidden
+    max-height 600px
   /*
   &:hover
     background-color #fff

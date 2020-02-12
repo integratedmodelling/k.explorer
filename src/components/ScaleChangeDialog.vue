@@ -9,24 +9,107 @@
     @show="initValues"
   >
     <div slot="body">
-      <q-input
-        v-model="resolution"
-        type="number"
-        min="0"
-        color="info"
-        autofocus
-        :after="[{
-            icon: 'warning',
-            error: true,
-            condition: resolutionError,
-        }]"
-        :stack-label="resolutionError ? $t('messages.changeScaleResolutionError') : $t('label.resolutionLabel')"></q-input>
+      <template v-if="scaleEditingType === SCALE_TYPE.ST_SPACE">
+        <q-input
+          v-model="resolution"
+          type="number"
+          min="0"
+          color="info"
+          autofocus
+          :after="[{
+              icon: 'warning',
+              error: true,
+              condition: resolutionError,
+          }]"
+          :stack-label="resolutionError ? $t('messages.changeScaleResolutionError') : $t('label.resolutionLabel')"></q-input>
+      </template>
       <q-select
         :float-label="$t('label.unitLabel')"
         v-model="unit"
         color="info"
-        :options="units"
+        :options="typedUnits(scaleEditingType)"
+        @input="scaleEditingType === SCALE_TYPE.ST_TIME && calculateEnd()"
       ></q-select>
+      <template v-if="scaleEditingType === SCALE_TYPE.ST_TIME">
+        <div>
+          <q-input
+            v-if="unit === SCALE_VALUES.CENTURY"
+            :float-label="$t('label.unitCentury')"
+            v-model="unitInputs.century"
+            type="number"
+            min="1"
+            color="info"
+            @input="setStartDate()"
+            autofocus
+          >
+          </q-input>
+          <q-select
+            :float-label="$t('label.unitMonth')"
+            v-if="unit === SCALE_VALUES.MONTH"
+            v-model="unitInputs.month"
+            type="number"
+            min="0"
+            color="info"
+            @input="setStartDate()"
+            :options="monthOptions"
+            autofocus
+          >
+          </q-select>
+          <q-input
+            v-if="unit === SCALE_VALUES.WEEK"
+            :float-label="$t('label.unitWeek')"
+            v-model="unitInputs.week"
+            type="number"
+            min="1"
+            max="53"
+            color="info"
+            :after="[{
+              icon: 'warning',
+              error: true,
+              condition: unitInputs.week > 53,
+            }]"
+            @input="setStartDate($event)"
+            autofocus
+          >
+          </q-input>
+          <q-input
+            v-if="unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.DECADE || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
+            :float-label="$t('label.unitYear')"
+            v-model="unitInputs.year"
+            type="number"
+            min="0"
+            color="info"
+            @input="setStartDate()"
+            autofocus
+          >
+          </q-input>
+        </div>
+        <q-datetime
+          color="info"
+          :float-label="$t('label.labelTimeStart')"
+          v-model="timeStart"
+          :format="getFormat()"
+          :type="unit === SCALE_VALUES.HOUR || unit === SCALE_VALUES.MINUTE || unit === SCALE_VALUES.SECOND ? 'datetime' : 'date'"
+          minimal
+          format24h
+          @input="calculateEnd"
+        ></q-datetime>
+        <q-datetime
+          color="info"
+          :float-label="$t('label.labelTimeEnd')"
+          v-model="timeEnd"
+          :format="getFormat()"
+          :type="unit === SCALE_VALUES.HOUR || unit === SCALE_VALUES.MINUTE || unit === SCALE_VALUES.SECOND ? 'datetime' : 'date'"
+          minimal
+          format24h
+          @input="checkEnd"
+          :after="[{
+            icon: 'warning',
+            error: true,
+            condition: resolutionError,
+          }]"
+        ></q-datetime>
+      </template>
     </div>
 
     <template slot="buttons" slot-scope="props">
@@ -38,30 +121,32 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { SCALE_TYPE } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES, SCALE_UNITS } from 'shared/Constants';
 
 export default {
   name: 'ScaleChangeDialog',
   data() {
     return {
-      resolution: null,
-      oldResolution: null,
+      resolution: null, // only aplicable to space
+      timeResolutionMultiplier: 1, // only aplicable to time
+      timeStart: null, // only aplicable to time
+      timeEnd: null, // only aplicable to time
+      timeEndMod: false,
       unit: null,
-      units: [
-        {
-          label: this.$t('label.labelCm'),
-          value: 'cm',
-        }, {
-          label: this.$t('label.labelM'),
-          value: 'm',
-        }, {
-          label: this.$t('label.labelKm'),
-          value: 'km',
-        },
-      ],
+      units: SCALE_UNITS,
       resolutionError: false,
       SCALE_TYPE,
+      SCALE_VALUES,
+      unitInputs: {
+        century: null,
+        // decade: null,
+        year: null,
+        month: null,
+        week: null,
+      },
+      monthOptions: [],
     };
   },
   computed: {
@@ -82,6 +167,12 @@ export default {
         this.$store.dispatch('view/setScaleEditing', { active, type: this.scaleEditingType });
       },
     },
+    typedUnits() {
+      return type => this.units.filter(u => u.type === type && u.selectable).map(u => ({
+        ...u,
+        label: this.$t(`label.${u.i18nlabel}`),
+      }));
+    },
   },
   methods: {
     ...mapActions('data', [
@@ -89,8 +180,9 @@ export default {
       'setNextScale',
     ]),
     choose(okFn) {
-      console.info(`Resolution: ${this.resolution} and unit: ${this.unit}`);
-      if (this.resolution === '' || this.resolution <= 0) {
+      if (this.scaleEditingType === SCALE_TYPE.ST_SPACE && (this.this.resolution === '' || this.resolution <= 0)) {
+        this.resolutionError = true;
+      } else if (this.scaleEditingType === SCALE_TYPE.ST_TIME && !this.checkEnd) {
         this.resolutionError = true;
       } else {
         okFn();
@@ -104,40 +196,150 @@ export default {
                 && this.unit === this.nextScale.spaceUnit))))
           || (this.scaleEditingType === SCALE_TYPE.ST_TIME
             && ((this.nextScale === null && (
-              this.resolution === this.scaleReference.timeResolution
-              && this.unit === this.scaleReference.timeUnit))
+              this.timeResolutionMultiplier === this.scaleReference.timeResolutionMultiplier
+              && this.unit === this.scaleReference.timeUnit
+              && this.timeStart === this.scaleReference.start
+              && this.timeEnd === this.scaleReference.end))
               || (this.nextScale !== null && (
-                this.resolution === this.nextScale.timeResolution
-                && this.unit === this.nextScale.timeUnit))))) {
+                this.timeResolutionMultiplier === this.nextScale.timeResolutionMultiplier
+                && this.unit === this.nextScale.timeUnit
+                && this.timeStart === this.nextScale.start
+                && this.timeEnd === this.nextScale.end))))) {
           return;
         }
         if (!this.hasContext) {
           this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
             scaleReference: this.scaleReference,
-            ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceResolutionConverted: this.resolution }),
-            ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && { spaceUnit: this.unit }),
-            ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeResolution: this.resolution }),
-            ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && { timeUnit: this.unit }),
+            ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && {
+              spaceResolutionConverted: this.resolution,
+              spaceUnit: this.unit,
+            }),
+            ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
+              timeResolutionMultiplier: this.timeResolutionMultiplier,
+              timeUnit: this.unit,
+              start: this.timeStart.getTime(),
+              end: this.timeEnd.getTime(),
+            }),
           }, this.$store.state.data.session).body);
         }
-        this.updateScaleReference({ type: this.scaleEditingType, resolution: this.resolution, unit: this.unit, next: this.hasContext });
+        this.updateScaleReference({
+          type: this.scaleEditingType,
+          unit: this.unit,
+          ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && {
+            resolution: this.resolution,
+          }),
+          ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
+            timeResolutionMultiplier: this.timeResolutionMultiplier,
+            start: this.timeStart,
+            end: this.timeEnd,
+          }),
+          next: this.hasContext,
+        });
         this.$q.notify({
-          message: this.$t(this.hasContext ? 'messages.updateNextScale' : 'messages.updateScale', { type: this.scaleEditingType, resolution: this.resolution, unit: this.unit }),
+          message: this.$t(this.hasContext ? 'messages.updateNextScale' : 'messages.updateScale', { type: this.scaleEditingType.charAt(0).toUpperCase() + this.scaleEditingType.slice(1) }), // , resolution: this.resolution, unit: this.unit }),
           type: 'info',
           icon: 'mdi-information',
           timeout: 2000,
         });
       }
     },
-    initValues() {
-      if (this.nextScale !== null) {
-        this.resolution = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.nextScale.spaceResolutionConverted : this.nextScale.timeResolution;
-        this.unit = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.nextScale.spaceUnit : this.nextScale.timeUnit;
-      } else if (this.scaleReference !== null) {
-        this.resolution = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceResolutionConverted : this.scaleReference.timeResolution;
-        this.unit = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? this.scaleReference.spaceUnit : this.scaleReference.timeUnit;
+    setStartDate(event) {
+      switch (this.unit) {
+        case SCALE_VALUES.CENTURY:
+          this.timeStart = new Date(0, 0, 1);
+          this.timeStart.setFullYear(((this.unitInputs.century - 1) * 100) + 1);
+          break;
+        // case SCALE_VALUES.DECADE:
+        case SCALE_VALUES.YEAR:
+          this.timeStart = new Date(0, 0, 1);
+          this.timeStart.setFullYear(this.unitInputs.year);
+          break;
+        case SCALE_VALUES.MONTH:
+          this.timeStart = new Date(0, this.unitInputs.month, 1);
+          this.timeStart.setFullYear(this.unitInputs.year);
+          break;
+        case SCALE_VALUES.WEEK:
+          if (event >= 53) {
+            this.unitInputs.week = moment(this.timeStart).week();
+          } else {
+            this.timeStart = new Date(0, 0, (1 + (this.unitInputs.week - 1) * 7));
+            this.timeStart.setFullYear(this.unitInputs.year);
+          }
+          break;
+        default:
+          break;
+      }
+      this.initUnitInputs();
+      this.calculateEnd();
+    },
+    calculateEnd() {
+      const unit = SCALE_UNITS.find(u => u.value === this.unit);
+      this.timeEnd = moment(this.timeStart).add((this.timeResolutionMultiplier * unit.momentMultiplier) - (unit.momentMultiplier !== 1 ? 1 : 0), unit.momentShorthand).toDate();
+    },
+    checkEnd() {
+      if (this.timeEnd <= this.timeStart) {
+        this.$q.notify({
+          message: this.$t('messages.timeEndBeforeTimeStart'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 2000,
+        });
+        this.calculateEnd();
       }
     },
+    getFormat() {
+      switch (this.unit) {
+        case SCALE_VALUES.CENTURY:
+        case SCALE_VALUES.DECADE:
+        case SCALE_VALUES.YEAR:
+        case SCALE_VALUES.MONTH:
+        case SCALE_VALUES.WEEK:
+          return 'DD/MM/YYYY';
+        case SCALE_VALUES.DAY:
+        case SCALE_VALUES.HOUR:
+          return 'DD/MM/YYYY HH:mm';
+        case SCALE_VALUES.MINUTE:
+        case SCALE_VALUES.SECOND:
+          return 'DD/MM/YYYY HH:mm:ss';
+        case SCALE_VALUES.MILLISECOND:
+          return 'DD/MM/YYYY HH:mm:ss:SSS';
+        default:
+          return 'DD/MM/YYYY HH:mm:ss';
+      }
+    },
+    formatDate(date, format = 'dddd, MMMM Do YYYY, h:mm:ss a') {
+      if (date && date !== null) {
+        return moment(date).format(format);
+      }
+      return '';
+    },
+    initValues() {
+      const scale = this.nextScale !== null ? this.nextScale : (this.scaleReference !== null ? this.scaleReference : null);
+      if (scale !== null) {
+        this.resolution = scale.spaceResolutionConverted;
+        this.unit = this.scaleEditingType === SCALE_TYPE.ST_SPACE ? scale.spaceUnit : scale.timeUnit !== null ? scale.timeUnit : SCALE_VALUES.YEAR;
+        this.timeResolutionMultiplier = scale.timeResolutionMultiplier !== 0 ? scale.timeResolutionMultiplier : 1;
+        this.timeStart = scale.start !== 0 ? new Date(scale.start) : new Date();
+        this.calculateEnd();
+      }
+      this.initUnitInputs();
+    },
+    initUnitInputs() {
+      const momentDate = this.timeStart ? moment(this.timeStart) : moment();
+      this.unitInputs.century = Math.ceil(momentDate.year() / 100);
+      // this.unitInputs.decade = Math.floor(momentDate.year() / 10) * 10;
+      this.unitInputs.year = momentDate.year();
+      this.unitInputs.month = momentDate.month();
+      this.unitInputs.week = momentDate.week();
+    },
+  },
+  created() {
+    for (let i = 0; i < 12; i++) {
+      this.monthOptions.push({
+        label: this.$t(`label.months.m${i}`),
+        value: i,
+      });
+    }
   },
 };
 </script>

@@ -448,8 +448,8 @@ export default {
     // commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
   },
 
-  updateScaleReference: ({ commit }, { type, resolution, unit, next = false }) => {
-    commit('UPDATE_SCALE_REFERENCE', { type, resolution, unit, next });
+  updateScaleReference: ({ commit }, scaleReference) => {
+    commit('UPDATE_SCALE_REFERENCE', scaleReference);
   },
 
   setScaleLocked: ({ commit }, { scaleType, scaleLocked }) => {

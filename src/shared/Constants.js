@@ -1,8 +1,4 @@
 /**
- * Useful constants in app
- */
-
-/**
  * Constants of application
  */
 export const CONSTANTS = {
@@ -519,12 +515,131 @@ export const SCALE_TYPE = {
   ST_TIME: 'time',
 };
 
+export const SCALE_VALUES = {
+  CENTIMETERS: 'cm',
+  METERS: 'm',
+  KILOMETERS: 'km',
+  MILLENNIUM: 'MILLENNIUM',
+  CENTURY: 'CENTURY',
+  DECADE: 'DECADE',
+  YEAR: 'YEAR',
+  MONTH: 'MONTH',
+  WEEK: 'WEEK',
+  DAY: 'DAY',
+  HOUR: 'HOUR',
+  MINUTE: 'MINUTE',
+  SECOND: 'SECOND',
+  MILLISECOND: 'MILLISECOND',
+};
+
+/**
+ * The admited scales units with this format:
+ * i18nlabel: the i18n variable under group label
+ * type: TIME or SPACE
+ * value: the value to send to engine
+ */
+export const SCALE_UNITS = [
+  {
+    i18nlabel: 'unitCentimeter',
+    type: SCALE_TYPE.ST_SPACE,
+    value: SCALE_VALUES.CENTIMETERS,
+    selectable: true,
+  }, {
+    i18nlabel: 'unitMeter',
+    type: SCALE_TYPE.ST_SPACE,
+    value: SCALE_VALUES.METERS,
+    selectable: true,
+  }, {
+    i18nlabel: 'unitKilometer',
+    type: SCALE_TYPE.ST_SPACE,
+    value: SCALE_VALUES.KILOMETERS,
+    selectable: true,
+  }, {
+    i18nlabel: 'unitMillennium',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.MILLENNIUM,
+    selectable: false,
+    momentShorthand: 'y',
+    momentMultiplier: 1000,
+  }, {
+    i18nlabel: 'unitCentury',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.CENTURY,
+    selectable: true,
+    momentShorthand: 'y',
+    momentMultiplier: 100,
+  }, {
+    i18nlabel: 'unitDecade',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.DECADE,
+    selectable: false,
+    momentShorthand: 'y',
+    momentMultiplier: 10,
+  }, {
+    i18nlabel: 'unitYear',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.YEAR,
+    selectable: true,
+    momentShorthand: 'y',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitMonth',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.MONTH,
+    selectable: true,
+    momentShorthand: 'M',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitWeek',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.WEEK,
+    selectable: true,
+    momentShorthand: 'W',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitDay',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.DAY,
+    selectable: true,
+    momentShorthand: 'd',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitHour',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.HOUR,
+    selectable: true,
+    momentShorthand: 'h',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitMinute',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.MINUTE,
+    selectable: true,
+    momentShorthand: 'm',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitSecond',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.SECOND,
+    selectable: false,
+    momentShorthand: 's',
+    momentMultiplier: 1,
+  }, {
+    i18nlabel: 'unitMillisecond',
+    type: SCALE_TYPE.ST_TIME,
+    value: SCALE_VALUES.MILLISECOND,
+    selectable: false,
+    momentShorthand: 'ms',
+    momentMultiplier: 1,
+  },
+];
+
 export const TIMES = {
   DEFAULT_STEP: 24 * 60 * 60 * 1000,
   DEFAULT_INTERVAL: 100,
   PIXEL_TIME_MULTIPLIER: 1,
   MIN_PLAY_TIME: 60 * 1000, // 1 minute
-  MAX_PLAY_TIME: 2 * 60 * 1000, // 2 minutes
+  MAX_PLAY_TIME: 1 * 60 * 1000, // 2 minutes
 };
 
 export const SEARCH_MODES = {

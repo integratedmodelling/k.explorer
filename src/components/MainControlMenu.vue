@@ -8,7 +8,7 @@
     class="mcm-menubutton absolute-top-right"
   >
     <q-popover
-      v-if="!isDrawMode"
+      v-if="isVisible"
       anchor="top right"
       self="top left"
       ref="mcm-main-popover"
@@ -125,7 +125,7 @@
           </q-item>
           <q-item>
             <q-item-main>
-              <scale-reference width="180px" :light="true" scaleType="time" :editable="false" :full="true"></scale-reference>
+              <scale-reference width="180px" :light="true" scaleType="time" :editable="true" :full="true"></scale-reference>
             </q-item-main>
           </q-item>
         </template>
@@ -176,21 +176,21 @@
               </q-item-side>
             </div>
           </q-item>
-          <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuHelp') }}</q-list-header>
-          <q-item-separator></q-item-separator>
-          <q-item>
-            <div class="mcm-container">
-              <div class="klab-menuitem klab-clickable" @click="askTutorial">
-                <div class="klab-item klab-font klab-im-logo klab-icon"></div>
-                <div class="klab-item klab-text klab-only-text">{{ $t('label.showHelp') }}</div>
-              </div>
-            </div>
-          </q-item>
-          <q-item-separator></q-item-separator>
-          <q-item>
-            <div class="klab-version">Version: {{ $store.state.data.packageVersion }}/ Build {{ $store.state.data.packageBuild }}</div>
-          </q-item>
         </template>
+        <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuHelp') }}</q-list-header>
+        <q-item-separator></q-item-separator>
+        <q-item>
+          <div class="mcm-container">
+            <div class="klab-menuitem klab-clickable" @click="askTutorial">
+              <div class="klab-item klab-font klab-im-logo klab-icon"></div>
+              <div class="klab-item klab-text klab-only-text">{{ $t('label.showHelp') }}</div>
+            </div>
+          </div>
+        </q-item>
+        <q-item-separator></q-item-separator>
+        <q-item>
+          <div class="klab-version">Version: {{ $store.state.data.packageVersion }}/ Build {{ $store.state.data.packageBuild }}</div>
+        </q-item>
       </q-list>
     </q-popover>
   </q-btn>
@@ -241,6 +241,7 @@ export default {
     ...mapGetters('view', [
       'searchIsActive',
       'isDrawMode',
+      'isScaleEditing',
       'isMainControlDocked',
     ]),
     ...mapState('view', [
@@ -271,6 +272,9 @@ export default {
       set(value) {
         this.setInteractiveMode(value);
       },
+    },
+    isVisible() {
+      return !this.isDrawMode && !this.isScaleEditing;
     },
     /*
     cleanContextsHistory() {

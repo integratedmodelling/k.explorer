@@ -138,6 +138,7 @@ export default {
       loadedTime: 0,
       playTimer: null,
       interval: undefined,
+      // speedMultiplier: 4,
     };
   },
   computed: {
@@ -268,6 +269,7 @@ export default {
         } else if (interval > TIMES.MAX_PLAY_TIME) {
           interval = TIMES.MAX_PLAY_TIME / steps;
         }
+        // interval /= this.speedMultiplier;
         this.interval = { step, steps, interval, buffer };
         console.info(`Step: ${this.interval.step}; Steps: ${this.interval.steps}; Interval: ${this.interval.interval}; Buffer: ${this.interval.buffer}`);
       }

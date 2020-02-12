@@ -124,13 +124,14 @@ export default {
     "spaceUnit" : {
       "type" : "string"
     },
-    "timeResolution" : {
+    "timeResolutionMultiplier" : {
       "type" : "number"
     },
-    "timeResolutionDescription" : {
-      "type" : "string"
-    },
     "timeUnit" : {
+      "type" : "string",
+      "enum" : [ "MILLENNIUM", "CENTURY", "DECADE", "YEAR", "MONTH", "WEEK", "DAY", "HOUR", "MINUTE", "SECOND", "MILLISECOND" ]
+    },
+    "timeResolutionDescription" : {
       "type" : "string"
     },
     "unlockSpace" : {

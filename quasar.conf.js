@@ -161,6 +161,7 @@ module.exports = function (ctx) {
         'QCarousel',
         'QCarouselSlide',
         'QCarouselControl',
+        'QDatetime',
       ],
       directives: [
         'Ripple',
