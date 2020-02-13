@@ -101,6 +101,7 @@ export default {
     titleCommentResource: 'Comment on resource',
     sendComment: 'Send',
     noTimeSet: 'Initial state',
+    timeResolutionMultiplier: 'Multiplier',
     months: {
       m0: 'January',
       m1: 'February',
@@ -160,6 +161,7 @@ export default {
     waitingObservationInit: 'Initializing observation...',
     availableInFuture: 'This feature will be available soon',
     timeEndBeforeTimeStart: 'End time cannot be before start time',
+    timeEndModified: 'Multiplier is not used because the end time was manually changed',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

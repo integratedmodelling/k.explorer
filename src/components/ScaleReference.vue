@@ -14,9 +14,7 @@
         >{{ isScaleLocked[scaleType] ? $t('label.clickToUnlock') : $t('label.clickToLock')}}</q-tooltip>
       </div>
       <div class="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-scaletype klab-item" :class="[ scaleType === SCALE_TYPE.ST_SPACE ? `mdi ${type} sr-icon` : '']">
-          <span v-if="scaleType === SCALE_TYPE.ST_TIME">{{ type }}</span>
-        </div>
+        <div class="sr-scaletype klab-item" :class="[`mdi ${type} sr-icon`]"></div>
         <div class="sr-description klab-item">{{ description }}</div>
         <div class="sr-spacescale klab-item">{{ scale }}</div>
         <q-tooltip
@@ -24,7 +22,7 @@
           anchor="bottom middle"
           self="top middle"
           :offset="[0, 5]"
-        >{{ $t('label.clickToEditScale') }}</q-tooltip>
+        ><div v-if="scaleType === SCALE_TYPE.ST_TIME && timeLimits !== ''" class="sr-tooltip sr-time-tooltip" v-html="timeLimits"></div><div class="sr-tooltip">{{ $t('label.clickToEditScale') }}</div></q-tooltip>
       </div>
     </div>
     <div class="sr-no-scalereference" v-else>
@@ -84,23 +82,37 @@ export default {
       'isScaleLocked',
       'nextScale',
     ]),
+    scaleObj() {
+      return this.useNext ? this.nextScale : this.scaleReference;
+    },
     resolution() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceResolutionConverted : this.scaleReference.spaceResolutionConverted) : '';
+      return this.scaleType === SCALE_TYPE.ST_SPACE
+        ? this.scaleObj.spaceResolutionConverted
+        : this.scaleObj.timeUnit;
     },
     unit() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceUnit : this.scaleReference.spaceUnit) : moment().year();
+      return this.scaleType === SCALE_TYPE.ST_SPACE
+        ? this.scaleObj.spaceUnit
+        : this.scaleObj.timeUnit;
     },
     type() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : 'YEAR'; // TODO implement different type
+      return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : 'mdi-clock-outline';
     },
     description() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceResolutionDescription : this.scaleReference.spaceResolutionDescription) : this.unit;
+      return this.scaleType === SCALE_TYPE.ST_SPACE
+        ? this.scaleObj.spaceResolutionDescription
+        : this.scaleObj.timeUnit === null ? 'YEAR' : this.scaleObj.timeUnit;
     },
     scale() {
-      return this.scaleType === SCALE_TYPE.ST_SPACE ? (this.useNext ? this.nextScale.spaceScale : this.scaleReference.spaceScale) : '3'; // this.scaleReference.timeScale;
+      return this.scaleType === SCALE_TYPE.ST_SPACE
+        ? this.scaleObj.spaceScale
+        : this.scaleObj.timeScale;
     },
     hasScale() {
       return this.useNext ? this.nextScale !== null : this.scaleReference !== null;
+    },
+    timeLimits() {
+      return this.scaleObj.start === 0 && this.scaleObj.end === 0 ? '' : `${moment(this.scaleObj.start).format('L HH:mm:ss')}<br />${moment(this.scaleObj.end).format('L HH:mm:ss')}`;
     },
     scaleEditing: {
       get() {
@@ -207,5 +219,11 @@ export default {
   */
   .mdi-lock-outline
     color $main-control-main-color
+
+  .sr-tooltip
+    text-align center
+    padding 4px 0
+    &.sr-time-tooltip
+      color $main-control-yellow
 
 </style>

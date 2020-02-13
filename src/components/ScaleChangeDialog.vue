@@ -31,14 +31,15 @@
         @input="scaleEditingType === SCALE_TYPE.ST_TIME && calculateEnd()"
       ></q-select>
       <template v-if="scaleEditingType === SCALE_TYPE.ST_TIME">
-        <div>
+        <div class="row">
           <q-input
             v-if="unit === SCALE_VALUES.CENTURY"
+            class="col col-8"
             :float-label="$t('label.unitCentury')"
             v-model="unitInputs.century"
             type="number"
             min="1"
-            color="info"
+            color="mc-main"
             @input="setStartDate()"
             autofocus
           >
@@ -46,10 +47,11 @@
           <q-select
             :float-label="$t('label.unitMonth')"
             v-if="unit === SCALE_VALUES.MONTH"
+            class="col col-4"
             v-model="unitInputs.month"
             type="number"
             min="0"
-            color="info"
+            color="mc-main"
             @input="setStartDate()"
             :options="monthOptions"
             autofocus
@@ -59,10 +61,11 @@
             v-if="unit === SCALE_VALUES.WEEK"
             :float-label="$t('label.unitWeek')"
             v-model="unitInputs.week"
+            class="col col-4"
             type="number"
             min="1"
             max="53"
-            color="info"
+            color="mc-main"
             :after="[{
               icon: 'warning',
               error: true,
@@ -73,19 +76,37 @@
           >
           </q-input>
           <q-input
-            v-if="unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.DECADE || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
+            v-if="unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
             :float-label="$t('label.unitYear')"
+            :class="{ 'col': unit === SCALE_VALUES.YEAR, 'col-8': unit === SCALE_VALUES.YEAR, 'col-4': unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK }"
             v-model="unitInputs.year"
             type="number"
             min="0"
-            color="info"
+            color="mc-main"
             @input="setStartDate()"
             autofocus
           >
           </q-input>
+          <q-input
+            v-if="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
+            :float-label="$t('label.timeResolutionMultiplier')"
+            class="col col-4"
+            :class="{ 'scd-inactive-multiplier': timeEndModified }"
+            v-model="timeResolutionMultiplier"
+            type="number"
+            min="1"
+            color="mc-main"
+          >
+            <q-tooltip
+              v-if="timeEndModified"
+              :offset="[0, 15]"
+              self="top middle"
+              anchor="bottom middle"
+            >{{ $t('messages.timeEndModified') }}</q-tooltip>
+          </q-input>
         </div>
         <q-datetime
-          color="info"
+          color="mc-main"
           :float-label="$t('label.labelTimeStart')"
           v-model="timeStart"
           :format="getFormat()"
@@ -95,7 +116,7 @@
           @input="calculateEnd"
         ></q-datetime>
         <q-datetime
-          color="info"
+          color="mc-main"
           :float-label="$t('label.labelTimeEnd')"
           v-model="timeEnd"
           :format="getFormat()"
@@ -113,8 +134,8 @@
     </div>
 
     <template slot="buttons" slot-scope="props">
-      <q-btn color="info" outline :label="$t('label.appCancel')" @click="props.cancel"></q-btn>
-      <q-btn color="info" :label="$t('label.appOK')" @click="choose(props.ok)"></q-btn>
+      <q-btn color="mc-main" outline :label="$t('label.appCancel')" @click="props.cancel"></q-btn>
+      <q-btn color="mc-main" :label="$t('label.appOK')" @click="choose(props.ok)"></q-btn>
     </template>
   </q-dialog>
 </template>
@@ -147,6 +168,7 @@ export default {
         week: null,
       },
       monthOptions: [],
+      timeEndModified: false,
     };
   },
   computed: {
@@ -259,7 +281,7 @@ export default {
           this.timeStart.setFullYear(this.unitInputs.year);
           break;
         case SCALE_VALUES.WEEK:
-          if (event >= 53) {
+          if (event > 53) {
             this.unitInputs.week = moment(this.timeStart).week();
           } else {
             this.timeStart = new Date(0, 0, (1 + (this.unitInputs.week - 1) * 7));
@@ -272,9 +294,10 @@ export default {
       this.initUnitInputs();
       this.calculateEnd();
     },
-    calculateEnd() {
+    calculateEnd(manual = false) {
       const unit = SCALE_UNITS.find(u => u.value === this.unit);
       this.timeEnd = moment(this.timeStart).add((this.timeResolutionMultiplier * unit.momentMultiplier) - (unit.momentMultiplier !== 1 ? 1 : 0), unit.momentShorthand).toDate();
+      this.$nextTick(() => { this.timeEndModified = manual; });
     },
     checkEnd() {
       if (this.timeEnd <= this.timeStart) {
@@ -284,7 +307,8 @@ export default {
           icon: 'mdi-information',
           timeout: 2000,
         });
-        this.calculateEnd();
+      } else {
+        this.calculateEnd(true);
       }
     },
     getFormat() {
@@ -333,6 +357,15 @@ export default {
       this.unitInputs.week = momentDate.week();
     },
   },
+  watch: {
+    timeResolutionMultiplier(newValue, oldValue) {
+      if (newValue < 1) {
+        this.timeResolutionMultiplier = oldValue;
+      } else {
+        this.calculateEnd();
+      }
+    },
+  },
   created() {
     for (let i = 0; i < 12; i++) {
       this.monthOptions.push({
@@ -344,5 +377,8 @@ export default {
 };
 </script>
 
-<style>
+<style lang="stylus">
+  @import '~variables'
+  .scd-inactive-multiplier .q-input-target
+      color #979797 // same of quasar style
 </style>
