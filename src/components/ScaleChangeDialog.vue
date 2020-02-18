@@ -28,13 +28,27 @@
         v-model="unit"
         color="info"
         :options="typedUnits(scaleEditingType)"
-        @input="scaleEditingType === SCALE_TYPE.ST_TIME && calculateEnd()"
+        @input="scaleEditingType === SCALE_TYPE.ST_TIME && setStartDate()"
       ></q-select>
       <template v-if="scaleEditingType === SCALE_TYPE.ST_TIME">
         <div class="row">
           <q-input
-            v-if="unit === SCALE_VALUES.CENTURY"
-            class="col col-8"
+            v-if="unit === SCALE_VALUES.DECADE"
+            class="col col-4"
+            :float-label="$t('label.unitDecade')"
+            v-model="unitInputs.decade"
+            type="number"
+            min="0"
+            max="90"
+            step="10"
+            color="mc-main"
+            @input="setStartDate()"
+            autofocus
+          >
+          </q-input>
+          <q-input
+            v-if="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.DECADE"
+            :class="[ 'col', unit === SCALE_VALUES.CENTURY ? 'col-8' : 'col-4']"
             :float-label="$t('label.unitCentury')"
             v-model="unitInputs.century"
             type="number"
@@ -78,17 +92,20 @@
           <q-input
             v-if="unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
             :float-label="$t('label.unitYear')"
-            :class="{ 'col': unit === SCALE_VALUES.YEAR, 'col-8': unit === SCALE_VALUES.YEAR, 'col-4': unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK }"
+            :class="{ 'col': unit === SCALE_VALUES.YEAR, 'col-8': unit === SCALE_VALUES.YEAR, 'col-4': (unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK) }"
             v-model="unitInputs.year"
             type="number"
             min="0"
             color="mc-main"
             @input="setStartDate()"
             autofocus
+            :default-view="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.DECADE ||
+             unit === SCALE_VALUES.YEAR ? 'year' : 'day'"
           >
           </q-input>
           <q-input
-            v-if="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
+            v-if="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.DECADE ||
+             unit === SCALE_VALUES.YEAR || unit === SCALE_VALUES.MONTH || unit === SCALE_VALUES.WEEK"
             :float-label="$t('label.timeResolutionMultiplier')"
             class="col col-4"
             :class="{ 'scd-inactive-multiplier': timeEndModified }"
@@ -113,7 +130,11 @@
           :type="unit === SCALE_VALUES.HOUR || unit === SCALE_VALUES.MINUTE || unit === SCALE_VALUES.SECOND ? 'datetime' : 'date'"
           minimal
           format24h
-          @input="calculateEnd"
+          @focus="manualInputChange = true"
+          @blur="manualInputChange = false"
+          @input="manualInputChange && initUnitInputs() && calculateEnd()"
+          :default-view="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.DECADE ||
+             unit === SCALE_VALUES.YEAR ? 'year' : 'day'"
         ></q-datetime>
         <q-datetime
           color="mc-main"
@@ -129,6 +150,9 @@
             error: true,
             condition: resolutionError,
           }]"
+          :default-view="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.DECADE ||
+             unit === SCALE_VALUES.YEAR ? 'year' : 'day'"
+
         ></q-datetime>
       </template>
     </div>
@@ -169,6 +193,7 @@ export default {
       },
       monthOptions: [],
       timeEndModified: false,
+      manualInputChange: false,
     };
   },
   computed: {
@@ -266,12 +291,18 @@ export default {
       }
     },
     setStartDate(event) {
+      // As ISO 8601-1 say:
+      // century: time scale unit (3.1.1.7) of 100 calendar years (3.1.2.21)duration (3.1.1.8), beginning with a year whose year number is divisible without remainder by 100
+      // decade: time scale unit (3.1.1.7) of 10 calendar years (3.1.2.21), beginning with a year whose year number is divisible without remainder by ten
       switch (this.unit) {
         case SCALE_VALUES.CENTURY:
           this.timeStart = new Date(0, 0, 1);
-          this.timeStart.setFullYear(((this.unitInputs.century - 1) * 100) + 1);
+          this.timeStart.setFullYear((this.unitInputs.century - 1) * 100);
           break;
-        // case SCALE_VALUES.DECADE:
+        case SCALE_VALUES.DECADE:
+          this.timeStart = new Date(0, 0, 1);
+          this.timeStart.setFullYear(((this.unitInputs.century - 1) * 100) + this.unitInputs.decade);
+          break;
         case SCALE_VALUES.YEAR:
           this.timeStart = new Date(0, 0, 1);
           this.timeStart.setFullYear(this.unitInputs.year);
@@ -350,8 +381,8 @@ export default {
     },
     initUnitInputs() {
       const momentDate = this.timeStart ? moment(this.timeStart) : moment();
-      this.unitInputs.century = Math.ceil(momentDate.year() / 100);
-      // this.unitInputs.decade = Math.floor(momentDate.year() / 10) * 10;
+      this.unitInputs.century = Math.floor(momentDate.year() / 100) + 1;
+      this.unitInputs.decade = Math.floor(momentDate.year() / 10) * 10 - Math.floor(momentDate.year() / 100) * 100; // sorry
       this.unitInputs.year = momentDate.year();
       this.unitInputs.month = momentDate.month();
       this.unitInputs.week = momentDate.week();

@@ -561,6 +561,7 @@ export const SCALE_UNITS = [
     selectable: false,
     momentShorthand: 'y',
     momentMultiplier: 1000,
+    index: 0,
   }, {
     i18nlabel: 'unitCentury',
     type: SCALE_TYPE.ST_TIME,
@@ -568,13 +569,15 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'y',
     momentMultiplier: 100,
+    index: 1,
   }, {
     i18nlabel: 'unitDecade',
     type: SCALE_TYPE.ST_TIME,
     value: SCALE_VALUES.DECADE,
-    selectable: false,
+    selectable: true,
     momentShorthand: 'y',
     momentMultiplier: 10,
+    index: 2,
   }, {
     i18nlabel: 'unitYear',
     type: SCALE_TYPE.ST_TIME,
@@ -582,6 +585,7 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'y',
     momentMultiplier: 1,
+    index: 3,
   }, {
     i18nlabel: 'unitMonth',
     type: SCALE_TYPE.ST_TIME,
@@ -589,6 +593,7 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'M',
     momentMultiplier: 1,
+    index: 4,
   }, {
     i18nlabel: 'unitWeek',
     type: SCALE_TYPE.ST_TIME,
@@ -596,6 +601,7 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'W',
     momentMultiplier: 1,
+    index: 5,
   }, {
     i18nlabel: 'unitDay',
     type: SCALE_TYPE.ST_TIME,
@@ -603,6 +609,7 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'd',
     momentMultiplier: 1,
+    index: 6,
   }, {
     i18nlabel: 'unitHour',
     type: SCALE_TYPE.ST_TIME,
@@ -610,6 +617,7 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'h',
     momentMultiplier: 1,
+    index: 7,
   }, {
     i18nlabel: 'unitMinute',
     type: SCALE_TYPE.ST_TIME,
@@ -617,6 +625,7 @@ export const SCALE_UNITS = [
     selectable: true,
     momentShorthand: 'm',
     momentMultiplier: 1,
+    index: 8,
   }, {
     i18nlabel: 'unitSecond',
     type: SCALE_TYPE.ST_TIME,
@@ -624,6 +633,7 @@ export const SCALE_UNITS = [
     selectable: false,
     momentShorthand: 's',
     momentMultiplier: 1,
+    index: 9,
   }, {
     i18nlabel: 'unitMillisecond',
     type: SCALE_TYPE.ST_TIME,
@@ -631,6 +641,7 @@ export const SCALE_UNITS = [
     selectable: false,
     momentShorthand: 'ms',
     momentMultiplier: 1,
+    index: 10,
   },
 ];
 

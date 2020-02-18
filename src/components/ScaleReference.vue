@@ -35,7 +35,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { SCALE_TYPE, SETTING_NAMES, CUSTOM_EVENTS } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_UNITS, SETTING_NAMES, CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'ScaleReference',
@@ -106,7 +106,7 @@ export default {
     scale() {
       return this.scaleType === SCALE_TYPE.ST_SPACE
         ? this.scaleObj.spaceScale
-        : this.scaleObj.timeScale;
+        : this.unit ? SCALE_UNITS.find(u => u.value === this.unit).index : this.scaleObj.timeScale;
     },
     hasScale() {
       return this.useNext ? this.nextScale !== null : this.scaleReference !== null;
