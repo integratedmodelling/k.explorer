@@ -274,8 +274,8 @@ export default {
           }),
           ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
             timeResolutionMultiplier: this.timeResolutionMultiplier,
-            start: this.timeStart,
-            end: this.timeEnd,
+            start: this.timeStart.getTime(),
+            end: this.timeEnd.getTime(),
           }),
           next: this.hasContext,
         });
