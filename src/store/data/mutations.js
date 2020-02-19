@@ -315,6 +315,7 @@ export default {
   },
 
   SET_SCALE_REFERENCE: (state, scaleReference) => {
+    // TODO: IMPORTANT!!!! Add to solve the bad initialization of the time unit, remove when engine send correct one
     if (scaleReference.timeUnit === null) {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
