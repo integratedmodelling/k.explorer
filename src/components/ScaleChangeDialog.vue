@@ -40,7 +40,7 @@
             type="number"
             min="0"
             max="90"
-            step="10"
+            :step="10"
             color="mc-main"
             @input="setStartDate()"
             autofocus
@@ -53,6 +53,7 @@
             v-model="unitInputs.century"
             type="number"
             min="1"
+            :step="1"
             color="mc-main"
             @input="setStartDate()"
             autofocus
@@ -79,12 +80,8 @@
             type="number"
             min="1"
             max="53"
+            :step="1"
             color="mc-main"
-            :after="[{
-              icon: 'warning',
-              error: true,
-              condition: unitInputs.week > 53,
-            }]"
             @input="setStartDate($event)"
             autofocus
           >
@@ -96,11 +93,10 @@
             v-model="unitInputs.year"
             type="number"
             min="0"
+            :step="1"
             color="mc-main"
             @input="setStartDate()"
             autofocus
-            :default-view="unit === SCALE_VALUES.CENTURY || unit === SCALE_VALUES.DECADE ||
-             unit === SCALE_VALUES.YEAR ? 'year' : 'day'"
           >
           </q-input>
           <q-input
@@ -112,6 +108,7 @@
             v-model="timeResolutionMultiplier"
             type="number"
             min="1"
+            :step="1"
             color="mc-main"
           >
             <q-tooltip

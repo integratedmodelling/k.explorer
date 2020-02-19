@@ -14,7 +14,9 @@
         >{{ isScaleLocked[scaleType] ? $t('label.clickToUnlock') : $t('label.clickToLock')}}</q-tooltip>
       </div>
       <div class="sr-editables" :style="{ cursor: editable ? 'pointer' : 'default' }" >
-        <div class="sr-scaletype klab-item" :class="[`mdi ${type} sr-icon`]"></div>
+        <div class="sr-scaletype klab-item" :class="[ /* type.startsWith('mdi') ?  */ `mdi ${type} sr-icon` /* : '' */]">
+          <!-- <span v-if="!type.startsWith('mdi')">{{ type }}</span> -->
+        </div>
         <div class="sr-description klab-item">{{ description }}</div>
         <div class="sr-spacescale klab-item">{{ scale }}</div>
         <q-tooltip
@@ -96,6 +98,7 @@ export default {
         : this.scaleObj.timeUnit;
     },
     type() {
+      // return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : ((this.scaleObj.timeResolutionDescription && this.scaleObj.timeResolutionDescription !== '') ? this.scaleObj.timeResolutionDescription : 'mdi-clock-outline');
       return this.scaleType === SCALE_TYPE.ST_SPACE ? 'mdi-grid' : 'mdi-clock-outline';
     },
     description() {
