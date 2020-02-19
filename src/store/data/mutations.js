@@ -1,5 +1,5 @@
 import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
-import { SCALE_TYPE } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -315,6 +315,9 @@ export default {
   },
 
   SET_SCALE_REFERENCE: (state, scaleReference) => {
+    if (scaleReference.timeUnit === null) {
+      scaleReference.timeUnit = SCALE_VALUES.YEAR;
+    }
     state.scaleReference = scaleReference;
   },
 

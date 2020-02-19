@@ -224,7 +224,7 @@ export default {
       'setNextScale',
     ]),
     choose(okFn) {
-      if (this.scaleEditingType === SCALE_TYPE.ST_SPACE && (this.this.resolution === '' || this.resolution <= 0)) {
+      if (this.scaleEditingType === SCALE_TYPE.ST_SPACE && (this.resolution === '' || this.resolution <= 0)) {
         this.resolutionError = true;
       } else if (this.scaleEditingType === SCALE_TYPE.ST_TIME && !this.checkEnd) {
         this.resolutionError = true;
