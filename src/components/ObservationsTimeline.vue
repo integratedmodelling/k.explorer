@@ -55,7 +55,41 @@
             class="ot-modification-container"
             :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 1px)` }"
           >
-            <div class="ot-modification"></div>
+            <div class="ot-timeline-viewer" v-show="visibleEvents.length > 0"></div>
+            <div
+              v-for="(modification) in visibleEvents"
+              :key="`${modification.id}-${modification.timestamp}`"
+              class="ot-modification-container"
+              :style="{ left: `calc(${calculatePosition(modification.timestamp)}px - 1px)` }"
+            >
+              <div class="ot-modification"></div>
+            </div>
+            <div
+              class="ot-loaded-time"
+              :style="{ width: loadedTime === 0 ? 0 : `calc(${calculatePosition(loadedTime)}px + 4px)` }"
+            ></div>
+            <!--
+            <div
+              class="ot-player-time"
+              v-if="playTimer !== null"
+              :style="{ width: `calc(${calculatePosition(timestamp)}px + 4px)` }"
+            ></div>
+            -->
+            <div
+              class="ot-actual-time"
+              v-if="timestamp !== -1"
+              :style="{ left: `calc(${calculatePosition(visibleTimestamp)}px + ${timestamp === scaleReference.end ? '0' : '1'}px)` }">
+            </div>
+
+            <q-tooltip
+              v-if="modificationEvents.length !== 0"
+              :offset="[0, 15]"
+              self="top middle"
+              anchor="bottom middle"
+              v-html="timelineDate"
+              class="ot-date-tooltip"
+              :delay="300"
+            ></q-tooltip>
           </div>
           <div
             class="ot-loaded-time"

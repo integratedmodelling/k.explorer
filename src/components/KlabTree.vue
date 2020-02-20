@@ -192,6 +192,7 @@ export default {
       'contextId',
       'observations',
       'modificationEventsOfObservation',
+      'timestamp',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -328,7 +329,16 @@ export default {
         });
       }
     },
-    askDownload(observationId, outputFormat, formats, label = observationId) {
+    askDownload(observationId, outputFormat, formats, label) {
+      if (typeof label === 'undefined') {
+        let sDate = '';
+        if (this.timestamp !== -1) {
+          const dTimestamp = new Date(this.timestamp);
+          sDate = `_${dTimestamp.getFullYear()}${dTimestamp.getMonth() < 9 ? '0' : ''}${(dTimestamp.getMonth() + 1)}${dTimestamp.getDate() < 10 ? '0' : ''}${dTimestamp.getDate()}_${dTimestamp.getHours() < 10 ? '0' : ''}${dTimestamp.getHours()}${dTimestamp.getMinutes() < 10 ? '0' : ''}${dTimestamp.getMinutes()}${dTimestamp.getSeconds() < 10 ? '0' : ''}${dTimestamp.getSeconds()}`;
+        }
+        label = `${observationId}${sDate}`;
+      }
+
       const selectedFormat = formats.find(f => f.value === outputFormat);
       getAxiosContent(
         `dw_${observationId}`,
@@ -338,6 +348,7 @@ export default {
             format: 'RAW', // TODO change when RAW call work as expected
             outputFormat,
             adapter: selectedFormat.adapter,
+            ...(this.timestamp !== -1 && { locator: `T1(1){time=${this.timestamp}}` }),
           },
           responseType: 'blob',
         },
