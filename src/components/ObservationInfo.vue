@@ -361,7 +361,7 @@ export default {
   #oi-histogram-nodata
     color #fff
     text-align center
-    background-color rgba(119,119,119,.65)
+    background-color $main-control-grey-alpha
     padding-top 20%
 
   .oi-histogram
@@ -374,7 +374,7 @@ export default {
     height 100%
     position relative
     &:hover
-      background rgba(119,119,119,.65);
+      background $main-control-grey-alpha
 
   .oi-histogram-val
     background #000
@@ -382,8 +382,8 @@ export default {
     position: absolute
     bottom 0
 
-    border-right 1px solid rgba(119, 119, 119, 0.85)
-    border-left 1px solid rgba(119, 119, 119, 0.85)
+    border-right 1px solid alpha($main-control-grey, 0.85)
+    border-left 1px solid alpha($main-control-grey, 0.85)
     &:hover
       background rgba(0, 0, 0, 0.7)
 

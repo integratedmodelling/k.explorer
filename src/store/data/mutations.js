@@ -1,5 +1,5 @@
 import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
-import { SCALE_TYPE } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -315,19 +315,32 @@ export default {
   },
 
   SET_SCALE_REFERENCE: (state, scaleReference) => {
+    // TODO: IMPORTANT!!!! Add to solve the bad initialization of the time unit, remove when engine send correct one
+    if (scaleReference.timeUnit === null) {
+      scaleReference.timeUnit = SCALE_VALUES.YEAR;
+    }
     state.scaleReference = scaleReference;
   },
 
-  UPDATE_SCALE_REFERENCE: (state, { type, resolution, unit, next = false }) => {
-    if (resolution !== 0 && Math.round(resolution) !== resolution) {
+  UPDATE_SCALE_REFERENCE: (state, scaleReference) => {
+    const { type, unit, timeResolutionMultiplier, start, end, next = false } = scaleReference;
+    let { resolution } = scaleReference;
+    if (type === SCALE_TYPE.ST_SPACE && resolution !== 0 && Math.round(resolution) !== resolution) {
       resolution = resolution.toFixed(1);
     }
     const update = {
       ...state.scaleReference,
-      [`${type}Resolution`]: resolution,
-      [`${type}ResolutionConverted`]: resolution,
       [`${type}Unit`]: unit,
-      [`${type}ResolutionDescription`]: (resolution === 0 ? '' : `${resolution} `) + unit,
+      [`${type}ResolutionDescription`]: (!resolution || resolution === 0 ? '' : `${resolution} `) + unit,
+      ...(type === SCALE_TYPE.ST_SPACE && {
+        spaceResolution: resolution,
+        spaceResolutionConverted: resolution,
+      }),
+      ...(type === SCALE_TYPE.ST_TIME && {
+        timeResolutionMultiplier,
+        start,
+        end,
+      }),
     };
     if (next) {
       state.nextScale = {

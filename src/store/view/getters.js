@@ -120,4 +120,5 @@ export default {
   modalSize: state => state.modalSize,
   fuzzyMode: state => state.fuzzyMode,
   largeMode: state => state.largeMode,
+  isTimeRunning: state => state.timeRunning,
 };

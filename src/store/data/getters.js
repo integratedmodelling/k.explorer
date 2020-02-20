@@ -38,6 +38,11 @@ export default {
   modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
   modificationsTask: state => state.modificationsTask,
 
+  visibleEvents: (state) => {
+    const ids = state.observations.filter(observation => observation.visible).map(o => o.id);
+    return state.modificationEvents.filter(me => ids.includes(me.id));
+  },
+
   timestamp: state => state.timestamp,
 
   dataflow: state => state.dataflow,

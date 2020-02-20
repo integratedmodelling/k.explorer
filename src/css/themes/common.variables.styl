@@ -32,11 +32,15 @@ $main-control-spc-height = 20px; //height of splitter controllers
 $main-control-scrollbar = 30px // scrollbar has a margin bottom of -30px :(
 $main-control-header-height = 48px; // calculated value
 $main-control-actions-height = 66px // calculated value
+$leftmenu-total-width = 512px;
+$leftmenu-menu-width = 80px;
+$leftmenu-content-width = $leftmenu-total-width - $leftmenu-menu-width
 $docked-search-height = 52px
 $docked-undock-height = 32px
 $docked-timeline-height = 34px
 $docked-padding = 30px
 $docked-correction = 14px
+$timestampViewerWidth = 150px
 
 $oi-controls-height = 40px
 $oi-metadata-map-wrapper = 100% // only for reference
@@ -72,6 +76,8 @@ $main-control-green = rgb(231,255,219);
 $main-control-cyan = rgb(228,253,255);
 $main-control-yellow = rgb(255, 195, 0);
 $main-control-red = rgb(255, 100, 100);
+$main-control-grey = rgb(119, 119, 119);
+$main-control-grey-alpha = alpha($main-control-grey, .65);
 
 $state-forthcoming = $main-control-main-color;
 $state-experimental = $warning;

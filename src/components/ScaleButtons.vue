@@ -58,7 +58,7 @@
       :class="[{ active: showTimeScalePopup }]"
       @mouseover="toggleScalePopup('time', true)"
       @mouseleave="toggleScalePopup('time', false)"
-      @click="noTimeScaleChange"
+      @click="scaleEditing = { active: true, type: SCALE_TYPE.ST_TIME }"
     >
       <q-icon name="mdi-clock" :class="{ 'mdi-next-scale': hasNextScale(SCALE_TYPE.ST_TIME) }">
         <q-popover
@@ -174,10 +174,17 @@ export default {
         this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
           scaleReference: this.scaleReference,
           contextId: this.contextId,
-          ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && { spaceResolutionConverted: this.nextScale.spaceResolutionConverted }),
-          ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && { spaceUnit: this.nextScale.spaceUnit }),
-          ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && { timeResolution: this.nextScale.timeResolution }),
-          ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && { timeUnit: this.nextScale.timeUnit }),
+          ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && {
+            spaceResolutionConverted: this.nextScale.spaceResolutionConverted,
+            spaceUnit: this.nextScale.spaceUnit,
+          }),
+          ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && {
+            timeResolutionMultiplier: this.nextScale.timeResolutionMultiplier,
+            timeUnit: this.nextScale.timeUnit,
+            start: this.nextScale.start,
+            end: this.nextScale.end,
+
+          }),
         }, this.$store.state.data.session).body);
         /*
         }).catch(() => {

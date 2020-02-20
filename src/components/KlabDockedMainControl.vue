@@ -117,7 +117,7 @@ export default {
       -o-user-select none
       -moz-user-select -moz-none
       -webkit-user-select none
-      background-color rgba(119,119,119,0.65)
+      background-color $main-control-grey-alpha
       overflow hidden
       #klab-tree-pane
         height 100%
@@ -151,10 +151,6 @@ export default {
       &[open]
         border-bottom 1px solid #333
 
-    .dmc-timeline
-      width calc(512px - 240px)
-      // background-color
-      padding 9px 8px 9px 0
-      //position absolute
-      //bottom 0
+    .dmc-timeline .ot-container
+      padding 9px 0
 </style>

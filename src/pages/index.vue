@@ -19,6 +19,7 @@
                 leave-active-class="animated zoomOut">
       <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
     </transition>
+    <observation-time v-if="!isMainControlDocked"></observation-time>
     <q-modal
         id="modal-connection-status"
         v-model="modalVisible"
@@ -58,7 +59,7 @@ import DataflowViewer from 'components/DataflowViewer.vue';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
-
+import ObservationTime from 'components/ObservationTime.vue';
 import { colors } from 'quasar';
 import KlabPresentation from 'components/KlabPresentation';
 import 'ol/ol.css';
@@ -76,6 +77,7 @@ export default {
     InputRequestModal,
     ScaleChangeDialog,
     KlabPresentation,
+    ObservationTime,
   },
   data() {
     return {
