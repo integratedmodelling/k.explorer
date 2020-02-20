@@ -242,7 +242,13 @@ export default {
     commit('SET_MODIFICATIONS_TASK', task);
   },
 
+  /**
+   * Set the timestamp rounding it to nearest integer
+   */
   setTimestamp: ({ commit }, timestamp) => {
+    if (timestamp && timestamp !== -1) {
+      timestamp = Math.round(timestamp);
+    }
     commit('SET_TIMESTAMP', timestamp);
   },
 

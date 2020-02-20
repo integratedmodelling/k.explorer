@@ -62,7 +62,7 @@
             </div>
             <div
               class="ot-loaded-time"
-              :style="{ width: `calc(${calculatePosition(loadedTime)}px + 6px)` }"
+              :style="{ width: loadedTime === 0 ? 0 : `calc(${calculatePosition(loadedTime)}px + 4px)` }"
             ></div>
             <!--
             <div

@@ -6,6 +6,12 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.10.2
+### Added
+- Time selector
+## Improvements
+- Download of "layer" is linked to timestamp selected in this moment
+
 ## 0.10.1 - 2020-01-31
 ## Solved
 - Problem with context mask due to a mistake in declaring dependencies with ol library
