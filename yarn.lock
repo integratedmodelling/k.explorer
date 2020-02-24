@@ -2773,9 +2773,9 @@ dot-prop@^4.1.1:
     is-obj "^1.0.0"
 
 draggable-vue-directive@^2.0.2:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/draggable-vue-directive/-/draggable-vue-directive-2.0.6.tgz#dc967d005375289a0e22b4f049a594d5edfb8ffd"
-  integrity sha512-ijgu2gxuQW8ym3mebbgXH7pyVcUWxTUGI8Se7kcLajK0/Tppo0WnfDQVmKcQMrheCnDGnSgcyOeoL1G8KWhr1Q==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/draggable-vue-directive/-/draggable-vue-directive-2.1.0.tgz#de7b38e258a85ed8e0a3c756c41f8cea5725a396"
+  integrity sha512-LkzZQtql16Fvadesl9pbd3ib6e3fek0FbPfpmLU8a8k6zxrMw+SdSVdPFm4bYVtS3jAcDA/JpXAWts9SMIM7xA==
 
 duplexer@^0.1.1:
   version "0.1.1"

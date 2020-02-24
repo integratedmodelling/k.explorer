@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container" id="mc-container" class="print-hide small" v-show="!isDrawMode">
+  <div ref="main-control-container" ondragstart="return false;" id="mc-container" class="print-hide small" v-show="!isDrawMode">
     <transition
       appear
       enter-active-class="animated fadeInLeft"

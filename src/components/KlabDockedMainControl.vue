@@ -3,6 +3,7 @@
     id="dmc-container"
     class="full-height"
     :class="{'dmc-dragging': dragging, 'dmc-large-mode': searchIsFocused && largeMode > 0 }"
+    ondragstart="return false;"
   >
     <klab-breadcrumbs></klab-breadcrumbs>
     <klab-search-bar
