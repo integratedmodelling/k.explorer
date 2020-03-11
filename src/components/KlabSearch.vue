@@ -139,7 +139,9 @@ export default {
         return this.searchInput ? this.searchInput.$refs.input.style.color : 'black';
       },
       set(color) {
-        this.searchInput.$refs.input.style.color = color;
+        if (this.searchInput.$refs.input) {
+          this.searchInput.$refs.input.style.color = color;
+        }
       },
     },
   },
@@ -305,8 +307,11 @@ export default {
             this.acceptFreeText();
           } else if (this.suggestionShowed) { // take the first or the selected one
             const selectedIdx = this.autocompleteEl.keyboardIndex === -1 ? 0 : this.autocompleteEl.keyboardIndex;
-            this.autocompleteEl.setValue(this.autocompleteEl.results[selectedIdx]);
-            this.searchHistoryIndex = -1;
+            const selectedEl = this.autocompleteEl.results[selectedIdx];
+            if (!selectedEl.separator) {
+              this.autocompleteEl.setValue(selectedEl);
+              this.searchHistoryIndex = -1;
+            }
           } else if (!this.askForSuggestion()) {
             this.$q.notify({
               message: this.$t('messages.noSpaceAllowedInSearch'),
