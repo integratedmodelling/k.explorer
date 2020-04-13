@@ -172,4 +172,9 @@ export default {
   largeMode: 0, // search bar steps 0: normal; >0: larger
   helpBaseUrl: null,
   timeRunning: false,
+
+  /**
+   * View components coming from k.LAb
+   */
+  viewComponents: [],
 };

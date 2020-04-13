@@ -167,6 +167,10 @@ const PARSERS = {
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Network status received: ${JSON.stringify(message, null, 4)}`);
   },
+  [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
+    dispatch('view/addViewComponent', component, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Created view compoment received: ${JSON.stringify(component, null, 4)}`);
+  },
 };
 
 /**

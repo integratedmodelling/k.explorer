@@ -1,4 +1,4 @@
-import { pushElementInFixedQueue } from 'shared/Helpers';
+import { pushElementInFixedQueue, findNodeById } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 
@@ -333,5 +333,22 @@ export default {
 
   SET_TIME_RUNNING: (state, timeRunning) => {
     state.timeRunning = timeRunning;
+  },
+
+  ADD_VIEW_COMPONENT: (state, component) => {
+    if (component.id === null || component.parentId === null) {
+      state.viewComponents.push({
+        ...component,
+        children: [],
+      });
+    } else {
+      const parent = findNodeById(state.viewComponents, component.parentId);
+      if (parent != null) {
+        parent.children.push({
+          ...component,
+          children: [],
+        });
+      }
+    }
   },
 };

@@ -340,4 +340,8 @@ export default {
   setTimeRunning: ({ commit }, timeRunning) => {
     commit('SET_TIME_RUNNING', timeRunning);
   },
+
+  addViewComponent: ({ commit }, component) => {
+    commit('ADD_VIEW_COMPONENT', component);
+  },
 };

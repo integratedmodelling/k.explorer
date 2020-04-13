@@ -68,6 +68,7 @@ export const IN = Object.freeze({
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
   CLASS_USERINTERFACE: 'UserInterface',
   CLASS_AUTHORIZATION: 'Authorization',
+  CLASS_VIEWACTOR: 'ViewActor',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
   TYPE_DATAFLOWSTATECHANGED: 'DataflowStateChanged',
@@ -82,6 +83,7 @@ export const IN = Object.freeze({
   TYPE_SCHEDULINGSTARTED: 'SchedulingStarted',
   TYPE_SCHEDULINGFINISHED: 'SchedulingFinished',
   TYPE_NETWORKSTATUS: 'NetworkStatus',
+  TYPE_CREATEVIEWCOMPONENT: 'CreateViewComponent',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -101,4 +103,5 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_SCHEDULERNOTIFICATION: 'SchedulerNotification',
   PAYLOAD_CLASS_NETWORKREFERENCE: 'NetworkReference',
   PAYLOAD_CLASS_EMPTY: 'String',
+  PAYLOAD_CLASS_VIEWCOMPONENT: 'ViewComponent',
 });

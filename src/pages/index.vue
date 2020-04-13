@@ -1,5 +1,6 @@
 <template>
   <q-page class="column">
+    <components-viewer></components-viewer>
     <div class="col row full-height" id="viewer-container">
       <keep-alive>
         <!-- <transition name="component-fade" mode="out-in"> -->
@@ -60,6 +61,7 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ObservationTime from 'components/ObservationTime.vue';
+import ComponentsViewer from 'components/KlabComponentsViewer.vue';
 import { colors } from 'quasar';
 import KlabPresentation from 'components/KlabPresentation';
 import 'ol/ol.css';
@@ -78,6 +80,7 @@ export default {
     ScaleChangeDialog,
     KlabPresentation,
     ObservationTime,
+    ComponentsViewer,
   },
   data() {
     return {
