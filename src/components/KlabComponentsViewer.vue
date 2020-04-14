@@ -47,14 +47,17 @@ export default {
           title: alert.title,
           message: alert.content,
         },
-        class: 'modal-no-backgroud',
+        class: {
+          'kcv-alert': true,
+        },
       });
     },
   },
   render(h) {
     if (this.viewComponents.length > 0) {
       const alerts = this.viewComponentsByType('Alerts');
-      return h('main', { class: 'cv-container' }, alerts.map(a => this.createAlert(h, a)));
+      return h('aside', {
+      }, alerts.map(a => this.createAlert(h, a)));
     }
     return null;
   },
@@ -62,6 +65,6 @@ export default {
 </script>
 
 <style lang="stylus">
-  .modal-backdrop
-    background-color transparent !important
+  .kcv-alert .modal-backdrop
+    background-color transparent
 </style>
