@@ -64,13 +64,14 @@ const PARSERS = {
   },
   [IN.TYPE_NEWOBSERVATION]: ({ payload: observation }, vuexContext) => {
     const { rootState, rootGetters, dispatch } = vuexContext;
-    if (rootState.stomp.tasks.findIndex(task => task.id === observation.taskId) === -1
-      && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.rootContextId) !== -1) {
+    const observationTask = rootState.stomp.tasks.find(task => task.id === observation.taskId);
+    if (typeof observationTask === 'undefined'
+      && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.contextId) !== -1) {
       // task not exists and context is one of possible, so I start a fake task
       dispatch('stomp/taskStart', {
         id: observation.taskId,
         description: FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION,
-        contextId: observation.rootContextId,
+        contextId: observation.contextId,
       }, { root: true });
       dispatch('view/addToStatusTexts', {
         id: observation.taskId,
@@ -101,12 +102,14 @@ const PARSERS = {
         addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR,
           `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`);
       }// else is the second message, so nothing to do
-    } else if (rootGetters['data/context'] !== null && rootGetters['data/context'].id === observation.rootContextId) {
+    } else if (rootGetters['data/context'] !== null && (
+      rootGetters['data/context'].id === observation.rootContextId
+      || (observationTask && rootGetters['data/context'].id === observationTask.contextId))) {
       // check if it is an observation linkable to actual context (checking rootContextId)
       addToKexplorerLog(
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
-        `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
+        `New observation received with id ${observation.id}, rootContextId ${observation.rootContextId} and contextId ${observation.contextId}`,
         JSON.stringify(observation, null, 4),
       );
       observation.notified = true; // needed in case of observation added to a reloaded context

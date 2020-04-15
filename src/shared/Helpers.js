@@ -143,6 +143,7 @@ export const getNodeFromObservation = (observation) => {
       isContainer: observation.isContainer,
       exportFormats: observation.exportFormats,
       rootContextId: observation.rootContextId,
+      contextId: observation.contextId,
       observationType: observation.observationType,
       noTick: observation.singleValue || observation.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS,
       ...(observation.isContainer && { childrenLoaded: 0 }),

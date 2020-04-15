@@ -141,7 +141,7 @@ export default {
     commit('SET_CONTEXT_CUSTOM_LABEL', contextCustomLabel);
   },
 
-  addObservation: ({ commit, state, dispatch }, {
+  addObservation: ({ commit, rootGetters, state, dispatch }, {
     observation,
     toTree = true,
     visible = false,
@@ -169,6 +169,15 @@ export default {
       observation.tsImages = [];
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
       observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
+
+      const task = rootGetters['stomp/tasks'].find(t => t.id === observation.taskId);
+      if (task) {
+        const { contextId } = task;
+        observation.contextId = contextId;
+      } else {
+        observation.contextId = observation.rootContextId;
+      }
+
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {

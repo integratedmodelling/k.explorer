@@ -138,7 +138,8 @@ export default {
       state.orphans.push(node);
       return;
     }
-    if (node.rootContextId !== context.id) {
+    const isRoot = context.id === context.rootContextId;
+    if ((isRoot && node.rootContextId !== context.id) || (!isRoot && node.contextId !== context.id)) {
       console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
     }
     if (context.id === node.id) {

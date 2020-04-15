@@ -142,9 +142,9 @@ export default {
           // isn't context?
           let parent = null;
           if (observation.parentId !== null) {
-            parent = findNodeById(rootGetters['data/tree'], observation.rootContextId);
+            parent = findNodeById(rootGetters['data/tree'], observation.contextId);
             if (typeof parent === 'undefined') {
-              console.warn(`Observation with id ${observation.id} has an invalid rootContextId: ${observation.rootContextId}`);
+              console.warn(`Observation with id ${observation.id} has an invalid contextId: ${observation.contextId}`);
               parent = null;
             }
           }
