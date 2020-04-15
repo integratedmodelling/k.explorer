@@ -119,15 +119,15 @@ export default {
             // is a map but...
             viewerType = VIEWER_COMPONENTS.VIEW_MAP;
             // i need WKT from parent
-            let parent = null;
+            let parent;
             if (observation.parentId === rootGetters['data/contextId']) {
               // parent is context
               parent = rootGetters['data/context'];
             } else {
               // search for parent in tree
-              parent = findNodeById(rootGetters['data/tree'], observation.parentId);
+              parent = rootGetters['data/observations'].find(o => o.id === observation.parentId);
             }
-            if (parent !== null) {
+            if (typeof parent !== 'undefined') {
               observation.encodedShape = parent.encodedShape;
               ({ label } = parent);
             } else {

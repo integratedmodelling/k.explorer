@@ -320,14 +320,15 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
   if (isRaster) {
-    if (observation.parentId === store.getters['data/context'].id) {
-      spatialProjection = store.getters['data/context'].spatialProjection;
+    const context = store.getters['data/context'];
+    if (observation.parentId === context.id) {
+      spatialProjection = context.spatialProjection;
     } else {
-      const parent = findNodeById(store.state.data.tree, observation.parentId);
-      if (parent !== null && parent.spatialProjection) {
+      const parent = store.getters['data/observations'].find(o => o.id === observation.parentId);
+      if (parent && parent.spatialProjection) {
         spatialProjection = parent.spatialProjection;
       } else {
-        console.debug(`Unknown parent with id ${observation.parentId}`);
+        spatialProjection = context.spatialProjection;
       }
     }
   } else {
