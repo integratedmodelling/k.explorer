@@ -496,7 +496,7 @@ export default {
             offset: 0,
             count: this.childrenToAskFor,
             total: expandedNode.childrenCount,
-            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.isContainer ? expandedNode.ticked : false,
           });
         }
       }
