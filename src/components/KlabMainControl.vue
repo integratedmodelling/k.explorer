@@ -1,5 +1,5 @@
 <template>
-  <div ref="main-control-container" ondragstart="return false;" id="mc-container" class="print-hide small" v-show="!isDrawMode">
+  <div ref="main-control-container" id="mc-container" class="print-hide small" v-show="!isDrawMode">
     <transition
       appear
       enter-active-class="animated fadeInLeft"
@@ -46,6 +46,7 @@
         :style="{
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
         }"
+        ondragstart="return false;"
       >
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
