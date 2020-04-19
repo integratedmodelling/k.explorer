@@ -118,41 +118,46 @@ export default {
           } else {
             // is a map but...
             viewerType = VIEWER_COMPONENTS.VIEW_MAP;
-            // i need WKT from parent
-            let parent;
-            if (observation.parentId === rootGetters['data/contextId']) {
-              // parent is context
-              parent = rootGetters['data/context'];
-            } else {
-              // search for parent in tree
-              parent = rootGetters['data/observations'].find(o => o.id === observation.parentId);
-            }
-            if (typeof parent !== 'undefined') {
-              observation.encodedShape = parent.encodedShape;
-              ({ label } = parent);
-            } else {
-              console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
+            if (!observation.encodedShape) {
+              // i need WKT from parent if I don't have it
+              let parent;
+              if (observation.parentId === rootGetters['data/contextId']) {
+                // parent is context
+                parent = rootGetters['data/context'];
+              } else {
+                // search for parent in tree
+                parent = rootGetters['data/observations'].find(o => o.id === observation.parentId);
+              }
+              if (typeof parent !== 'undefined') {
+                observation.encodedShape = parent.encodedShape;
+                ({ label } = parent);
+              } else {
+                console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
+              }
             }
           }
           break;
         case OBSERVATION_CONSTANTS.TYPE_INITIAL:
-        case OBSERVATION_CONSTANTS.TYPE_SUBJECT:
         case OBSERVATION_CONSTANTS.TYPE_RELATIONSHIP: {
           viewerType = VIEWER_COMPONENTS.VIEW_MAP;
           // isn't context?
           let parent = null;
           if (observation.parentId !== null) {
-            parent = findNodeById(rootGetters['data/tree'], observation.contextId);
+            parent = findNodeById(rootGetters['data/tree'], observation.parentId);
             if (typeof parent === 'undefined') {
-              console.warn(`Observation with id ${observation.id} has an invalid contextId: ${observation.contextId}`);
+              console.warn(`Observation with id ${observation.id} has an invalid unknown parent: ${observation.parentId}`);
               parent = null;
             }
           }
-          if (parent !== null) {
+          if (parent) {
             ({ label } = parent);
           } else {
             ({ label } = observation);
           }
+          break;
+        }
+        case OBSERVATION_CONSTANTS.TYPE_SUBJECT: {
+          viewerType = VIEWER_COMPONENTS.VIEW_MAP;
           break;
         }
         case OBSERVATION_CONSTANTS.TYPE_CONFIGURATION:
