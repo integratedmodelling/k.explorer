@@ -50,7 +50,7 @@ const PARSERS = {
   },
   [IN.TYPE_DATAFLOWDOCUMENTATION]: ({ payload }, { dispatch }) => {
     if (payload && payload !== null && payload.dataflowId && payload.htmlDescription) {
-      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', JSON.stringify(payload, null, 4));
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', payload);
       dispatch('data/setDataflowInfo', {
         id: payload.dataflowId,
         html: payload.htmlDescription,
@@ -59,7 +59,7 @@ const PARSERS = {
         averageRating: payload.averageRating,
       }, { root: true });
     } else {
-      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, `Strange payload of dataflow element info received: ${JSON.stringify(payload, null, 4)}`);
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, 'Strange payload of dataflow element info received', payload);
     }
   },
   [IN.TYPE_NEWOBSERVATION]: ({ payload: observation }, vuexContext) => {
@@ -81,7 +81,7 @@ const PARSERS = {
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
         'Received an observation of previous context with no task associated. Session was been reloaded?',
-        JSON.stringify(observation, null, 4),
+        observation,
       );
     }
     // check if is context and is a new context
@@ -92,7 +92,7 @@ const PARSERS = {
           dispatch,
           MESSAGE_TYPES.TYPE_DEBUG,
           `New context received with id ${observation.id}`,
-          JSON.stringify(observation, null, 4),
+          observation,
         );
         dispatch('data/setContext', { context: observation }, { root: true });
         if (typeof observation.scaleReference !== 'undefined' && observation.scaleReference !== null) {
@@ -100,7 +100,7 @@ const PARSERS = {
         }
       } else {
         addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR,
-          `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`);
+          `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`, observation);
       }// else is the second message, so nothing to do
     } else if (rootGetters['data/context'] !== null && (
       rootGetters['data/context'].id === observation.rootContextId
@@ -110,7 +110,7 @@ const PARSERS = {
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
         `New observation received with id ${observation.id}, rootContextId ${observation.rootContextId} and contextId ${observation.contextId}`,
-        JSON.stringify(observation, null, 4),
+        observation,
       );
       observation.notified = true; // needed in case of observation added to a reloaded context
       dispatch('data/addObservation', { observation }, { root: true });
@@ -119,16 +119,17 @@ const PARSERS = {
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
         'Received an observation of different context',
-        JSON.stringify(observation, null, 4),
+        observation, null, 4,
       );
     }
   },
   [IN.TYPE_MODIFIEDOBSERVATION]: ({ payload: modificationEvent }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Received a modification event: ${JSON.stringify(modificationEvent, null, 2)}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG,
+      'Received a modification event', modificationEvent);
     dispatch('data/addModificationEvent', modificationEvent, { root: true });
   },
   [IN.TYPE_QUERYRESULT]: ({ payload: results }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received search results', JSON.stringify(results));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received search results', results);
     dispatch('data/storeSearchResult', results, { root: true });
   },
   [IN.TYPE_RESETCONTEXT]: (message, { dispatch }) => {
@@ -136,7 +137,7 @@ const PARSERS = {
     dispatch('data/resetContext', null, { root: true });
   },
   [IN.TYPE_SCALEDEFINED]: ({ payload: scaleReference }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scale reference', scaleReference);
     dispatch('data/setScaleReference', scaleReference, { root: true });
   },
   [IN.TYPE_USERINPUTREQUESTED]: (message, { dispatch }) => {
@@ -144,11 +145,11 @@ const PARSERS = {
     dispatch('view/inputRequest', message, { root: true });
   },
   [IN.TYPE_SCHEDULINGSTARTED]: ({ payload: scheduling }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling started', JSON.stringify(scheduling));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling started', scheduling);
     dispatch('data/setScheduling', scheduling, { root: true });
   },
   [IN.TYPE_SCHEDULINGFINISHED]: ({ payload: scheduling }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling finished', JSON.stringify(scheduling));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling finished', scheduling);
     dispatch('data/setScheduling', scheduling, { root: true });
   },
   // k.LAB log messages
@@ -168,11 +169,11 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project opened in k.Modeler');
   },
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Network status received: ${JSON.stringify(message, null, 4)}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Network status received', message);
   },
   [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
     dispatch('view/addViewComponent', component, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Created view compoment received: ${JSON.stringify(component, null, 4)}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Created view compoment received', component);
   },
 };
 
