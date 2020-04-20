@@ -645,6 +645,48 @@ export const SCALE_UNITS = [
   },
 ];
 
+export const MODIFICATIONS_TYPE = {
+  /**
+   * Spatial context has changed location
+   */
+  SPATIAL_TRANSLATION: 'SpatialTranslation',
+
+  /**
+   * Spatial context has changed shape
+   */
+  SPATIAL_CHANGE: 'SpatialChange',
+
+  /**
+   * Observation has been terminated and is no longer in the context
+   */
+  TERMINATION: 'Termination',
+
+  /**
+   * Number of children has changed: newSize contains the new number
+   */
+  STRUCTURE_CHANGE: 'StructureChange',
+
+  /**
+   * Name of object has changed
+   */
+  NAME_CHANGE: 'NameChange',
+
+  /**
+   * Attributes linked to an object or a folder have changed
+   */
+  ATTRIBUTE_CHANGE: 'AttributeChange',
+
+  /**
+   * Values of a state have changed
+   */
+  VALUE_CHANGE: 'ValueChange',
+
+  /**
+   * Observation becomes "main"
+   */
+  BRING_FORWARD: 'BringForward',
+};
+
 export const TIMES = {
   DEFAULT_STEP: 24 * 60 * 60 * 1000,
   DEFAULT_INTERVAL: 100,
@@ -696,6 +738,7 @@ export default {
   CUSTOM_EVENTS,
   SCALE_TYPE,
   TIMES,
+  MODIFICATIONS_TYPE,
   SETTING_NAMES,
   HELP_CONSTANTS,
 };

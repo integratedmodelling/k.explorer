@@ -1,6 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
 
 export default {
   /**
@@ -241,7 +241,32 @@ export default {
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
-    commit('ADD_MODIFICATION_EVENT', modificationEvent);
+    const context = state.contexts.peek();
+    if (context && context.id === modificationEvent.contextId) {
+      const node = findNodeById(state.tree, modificationEvent.id);
+      if (node) {
+        const payload = {
+          event: modificationEvent,
+          node,
+        };
+        switch (modificationEvent.type) {
+          case MODIFICATIONS_TYPE.BRING_FORWARD: {
+            commit('ADD_MODIFICATION_EVENT', payload);
+            dispatch('changeTreeOfNode', { id: node.id, node, isUserTree: true });
+            // commit('UPDATE_USER_NODE', { node, userNode: true });
+            break;
+          }
+          default: {
+            commit('ADD_MODIFICATION_EVENT', payload);
+            break;
+          }
+        }
+      } else {
+        console.warn(`Received a modification event but there is no observation with id ${modificationEvent.id}`);
+      }
+    } else {
+      console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
+    }
     if (state.modificationsTask === null) {
       dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
     }
@@ -352,8 +377,10 @@ export default {
     }
   },
 
-  changeTreeOfNode({ commit, state }, { id, isUserTree }) {
-    const node = findNodeById(state.tree, id);
+  changeTreeOfNode({ commit, state }, { id, isUserTree, node = null }) {
+    if (node === null) {
+      node = findNodeById(state.tree, id);
+    }
     if (isUserTree) {
       if (findNodeById(state.userTree, id) === null) {
         commit('UPDATE_USER_NODE', { node, userNode: true });

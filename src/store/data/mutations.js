@@ -1,5 +1,5 @@
 import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
-import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES, MODIFICATIONS_TYPE } from 'shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -92,19 +92,20 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
-  ADD_MODIFICATION_EVENT: (state, modificationEvent) => {
-    const context = state.contexts.peek();
-    if (context && context.id === modificationEvent.contextId) {
-      const node = findNodeById(state.tree, modificationEvent.id);
-      if (node) {
-        node.dynamic = true;
-        state.modificationEvents.push(modificationEvent);
-      } else {
-        console.warn(`Received a modification event but there is no observation with id ${modificationEvent.id}`);
+  ADD_MODIFICATION_EVENT: (state, payload) => {
+    switch (payload.event.type) {
+      case MODIFICATIONS_TYPE.BRING_FORWARD: {
+        const observation = state.observations.find(o => o.id === payload.node.id);
+        observation.main = true;
+        payload.node.main = true;
+        break;
       }
-    } else {
-      console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
+      default: {
+        payload.node.dynamic = true; // TODO: check the type of modification of time
+        break;
+      }
     }
+    state.modificationEvents.push(payload.event);
   },
 
   SET_MODIFICATIONS_TASK: (state, task) => {
