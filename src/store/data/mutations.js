@@ -322,6 +322,7 @@ export default {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
     state.scaleReference = scaleReference;
+    console.info(`Scale reference setted: ${JSON.stringify(scaleReference, null, 2)}`);
   },
 
   UPDATE_SCALE_REFERENCE: (state, scaleReference) => {

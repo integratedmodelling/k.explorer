@@ -58,7 +58,7 @@ export default {
       // remove children so no reactive observations are loaded
       await dispatch('setContext', { context: { ...context, children: [] } });
       commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
-      console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
+      console.debug(`Context received with id ${context.id}`);
       // console.dir(context);
       if (context.children.length > 0) {
         const tasks = [];
@@ -485,7 +485,6 @@ export default {
   },
 
   setScaleReference: ({ commit }, scaleReference) => {
-    console.debug(`Set scale reference: ${JSON.stringify(scaleReference, null, 2)}`);
     commit('SET_SCALE_REFERENCE', scaleReference);
     // commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
   },
