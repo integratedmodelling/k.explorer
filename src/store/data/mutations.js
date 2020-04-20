@@ -1,5 +1,5 @@
 import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
-import { SCALE_TYPE, SCALE_VALUES, MODIFICATIONS_TYPE } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -92,20 +92,28 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
-  ADD_MODIFICATION_EVENT: (state, payload) => {
-    switch (payload.event.type) {
-      case MODIFICATIONS_TYPE.BRING_FORWARD: {
-        const observation = state.observations.find(o => o.id === payload.node.id);
-        observation.main = true;
-        payload.node.main = true;
-        break;
-      }
-      default: {
-        payload.node.dynamic = true; // TODO: check the type of modification of time
-        break;
-      }
-    }
-    state.modificationEvents.push(payload.event);
+  MOD_BRING_FORWARD: (state, node) => {
+    const observation = state.observations.find(o => o.id === node.id);
+    observation.main = true;
+    node.main = true;
+  },
+
+  MOD_STRUCTURE_CHANGE: (state, { node, modificationEvent }) => {
+    const observation = state.observations.find(o => o.id === modificationEvent.id);
+    observation.childrenCount = modificationEvent.newSize;
+    observation.empty = false;
+    node.childrenCount = modificationEvent.newSize;
+    node.tickable = true;
+    node.disabled = false;
+    node.empty = false;
+  },
+
+  MOD_VALUE_CHANGE: (state, node) => {
+    node.dynamic = true;
+  },
+
+  ADD_MODIFICATION_EVENT: (state, event) => {
+    state.modificationEvents.push(event);
   },
 
   SET_MODIFICATIONS_TASK: (state, task) => {

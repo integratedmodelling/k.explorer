@@ -244,31 +244,31 @@ export default {
     const context = state.contexts.peek();
     if (context && context.id === modificationEvent.contextId) {
       const node = findNodeById(state.tree, modificationEvent.id);
-      if (node) {
-        const payload = {
-          event: modificationEvent,
-          node,
-        };
-        switch (modificationEvent.type) {
-          case MODIFICATIONS_TYPE.BRING_FORWARD: {
-            commit('ADD_MODIFICATION_EVENT', payload);
-            dispatch('changeTreeOfNode', { id: node.id, node, isUserTree: true });
-            // commit('UPDATE_USER_NODE', { node, userNode: true });
-            break;
-          }
-          default: {
-            commit('ADD_MODIFICATION_EVENT', payload);
-            break;
-          }
+      switch (modificationEvent.type) {
+        case MODIFICATIONS_TYPE.BRING_FORWARD: {
+          commit('MOD_BRING_FORWARD', node);
+          dispatch('changeTreeOfNode', { id: modificationEvent.id, isUserTree: true });
+          break;
         }
-      } else {
-        console.warn(`Received a modification event but there is no observation with id ${modificationEvent.id}`);
+        case MODIFICATIONS_TYPE.VALUE_CHANGE:
+          commit('MOD_VALUE_CHANGE', node);
+          commit('ADD_MODIFICATION_EVENT', modificationEvent);
+          if (state.modificationsTask === null) {
+            dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
+          }
+          break;
+        case MODIFICATIONS_TYPE.STRUCTURE_CHANGE:
+          commit('MOD_STRUCTURE_CHANGE', { node, modificationEvent });
+          if (node.childrenCount > 0 && node.children.length === 0) {
+            dispatch('addStub', node);
+          }
+          break;
+        default:
+          console.warn(`Unknown modification event: ${modificationEvent.type}`);
+          break;
       }
     } else {
       console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
-    }
-    if (state.modificationsTask === null) {
-      dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
     }
   },
 
@@ -377,10 +377,8 @@ export default {
     }
   },
 
-  changeTreeOfNode({ commit, state }, { id, isUserTree, node = null }) {
-    if (node === null) {
-      node = findNodeById(state.tree, id);
-    }
+  changeTreeOfNode({ commit, state }, { id, isUserTree }) {
+    const node = findNodeById(state.tree, id);
     if (isUserTree) {
       if (findNodeById(state.userTree, id) === null) {
         commit('UPDATE_USER_NODE', { node, userNode: true });
