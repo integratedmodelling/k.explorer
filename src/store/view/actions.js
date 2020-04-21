@@ -116,17 +116,24 @@ export default {
             // if valueCount === 1, is added to tree but is not something to view in viewer
             viewerType = null;
           } else {
-            // is a map but...
+            // viewer is a map but i need WKT from parent if I don't have it
             viewerType = VIEWER_COMPONENTS.VIEW_MAP;
             if (!observation.encodedShape) {
-              // i need WKT from parent if I don't have it
               let parent;
               if (observation.parentId === rootGetters['data/contextId']) {
                 // parent is context
                 parent = rootGetters['data/context'];
               } else {
-                // search for parent in tree
-                parent = rootGetters['data/observations'].find(o => o.id === observation.parentId);
+                const findEncodedShape = (child) => {
+                  const p = rootGetters['data/observations'].find(o => o.id === child.parentId);
+                  if (p.encodedShape) {
+                    parent = p;
+                  } else {
+                    findEncodedShape(p);
+                  }
+                };
+                // search for encoded shape in hierarchy
+                findEncodedShape(observation);
               }
               if (typeof parent !== 'undefined') {
                 observation.encodedShape = parent.encodedShape;

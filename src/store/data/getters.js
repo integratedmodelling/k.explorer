@@ -33,14 +33,14 @@ export default {
   hasObservations: state => state.observations.length !== 0,
   visibleObservations: state => state.observations.filter(observation => observation.visible),
 
-  modificationEvents: state => state.modificationEvents,
-  modificationEventsOfObservation: state => id => state.modificationEvents.filter(e => e.id === id),
-  modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
+  timeEvents: state => state.timeEvents,
+  timeEventsOfObservation: state => id => state.timeEvents.filter(e => e.id === id),
+  timeEventsUntil: state => timestamp => state.timeEventsEvents.filter(e => e.timestamp <= timestamp),
   modificationsTask: state => state.modificationsTask,
 
   visibleEvents: (state) => {
     const ids = state.observations.filter(observation => observation.visible).map(o => o.id);
-    return state.modificationEvents.filter(me => ids.includes(me.id));
+    return state.timeEvents.filter(me => ids.includes(me.id));
   },
 
   timestamp: state => state.timestamp,

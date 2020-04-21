@@ -191,7 +191,7 @@ export default {
       'contextReloaded',
       'contextId',
       'observations',
-      'modificationEventsOfObservation',
+      'timeEventsOfObservation',
       'timestamp',
     ]),
     ...mapGetters('stomp', [
@@ -384,7 +384,7 @@ export default {
           this.fitMap(node, meta, geometry);
         }
       }
-      if (this.modificationEventsOfObservation(node.id).length > 0) {
+      if (this.timeEventsOfObservation(node.id).length > 0) {
         this.setTimestamp(-1);
       }
     },

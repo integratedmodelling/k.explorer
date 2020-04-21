@@ -235,7 +235,7 @@ export default {
    *  "terminated": true | false (is the observation terminated?)
    * }
    */
-  modificationEvents: [],
+  timeEvents: [],
   modificationsTask: null,
 
   /**

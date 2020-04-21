@@ -1,5 +1,5 @@
 <template>
-  <div class="ot-wrapper" :class="{ 'ot-no-timestamp': modificationEvents.length === 0 || timestamp === -1 }">
+  <div class="ot-wrapper" :class="{ 'ot-no-timestamp': timeEvents.length === 0 || timestamp === -1 }">
     <div
       class="ot-container"
       :class="{ 'ot-active-timeline': visibleEvents.length > 0, 'ot-docked': isMainControlDocked,  }"
@@ -16,7 +16,7 @@
         <div class="ot-date-container">
           <div
             class="ot-date ot-date-start col"
-            :class="{ 'ot-with-modifications': modificationEvents.length !== 0 ,'ot-date-loaded': loadedTime > 0 }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0 ,'ot-date-loaded': loadedTime > 0 }"
             @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
             @dblclick="onDblClick($event, () => { changeTimestamp(-1); })"
           >
@@ -27,7 +27,7 @@
               color="mc-main"
             ></q-icon>
             <q-tooltip
-              v-if="modificationEvents.length !== 0"
+              v-if="timeEvents.length !== 0"
               :offset="[0, 8]"
               self="top middle"
               anchor="bottom middle"
@@ -44,7 +44,7 @@
         >
           <div
             class="ot-timeline"
-            :class="{ 'ot-with-modifications': modificationEvents.length !== 0 }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0 }"
             ref="ot-timeline"
             @mousemove="moveOnTimeline"
             @mouseenter="timelineActivated = true"
@@ -78,7 +78,7 @@
             </div>
 
             <q-tooltip
-              v-if="modificationEvents.length !== 0"
+              v-if="timeEvents.length !== 0"
               :offset="[0, 15]"
               self="top middle"
               anchor="bottom middle"
@@ -94,7 +94,7 @@
             @click.self="changeTimestamp(scaleReference.end)"
             :class="{ 'ot-date-loaded': loadedTime === scaleReference.end }"
           ><q-tooltip
-            v-if="modificationEvents.length !== 0"
+            v-if="timeEvents.length !== 0"
             :offset="[0, 8]"
             self="top middle"
             anchor="bottom middle"
@@ -144,7 +144,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'scaleReference',
-      'modificationEvents',
+      'timeEvents',
       'timestamp',
       'modificationsTask',
       'hasContext',
@@ -212,7 +212,7 @@ export default {
       return date;
     },
     changeTimestamp(date) {
-      if (this.modificationEvents.length === 0) {
+      if (this.timeEvents.length === 0) {
         return;
       }
       if (date > this.scaleReference.end) {
@@ -276,7 +276,7 @@ export default {
     },
   },
   watch: {
-    modificationEvents(newValue) {
+    timeEvents(newValue) {
       if (!this.interval) {
         this.calculateInterval();
       }

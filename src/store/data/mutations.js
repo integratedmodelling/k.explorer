@@ -37,7 +37,7 @@ export default {
     state.nextScale = null;
     state.crossingIDL = false;
     state.contextCustomLabel = null;
-    state.modificationEvents = [];
+    state.timeEvents = [];
     state.timestamp = -1;
     if (context === null) {
       state.contextsHistory = [];
@@ -112,8 +112,8 @@ export default {
     node.dynamic = true;
   },
 
-  ADD_MODIFICATION_EVENT: (state, event) => {
-    state.modificationEvents.push(event);
+  ADD_TIME_EVENT: (state, event) => {
+    state.timeEvents.push(event);
   },
 
   SET_MODIFICATIONS_TASK: (state, task) => {

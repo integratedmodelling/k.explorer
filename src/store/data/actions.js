@@ -252,7 +252,7 @@ export default {
         }
         case MODIFICATIONS_TYPE.VALUE_CHANGE:
           commit('MOD_VALUE_CHANGE', node);
-          commit('ADD_MODIFICATION_EVENT', modificationEvent);
+          commit('ADD_TIME_EVENT', modificationEvent);
           if (state.modificationsTask === null) {
             dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
           }

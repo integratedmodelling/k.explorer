@@ -163,8 +163,8 @@ export default {
       'session',
       'timestamp',
       'scaleReference',
-      'modificationEvents',
-      'modificationEventsOfObservation',
+      'timeEvents',
+      'timeEventsOfObservation',
     ]),
     ...mapGetters('view', [
       'contextGeometry',
@@ -284,7 +284,7 @@ export default {
     findModificationTimestamp(observationId, timestamp) {
       if (timestamp !== -1) {
         // find the fist step of this observation
-        const modifications = observationId === null ? this.modificationEvents : this.modificationEventsOfObservation(observationId);
+        const modifications = observationId === null ? this.timeEvents : this.timeEventsOfObservation(observationId);
         if (modifications.length > 0) {
           return modifications.reduce((result, me) => {
             const diff = timestamp - me.timestamp;
@@ -339,7 +339,7 @@ export default {
 
     bufferLayerImages(buffer) {
       console.debug(`Ask preload from ${buffer.start} to ${buffer.stop}`);
-      const modifications = this.modificationEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
+      const modifications = this.timeEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
       const mtll = modifications.length;
       if (mtll > 0) {
         const loadImage = (index) => {
