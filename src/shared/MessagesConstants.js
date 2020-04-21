@@ -38,6 +38,7 @@ export const OUT = Object.freeze({
   TYPE_DATAFLOWNODERATING: 'DataflowNodeRating',
   TYPE_CHANGESETTING: 'ChangeSetting',
   TYPE_USERINPUTPROVIDED: 'UserInputProvided',
+  TYPE_WATCHOBSERVATION: 'WatchObservation',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -51,6 +52,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_CONTEXTUALIZATIONREQUEST: 'ContextualizationRequest',
   PAYLOAD_CLASS_SETTINGCHANGEREQUEST: 'SettingChangeRequest',
   PAYLOAD_CLASS_USERINPUTRESPONSE: 'UserInputResponse',
+  PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
 });
 

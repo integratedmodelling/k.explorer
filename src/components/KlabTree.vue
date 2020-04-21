@@ -181,6 +181,7 @@ export default {
       showPopover: null,
       dragStart: false,
       dragEnter: 0,
+      watchedObservation: [],
       OBSERVATION_CONSTANTS,
     };
   },
@@ -465,7 +466,6 @@ export default {
     },
   },
   watch: {
-
     tree() {
       this.treeSizeChangeListener();
     },
@@ -474,13 +474,34 @@ export default {
         this.selected = value;
       }
     },
-    expanded(expanded, oldExpanded) {
-      this.$store.state.view.treeExpanded = expanded;
-      if (oldExpanded >= expanded) {
+    expanded(newExpanded, oldExpanded) {
+      this.$store.state.view.treeExpanded = newExpanded;
+      if (oldExpanded.length === newExpanded.length) {
         return;
       }
-      const { [expanded.length - 1]: selectedId } = expanded;
+      if (oldExpanded.length > newExpanded.length) {
+        // stop watch
+        const contractedId = oldExpanded.filter(n => newExpanded.indexOf(n) < 0)[0];
+        const contractedNode = findNodeById(this.tree, contractedId);
+        this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+          { active: false, observationId: contractedId, rootContextId: contractedNode.rootContextId },
+          this.$store.state.data.session,
+        ).body);
+        this.watchedObservation.splice(this.watchedObservation.findIndex(wo => wo.observationId === contractedId), 1);
+        console.info(`Stop watching observation ${contractedId} with rootContextId ${contractedNode.rootContextId}`);
+        return;
+      }
+      const { [newExpanded.length - 1]: selectedId } = newExpanded;
       const expandedNode = findNodeById(this.tree, selectedId);
+      this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+        { active: true, observationId: selectedId, rootContextId: expandedNode.rootContextId },
+        this.$store.state.data.session,
+      ).body);
+      this.watchedObservation.push({
+        observationId: selectedId,
+        rootContextId: expandedNode.rootContextId,
+      });
+      console.info(`Start watching observation ${selectedId} with rootContextId ${expandedNode.rootContextId}`);
       if (expandedNode && expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
         // remove the stub
         expandedNode.children.splice(0, 1);
@@ -629,6 +650,15 @@ export default {
 
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.UPDATE_FOLDER, this.updateFolderListener);
+    if (this.watchedObservation.length > 0) {
+      this.watchedObservation.forEach((wo) => {
+        this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+          { active: false, observationId: wo.observationId, rootContextId: wo.rootContextId },
+          this.$store.state.data.session,
+        ).body);
+        console.info(`Stop watching observation ${wo.observationId} with rootContextId ${wo.rootContextId}`);
+      });
+    }
   },
 
 };

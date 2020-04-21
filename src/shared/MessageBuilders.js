@@ -251,4 +251,16 @@ export const MESSAGES_BUILDERS = {
     session,
     messageId,
   ),
+
+  WATCH_REQUEST: ({ active, observationId, rootContextId }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_WATCHOBSERVATION,
+    OUT.PAYLOAD_CLASS_WATCHREQUEST,
+    {
+      active,
+      observationId,
+      rootContextId,
+    },
+    session,
+  ),
 };
