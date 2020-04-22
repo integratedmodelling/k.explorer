@@ -300,15 +300,15 @@ export default {
     notified = true,
   }) => new Promise((resolve) => {
     console.debug(`Ask for children of node ${parentId}: count:${count} / offset ${offset}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${parentId}`, {
-      params: {
-        count,
-        offset,
-      },
-    })
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
+    dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${parentId}`, {
+        params: {
+          count,
+          offset,
+        },
+      })
+        .then(({ data }) => {
+          if (data && data.length > 0) {
             data.forEach((child, index, array) => {
               child.notified = notified;
               child.siblingsCount = total; // the total of element for [INDEX] of [TOTAL]
@@ -327,23 +327,23 @@ export default {
                       total,
                     });
                   }
-                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
                   resolve();
                 }
               });
+              const setChildrenLoaded = (tree) => {
+                const parent = findNodeById(tree, parentId);
+                if (parent && parent !== null) {
+                  parent.childrenLoaded += data.length;
+                }
+              };
+              setChildrenLoaded(state.tree);
+              setChildrenLoaded(state.userTree);
             });
-            const setChildrenLoaded = (tree) => {
-              const parent = findNodeById(tree, parentId);
-              if (parent && parent !== null) {
-                parent.childrenLoaded += data.length;
-              }
-            };
-            setChildrenLoaded(state.tree);
-            setChildrenLoaded(state.userTree);
-          });
-        }
-        resolve();
-      });
+          }
+          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
+          resolve();
+        });
+    });
   }),
 
   /**
