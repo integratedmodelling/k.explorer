@@ -94,6 +94,9 @@ export default {
 
   MOD_BRING_FORWARD: (state, node) => {
     const observation = state.observations.find(o => o.id === node.id);
+    if (!observation) {
+      console.warn(`Receive a bring forward for an unknown observation: ${node.id} - ${node.label}`);
+    }
     observation.main = true;
     node.main = true;
   },
@@ -168,6 +171,10 @@ export default {
       const addToParent = (tree, localNode = node) => {
         const parent = findNodeById(tree, parentId);
         if (parent !== null) {
+          if (parent.children.length === parent.childrenCount) {
+            // is a live appending observation
+            parent.childrenCount++;
+          }
           parent.children.push({
             ...localNode,
             idx: parent.children.length,
