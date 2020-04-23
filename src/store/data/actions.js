@@ -434,10 +434,17 @@ export default {
         visible,
       }, { root: true });
       commit('SET_VISIBLE', {
-        nodeId: node.id,
+        id: node.id,
         visible,
       });
     }
+  },
+
+  putObservationOnTop: ({ commit }, id) => {
+    commit('SET_VISIBLE', {
+      id,
+      visible: true,
+    });
   },
 
   selectNode: ({ dispatch, state }, selectedId) => {

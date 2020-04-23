@@ -36,12 +36,13 @@
             :class="[
                prop.node.main ? 'node-emphasized' : '',
                hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
-               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : '',
+               cleanTopLayerId !== null && cleanTopLayerId === prop.node.id ? 'node-on-top' : '',
                isUser ? 'node-user-element' : 'node-tree-element',
             ]"
             class="node-element"
             :id="`node-${prop.node.id}`"
           >
+            <q-icon name="mdi-content-copy" class="node-no-tick" @click.native="copyToClipboard(prop.node.id)"></q-icon><!-- TODO: DELETE IT -->
             <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
             {{ prop.node.label }}<q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': isLoadingLayer(prop.node.id) }"></q-icon>
@@ -51,7 +52,7 @@
               self="bottom left"
               anchor="top left"
               class="kt-q-tooltip"
-            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+            >{{  clearObservable(prop.node.observable) }} - {{  prop.node.id }}</q-tooltip> <!-- TODO: DELETE NODE ID -->
 
           </span>
           <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
@@ -150,6 +151,7 @@ import { CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
+import { copyToClipboard } from 'shared/Utils';
 
 let scrollToTimeout = null;
 
@@ -211,8 +213,12 @@ export default {
       'treeExpanded',
       'showNotified',
     ]),
+    cleanTopLayerId() {
+      return this.topLayerId ? this.topLayerId.substr(0, this.topLayerId.indexOf('T')) : null;
+    },
   },
   methods: {
+    copyToClipboard,
     ...mapActions('data', [
       'setVisibility',
       'selectNode',

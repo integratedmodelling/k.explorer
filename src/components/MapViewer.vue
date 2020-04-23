@@ -67,7 +67,7 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { getLayerObject, isRasterObservation } from 'shared/Helpers';
+import { getLayerObject, isRasterObservation, getContextGeometry } from 'shared/Helpers';
 import { createMarker, findDifference } from 'shared/Utils';
 import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
@@ -86,6 +86,8 @@ import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
+import { click } from 'ol/events/condition';
+import Select from 'ol/interaction/Select';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -196,6 +198,7 @@ export default {
   methods: {
     ...mapActions('data', [
       'setCrossingIDL',
+      'putObservationOnTop',
     ]),
     ...mapActions('view', [
       'addToKexplorerLog',
@@ -587,7 +590,7 @@ export default {
           this.storedZoom = this.view.getZoom();
         }
         setTimeout(() => {
-          if (geometry instanceof Array) {
+          if (geometry instanceof Array && geometry.length === 2) {
             this.view.setCenter(geometry);
           } else {
             this.view.fit(geometry, {
@@ -610,8 +613,24 @@ export default {
     sendRegionOfInterestListener() {
       this.sendRegionOfInterest();
     },
-    imageBufferListener() {
-
+    findTopLayerFromClick(event) {
+      let selectedLayer = null;
+      let maxZIndex = -1;
+      this.map.forEachLayerAtPixel(event.pixel, (layer) => {
+        if (maxZIndex > layer.get('zIndex')) {
+          return;
+        }
+        maxZIndex = layer.get('zIndex');
+        selectedLayer = layer;
+      }, {
+        layerFilter: (candidate) => {
+          if (candidate.get('type') === 'base') {
+            return false;
+          }
+          return true;
+        },
+      });
+      return selectedLayer;
     },
   },
   watch: {
@@ -764,16 +783,9 @@ export default {
     });
     // Main map listeners...
     this.map.on('moveend', this.onMoveEnd);
-    /*
-    this.map.on('pointermove', (event) => {
-      if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-        this.map.getTargetElement().style.cursor = 'crosshair';
-      } else {
-        this.map.getTargetElement().style.cursor = '';
-      }
-    });
-    */
+
     this.map.on('click', (event) => {
+      /* EASTER EGG */
       if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
         const lastLayer = baseLayersGroup.getLayersArray().slice(-1)[0];
         if (lastLayer && lastLayer.get('name') === 'mapbox_got') {
@@ -796,17 +808,45 @@ export default {
         }
       }
       this.clicksOnMap += 1;
-      setTimeout(() => {
+      setTimeout(async () => {
         if (this.clicksOnMap === 1) {
-          this.setMapInfoPoint({ event });
+          // select the clicked layer (we don't know if the first is the top one)
+          const selectedLayer = this.findTopLayerFromClick(event);
+          if (selectedLayer.get('id') !== this.topLayer.id) {
+            selectedLayer.get('id').substr(0, selectedLayer.get('id').indexOf('T'));
+            this.putObservationOnTop(selectedLayer.get('id').substr(0, selectedLayer.get('id').indexOf('T')));
+          } else {
+            this.setMapInfoPoint({ event });
+          }
           this.clicksOnMap = 0;
         }
       }, 300);
     });
     this.map.on('dblclick', (event) => {
-      this.setMapInfoPoint({ event, locked: true });
+      const selectedLayer = this.findTopLayerFromClick(event);
+      if (selectedLayer.get('id') !== this.topLayer.id) {
+        this.putObservationOnTop(selectedLayer.get('id').substr(0, selectedLayer.get('id').indexOf('T')));
+        const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), 'EPSG:3857');
+        this.needFitMapListener({ geometry: extent });
+      } else {
+        this.setMapInfoPoint({ event, locked: true });
+      }
       this.clicksOnMap = 0;
     });
+    /*
+    const select = new Select({
+      condition: click,
+    });
+    this.map.addInteraction(select);
+    select.on('select', (e) => {
+      console.group();
+      console.warn(`${e.target.getFeatures().getLength()}
+        selected features (last operation selected ${e.selected.length}
+        and deselected ${e.deselected.length} features)`);
+      console.dir(e);
+      console.groupEnd();
+    });
+    */
     // ...and set some attribute for rapid access
     this.view = this.map.getView();
     this.proj = this.view.getProjection();

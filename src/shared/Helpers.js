@@ -235,7 +235,9 @@ export async function getContextGeometry(contextObservation) {
       featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
     });
   }
-  contextObservation.zIndexOffset = 0; // is context, remaind it
+  if (contextObservation.id === contextObservation.rootContextId) {
+    contextObservation.zIndexOffset = 0; // is context, remaind it
+  }
   return geometry;
 }
 

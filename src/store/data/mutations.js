@@ -261,11 +261,11 @@ export default {
   },
 
   SET_VISIBLE: (state, {
-    nodeId,
+    id,
     visible,
   }) => {
     // set observation visible (for layer)
-    const observationIdx = state.observations.findIndex(o => o.id === nodeId);
+    const observationIdx = state.observations.findIndex(o => o.id === id);
     const observation = state.observations[observationIdx];
     if (typeof observation !== 'undefined') {
       // store the offset, we need to set top to false only for observations with same offset
@@ -275,14 +275,14 @@ export default {
       // if hide, nothing else, else need to put down others
       if (visible) {
         state.observations.forEach((o) => {
-          if (o.id !== nodeId && o.zIndexOffset === offset) {
+          if (o.id !== id && o.zIndexOffset === offset) {
             o.top = false;
           }
         });
       }
       // set node ticked (for tree view)
       const setNodeTicked = (tree) => {
-        const node = findNodeById(tree, nodeId);
+        const node = findNodeById(tree, id);
         if (node) {
           node.ticked = visible;
         }
@@ -291,7 +291,7 @@ export default {
       setNodeTicked(state.userTree);
       state.observations.splice(observationIdx, 1, observation);
     } else {
-      console.warn(`Try to change visibility to no existing observations with id ${nodeId}`);
+      console.warn(`Try to change visibility to no existing observations with id ${id}`);
     }
   },
 
