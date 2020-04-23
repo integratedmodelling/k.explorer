@@ -569,7 +569,7 @@ export default {
           pixelSelected: coordinate,
           timestamp: this.timestamp,
           layerSelected: clonedLayer,
-          ...(!this.exploreMode && { observationId: this.topLayer.id.substring(0, this.topLayer.id.indexOf('T')) }),
+          ...(!this.exploreMode && { observationId: this.getObservationIdFromLayerId(this.topLayer.id) }),
           locked,
         });
       } else {
@@ -631,6 +631,12 @@ export default {
         },
       });
       return selectedLayer;
+    },
+    getObservationIdFromLayerId(layerId) {
+      if (layerId && layerId !== '') {
+        return layerId.substr(0, layerId.indexOf('T'));
+      }
+      return layerId;
     },
   },
   watch: {
@@ -812,11 +818,15 @@ export default {
         if (this.clicksOnMap === 1) {
           // select the clicked layer (we don't know if the first is the top one)
           const selectedLayer = this.findTopLayerFromClick(event);
-          if (selectedLayer.get('id') !== this.topLayer.id) {
-            selectedLayer.get('id').substr(0, selectedLayer.get('id').indexOf('T'));
-            this.putObservationOnTop(selectedLayer.get('id').substr(0, selectedLayer.get('id').indexOf('T')));
-          } else {
-            this.setMapInfoPoint({ event });
+          if (selectedLayer !== null) {
+            // if is Vector, no top // TODO check it
+            if (selectedLayer.type === 'IMAGE') {
+              if (selectedLayer.get('id') !== this.topLayer.id) {
+                this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
+              } else {
+                this.setMapInfoPoint({ event });
+              }
+            }
           }
           this.clicksOnMap = 0;
         }
@@ -824,14 +834,23 @@ export default {
     });
     this.map.on('dblclick', (event) => {
       const selectedLayer = this.findTopLayerFromClick(event);
-      if (selectedLayer.get('id') !== this.topLayer.id) {
-        this.putObservationOnTop(selectedLayer.get('id').substr(0, selectedLayer.get('id').indexOf('T')));
-        const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), 'EPSG:3857');
-        this.needFitMapListener({ geometry: extent });
-      } else {
-        this.setMapInfoPoint({ event, locked: true });
+      if (selectedLayer !== null) {
+        if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
+          if (selectedLayer.type === 'IMAGE') {
+            this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
+          }
+          let extent = null;
+          if (selectedLayer.type === 'IMAGE') {
+            extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
+          } else {
+            extent = selectedLayer.getSource().getExtent(); // Vector layer is ever in EPSG:4326
+          }
+          this.needFitMapListener({ geometry: extent });
+        } else if (selectedLayer === 'IMAGE') {
+          this.setMapInfoPoint({ event, locked: true });
+        }
+        this.clicksOnMap = 0;
       }
-      this.clicksOnMap = 0;
     });
     /*
     const select = new Select({
