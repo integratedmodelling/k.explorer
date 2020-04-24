@@ -131,7 +131,11 @@ export const Layers = {
     name: 'osm_layer',
     title: 'Open Street Map',
     type: 'base',
-    source: new OSM(),
+    source: new OSM({
+      attributions: `Map credits &#169;
+        <a href="https://www.openstreetmap.org/copyright" title="Open Street Maps">OSM</a>
+      contributors.`,
+    }),
     visible: false,
   }),
 
