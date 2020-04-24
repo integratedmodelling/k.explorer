@@ -541,8 +541,8 @@ export default {
       }
     },
     setMapInfoPoint({ event = null, locked = false } = {}) {
-      if ((this.exploreMode || this.topLayer !== null)
-        && (event === null || (!(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)))) {
+      if ((this.exploreMode || this.topLayer !== null)) {
+        // && (event === null || (!(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)))) {
         let coordinate;
         if (event !== null) {
           ({ coordinate } = event);
@@ -613,7 +613,7 @@ export default {
     sendRegionOfInterestListener() {
       this.sendRegionOfInterest();
     },
-    findTopLayerFromClick(event) {
+    findTopLayerFromClick(event, noVector = true) {
       let selectedLayer = null;
       let maxZIndex = -1;
       this.map.forEachLayerAtPixel(event.pixel, (layer) => {
@@ -625,6 +625,9 @@ export default {
       }, {
         layerFilter: (candidate) => {
           if (candidate.get('type') === 'base') {
+            return false;
+          }
+          if (noVector && candidate.type === 'VECTOR') {
             return false;
           }
           return true;

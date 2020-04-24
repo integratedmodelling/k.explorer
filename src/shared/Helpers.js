@@ -361,7 +361,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
   // check if the layer is a raster
   if (isRaster) {
     // z-index offset = 0, raster is down
-    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_RASTER;
+    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_BASE * MAP_CONSTANTS.ZINDEX_MULTIPLIER_RASTER;
     if (viewport === null) {
       viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MULTIPLIER;
       // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
@@ -459,13 +459,13 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
 
   if (encodedShape.indexOf('LINESTRING') === 0 || encodedShape.indexOf('MULTILINESTRING') === 0) {
     layerStyle = MAP_STYLES.LNE_OBSERVATION_STYLE;
-    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_LINES;
+    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_BASE * MAP_CONSTANTS.ZINDEX_MULTIPLIER_LINES;
   } else if (encodedShape.indexOf('POINT') === 0 || encodedShape.indexOf('MULTIPOINT') === 0) {
     layerStyle = createMarker(MAP_STYLES.POINT_OBSERVATION_SVG_PARAM, observation.label);
-    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POINTS;
+    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_BASE * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POINTS;
   } else {
     layerStyle = MAP_STYLES.POLYGON_OBSERVATION_STYLE;
-    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_OFFSET * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POLYGONS;
+    observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_BASE * MAP_CONSTANTS.ZINDEX_MULTIPLIER_POLYGONS;
   }
 
   const feature = new Feature({

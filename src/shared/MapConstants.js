@@ -24,7 +24,8 @@ export const MAP_CONSTANTS = {
   PROJ_EPSG_4326: getProjection('EPSG:4326'),
   PROJ_EPSG_3857: getProjection('EPSG:3857'),
 
-  ZINDEX_OFFSET: 10000,
+  ZINDEX_TOP: 10000,
+  ZINDEX_BASE: 1000,
   ZINDEX_MULTIPLIER_RASTER: 0,
   ZINDEX_MULTIPLIER_POLYGONS: 1,
   ZINDEX_MULTIPLIER_LINES: 2,
@@ -85,15 +86,13 @@ export const MAP_STYLES = {
     }),
   }),
   POLYGON_OBSERVATION_STYLE: new Style({
-    /*
     stroke: new Stroke({
       // color: colors.getBrand('secondary'),
       color: 'rgb(255, 102, 0)',
-      width: 1,
+      width: 2,
     }),
-    */
     fill: new Fill({
-      color: 'rgba(255, 102, 0, 0.4)',
+      color: 'rgba(255, 102, 0, 0.2)',
     }),
   }),
   LNE_OBSERVATION_STYLE: new Style({
