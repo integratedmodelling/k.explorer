@@ -152,11 +152,16 @@ export default {
       clicksOnMap: 0,
       bufferingLayers: false,
       lastModificationLoaded: null,
+      previousTopLayer: null,
+      lockedObservations: [],
     };
   },
   computed: {
     observations() {
       return this.$store.getters['data/observationsOfViewer'](this.idx);
+    },
+    lockedObservationsIds() {
+      return this.lockedObservations.map(lo => lo.id);
     },
     ...mapGetters('data', [
       'hasContext',
@@ -407,6 +412,35 @@ export default {
 
     drawObservations() {
       if (this.observations && this.observations.length > 0) {
+        // search the observation on top
+        this.lockedObservations = this.lockedObservations.filter(o => o.visible);
+        const topObservation = this.observations.find(o => o.top);
+        if (topObservation && topObservation.parentId !== topObservation.rootContextId) {
+          if (!this.previousTopLayer) {
+            this.previousTopLayer = topObservation;
+            // TODO: remove the unlocked one
+          } else if (topObservation.id !== this.previousTopLayer.id) {
+            if (topObservation.parentId === this.previousTopLayer.parentId) {
+              // different observation, same context. Remove the previousTopLayer from array
+              const lockedIdx = this.lockedObservations.findIndex(ptl => ptl.id === this.previousTopLayer.id);
+              if (lockedIdx !== -1) {
+                this.lockedObservations.splice(-1, 1);
+              }
+              /*
+              else {
+                console.warn(`Id not locked previously ${this.previousTopLayer.id}`, this.lockedObservations);
+              }
+              */
+            } else { // the new top is the context
+              // different observation, different context and not rootContext. Add to array
+              this.lockedObservations = this.lockedObservations.filter(o => o.parentId !== topObservation.parentId);
+              this.lockedObservations.push(this.previousTopLayer);
+            }
+            this.previousTopLayer = topObservation;
+          }
+        }
+        // clean locked is someone now is hidden
+
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
@@ -416,9 +450,14 @@ export default {
                 layer.setOpacity(observation.layerOpacity);
                 let { zIndex } = observation;
                 if (observation.top) {
-                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1);
+                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP - (observation.parentId === observation.rootContextId ? 0 : 1));
                 }
-                layer.setZIndex(zIndex);
+                const zIndexIsLocked = this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id);
+                if (!zIndexIsLocked) {
+                  layer.setZIndex(zIndex);
+                } else {
+                  console.debug(`Locked observation ${observation.id}: ${observation.label}, parent of ${observation.parentId}`);
+                }
                 if (
                   (observation.visible && observation.top)
                   && isRasterObservation(observation) // is RASTER...
@@ -434,9 +473,11 @@ export default {
                   if (observation.visible) {
                     founds.forEach((f) => {
                       if (f.get('id') === `${observation.id}T${timestamp}`) {
-                        f.setZIndex(zIndex + 1);
+                        if (!zIndexIsLocked) {
+                          f.setZIndex(zIndex + 1);
+                        }
                         f.setVisible(true);
-                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
+                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !zIndexIsLocked) {
                         f.setZIndex(zIndex);
                       }
                     });
@@ -820,15 +861,12 @@ export default {
       setTimeout(async () => {
         if (this.clicksOnMap === 1) {
           // select the clicked layer (we don't know if the first is the top one)
-          const selectedLayer = this.findTopLayerFromClick(event);
+          const selectedLayer = this.findTopLayerFromClick(event, false); // Vector layer are skipped
           if (selectedLayer !== null) {
-            // if is Vector, no top // TODO check it
-            if (selectedLayer.type === 'IMAGE') {
-              if (selectedLayer.get('id') !== this.topLayer.id) {
-                this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
-              } else {
-                this.setMapInfoPoint({ event });
-              }
+            if (selectedLayer.get('id') !== this.topLayer.id) {
+              this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
+            } else {
+              this.setMapInfoPoint({ event });
             }
           }
           this.clicksOnMap = 0;
@@ -838,18 +876,19 @@ export default {
     this.map.on('dblclick', (event) => {
       const selectedLayer = this.findTopLayerFromClick(event);
       if (selectedLayer !== null) {
-        if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
+        // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
+        if (selectedLayer.get('id') !== this.topLayer.id) {
+          this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
+          const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
+          this.needFitMapListener({ geometry: extent });
+          /*
           if (selectedLayer.type === 'IMAGE') {
-            this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
-          }
-          let extent = null;
-          if (selectedLayer.type === 'IMAGE') {
-            extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
+            extent =
           } else {
             extent = selectedLayer.getSource().getExtent(); // Vector layer is ever in EPSG:4326
           }
-          this.needFitMapListener({ geometry: extent });
-        } else if (selectedLayer === 'IMAGE') {
+          */
+        } else {
           this.setMapInfoPoint({ event, locked: true });
         }
         this.clicksOnMap = 0;

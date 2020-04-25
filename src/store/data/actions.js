@@ -170,12 +170,14 @@ export default {
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
       observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
 
-      const task = rootGetters['stomp/tasks'].find(t => t.id === observation.taskId);
-      if (task) {
-        const { contextId } = task;
-        observation.contextId = contextId;
-      } else {
-        observation.contextId = observation.rootContextId;
+      if (observation.contextId === null) {
+        const task = rootGetters['stomp/tasks'].find(t => observation.taskId.startsWith(t.id));
+        if (task) {
+          const { contextId } = task;
+          observation.contextId = contextId;
+        } else {
+          observation.contextId = observation.rootContextId;
+        }
       }
 
       // add observation. Children attribute is override to prevent reactivity on then
@@ -241,6 +243,7 @@ export default {
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
+    /*
     const context = state.contexts.peek();
     // check if the modification is relative to context TODO make sense send a modification for context? Probably a bug
     if (context && context.id === modificationEvent.id) {
@@ -248,7 +251,9 @@ export default {
       return;
     }
     if (context && context.id === modificationEvent.contextId) {
-      const node = findNodeById(state.tree, modificationEvent.id);
+    */
+    const node = findNodeById(state.tree, modificationEvent.id);
+    if (node) {
       switch (modificationEvent.type) {
         case MODIFICATIONS_TYPE.BRING_FORWARD: {
           commit('MOD_BRING_FORWARD', node);
@@ -273,8 +278,13 @@ export default {
           break;
       }
     } else {
+      console.warn('Modification event for a no existing node', modificationEvent);
+    }
+    /*
+    } else {
       console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
     }
+    */
   },
 
   setModificationsTask({ commit }, task = null) {

@@ -42,7 +42,7 @@
             class="node-element"
             :id="`node-${prop.node.id}`"
           >
-            <q-icon name="mdi-content-copy" class="node-no-tick" @click.native="copyToClipboard(prop.node.id)"></q-icon><!-- TODO: DELETE IT -->
+            <!-- <q-icon name="mdi-content-copy" class="node-no-tick" @click.native="copyToClipboard(prop.node.id)"></q-icon> TODO: DELETE IT -->
             <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
             {{ prop.node.label }}<q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': isLoadingLayer(prop.node.id) }"></q-icon>

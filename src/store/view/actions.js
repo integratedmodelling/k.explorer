@@ -118,29 +118,19 @@ export default {
           } else {
             // viewer is a map but i need WKT from parent if I don't have it
             viewerType = VIEWER_COMPONENTS.VIEW_MAP;
-            if (!observation.encodedShape) {
-              let parent;
-              if (observation.parentId === rootGetters['data/contextId']) {
-                // parent is context
-                parent = rootGetters['data/context'];
-              } else {
-                const findEncodedShape = (child) => {
-                  const p = rootGetters['data/observations'].find(o => o.id === child.parentId);
-                  if (p.encodedShape) {
-                    parent = p;
-                  } else {
-                    findEncodedShape(p);
-                  }
-                };
-                // search for encoded shape in hierarchy
-                findEncodedShape(observation);
-              }
-              if (typeof parent !== 'undefined') {
-                observation.encodedShape = parent.encodedShape;
-                ({ label } = parent);
-              } else {
-                console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
-              }
+            // a state ever has the same shape of the parent
+            let parent;
+            if (observation.parentId === rootGetters['data/contextId']) {
+              // parent is context
+              parent = rootGetters['data/context'];
+            } else {
+              parent = rootGetters['data/observations'].find(o => o.id === observation.parentId);
+            }
+            if (typeof parent !== 'undefined') {
+              observation.encodedShape = parent.encodedShape;
+              ({ label } = parent);
+            } else {
+              console.warn(`Need parent of ${observation.id} but doesn't find it. Parent id is ${observation.parentId}`);
             }
           }
           break;
