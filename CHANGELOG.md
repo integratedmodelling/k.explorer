@@ -6,6 +6,12 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.11
+### Improvements
+- Click on map layer of secondary context, select it (in tree is underlined)
+- Double click on map layer, fit it in main windows
+- z-index of layers of secondary context has better management
+
 ## 0.10.2
 ### Added
 - Time selector
