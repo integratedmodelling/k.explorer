@@ -243,15 +243,6 @@ export default {
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
-    /*
-    const context = state.contexts.peek();
-    // check if the modification is relative to context TODO make sense send a modification for context? Probably a bug
-    if (context && context.id === modificationEvent.id) {
-      console.warn(`Received a modification with type ${modificationEvent.type} relative to context, skipped`);
-      return;
-    }
-    if (context && context.id === modificationEvent.contextId) {
-    */
     const node = findNodeById(state.tree, modificationEvent.id);
     if (node) {
       switch (modificationEvent.type) {
@@ -278,13 +269,8 @@ export default {
           break;
       }
     } else {
-      console.warn('Modification event for a no existing node', modificationEvent);
+      console.warn('Modification event for a no existing node, Could be for context', modificationEvent);
     }
-    /*
-    } else {
-      console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
-    }
-    */
   },
 
   setModificationsTask({ commit }, task = null) {

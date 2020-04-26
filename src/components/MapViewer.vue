@@ -412,35 +412,26 @@ export default {
 
     drawObservations() {
       if (this.observations && this.observations.length > 0) {
-        // search the observation on top
+        // clean locked if someone now is hidden
         this.lockedObservations = this.lockedObservations.filter(o => o.visible);
+        // search the observation on top
         const topObservation = this.observations.find(o => o.top);
-        if (topObservation && topObservation.parentId !== topObservation.rootContextId) {
-          if (!this.previousTopLayer) {
-            this.previousTopLayer = topObservation;
-            // TODO: remove the unlocked one
-          } else if (topObservation.id !== this.previousTopLayer.id) {
-            if (topObservation.parentId === this.previousTopLayer.parentId) {
-              // different observation, same context. Remove the previousTopLayer from array
-              const lockedIdx = this.lockedObservations.findIndex(ptl => ptl.id === this.previousTopLayer.id);
-              if (lockedIdx !== -1) {
-                this.lockedObservations.splice(-1, 1);
-              }
-              /*
-              else {
-                console.warn(`Id not locked previously ${this.previousTopLayer.id}`, this.lockedObservations);
-              }
-              */
-            } else { // the new top is the context
-              // different observation, different context and not rootContext. Add to array
-              this.lockedObservations = this.lockedObservations.filter(o => o.parentId !== topObservation.parentId);
-              this.lockedObservations.push(this.previousTopLayer);
+        if (!this.previousTopLayer || !this.previousTopLayer.visible) {
+          this.previousTopLayer = topObservation;
+        } else if (topObservation.id !== this.previousTopLayer.id) {
+          if (topObservation.parentId === this.previousTopLayer.parentId) {
+            // different observation, same context. Remove the previousTopLayer from array
+            const lockedIdx = this.lockedObservations.findIndex(ptl => ptl.id === this.previousTopLayer.id);
+            if (lockedIdx !== -1) {
+              this.lockedObservations.splice(-1, 1);
             }
-            this.previousTopLayer = topObservation;
+          } else {
+            // different observation, different context. Add to array
+            this.lockedObservations = this.lockedObservations.filter(o => o.parentId !== topObservation.parentId);
+            this.lockedObservations.push(this.previousTopLayer);
           }
+          this.previousTopLayer = topObservation;
         }
-        // clean locked is someone now is hidden
-
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
@@ -450,14 +441,11 @@ export default {
                 layer.setOpacity(observation.layerOpacity);
                 let { zIndex } = observation;
                 if (observation.top) {
-                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP - (observation.parentId === observation.rootContextId ? 0 : 1));
+                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
+                } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
+                  zIndex = layer.get('zIndex') - 10;
                 }
-                const zIndexIsLocked = this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id);
-                if (!zIndexIsLocked) {
-                  layer.setZIndex(zIndex);
-                } else {
-                  console.debug(`Locked observation ${observation.id}: ${observation.label}, parent of ${observation.parentId}`);
-                }
+                layer.setZIndex(zIndex);
                 if (
                   (observation.visible && observation.top)
                   && isRasterObservation(observation) // is RASTER...
@@ -473,37 +461,12 @@ export default {
                   if (observation.visible) {
                     founds.forEach((f) => {
                       if (f.get('id') === `${observation.id}T${timestamp}`) {
-                        if (!zIndexIsLocked) {
-                          f.setZIndex(zIndex + 1);
-                        }
+                        f.setZIndex(zIndex + 1);
                         f.setVisible(true);
-                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !zIndexIsLocked) {
+                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
                         f.setZIndex(zIndex);
                       }
                     });
-                    // }
-                    /*
-                    const visibleLayer = founds.find(f => f.get('id') === `${observation.id}T${this.timestamp}`);
-                    // console.warn(`Show ${visibleLayer.get('id')} with T: ${this.timestamp}: visible layer visible: ${visibleLayer.getVisible()}`);
-                    // console.dir(observation.tsImages);
-                    visibleLayer.setVisible(true);
-                    founds.forEach((f) => {
-                      console.warn(`${f.get('id')} visibility: ${f.getVisible()}`);
-                    });
-                    if (observation.tsImages.indexOf(`T${this.timestamp}`) !== -1) {
-                      founds.forEach((f) => {
-                        if (f.get('id') !== `${observation.id}T${this.timestamp}`) {
-                          f.setZIndex(0);
-                          this.$nextTick(() => {
-                            f.setVisible(false);
-                            // console.warn(`Hide ${f.get('id')} with T: ${this.timestamp}: visible layer visible: ${visibleLayer.getVisible()}`);
-                            // console.dir(observation.tsImages);
-                          });
-                        }
-                        console.warn(`${f.get('id')} visibility: ${f.getVisible()}`);
-                      });
-                    }
-                    */
                   } else { // no visibility
                     founds.forEach((f) => { f.setVisible(false); });
                   }
