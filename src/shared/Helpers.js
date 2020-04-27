@@ -128,6 +128,7 @@ export const getNodeFromObservation = (observation) => {
       dynamic: false, // used if we receive some modification event
       viewerIdx: observation.viewerIdx,
       viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
+      loading: false,
       children: [],
       childrenCount: observation.childrenCount,
       childrenLoaded: 0,
@@ -200,7 +201,6 @@ export const registerProjection = projection => new Promise((resolve, reject) =>
 
 /**
  * Return the geometry of context.
- * Now getLayerObject only work with observation
  * @param contextObservation
  * @returns {<module:ol/geom/Geometry> || Array with 2 coordinates}
  */
@@ -362,6 +362,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
   if (isRaster) {
     // z-index offset = 0, raster is down
     observation.zIndexOffset = MAP_CONSTANTS.ZINDEX_BASE * MAP_CONSTANTS.ZINDEX_MULTIPLIER_RASTER;
+    observation.loaded = false;
     if (viewport === null) {
       viewport = Math.max(document.body.clientHeight, document.body.clientWidth) * GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MULTIPLIER;
       // console.log(`Viewport: ${viewport} calculated using clientHeight: ${document.body.clientHeight} and clientwidth: ${document.body.clientWidth}`);
@@ -370,18 +371,14 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
     }
     const layerExtent = geometry.getExtent();
     const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
-    // const url = 'http://localhost:8080/statics/klab-logo.png';
     const source = new Static({
-      // projection: MAP_CONSTANTS.PROJ_EPSG_3857,
       projection: dataProjection,
       imageExtent: layerExtent,
-      // imageSize: [800, 800], // extent.getSize(layerExtent),
       url,
       style: MAP_STYLES.POLYGON_OBSERVATION_STYLE,
       imageLoadFunction: (imageWrapper, src) => {
         store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: `${src}${timestamp}` }, { root: true });
-        store.dispatch('view/setLoadingLayers', { loading: true, observationId: observation.id });
-        // console.time('loading image');
+        // store.dispatch('data/setLoadingLayers', { loading: true, observation });
         axiosInstance.get(src, {
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -400,7 +397,8 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                 image.src = reader.result;
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 observation.tsImages.push(`T${timestamp}`);
-                store.dispatch('view/setLoadingLayers', { loading: false, observationId: observation.id });
+                observation.loaded = true;
+                // store.dispatch('data/setLoadingLayers', { loading: false, observation });
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP', ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
@@ -445,6 +443,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
               owner: src,
               errorMessage: error,
             }, { root: true });
+            // store.dispatch('data/setLoadingLayers', { loading: false, observationId: observation.id });
             throw error;
           });
       },

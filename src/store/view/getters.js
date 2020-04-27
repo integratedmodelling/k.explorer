@@ -70,9 +70,6 @@ export default {
     return null;
   },
 
-  loadingLayers: state => state.loadingLayers,
-  isLoadingLayer: state => observationId => state.loadingLayers.indexOf(observationId) !== -1,
-
   spinnerIsAnimated: state => state.spinner.animated,
   spinner: state => state.spinner,
   spinnerOwners: state => state.spinnerOwners,

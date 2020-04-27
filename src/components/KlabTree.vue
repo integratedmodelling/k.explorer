@@ -28,7 +28,7 @@
         :noFilteredResultLabel="isUser ? taskOfContextIsAlive ? $t('messages.treeNoResultUserWaiting') : $t('messages.treeNoResultUser') : $t('messages.treeNoResultNoUser')">
       >
         <div slot="header-default" slot-scope="prop" :class="{ 'node-disabled': prop.node.disabled && !prop.node.noTick }">
-          <span
+          <div
             :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
             @dragend="onDragEnd"
@@ -42,10 +42,11 @@
             class="node-element"
             :id="`node-${prop.node.id}`"
           >
-            <!-- <q-icon name="mdi-content-copy" class="node-no-tick" @click.native="copyToClipboard(prop.node.id)"></q-icon> TODO: DELETE IT -->
             <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
-            {{ prop.node.label }}<q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': isLoadingLayer(prop.node.id) }"></q-icon>
+            <span>{{ prop.node.label }}</span>
+            <q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': prop.node.loading }"></q-icon>
+            <q-icon name="mdi-loading" class="node-icon-time node-loading-layer" :class="{ 'animate-spin': prop.node.loading }" v-else></q-icon>
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
@@ -54,7 +55,7 @@
               class="kt-q-tooltip"
             >{{  clearObservable(prop.node.observable) }} - {{  prop.node.id }}</q-tooltip> <!-- TODO: DELETE NODE ID -->
 
-          </span>
+          </div>
           <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
             <q-chip
               class="node-chip"
@@ -92,7 +93,7 @@
           </template>
         </div>
         <div slot="header-folder" slot-scope="prop" :class="{ 'node-disabled': prop.node.disabled && !prop.node.noTick }">
-          <span
+          <div
             :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
             @dragend="onDragEnd"
@@ -100,7 +101,7 @@
             :id="`node-${prop.node.id}`"
             v-ripple="prop.node.main"
             :class="[prop.node.main ? 'node-emphasized' : '']"
-          >{{ prop.node.label }}</span>
+          ><span>{{ prop.node.label }}</span></div>
           <q-btn
             round
             flat
@@ -205,7 +206,6 @@ export default {
       'observationInfo',
       'hasObservationInfo',
       'topLayerId',
-      'isLoadingLayer',
     ]),
     ...mapState('view', [
       'treeSelected',
@@ -232,11 +232,6 @@ export default {
       'setSpinner',
       'setMainDataViewer',
     ]),
-    /*
-    filterMethod(node) {
-      return !this.contextReloaded || node.notified;
-    },
-    */
     filterUser(node, filter) {
       return node.userNode ? filter === 'user' : filter === 'tree';
     },
@@ -747,8 +742,9 @@ export default {
       .node-disabled
         opacity 0.6 !important
       .node-no-tick
-        margin-right 5px
-      .node-on-top
+        margin-right 7px
+        padding-left 3px
+      .node-on-top span
         text-decoration underline
       .node-icon
         display inline
@@ -756,6 +752,12 @@ export default {
       .node-icon-time
         position relative
         right -5px
+        &.node-loading-layer
+          opacity 0
+          span
+            text-decoration none
+          &.animate-spin
+            opacity 1
       .kt-q-tooltip
         background-color #333
       .q-tree-node-link

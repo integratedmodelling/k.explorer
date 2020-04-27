@@ -169,7 +169,8 @@ export default {
       observation.tsImages = [];
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
       observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
-
+      observation.loading = false;
+      observation.loaded = true; // change to false if is a raster
       if (observation.contextId === null) {
         const task = rootGetters['stomp/tasks'].find(t => observation.taskId.startsWith(t.id));
         if (task) {

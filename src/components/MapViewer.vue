@@ -412,6 +412,10 @@ export default {
 
     drawObservations() {
       if (this.observations && this.observations.length > 0) {
+        // check if something is loading
+        if (this.observations.find(o => o.visible && o.loading)) {
+          return;
+        }
         // clean locked if someone now is hidden
         this.lockedObservations = this.lockedObservations.filter(o => o.visible);
         // search the observation on top

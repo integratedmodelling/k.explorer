@@ -286,10 +286,6 @@ export default {
     }
   },
 
-  setLoadingLayers: ({ commit }, { loading, observationId }) => {
-    commit('SET_LOADING_LAYERS', { loading, observationId });
-  },
-
   setScaleEditing: ({ commit }, { active, type }) => {
     commit('SET_SCALE_EDITING', { active, type });
     commit('SET_MODAL_MODE', active);
