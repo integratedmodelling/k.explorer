@@ -412,10 +412,6 @@ export default {
 
     drawObservations() {
       if (this.observations && this.observations.length > 0) {
-        // check if something is loading
-        if (this.observations.find(o => o.visible && o.loading)) {
-          return;
-        }
         // clean locked if someone now is hidden
         this.lockedObservations = this.lockedObservations.filter(o => o.visible);
         // search the observation on top
@@ -436,6 +432,7 @@ export default {
           }
           this.previousTopLayer = topObservation;
         }
+        const waitForLayerLoading = typeof this.observations.find(o => o.visible && !o.loaded) !== 'undefined';
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
@@ -449,25 +446,29 @@ export default {
                 } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
                   zIndex = layer.get('zIndex') - 10;
                 }
-                layer.setZIndex(zIndex);
-                if (
-                  (observation.visible && observation.top)
-                  && isRasterObservation(observation) // is RASTER...
-                  && observation.dataSummary.histogram.length > 0 // and has values
-                  && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
-                ) {
-                  this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
-                } else if ((!observation.visible || !observation.top)
-                  && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
-                  this.setTopLayer(null);
+                if (!waitForLayerLoading) {
+                  layer.setZIndex(zIndex);
+                  if (
+                    (observation.visible && observation.top)
+                    && isRasterObservation(observation) // is RASTER...
+                    && observation.dataSummary.histogram.length > 0 // and has values
+                    && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
+                  ) {
+                    this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
+                  } else if ((!observation.visible || !observation.top)
+                    && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
+                    this.setTopLayer(null);
+                  }
                 }
                 if (founds.length > 0) {
                   if (observation.visible) {
                     founds.forEach((f) => {
                       if (f.get('id') === `${observation.id}T${timestamp}`) {
-                        f.setZIndex(zIndex + 1);
+                        if (!waitForLayerLoading) {
+                          f.setZIndex(zIndex + 1);
+                        }
                         f.setVisible(true);
-                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
+                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
                         f.setZIndex(zIndex);
                       }
                     });
@@ -830,7 +831,7 @@ export default {
           // select the clicked layer (we don't know if the first is the top one)
           const selectedLayer = this.findTopLayerFromClick(event, false); // Vector layer are skipped
           if (selectedLayer !== null) {
-            if (selectedLayer.get('id') !== this.topLayer.id) {
+            if (!this.topLayer || selectedLayer.get('id') !== this.topLayer.id) {
               this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
             } else {
               this.setMapInfoPoint({ event });
@@ -844,7 +845,7 @@ export default {
       const selectedLayer = this.findTopLayerFromClick(event);
       if (selectedLayer !== null) {
         // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
-        if (selectedLayer.get('id') !== this.topLayer.id) {
+        if (!this.topLayer || selectedLayer.get('id') !== this.topLayer.id) {
           this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
           const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
           this.needFitMapListener({ geometry: extent });
