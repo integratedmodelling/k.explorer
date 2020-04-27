@@ -378,7 +378,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
       style: MAP_STYLES.POLYGON_OBSERVATION_STYLE,
       imageLoadFunction: (imageWrapper, src) => {
         store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: `${src}${timestamp}` }, { root: true });
-        // store.dispatch('data/setLoadingLayers', { loading: true, observation });
+        store.dispatch('data/setLoadingLayers', { loading: true, observation });
         axiosInstance.get(src, {
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -398,7 +398,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 observation.tsImages.push(`T${timestamp}`);
                 observation.loaded = true;
-                // store.dispatch('data/setLoadingLayers', { loading: false, observation });
+                store.dispatch('data/setLoadingLayers', { loading: false, observation });
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP', ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {

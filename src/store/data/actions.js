@@ -458,6 +458,12 @@ export default {
     }
   },
 
+  setLoadingLayers: ({ commit }, { loading, observation }) => {
+    if (observation) {
+      commit('SET_LOADING_LAYERS', { loading, observation });
+    }
+  },
+
   addDataflow: ({ commit }, dataflow) => {
     if (typeof dataflow === 'undefined' || dataflow === null) {
       console.warn('Try to layout an empty ELK dataflow');

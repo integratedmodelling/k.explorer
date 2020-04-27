@@ -295,6 +295,20 @@ export default {
     }
   },
 
+  SET_LOADING_LAYERS: (state, { loading, observation }) => {
+    if (observation) {
+      observation.loading = loading;
+      const node = findNodeById(state.tree, observation.id);
+      if (node) {
+        node.loading = loading;
+        if (node.userNode) {
+          const userNode = findNodeById(state.tree, observation.id);
+          userNode.loading = loading;
+        }
+      }
+    }
+  },
+
   STORE_RAW_SEARCH_RESULT: (state, result) => {
     state.searchResult = result;
   },
