@@ -146,6 +146,10 @@ export default {
   treeSelected: null,
   treeTicked: [],
   treeExpanded: [],
+  /**
+   * The raster layer on the top
+   * Vector layer are not used
+  */
   topLayer: null,
   /**
    * true if we are editing the scale. Need for no intercept events

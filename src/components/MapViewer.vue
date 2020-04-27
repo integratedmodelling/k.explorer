@@ -378,6 +378,8 @@ export default {
       if (oldContext !== null) {
         // if context is changed, everything disappear
         this.layers.clear();
+        this.lockedObservations = [];
+        this.previousTopLayer = null;
         if (this.contextLayer !== null) {
           this.map.removeLayer(this.contextLayer);
           this.contextLayer = null;
@@ -414,23 +416,25 @@ export default {
       if (this.observations && this.observations.length > 0) {
         // clean locked if someone now is hidden
         this.lockedObservations = this.lockedObservations.filter(o => o.visible);
-        // search the observation on top
-        const topObservation = this.observations.find(o => o.top);
-        if (!this.previousTopLayer || !this.previousTopLayer.visible) {
-          this.previousTopLayer = topObservation;
-        } else if (topObservation.id !== this.previousTopLayer.id) {
-          if (topObservation.parentId === this.previousTopLayer.parentId) {
+        // search the observation on top and is a raster observation
+        const topObservation = this.observations.find(o => o.top && isRasterObservation(o));
+        if (topObservation) {
+          if (!this.previousTopLayer || !this.previousTopLayer.visible) { // no previous
+            this.previousTopLayer = topObservation;
+          } else if (topObservation.id !== this.previousTopLayer.id) { // different id, we need to put in the stack
+            // if (topObservation.parentId === this.previousTopLayer.parentId) {
             // different observation, same context. Remove the previousTopLayer from array
-            const lockedIdx = this.lockedObservations.findIndex(ptl => ptl.id === this.previousTopLayer.id);
-            if (lockedIdx !== -1) {
-              this.lockedObservations.splice(-1, 1);
-            }
-          } else {
+            //  const lockedIdx = this.lockedObservations.findIndex(ptl => ptl.id === this.previousTopLayer.id);
+            //  if (lockedIdx !== -1) {
+            //    this.lockedObservations.splice(-1, 1);
+            //  }
+            // } else {
             // different observation, different context. Add to array
-            this.lockedObservations = this.lockedObservations.filter(o => o.parentId !== topObservation.parentId);
-            this.lockedObservations.push(this.previousTopLayer);
+            this.lockedObservations = this.lockedObservations.filter(o => o.id !== topObservation.id); // remove previous entry
+            this.lockedObservations.push(this.previousTopLayer); // add on top
+            // }
+            this.previousTopLayer = topObservation;
           }
-          this.previousTopLayer = topObservation;
         }
         const waitForLayerLoading = typeof this.observations.find(o => o.visible && !o.loaded) !== 'undefined';
         this.observations.forEach((observation) => {
@@ -444,14 +448,13 @@ export default {
                 if (observation.top) {
                   zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
                 } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
-                  zIndex = layer.get('zIndex') - 10;
+                  zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
                 }
                 if (!waitForLayerLoading) {
                   layer.setZIndex(zIndex);
                   if (
                     (observation.visible && observation.top)
                     && isRasterObservation(observation) // is RASTER...
-                    && observation.dataSummary.histogram.length > 0 // and has values
                     && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
                   ) {
                     this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
