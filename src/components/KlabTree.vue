@@ -28,7 +28,7 @@
         :noFilteredResultLabel="isUser ? taskOfContextIsAlive ? $t('messages.treeNoResultUserWaiting') : $t('messages.treeNoResultUser') : $t('messages.treeNoResultNoUser')">
       >
         <div slot="header-default" slot-scope="prop" :class="{ 'node-disabled': prop.node.disabled && !prop.node.noTick }">
-          <div
+          <span
             :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
             @dragend="onDragEnd"
@@ -44,7 +44,7 @@
           >
             <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
-            <span>{{ prop.node.label }}</span>
+            {{ prop.node.label }}
             <q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': prop.node.loading }"></q-icon>
             <q-icon name="mdi-loading" class="node-icon-time node-loading-layer" :class="{ 'animate-spin': prop.node.loading }" v-else></q-icon>
             <q-tooltip
@@ -53,9 +53,9 @@
               self="bottom left"
               anchor="top left"
               class="kt-q-tooltip"
-            >{{  clearObservable(prop.node.observable) }} - {{  prop.node.id }}</q-tooltip> <!-- TODO: DELETE NODE ID -->
+            >{{ clearObservable(prop.node.observable) }}</q-tooltip> <!-- TODO: DELETE NODE ID -->
 
-          </div>
+          </span>
           <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
             <q-chip
               class="node-chip"
@@ -93,7 +93,7 @@
           </template>
         </div>
         <div slot="header-folder" slot-scope="prop" :class="{ 'node-disabled': prop.node.disabled && !prop.node.noTick }">
-          <div
+          <span
             :draggable="prop.node.parentId === contextId"
             @dragstart="onDragStart($event, prop.node.id)"
             @dragend="onDragEnd"
@@ -101,7 +101,7 @@
             :id="`node-${prop.node.id}`"
             v-ripple="prop.node.main"
             :class="[prop.node.main ? 'node-emphasized' : '']"
-          ><span>{{ prop.node.label }}</span></div>
+          >{{ prop.node.label }}</span>
           <q-btn
             round
             flat
@@ -742,10 +742,9 @@ export default {
       .node-disabled
         opacity 0.6 !important
       .node-no-tick
-        margin-right 7px
-        padding-left 3px
-      .node-on-top span
-        text-decoration underline
+        margin-right 5px
+      .node-on-top
+        color $main-control-yellow
       .node-icon
         display inline
         padding-left 5px
@@ -754,8 +753,6 @@ export default {
         right -5px
         &.node-loading-layer
           opacity 0
-          span
-            text-decoration none
           &.animate-spin
             opacity 1
       .kt-q-tooltip
