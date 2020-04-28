@@ -163,39 +163,48 @@ export const getNodeFromObservation = (observation) => {
  * @param projection
  * @returns {Promise}
  */
-export const registerProjection = projection => new Promise((resolve, reject) => { // projection in format ESPG:XXXXX
-  const toAsk = projection.substring(5); // ask without ESPG
-  fetch(`https://epsg.io/?format=json&q=${toAsk}`)
-    .then(response => response.json().then((json) => {
-      const { results } = json;
-      if (results && results.length > 0) {
-        for (let i = 0, ii = results.length; i < ii; i += 1) {
-          const result = results[i];
-          if (result) {
-            const { code, proj4: proj4def, bbox } = result;
-            if (code && code.length > 0 && proj4def && proj4def.length > 0
-              && bbox && bbox.length === 4) {
-              const newProjCode = `EPSG:${code}`;
-              proj4.defs(newProjCode, proj4def);
-              register(proj4);
-              const newProj = getProjection(newProjCode);
-              const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, newProj);
-              // very approximate calculation of projection extent
-              const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
-              newProj.setExtent(extent);
-              console.info(`New projection registered: ${newProjCode}`);
-              resolve(newProj);
-            } else {
-              reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
+export const registerProjection = spatialProjection => new Promise((resolve, reject) => { // projection in format ESPG:XXXXX
+  if (spatialProjection !== null) {
+    const dataProjection = getProjection(spatialProjection);
+    if (dataProjection === null) { // unknows projection, need ask for it
+      const toAsk = spatialProjection.substring(5); // ask without ESPG
+      fetch(`https://epsg.io/?format=json&q=${toAsk}`)
+        .then(response => response.json().then((json) => {
+          const { results } = json;
+          if (results && results.length > 0) {
+            for (let i = 0, ii = results.length; i < ii; i += 1) {
+              const result = results[i];
+              if (result) {
+                const { code, proj4: proj4def, bbox } = result;
+                if (code && code.length > 0 && proj4def && proj4def.length > 0
+                  && bbox && bbox.length === 4) {
+                  const newProjCode = `EPSG:${code}`;
+                  proj4.defs(newProjCode, proj4def);
+                  register(proj4);
+                  const newProj = getProjection(newProjCode);
+                  const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, newProj);
+                  // very approximate calculation of projection extent
+                  const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
+                  newProj.setExtent(extent);
+                  console.info(`New projection registered: ${newProjCode}`);
+                  resolve(newProj);
+                } else {
+                  reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
+                }
+              } else {
+                reject(new Error('Some error in projection search result: no results'));
+              }
             }
           } else {
-            reject(new Error('Some error in projection search result: no results'));
+            reject(new Error(`Unknown projection: ${spatialProjection}`));
           }
-        }
-      } else {
-        reject(new Error(`Unknown projection: ${projection}`));
-      }
-    }));
+        }));
+    } else {
+      resolve(dataProjection);
+    }
+  } else {
+    resolve(MAP_CONSTANTS.PROJ_EPSG_4326);
+  }
 });
 
 
@@ -205,16 +214,8 @@ export const registerProjection = projection => new Promise((resolve, reject) =>
  * @returns {<module:ol/geom/Geometry> || Array with 2 coordinates}
  */
 export async function getContextGeometry(contextObservation) {
-  let dataProjection;
   const { spatialProjection } = contextObservation;
-  if (spatialProjection !== null) {
-    dataProjection = getProjection(spatialProjection);
-    if (dataProjection === null) { // unknows projection, need ask for it
-      dataProjection = await registerProjection(spatialProjection);
-    }
-  } else {
-    dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
-  }
+  const dataProjection = await registerProjection(spatialProjection); // .then((dataProjection) => {
   let { encodedShape } = contextObservation;
   // normalize encodedShape
   if (encodedShape.indexOf('LINEARRING') === 0) {
@@ -239,6 +240,7 @@ export async function getContextGeometry(contextObservation) {
     contextObservation.zIndexOffset = 0; // is context, remaind it
   }
   return geometry;
+  // });
 }
 
 /**
@@ -317,7 +319,7 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
  * @param viewport not used for now. If not setted, for now is the double of height/width of browser
  * @return layer
  */
-export async function getLayerObject(observation, { viewport = null, timestamp = -1 /* , projection = null */ }) {
+export function getLayerObject(observation, { viewport = null, timestamp = -1 /* , projection = null */ }) {
   // const { geometryTypes } = observation;
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
@@ -341,7 +343,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
   if (spatialProjection !== null) {
     dataProjection = getProjection(spatialProjection);
     if (dataProjection === null) { // unknows projection, need ask for it
-      dataProjection = await registerProjection(spatialProjection);
+      dataProjection = registerProjection(spatialProjection);
     }
   } else {
     dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
@@ -398,7 +400,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 observation.tsImages.push(`T${timestamp}`);
                 observation.loaded = true;
-                store.dispatch('data/setLoadingLayers', { loading: false, observation });
+                // store.dispatch('data/setLoadingLayers', { loading: false, observation });
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP', ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {

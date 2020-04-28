@@ -57,6 +57,7 @@
       ></q-btn>
       <div id="mv-popup-content" class="ol-popup-content" v-html="popupContent"></div>
     </div>
+    <observation-context-menu @hide="contextMenuObservationId = null" :observation-id="contextMenuObservationId"></observation-context-menu>
   </div>
 </template>
 
@@ -67,12 +68,14 @@
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-import { getLayerObject, isRasterObservation, getContextGeometry } from 'shared/Helpers';
+import { getLayerObject, isRasterObservation } from 'shared/Helpers';
 import { createMarker, findDifference } from 'shared/Utils';
 import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
+import MapDrawer from 'components/MapDrawer';
+import ObservationContextMenu from 'components/ObservationContextMenu';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Collection from 'ol/Collection';
@@ -81,7 +84,6 @@ import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
 import LayerSwitcher from 'ol-layerswitcher';
 import WKT from 'ol/format/WKT';
-import MapDrawer from 'components/MapDrawer';
 import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -94,6 +96,7 @@ export default {
   name: 'MapViewer',
   components: {
     MapDrawer,
+    ObservationContextMenu,
   },
   props: {
     idx: {
@@ -154,6 +157,7 @@ export default {
       lastModificationLoaded: null,
       previousTopLayer: null,
       lockedObservations: [],
+      contextMenuObservationId: null,
     };
   },
   computed: {
@@ -310,7 +314,7 @@ export default {
       return -1;
     },
 
-    async findLayerById({ observation, timestamp = -1 }) {
+    findLayerById({ observation, timestamp = -1 }) {
       const founds = this.findExistingLayerById(observation.id);
       if (founds.length > 0) {
         const id = `${observation.id}T${timestamp}`;
@@ -321,8 +325,8 @@ export default {
       }
       // need to create new layer
       try {
-        console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
-        const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
+        console.log(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
+        const layer = getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
         } else {
@@ -354,19 +358,19 @@ export default {
           // if (modifications[index].timestamp <= buffer) {
           const observation = this.observations.find(obs => obs.id === modifications[index].id);
           if (observation) {
-            this.findLayerById({ observation, timestamp: modifications[index].timestamp }).then(({ layer }) => {
-              const image = layer.getSource().image_;
-              if (image && image.state === 0) {
-                image.load();
-                layer.getSource().on('imageloadend', ({ image: loadedImage }) => {
-                  if (++index < mtll) {
-                    loadImage(index);
-                  }
-                });
-              } else if (++index < mtll) {
-                loadImage(index);
-              }
-            });
+            const { layer } = this.findLayerById({ observation, timestamp: modifications[index].timestamp }); // .then(({ layer }) => {
+            const image = layer.getSource().image_;
+            if (image && image.state === 0) {
+              image.load();
+              layer.getSource().on('imageloadend', ({ image: loadedImage }) => {
+                if (++index < mtll) {
+                  loadImage(index);
+                }
+              });
+            } else if (++index < mtll) {
+              loadImage(index);
+            }
+            // });
           }
           // }
         };
@@ -440,50 +444,50 @@ export default {
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
-            this.findLayerById({ observation, timestamp }).then((layers) => {
-              if (layers !== null) {
-                const { founds, layer } = layers;
-                layer.setOpacity(observation.layerOpacity);
-                let { zIndex } = observation;
-                if (observation.top) {
-                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
-                } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
-                  zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
-                }
-                if (!waitForLayerLoading) {
-                  layer.setZIndex(zIndex);
-                  if (
-                    (observation.visible && observation.top)
-                    && isRasterObservation(observation) // is RASTER...
-                    && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
-                  ) {
-                    this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
-                  } else if ((!observation.visible || !observation.top)
-                    && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
-                    this.setTopLayer(null);
-                  }
-                }
-                if (founds.length > 0) {
-                  if (observation.visible) {
-                    founds.forEach((f) => {
-                      if (f.get('id') === `${observation.id}T${timestamp}`) {
-                        if (!waitForLayerLoading) {
-                          f.setZIndex(zIndex + 1);
-                        }
-                        f.setVisible(true);
-                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
-                        f.setZIndex(zIndex);
-                      }
-                    });
-                  } else { // no visibility
-                    founds.forEach((f) => { f.setVisible(false); });
-                  }
-                } else {
-                  console.debug(`No multiple layer for observation ${observation.id}, refreshing`);
-                  layer.setVisible(observation.visible);
+            const layers = this.findLayerById({ observation, timestamp }); // .then((layers) => {
+            if (layers !== null) {
+              const { founds, layer } = layers;
+              layer.setOpacity(observation.layerOpacity);
+              let { zIndex } = observation;
+              if (observation.top) {
+                zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
+              } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
+                zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
+              }
+              if (!waitForLayerLoading) {
+                layer.setZIndex(zIndex);
+                if (
+                  (observation.visible && observation.top)
+                  && isRasterObservation(observation) // is RASTER...
+                  && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
+                ) {
+                  this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
+                } else if ((!observation.visible || !observation.top)
+                  && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
+                  this.setTopLayer(null);
                 }
               }
-            });
+              if (founds.length > 0) {
+                if (observation.visible) {
+                  founds.forEach((f) => {
+                    if (f.get('id') === `${observation.id}T${timestamp}`) {
+                      if (!waitForLayerLoading) {
+                        f.setZIndex(zIndex + 1);
+                      }
+                      f.setVisible(true);
+                    } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
+                      f.setZIndex(zIndex);
+                    }
+                  });
+                } else { // no visibility
+                  founds.forEach((f) => { f.setVisible(false); });
+                }
+              } else {
+                console.debug(`No multiple layer for observation ${observation.id}, refreshing`);
+                layer.setVisible(observation.visible);
+              }
+            }
+            // });
           }
         });
         if (this.topLayer === null) {
@@ -630,14 +634,17 @@ export default {
       this.sendRegionOfInterest();
     },
     findTopLayerFromClick(event, noVector = true) {
-      let selectedLayer = null;
-      let maxZIndex = -1;
+      const selectedLayers = [];
+      const maxZIndex = [];
       this.map.forEachLayerAtPixel(event.pixel, (layer) => {
-        if (maxZIndex > layer.get('zIndex')) {
+        if (maxZIndex[layer.getType()] && maxZIndex[layer.getType()] > layer.get('zIndex')) {
           return;
         }
-        maxZIndex = layer.get('zIndex');
-        selectedLayer = layer;
+        maxZIndex[layer.getType()] = layer.get('zIndex');
+        selectedLayers.push({
+          layer,
+          type: layer.getType(),
+        });
       }, {
         layerFilter: (candidate) => {
           if (candidate.getType() === 'TILE') {
@@ -649,7 +656,7 @@ export default {
           return true;
         },
       });
-      return selectedLayer;
+      return selectedLayers;
     },
     getObservationIdFromLayerId(layerId) {
       if (layerId && layerId !== '') {
@@ -836,32 +843,39 @@ export default {
       setTimeout(async () => {
         if (this.clicksOnMap === 1) {
           // select the clicked layer (we don't know if the first is the top one)
-          const selectedLayer = this.findTopLayerFromClick(event, true); // Vector layer are skipped
-          if (selectedLayer !== null) {
-            const layerId = selectedLayer.get('id');
-            if (!this.topLayer || layerId !== this.topLayer.id) {
-              this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
-              this.setMapInfoPoint({ event, layer: selectedLayer });
-            } else {
-              this.setMapInfoPoint({ event });
-            }
+          const selectedLayers = this.findTopLayerFromClick(event, false); // Vector layer are skipped
+          if (selectedLayers.length > 0) {
+            selectedLayers.forEach((sl) => {
+              const layerId = sl.layer.get('id');
+              if (sl.type === 'VECTOR') {
+                this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+                if (selectedLayers.length === 1) {
+                  this.closePopup();
+                }
+              } else if (!this.topLayer || layerId !== this.topLayer.id) {
+                this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+                this.setMapInfoPoint({ event, layer: sl.layer });
+              } else {
+                this.setMapInfoPoint({ event });
+              }
+            });
           }
           this.clicksOnMap = 0;
         }
       }, 300);
     });
     this.map.on('dblclick', (event) => {
-      const selectedLayer = this.findTopLayerFromClick(event);
-      if (selectedLayer !== null) {
+      const selectedLayers = this.findTopLayerFromClick(event);
+      if (selectedLayers.length === 1) {
         // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
-        const layerId = selectedLayer.get('id');
+        const layerId = selectedLayers[0].layer.get('id');
         if (!this.topLayer || layerId !== this.topLayer.id) {
           this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
           /* / TODO: make sense fit the layer?
           const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
           this.needFitMapListener({ geometry: extent });
           */
-          this.setMapInfoPoint({ event, locked: true, layer: selectedLayer });
+          this.setMapInfoPoint({ event, locked: true, layer: selectedLayers[0].layer });
           /*
           if (selectedLayer.type === 'IMAGE') {
             extent =
@@ -873,6 +887,16 @@ export default {
           this.setMapInfoPoint({ event, locked: true });
         }
         this.clicksOnMap = 0;
+      } else {
+        console.warn('Multiple layer but must be one');
+      }
+    });
+    this.map.on('contextmenu', (event) => {
+      const selectedLayers = this.findTopLayerFromClick(event, false);
+      if (selectedLayers.length === 1) {
+        // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
+        this.contextMenuObservationId = this.getObservationIdFromLayerId(selectedLayers[0].layer.get('id'));
+        event.preventDefault();
       }
     });
     /*

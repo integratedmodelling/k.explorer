@@ -32,6 +32,9 @@ export default {
 
   hasObservations: state => state.observations.length !== 0,
   visibleObservations: state => state.observations.filter(observation => observation.visible),
+  observationsIdOnTop: state => state.observations.filter(o => o.top).map(o => o.id),
+
+  contextMenuObservationId: state => state.contextMenuObservationId,
 
   timeEvents: state => state.timeEvents,
   timeEventsOfObservation: state => id => state.timeEvents.filter(e => e.id === id),

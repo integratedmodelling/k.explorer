@@ -444,6 +444,10 @@ export default {
     });
   },
 
+  setContextMenuObservationId: ({ commit }, contextMenuObservationId) => {
+    commit('SET_CONTEXTMENU_OBSERVATIONID', contextMenuObservationId);
+  },
+
   selectNode: ({ dispatch, state }, selectedId) => {
     if (selectedId === null) {
       dispatch('view/setObservationInfo', null, { root: true });

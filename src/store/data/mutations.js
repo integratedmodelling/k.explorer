@@ -92,6 +92,10 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
+  SET_CONTEXTMENU_OBSERVATIONID: (state, contextMenuObservationId) => {
+    state.contextMenuObservationId = contextMenuObservationId;
+  },
+
   MOD_BRING_FORWARD: (state, node) => {
     const observation = state.observations.find(o => o.id === node.id);
     if (!observation) {

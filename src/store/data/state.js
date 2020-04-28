@@ -218,7 +218,7 @@ export default {
    "colormap"
    */
   observations: [],
-
+  contextMenuObservationId: null,
   /**
    * Modification Events
    * {
