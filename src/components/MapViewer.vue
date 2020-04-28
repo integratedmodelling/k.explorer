@@ -552,7 +552,7 @@ export default {
         this.popupOverlay.setPosition(undefined);
       }
     },
-    setMapInfoPoint({ event = null, locked = false } = {}) {
+    setMapInfoPoint({ event = null, locked = false, layer = null } = {}) {
       if ((this.exploreMode || this.topLayer !== null)) {
         // && (event === null || (!(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)))) {
         let coordinate;
@@ -567,21 +567,25 @@ export default {
           coordinate = this.mapSelection.pixelSelected;
         }
         let topLayerId;
-        if (this.exploreMode) {
-          topLayerId = `${this.observationInfo.id}T${this.findModificationTimestamp(this.observationInfo.id, this.timestamp)}`;
+        if (layer === null) {
+          if (this.exploreMode) {
+            topLayerId = `${this.observationInfo.id}T${this.findModificationTimestamp(this.observationInfo.id, this.timestamp)}`;
+          } else {
+            topLayerId = this.topLayer.id;
+          }
+          [layer] = this.findExistingLayerById(topLayerId);
         } else {
-          topLayerId = this.topLayer.id;
+          topLayerId = layer.get('id');
         }
-        const layerSelected = this.findExistingLayerById(topLayerId)[0];
         const clonedLayer = new ImageLayer({
           id: `cl_${topLayerId}`,
-          source: layerSelected.getSource(),
+          source: layer.getSource(),
         });
         this.setMapSelection({
           pixelSelected: coordinate,
           timestamp: this.timestamp,
           layerSelected: clonedLayer,
-          ...(!this.exploreMode && { observationId: this.getObservationIdFromLayerId(this.topLayer.id) }),
+          ...(!this.exploreMode && { observationId: this.getObservationIdFromLayerId(topLayerId) }),
           locked,
         });
       } else {
@@ -834,8 +838,10 @@ export default {
           // select the clicked layer (we don't know if the first is the top one)
           const selectedLayer = this.findTopLayerFromClick(event, false); // Vector layer are skipped
           if (selectedLayer !== null) {
-            if (!this.topLayer || selectedLayer.get('id') !== this.topLayer.id) {
-              this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
+            const layerId = selectedLayer.get('id');
+            if (!this.topLayer || layerId !== this.topLayer.id) {
+              this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+              this.setMapInfoPoint({ event, layer: selectedLayer });
             } else {
               this.setMapInfoPoint({ event });
             }
@@ -848,10 +854,12 @@ export default {
       const selectedLayer = this.findTopLayerFromClick(event);
       if (selectedLayer !== null) {
         // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
-        if (!this.topLayer || selectedLayer.get('id') !== this.topLayer.id) {
-          this.putObservationOnTop(this.getObservationIdFromLayerId(selectedLayer.get('id')));
+        const layerId = selectedLayer.get('id');
+        if (!this.topLayer || layerId !== this.topLayer.id) {
+          this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
           const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
           this.needFitMapListener({ geometry: extent });
+          this.setMapInfoPoint({ event, locked: true, layer: selectedLayer });
           /*
           if (selectedLayer.type === 'IMAGE') {
             extent =
