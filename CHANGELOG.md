@@ -11,7 +11,7 @@ is not available.
 - Time selection
 ### Improvements
 - Implements observations in secondary context
-- Click on map layer of secondary context, select it (in tree is underlined)
+- Click on map layer select it and give info
 - Double click on map layer, fit it in main windows
 - z-index of layers of secondary context has better management
 ### Solved

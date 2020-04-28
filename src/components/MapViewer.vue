@@ -640,10 +640,10 @@ export default {
         selectedLayer = layer;
       }, {
         layerFilter: (candidate) => {
-          if (candidate.get('type') === 'base') {
+          if (candidate.getType() === 'TILE') {
             return false;
           }
-          if (noVector && candidate.type === 'VECTOR') {
+          if (noVector && candidate.getType() === 'VECTOR') {
             return false;
           }
           return true;
@@ -836,7 +836,7 @@ export default {
       setTimeout(async () => {
         if (this.clicksOnMap === 1) {
           // select the clicked layer (we don't know if the first is the top one)
-          const selectedLayer = this.findTopLayerFromClick(event, false); // Vector layer are skipped
+          const selectedLayer = this.findTopLayerFromClick(event, true); // Vector layer are skipped
           if (selectedLayer !== null) {
             const layerId = selectedLayer.get('id');
             if (!this.topLayer || layerId !== this.topLayer.id) {
@@ -857,8 +857,10 @@ export default {
         const layerId = selectedLayer.get('id');
         if (!this.topLayer || layerId !== this.topLayer.id) {
           this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+          /* / TODO: make sense fit the layer?
           const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
           this.needFitMapListener({ geometry: extent });
+          */
           this.setMapInfoPoint({ event, locked: true, layer: selectedLayer });
           /*
           if (selectedLayer.type === 'IMAGE') {
