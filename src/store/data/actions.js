@@ -11,7 +11,7 @@ export default {
    * @param context the temporal or spatial context
    */
   setContext: ({ commit, getters, dispatch }, { context, isRecontext }) => {
-    // If set context, everything is resetted
+    // If set context, everything is re-set
     // set new context
     if (getters.context !== null && getters.context.id === context.id) {
       return;
@@ -169,13 +169,16 @@ export default {
       observation.tsImages = [];
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
       observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
-
-      const task = rootGetters['stomp/tasks'].find(t => t.id === observation.taskId);
-      if (task) {
-        const { contextId } = task;
-        observation.contextId = contextId;
-      } else {
-        observation.contextId = observation.rootContextId;
+      observation.loading = false;
+      observation.loaded = true; // change to false if is a raster
+      if (observation.contextId === null) {
+        const task = rootGetters['stomp/tasks'].find(t => observation.taskId.startsWith(t.id));
+        if (task) {
+          const { contextId } = task;
+          observation.contextId = contextId;
+        } else {
+          observation.contextId = observation.rootContextId;
+        }
       }
 
       // add observation. Children attribute is override to prevent reactivity on then
@@ -241,14 +244,8 @@ export default {
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
-    const context = state.contexts.peek();
-    // check if the modification is relative to context TODO make sense send a modification for context? Probably a bug
-    if (context && context.id === modificationEvent.id) {
-      console.warn(`Received a modification with type ${modificationEvent.type} relative to context, skipped`);
-      return;
-    }
-    if (context && context.id === modificationEvent.contextId) {
-      const node = findNodeById(state.tree, modificationEvent.id);
+    const node = findNodeById(state.tree, modificationEvent.id);
+    if (node) {
       switch (modificationEvent.type) {
         case MODIFICATIONS_TYPE.BRING_FORWARD: {
           commit('MOD_BRING_FORWARD', node);
@@ -273,7 +270,7 @@ export default {
           break;
       }
     } else {
-      console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
+      console.warn('Modification event for a no existing node, Could be for context', modificationEvent);
     }
   },
 
@@ -434,10 +431,21 @@ export default {
         visible,
       }, { root: true });
       commit('SET_VISIBLE', {
-        nodeId: node.id,
+        id: node.id,
         visible,
       });
     }
+  },
+
+  putObservationOnTop: ({ commit }, id) => {
+    commit('SET_VISIBLE', {
+      id,
+      visible: true,
+    });
+  },
+
+  setContextMenuObservationId: ({ commit }, contextMenuObservationId) => {
+    commit('SET_CONTEXTMENU_OBSERVATIONID', contextMenuObservationId);
   },
 
   selectNode: ({ dispatch, state }, selectedId) => {
@@ -451,6 +459,12 @@ export default {
         }
         dispatch('view/setObservationInfo', selectedObservation, { root: true });
       }
+    }
+  },
+
+  setLoadingLayers: ({ commit }, { loading, observation }) => {
+    if (observation) {
+      commit('SET_LOADING_LAYERS', { loading, observation });
     }
   },
 

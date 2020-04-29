@@ -36,7 +36,8 @@
             :class="[
                prop.node.main ? 'node-emphasized' : '',
                hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
-               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : '',
+               cleanTopLayerId !== null && cleanTopLayerId === prop.node.id ? 'node-on-top' : '',
+               checkObservationsOnTop(prop.node.id) ? 'node-on-top' : '',
                isUser ? 'node-user-element' : 'node-tree-element',
             ]"
             class="node-element"
@@ -44,14 +45,16 @@
           >
             <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
-            {{ prop.node.label }}<q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': isLoadingLayer(prop.node.id) }"></q-icon>
+            {{ prop.node.label }}
+            <q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': prop.node.loading }"></q-icon>
+            <q-icon name="mdi-loading" class="node-icon-time node-loading-layer" :class="{ 'animate-spin': prop.node.loading }" v-else></q-icon>
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
               self="bottom left"
               anchor="top left"
               class="kt-q-tooltip"
-            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+            >{{ clearObservable(prop.node.observable) }}</q-tooltip> <!-- TODO: DELETE NODE ID -->
 
           </span>
           <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
@@ -126,19 +129,7 @@
       </klab-q-tree>
     </div>
 
-    <q-context-menu ref="observations-context" v-show="enableContextMenu" @hide="enableContextMenu = false">
-      <q-list dense no-border style="min-width: 150px">
-        <template v-for="(action, index) in itemActions">
-          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
-          <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-          <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-        </template>
-      </q-list>
-    </q-context-menu>
+    <observation-context-menu @hide="contextMenuObservationId = null" :observation-id="contextMenuObservationId"></observation-context-menu>
     <q-resize-observable @resize="$emit('resized')"></q-resize-observable>
   </div>
 </template>
@@ -150,6 +141,8 @@ import { CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
+import ObservationContextMenu from 'components/ObservationContextMenu';
+import { copyToClipboard } from 'shared/Utils';
 
 let scrollToTimeout = null;
 
@@ -157,6 +150,7 @@ export default {
   name: 'klabTree',
   components: {
     KlabQTree,
+    ObservationContextMenu,
   },
   props: {
     isUser: {
@@ -173,8 +167,7 @@ export default {
       ticked: [],
       selected: null,
       expanded: [],
-      enableContextMenu: false,
-      itemActions: [],
+
       itemObservationId: null,
       askingForChildren: false,
       scrollElement: null,
@@ -182,6 +175,7 @@ export default {
       dragStart: false,
       dragEnter: 0,
       watchedObservation: [],
+      contextMenuObservationId: null,
       OBSERVATION_CONSTANTS,
     };
   },
@@ -194,6 +188,7 @@ export default {
       'observations',
       'timeEventsOfObservation',
       'timestamp',
+      'observationsIdOnTop',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -203,7 +198,6 @@ export default {
       'observationInfo',
       'hasObservationInfo',
       'topLayerId',
-      'isLoadingLayer',
     ]),
     ...mapState('view', [
       'treeSelected',
@@ -211,8 +205,15 @@ export default {
       'treeExpanded',
       'showNotified',
     ]),
+    cleanTopLayerId() {
+      return this.topLayerId ? this.topLayerId.substr(0, this.topLayerId.indexOf('T')) : null;
+    },
   },
   methods: {
+    checkObservationsOnTop(id) {
+      return this.observationsIdOnTop.length > 0 && this.observationsIdOnTop.includes(id);
+    },
+    copyToClipboard,
     ...mapActions('data', [
       'setVisibility',
       'selectNode',
@@ -226,11 +227,6 @@ export default {
       'setSpinner',
       'setMainDataViewer',
     ]),
-    /*
-    filterMethod(node) {
-      return !this.contextReloaded || node.notified;
-    },
-    */
     filterUser(node, filter) {
       return node.userNode ? filter === 'user' : filter === 'tree';
     },
@@ -246,55 +242,10 @@ export default {
         }
       }
       if (spanNode !== null) {
-        const observationId = spanNode.id.substring(5);
-        const node = this.treeNode(observationId);
-        if (node && node !== null && node.actions && node.actions.length > 1) {
-          this.itemActions = node.actions.slice(1);
-          this.itemObservationId = observationId;
-          /*
-          else {
-            this.itemActions = [{
-              actionId: null,
-              actionLabel: this.$t('messages.noActionForObservation'),
-              enabled: false,
-              separator: false,
-            }];
-            this.itemObservationId = null;
-          }
-          */
-        } else {
-          this.itemActions = [];
-          this.itemObservationId = null;
-        }
-        if (node.observationType !== OBSERVATION_CONSTANTS.TYPE_STATE) {
-          this.itemActions = [{
-            actionId: 0,
-            actionLabel: this.$t('label.recontextualization'),
-            enabled: true,
-            separator: false,
-          }];
-          this.itemObservationId = observationId;
-        }
-        if (this.itemActions && this.itemActions.length > 0) {
-          this.enableContextMenu = (this.itemActions && this.itemActions.length > 0);
-        } else {
-          this.enableContextMenu = false;
-        }
+        this.contextMenuObservationId = spanNode.id.substring(5);
+      } else {
+        this.contextMenuObservationId = null;
       }
-    },
-    askForAction(observationId, actionId) {
-      console.debug(`Will ask for ${actionId} of observation ${observationId}`);
-      if (actionId === 0) { // is ricontextualization
-        const observation = this.observations.find(o => o.id === observationId);
-        if (observation && observation !== null) {
-          this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
-            { contextId: observationId, parentContext: this.contextId },
-            this.$store.state.data.session,
-          ).body);
-          this.setContext({ context: observation, isRecontext: true });
-        }
-      }
-      this.enableContextMenu = false;
     },
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
@@ -743,13 +694,17 @@ export default {
       .node-no-tick
         margin-right 5px
       .node-on-top
-        text-decoration underline
+        color $main-control-yellow
       .node-icon
         display inline
         padding-left 5px
       .node-icon-time
         position relative
         right -5px
+        &.node-loading-layer
+          opacity 0
+          &.animate-spin
+            opacity 1
       .kt-q-tooltip
         background-color #333
       .q-tree-node-link

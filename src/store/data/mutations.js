@@ -92,6 +92,10 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
+  SET_CONTEXTMENU_OBSERVATIONID: (state, contextMenuObservationId) => {
+    state.contextMenuObservationId = contextMenuObservationId;
+  },
+
   MOD_BRING_FORWARD: (state, node) => {
     const observation = state.observations.find(o => o.id === node.id);
     if (!observation) {
@@ -146,7 +150,7 @@ export default {
   ADD_NODE: (state, { node, parentId, toUserTreeOnly = false }) => {
     const context = state.contexts.peek();
     if (context === null) {
-      console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
+      console.info(`Context is null, it's just set or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
       state.orphans.push(node);
       return;
     }
@@ -261,11 +265,11 @@ export default {
   },
 
   SET_VISIBLE: (state, {
-    nodeId,
+    id,
     visible,
   }) => {
     // set observation visible (for layer)
-    const observationIdx = state.observations.findIndex(o => o.id === nodeId);
+    const observationIdx = state.observations.findIndex(o => o.id === id);
     const observation = state.observations[observationIdx];
     if (typeof observation !== 'undefined') {
       // store the offset, we need to set top to false only for observations with same offset
@@ -275,14 +279,14 @@ export default {
       // if hide, nothing else, else need to put down others
       if (visible) {
         state.observations.forEach((o) => {
-          if (o.id !== nodeId && o.zIndexOffset === offset) {
+          if (o.id !== id && o.zIndexOffset === offset) {
             o.top = false;
           }
         });
       }
       // set node ticked (for tree view)
       const setNodeTicked = (tree) => {
-        const node = findNodeById(tree, nodeId);
+        const node = findNodeById(tree, id);
         if (node) {
           node.ticked = visible;
         }
@@ -291,7 +295,21 @@ export default {
       setNodeTicked(state.userTree);
       state.observations.splice(observationIdx, 1, observation);
     } else {
-      console.warn(`Try to change visibility to no existing observations with id ${nodeId}`);
+      console.warn(`Try to change visibility to no existing observations with id ${id}`);
+    }
+  },
+
+  SET_LOADING_LAYERS: (state, { loading, observation }) => {
+    if (observation) {
+      observation.loading = loading;
+      const node = findNodeById(state.tree, observation.id);
+      if (node) {
+        node.loading = loading;
+        if (node.userNode) {
+          const userNode = findNodeById(state.tree, observation.id);
+          userNode.loading = loading;
+        }
+      }
     }
   },
 
@@ -337,7 +355,7 @@ export default {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
     state.scaleReference = scaleReference;
-    console.info(`Scale reference setted: ${JSON.stringify(scaleReference, null, 2)}`);
+    console.info(`Scale reference set: ${JSON.stringify(scaleReference, null, 2)}`);
   },
 
   UPDATE_SCALE_REFERENCE: (state, scaleReference) => {

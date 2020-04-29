@@ -6,6 +6,17 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.11
+### Added
+- Time selection
+### Improvements
+- Implements observations in secondary context
+- Click on map layer select it and give info
+- Double click on map layer, fit it in main windows
+- z-index of layers of secondary context has better management
+### Solved
+- Various bug solved
+
 ## 0.10.2
 ### Added
 - Time selector

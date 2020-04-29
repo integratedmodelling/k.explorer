@@ -24,8 +24,8 @@ export default class {
    *   transports: string or string[]
    *   sessionId: Number or function
    * }
-   * store: if setted, everything is sent to store mutation or action,
-   * storeNS: if setted, indicate the Namespace of store to use for mutations or actions
+   * store: if set, everything is sent to store mutation or action,
+   * storeNS: if set, indicate the Namespace of store to use for mutations or actions
    * reconnection: indicate if automatic reconnection is needed
    * reconnectionAttempts: how many reconnection attempts. Default is Infinity
    * reconnectionDelay: reconnection delay. Default is 2000ms
@@ -183,7 +183,7 @@ export default class {
   }
 
   /**
-   * Manage the things to do on event: Emit to listener and if setted, send to store action
+   * Manage the things to do on event: Emit to listener and if set, send to store action
    * @param eventType
    * @param payload
    */

@@ -162,7 +162,7 @@ export default {
       const mcMaxHeight = Math.floor(window.innerHeight * parseInt(getComputedStyle(document.documentElement).getPropertyValue('--main-control-max-height'), 10) / 100);
       const mcMinChildHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--q-tree-no-child-min-height'), 10);
       const minResults = Math.floor(mcMaxHeight / mcMinChildHeight);
-      console.info(`Setted max children as ${minResults}`);
+      console.info(`Set max children to ${minResults}`);
       this.$store.state.data.childrenToAskFor = minResults;
     },
     askForUndockListener(ask) {
