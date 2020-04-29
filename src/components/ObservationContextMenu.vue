@@ -16,18 +16,8 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { OBSERVATION_CONSTANTS } from 'shared/Constants';
+import { OBSERVATION_CONSTANTS, OBSERVATION_CONTEXT_ITEMS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
-
-const SEPARATOR_OBJECT = {
-  actionLabel: null,
-  actionId: null,
-  downloadUrl: null,
-  downloadFileExtension: null,
-  enabled: true,
-  separator: true,
-  submenu: [],
-};
 
 export default {
   name: 'ObservationContextMenu',
@@ -74,13 +64,8 @@ export default {
         this.resetContextMenu();
       }
       if (observation.observationType !== OBSERVATION_CONSTANTS.TYPE_STATE && observation.observationType !== OBSERVATION_CONSTANTS.TYPE_GROUP) {
-        this.itemActions.push(SEPARATOR_OBJECT);
-        this.itemActions.push({
-          actionId: 0,
-          actionLabel: this.$t('label.recontextualization'),
-          enabled: true,
-          separator: false,
-        });
+        this.itemActions.push(OBSERVATION_CONTEXT_ITEMS.SEPARATOR_ITEM);
+        this.itemActions.push(OBSERVATION_CONTEXT_ITEMS.RECONTEXTUALIZATION_ITEM);
         this.itemObservation = observation;
       }
       if (this.itemActions && this.itemActions.length > 0) {
@@ -103,12 +88,19 @@ export default {
     askForAction(actionId) {
       if (this.itemObservation !== null) {
         console.debug(`Will ask for ${actionId} of observation ${this.itemObservation.id}`);
-        if (actionId === 0) { // is ricontextualization
-          this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
-            { contextId: this.itemObservation.id, parentContext: this.itemObservation.contextId },
-            this.$store.state.data.session,
-          ).body);
-          this.setContext({ context: this.itemObservation, isRecontext: true });
+        switch (actionId) {
+          case 'Recontextualization':
+            this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
+              { contextId: this.itemObservation.id, parentContext: this.itemObservation.contextId },
+              this.$store.state.data.session,
+            ).body);
+            this.setContext({ context: this.itemObservation, isRecontext: true });
+            break;
+          case 'AddToCache':
+            console.log('Ask for Add to cache, no action for now'); // TODO: add to cache action on engine
+            break;
+          default:
+            break;
         }
       }
       this.enableContextMenu = false;

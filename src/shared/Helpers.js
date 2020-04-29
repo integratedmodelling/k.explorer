@@ -159,14 +159,17 @@ export const getNodeFromObservation = (observation) => {
  * If we need a new projection, a call to epsg.io is maded to retrieve
  * projection definition and register it.
  * For now, it live until browser close
+ * Projection in format ESPG:XXXXX
  * TODO implement browser database support
  * @param projection
  * @returns {Promise}
  */
-export const registerProjection = spatialProjection => new Promise((resolve, reject) => { // projection in format ESPG:XXXXX
+export const findProjection = spatialProjection => new Promise((resolve, reject) => {
+  let dataProjection = null;
   if (spatialProjection !== null) {
-    const dataProjection = getProjection(spatialProjection);
-    if (dataProjection === null) { // unknows projection, need ask for it
+    dataProjection = getProjection(spatialProjection);
+    if (dataProjection === null) {
+      // unknows projection, need ask for it
       const toAsk = spatialProjection.substring(5); // ask without ESPG
       fetch(`https://epsg.io/?format=json&q=${toAsk}`)
         .then(response => response.json().then((json) => {
@@ -181,13 +184,13 @@ export const registerProjection = spatialProjection => new Promise((resolve, rej
                   const newProjCode = `EPSG:${code}`;
                   proj4.defs(newProjCode, proj4def);
                   register(proj4);
-                  const newProj = getProjection(newProjCode);
-                  const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, newProj);
+                  dataProjection = getProjection(newProjCode);
+                  const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, dataProjection);
                   // very approximate calculation of projection extent
                   const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
-                  newProj.setExtent(extent);
+                  dataProjection.setExtent(extent);
                   console.info(`New projection registered: ${newProjCode}`);
-                  resolve(newProj);
+                  resolve(dataProjection);
                 } else {
                   reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
                 }
@@ -206,6 +209,7 @@ export const registerProjection = spatialProjection => new Promise((resolve, rej
     resolve(MAP_CONSTANTS.PROJ_EPSG_4326);
   }
 });
+// });
 
 
 /**
@@ -215,7 +219,7 @@ export const registerProjection = spatialProjection => new Promise((resolve, rej
  */
 export async function getContextGeometry(contextObservation) {
   const { spatialProjection } = contextObservation;
-  const dataProjection = await registerProjection(spatialProjection); // .then((dataProjection) => {
+  const dataProjection = await findProjection(spatialProjection); // .then((dataProjection) => {
   let { encodedShape } = contextObservation;
   // normalize encodedShape
   if (encodedShape.indexOf('LINEARRING') === 0) {
@@ -316,10 +320,10 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
  * Build a layer object. If needed ask for projection (reason for async function)
  * @param observation the observations: needed for projection ad type of representation
  * @param isContext if is context, a lot of thing are not needed
- * @param viewport not used for now. If not setted, for now is the double of height/width of browser
+ * @param viewport not used for now. If not set, for now is the double of height/width of browser
  * @return layer
  */
-export function getLayerObject(observation, { viewport = null, timestamp = -1 /* , projection = null */ }) {
+export async function getLayerObject(observation, { viewport = null, timestamp = -1 /* , projection = null */ }) {
   // const { geometryTypes } = observation;
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
@@ -339,15 +343,8 @@ export function getLayerObject(observation, { viewport = null, timestamp = -1 /*
     spatialProjection = observation.spatialProjection;
   }
 
-  let dataProjection;
-  if (spatialProjection !== null) {
-    dataProjection = getProjection(spatialProjection);
-    if (dataProjection === null) { // unknows projection, need ask for it
-      dataProjection = registerProjection(spatialProjection);
-    }
-  } else {
-    dataProjection = MAP_CONSTANTS.PROJ_EPSG_4326;
-  }
+  const dataProjection = await findProjection(spatialProjection);
+
   let { encodedShape } = observation;
   // normalize encodedShape
   if (encodedShape.indexOf('LINEARRING') === 0) {
@@ -400,7 +397,7 @@ export function getLayerObject(observation, { viewport = null, timestamp = -1 /*
                 store.dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: `${src}${timestamp}` }, { root: true });
                 observation.tsImages.push(`T${timestamp}`);
                 observation.loaded = true;
-                // store.dispatch('data/setLoadingLayers', { loading: false, observation });
+                store.dispatch('data/setLoadingLayers', { loading: false, observation });
                 // load colormap if necesary
                 getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP', ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
@@ -445,7 +442,7 @@ export function getLayerObject(observation, { viewport = null, timestamp = -1 /*
               owner: src,
               errorMessage: error,
             }, { root: true });
-            // store.dispatch('data/setLoadingLayers', { loading: false, observationId: observation.id });
+            store.dispatch('data/setLoadingLayers', { loading: false, observationId: observation.id });
             throw error;
           });
       },
@@ -509,7 +506,7 @@ const Helpers = {
   lastFilteredLogElement,
   findNodeById,
   getNodeFromObservation,
-  registerProjection,
+  findProjection,
   getContextGeometry,
   getAxiosContent,
   getLayerObject,

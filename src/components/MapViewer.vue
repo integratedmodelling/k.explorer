@@ -314,7 +314,7 @@ export default {
       return -1;
     },
 
-    findLayerById({ observation, timestamp = -1 }) {
+    async findLayerById({ observation, timestamp = -1 }) {
       const founds = this.findExistingLayerById(observation.id);
       if (founds.length > 0) {
         const id = `${observation.id}T${timestamp}`;
@@ -326,7 +326,7 @@ export default {
       // need to create new layer
       try {
         console.log(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
-        const layer = getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
+        const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
         } else {
@@ -358,19 +358,19 @@ export default {
           // if (modifications[index].timestamp <= buffer) {
           const observation = this.observations.find(obs => obs.id === modifications[index].id);
           if (observation) {
-            const { layer } = this.findLayerById({ observation, timestamp: modifications[index].timestamp }); // .then(({ layer }) => {
-            const image = layer.getSource().image_;
-            if (image && image.state === 0) {
-              image.load();
-              layer.getSource().on('imageloadend', ({ image: loadedImage }) => {
-                if (++index < mtll) {
-                  loadImage(index);
-                }
-              });
-            } else if (++index < mtll) {
-              loadImage(index);
-            }
-            // });
+            this.findLayerById({ observation, timestamp: modifications[index].timestamp }).then(({ layer }) => {
+              const image = layer.getSource().image_;
+              if (image && image.state === 0) {
+                image.load();
+                layer.getSource().on('imageloadend', ({ image: loadedImage }) => {
+                  if (++index < mtll) {
+                    loadImage(index);
+                  }
+                });
+              } else if (++index < mtll) {
+                loadImage(index);
+              }
+            });
           }
           // }
         };
@@ -416,7 +416,7 @@ export default {
       }
     },
 
-    drawObservations() {
+    async drawObservations() {
       if (this.observations && this.observations.length > 0) {
         // clean locked if someone now is hidden
         this.lockedObservations = this.lockedObservations.filter(o => o.visible);
@@ -444,50 +444,50 @@ export default {
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
-            const layers = this.findLayerById({ observation, timestamp }); // .then((layers) => {
-            if (layers !== null) {
-              const { founds, layer } = layers;
-              layer.setOpacity(observation.layerOpacity);
-              let { zIndex } = observation;
-              if (observation.top) {
-                zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
-              } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
-                zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
-              }
-              if (!waitForLayerLoading) {
-                layer.setZIndex(zIndex);
-                if (
-                  (observation.visible && observation.top)
-                  && isRasterObservation(observation) // is RASTER...
-                  && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
-                ) {
-                  this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
-                } else if ((!observation.visible || !observation.top)
-                  && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
-                  this.setTopLayer(null);
+            this.findLayerById({ observation, timestamp }).then((layers) => {
+              if (layers !== null) {
+                const { founds, layer } = layers;
+                layer.setOpacity(observation.layerOpacity);
+                let { zIndex } = observation;
+                if (observation.top) {
+                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
+                } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
+                  zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
                 }
-              }
-              if (founds.length > 0) {
-                if (observation.visible) {
-                  founds.forEach((f) => {
-                    if (f.get('id') === `${observation.id}T${timestamp}`) {
-                      if (!waitForLayerLoading) {
-                        f.setZIndex(zIndex + 1);
+                if (!waitForLayerLoading) {
+                  layer.setZIndex(zIndex);
+                  if (
+                    (observation.visible && observation.top)
+                    && isRasterObservation(observation) // is RASTER...
+                    && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
+                  ) {
+                    this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
+                  } else if ((!observation.visible || !observation.top)
+                    && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
+                    this.setTopLayer(null);
+                  }
+                }
+                if (founds.length > 0) {
+                  if (observation.visible) {
+                    founds.forEach((f) => {
+                      if (f.get('id') === `${observation.id}T${timestamp}`) {
+                        if (!waitForLayerLoading) {
+                          f.setZIndex(zIndex + 1);
+                        }
+                        f.setVisible(true);
+                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
+                        f.setZIndex(zIndex);
                       }
-                      f.setVisible(true);
-                    } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
-                      f.setZIndex(zIndex);
-                    }
-                  });
-                } else { // no visibility
-                  founds.forEach((f) => { f.setVisible(false); });
+                    });
+                  } else { // no visibility
+                    founds.forEach((f) => { f.setVisible(false); });
+                  }
+                } else {
+                  console.debug(`No multiple layer for observation ${observation.id}, refreshing`);
+                  layer.setVisible(observation.visible);
                 }
-              } else {
-                console.debug(`No multiple layer for observation ${observation.id}, refreshing`);
-                layer.setVisible(observation.visible);
               }
-            }
-            // });
+            });
           }
         });
         if (this.topLayer === null) {
@@ -720,7 +720,7 @@ export default {
           this.drawObservations();
         }
         */
-        this.drawObservations();
+        this.$nextTick(() => this.drawObservations());
       },
       deep: true,
     },
@@ -893,7 +893,7 @@ export default {
     });
     this.map.on('contextmenu', (event) => {
       const selectedLayers = this.findTopLayerFromClick(event, false);
-      if (selectedLayers.length === 1) {
+      if (selectedLayers.length > 0) {
         // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
         this.contextMenuObservationId = this.getObservationIdFromLayerId(selectedLayers[0].layer.get('id'));
         event.preventDefault();
