@@ -16,7 +16,7 @@
         <div class="ot-date-container">
           <div
             class="ot-date ot-date-start col"
-            :class="{ 'ot-with-modifications': timeEvents.length !== 0 ,'ot-date-loaded': loadedTime > 0 }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0 ,'ot-date-loaded': engineTimestamp > 0 }"
             @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
             @dblclick="onDblClick($event, () => { changeTimestamp(-1); })"
           >
@@ -62,7 +62,7 @@
             </div>
             <div
               class="ot-loaded-time"
-              :style="{ width: loadedTime === 0 ? 0 : `calc(${calculatePosition(loadedTime)}px + 4px)` }"
+              :style="{ width: engineTimestamp === 0 ? 0 : `calc(${calculatePosition(engineTimestamp)}px + 4px)` }"
             ></div>
             <!--
             <div
@@ -92,7 +92,7 @@
           <div
             class="ot-date ot-date-end col"
             @click.self="changeTimestamp(scaleReference.end)"
-            :class="{ 'ot-date-loaded': loadedTime === scaleReference.end }"
+            :class="{ 'ot-date-loaded': engineTimestamp === scaleReference.end }"
           ><q-tooltip
             v-if="timeEvents.length !== 0"
             :offset="[0, 8]"
@@ -135,7 +135,7 @@ export default {
       timelineContainer: undefined,
       timelineLeft: undefined,
       visibleTimestamp: -1,
-      loadedTime: 0,
+      // loadedTime: 0,
       playTimer: null,
       interval: undefined,
       // speedMultiplier: 4,
@@ -149,6 +149,7 @@ export default {
       'modificationsTask',
       'hasContext',
       'visibleEvents',
+      'engineTimestamp',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -167,6 +168,7 @@ export default {
     ...mapActions('data', [
       'setTimestamp',
       'setModificationsTask',
+      'setEngineTimestamp',
     ]),
     ...mapActions('view', [
       'setTimeRunning',
@@ -276,19 +278,20 @@ export default {
     },
   },
   watch: {
-    timeEvents(newValue) {
+    timeEvents() {
       if (!this.interval) {
         this.calculateInterval();
       }
+      /*
       if (newValue.length > 0) {
         this.loadedTime = newValue[newValue.length - 1].timestamp;
       }
+      */
     },
     tasks(newValue) {
       if (newValue.length > 0 && this.modificationsTask) {
         const task = newValue.find(t => t.id === this.modificationsTask.id);
         if (task && !task.alive) {
-          this.loadedTime = this.scaleReference.end;
           this.setModificationsTask(null);
         }
       }

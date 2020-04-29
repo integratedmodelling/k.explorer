@@ -296,8 +296,25 @@ export default {
     commit('SET_TIMESTAMP', timestamp);
   },
 
+  scheduleAdvanced: ({ dispatch }, scheduleAdvanced) => {
+    if (scheduleAdvanced) {
+      switch (scheduleAdvanced.type) {
+        case 'TIME_ADVANCED':
+          dispatch('setEngineTimestamp', scheduleAdvanced.currentTime);
+          break;
+        default:
+          console.warn(`Unknown scheduleAdvanced type: ${scheduleAdvanced.type}`);
+          break;
+      }
+    }
+  },
+
+  setEngineTimestamp: ({ commit }, engineTimestamp) => {
+    commit('SET_ENGINE_TIMESTAMP', engineTimestamp);
+  },
+
   setScheduling: ({ commit }, scheduling) => {
-    commit('SET_SCHEDULING', scheduling);
+    commit('SET_SCHEDULING_STATUS', scheduling);
   },
 
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {

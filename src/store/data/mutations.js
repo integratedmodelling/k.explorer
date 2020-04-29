@@ -131,16 +131,35 @@ export default {
     state.timestamp = timestamp;
   },
 
-  SET_SCHEDULING: (state, scheduling) => {
+  SET_ENGINE_TIMESTAMP: (state, engineTimestamp) => {
+    state.engineTimestamp = engineTimestamp;
+  },
+
+  SET_SCHEDULING_STATUS: (state, scheduling) => {
     if (state.scaleReference !== null) {
-      if (scheduling.type === 'STARTED') {
-        state.scaleReference.schedulingType = 'STARTED';
-        state.scaleReference.schedulingResolution = scheduling.resolution;
-      } else {
-        state.scaleReference.schedulingType = 'FINISHED';
+      switch (scheduling.type) {
+        case 'TIME_ADVANCED':
+          state.engineTimestamp = scheduling.currentTime;
+          state.scaleReference.schedulingType = scheduling.type;
+          break;
+        case 'STARTED':
+          state.scaleReference.schedulingResolution = scheduling.resolution;
+          state.scaleReference.schedulingType = scheduling.type;
+          break;
+        case 'FINISHED':
+          state.scaleReference.schedulingType = scheduling.type;
+          if (scheduling.currentTime !== 0) {
+            state.engineTimestamp = scheduling.currentTime;
+          } else { // TODO remove when engine send the current time
+            state.engineTimestamp = state.scaleReference.end;
+          }
+          break;
+        default:
+          console.warn(`Unknown scheduling type: ${scheduling.type}`);
+          break;
       }
     } else {
-      console.warn('Try to set scheduling but no scaleReference');
+      console.warn('Try to change scheduling type but no scaleReference');
     }
   },
   /**

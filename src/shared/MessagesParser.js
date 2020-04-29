@@ -144,9 +144,9 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received input request', message.payload);
     dispatch('view/inputRequest', message, { root: true });
   },
-  [IN.TYPE_SCHEDULEADVANCED]: ({ payload: schedule }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received schedule advanced', schedule);
-    // dispatch('data/setScheduling', schedule, { root: true }); // TODO implement IT
+  [IN.TYPE_SCHEDULEADVANCED]: ({ payload: scheduling }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received schedule advanced', scheduling);
+    dispatch('data/setScheduling', scheduling, { root: true }); // TODO implement IT
   },
   [IN.TYPE_SCHEDULINGSTARTED]: ({ payload: scheduling }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling started', scheduling);

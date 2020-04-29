@@ -244,6 +244,11 @@ export default {
   timestamp: -1,
 
   /**
+   * Engine timestamp
+   */
+  engineTimestamp: -1,
+
+  /**
    * The dataflow of context as JSON ELK object
    */
   dataflow: null,

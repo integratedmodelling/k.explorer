@@ -47,6 +47,7 @@ export default {
   },
 
   timestamp: state => state.timestamp,
+  engineTimestamp: state => state.engineTimestamp,
 
   dataflow: state => state.dataflow,
   hasDataflow: state => state.dataflow !== null,
