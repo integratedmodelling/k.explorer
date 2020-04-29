@@ -1,6 +1,7 @@
 import { axiosInstance } from 'plugins/axios';
-import { findNodeById, getAxiosContent, getNodeFromObservation } from 'shared/Helpers';
+import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
 import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 export default {
   /**
@@ -10,7 +11,8 @@ export default {
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */
-  setContext: ({ commit, getters, dispatch }, { context, isRecontext }) => {
+  setContext: (vuexContext, { context, isRecontext }) => {
+    const { commit, getters, dispatch } = vuexContext;
     // If set context, everything is re-set
     // set new context
     if (getters.context !== null && getters.context.id === context.id) {
@@ -21,10 +23,14 @@ export default {
       dispatch('view/resetContext', null, { root: true });
     }
     dispatch('view/setContextLayer', context, { root: true });
+    console.debug(`Send start watch context ${context.id}`);
+    sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST, { active: true, observationId: context.id, rootContextId: context.rootContextId });
   },
 
   resetContext: ({ commit, dispatch, state, getters }) => {
-    if (getters.context !== null) {
+    const { context } = getters;
+    if (context !== null) {
+      const oldContext = { id: context.id, rootContextId: context.rootContextId };
       commit('SET_CONTEXT', {});
       dispatch('getSessionContexts');
       dispatch('view/resetContext', null, { root: true });
@@ -38,6 +44,8 @@ export default {
         });
       }
       dispatch('view/addToKlabLog', { type: MESSAGE_TYPES.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
+      console.debug(`Send stop watch context ${oldContext.id}`);
+      sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST, { active: false, observationId: oldContext.id, rootContextId: oldContext.rootContextId });
     } else {
       console.warn('Try to reset null context');
     }

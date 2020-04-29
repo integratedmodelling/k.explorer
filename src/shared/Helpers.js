@@ -483,6 +483,10 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
   return vectorLayer;
 }
 
+export function sendStompMessage(messagebuilder, params) {
+  store.$app.sendStompMessage(messagebuilder(params, store.state.data.session).body);
+}
+
 export const getStateIcon = (state) => {
   switch (state) {
     case 'FORTHCOMING':

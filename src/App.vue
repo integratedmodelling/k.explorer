@@ -139,6 +139,7 @@ export default {
   },
   mounted() {
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
+    this.$store.$app = this;
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
         console.warn(`[Intercepted Vue warn]: ${msg}${trace}`);
