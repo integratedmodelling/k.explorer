@@ -86,6 +86,7 @@ export const IN = Object.freeze({
   TYPE_SCHEDULINGFINISHED: 'SchedulingFinished',
   TYPE_NETWORKSTATUS: 'NetworkStatus',
   TYPE_CREATEVIEWCOMPONENT: 'CreateViewComponent',
+  TYPE_SCHEDULEADVANCED: 'ScheduleAdvanced',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
