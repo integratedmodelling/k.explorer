@@ -150,7 +150,7 @@ export default {
     time: false,
   },
   /**
-   * Ir a context is setted, we can ask for a "rescale".
+   * Ir a context is set, we can ask for a "rescale".
    * The new scale is stored here until refresh and confirmation
    */
   nextScale: null,

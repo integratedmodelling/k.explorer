@@ -150,7 +150,7 @@ export default {
   ADD_NODE: (state, { node, parentId, toUserTreeOnly = false }) => {
     const context = state.contexts.peek();
     if (context === null) {
-      console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
+      console.info(`Context is null, it's just set or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
       state.orphans.push(node);
       return;
     }
@@ -355,7 +355,7 @@ export default {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
     state.scaleReference = scaleReference;
-    console.info(`Scale reference setted: ${JSON.stringify(scaleReference, null, 2)}`);
+    console.info(`Scale reference set: ${JSON.stringify(scaleReference, null, 2)}`);
   },
 
   UPDATE_SCALE_REFERENCE: (state, scaleReference) => {

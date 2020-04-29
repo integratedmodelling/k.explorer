@@ -11,7 +11,7 @@ export default {
    * @param context the temporal or spatial context
    */
   setContext: ({ commit, getters, dispatch }, { context, isRecontext }) => {
-    // If set context, everything is resetted
+    // If set context, everything is re-set
     // set new context
     if (getters.context !== null && getters.context.id === context.id) {
       return;
