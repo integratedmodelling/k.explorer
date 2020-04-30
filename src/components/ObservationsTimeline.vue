@@ -16,6 +16,14 @@
           flat
         >
         </q-icon>
+        <q-tooltip
+          class="ot-change-speed-tooltip"
+          :offset="[0, 8]"
+          self="bottom middle"
+          anchor="top middle"
+          :delay="1000"
+          v-html="$t('messages.pressToChangeSpeed',{ multiplier: speedMultiplier })"
+        ></q-tooltip>
         <div>
           <q-popover v-model="selectSpeed" class="ot-speed-container">
             <q-list class="ot-speed-selector">
@@ -25,7 +33,7 @@
                 @click.native="changeSpeed(speed)"
                 :disabled="speedMultiplier === speed"
                 :class="{ 'ot-speed-disabled': speedMultiplier === speed }"
-              >x {{ speed }}</q-item>
+              >x{{ speed }}</q-item>
             </q-list>
           </q-popover>
         </div>
@@ -553,4 +561,7 @@ export default {
           background-color #333
           color $main-control-yellow
           cursor pointer
+  .ot-change-speed-tooltip
+    text-align center
+
 </style>
