@@ -218,7 +218,7 @@ export default {
     ]),
     handleResize() {
       if (this.map !== null) {
-        console.debug('HandleResize called!!!');
+        // console.debug('HandleResize called!!!');
         this.map.updateSize();
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
       }

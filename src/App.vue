@@ -88,9 +88,7 @@ export default {
     onerror: (error) => {
       console.log(`Error: ${JSON.stringify(error)}`);
     },
-    onerrorsend: (error) => {
-      console.log(`Error on send: ${JSON.stringify(error)}`);
-    },
+
     onmessage: (frame) => {
       /*
       let body = '';
@@ -104,11 +102,14 @@ export default {
     onclose: () => {
       console.log('Disconnected');
     },
+    onerrorsend: (error) => {
+      console.log(`Error sending: ${JSON.stringify(error)}`);
+    },
     */
-    onsend({ headers, message }) {
+    onsend({ message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
-        console.debug(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
+        // console.debug(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
       }
     },
   },
@@ -123,10 +124,24 @@ export default {
           icon: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'mdi-alert-circel' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'mdi-alert' : 'mdi-information'),
           timeout: 1500,
         });
-        if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING) {
-          console.warn(lastKexplorerLog.payload.message);
-        } else if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR) {
-          console.error(lastKexplorerLog.payload.message);
+        const message = `${lastKexplorerLog.payload.message}\n${JSON.stringify(lastKexplorerLog.attach)}`;
+        switch (lastKexplorerLog.type) {
+          case MESSAGE_TYPES.TYPE_DEBUG:
+            if (process.env.KEXPLORER_DEBUG) {
+              console.debug();
+            }
+            break;
+          case MESSAGE_TYPES.TYPE_INFO:
+            console.info(message);
+            break;
+          case MESSAGE_TYPES.TYPE_WARNING:
+            console.warn(message);
+            break;
+          case MESSAGE_TYPES.TYPE_ERROR:
+            console.error(message);
+            break;
+          default:
+            console.warn(`Unknown type: ${lastKexplorerLog.type}`, message);
         }
       }
     },

@@ -5,7 +5,7 @@ import { Cookies } from 'quasar';
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
     pushElementInFixedQueue(state.kexplorerLog, log);
-    console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
+    // console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
   },
 
   ADD_TO_KLAB_LOG: (state, log) => {

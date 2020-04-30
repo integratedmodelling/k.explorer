@@ -126,9 +126,9 @@ export default {
           if (rootObservations !== null && !(Object.keys(rootObservations).length === 0 && rootObservations.constructor === Object)) {
             console.debug(`Find ${Object.keys(rootObservations).length} root observations for this session`);
             let counter = 0;
-            Object.entries(rootObservations).forEach(([contextId, context]) => {
+            Object.entries(rootObservations).forEach(([context]) => {
               commit('STORE_CONTEXT', context);
-              console.debug(`Stored context with id ${contextId}`);
+              // console.debug(`Stored context with id ${contextId}`);
               counter += 1;
             });
             resolve(counter);
