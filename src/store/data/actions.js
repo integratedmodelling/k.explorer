@@ -277,8 +277,10 @@ export default {
           console.warn(`Unknown modification event: ${modificationEvent.type}`);
           break;
       }
-    } else {
+    } else if (modificationEvent.id !== modificationEvent.contextId) {
       console.warn('Modification event for a no existing node, Could be for context', modificationEvent);
+    } else {
+      console.debug('Modification event for context', modificationEvent);
     }
   },
 
