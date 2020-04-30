@@ -148,11 +148,11 @@ export default {
           break;
         case 'FINISHED':
           state.scaleReference.schedulingType = scheduling.type;
-          if (scheduling.currentTime !== 0) {
-            state.engineTimestamp = scheduling.currentTime;
-          } else { // TODO remove when engine send the current time
-            state.engineTimestamp = state.scaleReference.end;
-          }
+          // if (scheduling.currentTime !== 0) {
+          //   state.engineTimestamp = scheduling.currentTime;
+          // } else { // TODO remove when engine send the current time
+          state.engineTimestamp = state.scaleReference.end;
+          // }
           break;
         default:
           console.warn(`Unknown scheduling type: ${scheduling.type}`);
