@@ -8,12 +8,13 @@ is not available.
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 ## 0.11
 ### Added
-- Time selection
+- Time selection for scale
+- Speed selector on timeline with click and hold
 ### Improvements
 - Implements observations in secondary context
 - Click on map layer select it and give info
-- Double click on map layer, fit it in main windows
-- z-index of layers of secondary context has better management
+- Right click on layer for more action (like Set as context)
+- Layer on top of secondary context has better management
 ### Solved
 - Various bug solved
 

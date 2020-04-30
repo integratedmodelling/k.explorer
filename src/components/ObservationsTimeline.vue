@@ -9,8 +9,34 @@
           :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
           :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
           :class="{ 'cursor-pointer': timestamp < scaleReference.end }"
-          @click.native="timestamp < scaleReference.end && run($event)"
-        ></q-icon>
+          @mousedown.native="startPress"
+          @mouseup.native="stopPress"
+          @touchstart.native="startPress"
+          @touchend.native="stopPress" @touchcancel.native="stopPress"
+          flat
+        >
+        </q-icon>
+        <q-tooltip
+          class="ot-change-speed-tooltip"
+          :offset="[0, 8]"
+          self="bottom middle"
+          anchor="top middle"
+          :delay="1000"
+          v-html="$t('messages.pressToChangeSpeed',{ multiplier: speedMultiplier })"
+        ></q-tooltip>
+        <div>
+          <q-popover v-model="selectSpeed" class="ot-speed-container">
+            <q-list class="ot-speed-selector">
+              <q-item
+                v-for="speed in [1, 2, 4, 8]" :key="speed"
+                class="ot-speed"
+                @click.native="changeSpeed(speed)"
+                :disabled="speedMultiplier === speed"
+                :class="{ 'ot-speed-disabled': speedMultiplier === speed }"
+              >x{{ speed }}</q-item>
+            </q-list>
+          </q-popover>
+        </div>
       </div>
       <div class="ot-time row" :class="{ 'ot-time-full': visibleEvents.length === 0 }">
         <div class="ot-date-container">
@@ -138,7 +164,10 @@ export default {
       // loadedTime: 0,
       playTimer: null,
       interval: undefined,
-      // speedMultiplier: 4,
+      speedMultiplier: 1,
+      selectSpeed: false,
+      pressTimer: null,
+      longPress: false,
     };
   },
   computed: {
@@ -225,11 +254,17 @@ export default {
         this.setTimestamp(date);
       }
     },
+    stop() {
+      clearInterval(this.playTimer);
+      this.playTimer = null;
+    },
     run() {
       if (this.playTimer !== null) {
-        clearInterval(this.playTimer);
-        this.playTimer = null;
+        this.stop();
       } else {
+        if (!this.interval) {
+          this.calculateInterval();
+        }
         if (this.timestamp === -1) {
           this.changeTimestamp(this.scaleReference.start);
         }
@@ -239,8 +274,7 @@ export default {
           this.changeTimestamp(Math.floor(this.timestamp + this.interval.step));
           this.$nextTick(() => {
             if (this.timestamp >= this.scaleReference.end) {
-              clearInterval(this.playTimer);
-              this.playTimer = null;
+              this.stop();
               return;
             }
             // console.warn(`Timestamp:${this.timestamp};toLoad.start:${toLoad.start};toLoad.stop:${toLoad.stop};LIMIT:${toLoad.stop - this.scaleReference.schedulingResolution};this.scaleReference.schedulingResolution:${this.scaleReference.schedulingResolution};this.scaleReference.end:${this.scaleReference.end}`);
@@ -271,9 +305,50 @@ export default {
         } else if (interval > TIMES.MAX_PLAY_TIME) {
           interval = TIMES.MAX_PLAY_TIME / steps;
         }
-        // interval /= this.speedMultiplier;
-        this.interval = { step, steps, interval, buffer };
+        interval /= this.speedMultiplier;
+        this.interval = {
+          step,
+          steps,
+          interval,
+          buffer,
+          multiplier: this.speedMultiplier,
+        };
         console.info(`Step: ${this.interval.step}; Steps: ${this.interval.steps}; Interval: ${this.interval.interval}; Buffer: ${this.interval.buffer}`);
+      }
+    },
+    startPress() {
+      this.longPress = false;
+      if (this.pressTimer) {
+        clearInterval(this.pressTimer);
+        this.pressTimer = null;
+      } else {
+        this.pressTimer = setTimeout(() => {
+          this.selectSpeed = true;
+          this.longPress = true;
+        }, 600);
+      }
+    },
+    stopPress() {
+      clearInterval(this.pressTimer);
+      this.pressTimer = null;
+      if (!this.longPress && this.timestamp < this.scaleReference.end) {
+        this.run();
+      }
+      this.longPress = false;
+      // console.warn('Timer removed');
+    },
+    changeSpeed(speedMultiplier) {
+      this.speedMultiplier = speedMultiplier;
+      this.selectSpeed = false;
+      if (this.interval) {
+        this.$nextTick(() => {
+          this.interval.interval = this.interval.interval * this.interval.multiplier / this.speedMultiplier;
+          this.interval.multiplier = this.speedMultiplier;
+          if (this.playTimer !== null) { // we need to restart
+            this.stop();
+            this.run();
+          }
+        });
       }
     },
   },
@@ -298,8 +373,7 @@ export default {
     },
     visibleEvents() {
       if (this.visibleEvents.length === 0 && this.playTimer !== null) {
-        clearInterval(this.playTimer);
-        this.playTimer = null;
+        this.stop();
       }
     },
     timestamp(newValue, oldValue) {
@@ -321,7 +395,7 @@ export default {
     this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.calculateInterval);
   },
   destroyed() {
-    clearInterval(this.playTimer);
+    this.stop();
   },
 };
 </script>
@@ -468,5 +542,26 @@ export default {
     width 100px
     .ot-date-tooltip-content
       text-align center
+
+  .ot-speed-container
+    border-radius 6px
+    margin-left -6px
+    .ot-speed-selector
+      padding 5px 0
+      background-color rgba(35,35,35,0.8)
+      color #eee
+      .ot-speed
+        min-height 20px
+        font-size small
+        padding 5px
+        &.ot-speed-disabled
+          color $main-control-main-color
+          font-weight 800
+        &:hover
+          background-color #333
+          color $main-control-yellow
+          cursor pointer
+  .ot-change-speed-tooltip
+    text-align center
 
 </style>
