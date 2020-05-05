@@ -92,6 +92,26 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
+  UPDATE_OBSERVATION: (state, { observationIndex, newObservation }) => {
+    const oldObservation = state.observations[observationIndex];
+    // change the original observation with the fusion of new and old
+    const observation = {
+      ...oldObservation,
+      ...newObservation,
+    };
+    state.observations.splice(observationIndex, 1, observation);
+    // update node
+    const node = findNodeById(state.tree, observation.id);
+    node.needUpdate = !observation.contextualized;
+    node.dynamic = observation.dynamic;
+    node.childrenCount = observation.childrenCount;
+    node.children.forEach((child) => {
+      child.siblingsCount = observation.childrenCount;
+    });
+    node.tickable = (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0;
+    node.exportFormats = observation.exportFormats;
+  },
+
   SET_CONTEXTMENU_OBSERVATIONID: (state, contextMenuObservationId) => {
     state.contextMenuObservationId = contextMenuObservationId;
   },
@@ -110,9 +130,13 @@ export default {
     observation.childrenCount = modificationEvent.newSize;
     observation.empty = false;
     node.childrenCount = modificationEvent.newSize;
+    node.children.forEach((child) => {
+      child.siblingsCount = modificationEvent.newSize;
+    });
     node.tickable = true;
     node.disabled = false;
     node.empty = false;
+    node.needUpdate = true;
   },
 
   MOD_VALUE_CHANGE: (state, node) => {
@@ -197,6 +221,10 @@ export default {
           if (parent.children.length === parent.childrenCount) {
             // is a live appending observation
             parent.childrenCount++;
+            // update other children
+            parent.children.forEach((child) => {
+              child.siblingsCount = parent.childrenCount;
+            });
           }
           parent.children.push({
             ...localNode,

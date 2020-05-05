@@ -126,6 +126,7 @@ export const getNodeFromObservation = (observation) => {
       observable: observation.observable,
       type: observation.shapeType,
       dynamic: false, // used if we receive some modification event
+      needUpdate: !observation.contextualized,
       viewerIdx: observation.viewerIdx,
       viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
       loading: false,

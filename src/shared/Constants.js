@@ -687,6 +687,11 @@ export const MODIFICATIONS_TYPE = {
    * Observation becomes "main"
    */
   BRING_FORWARD: 'BringForward',
+
+  /**
+   * Observation becomes "main"
+   */
+  CONTEXTUALIZATION_COMPLETED: 'ContextualizationCompleted',
 };
 
 export const TIMES = {

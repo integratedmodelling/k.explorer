@@ -197,7 +197,6 @@ export default {
     ...mapActions('data', [
       'setTimestamp',
       'setModificationsTask',
-      'setEngineTimestamp',
     ]),
     ...mapActions('view', [
       'setTimeRunning',

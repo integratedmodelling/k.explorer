@@ -126,8 +126,8 @@ export default {
           if (rootObservations !== null && !(Object.keys(rootObservations).length === 0 && rootObservations.constructor === Object)) {
             console.debug(`Find ${Object.keys(rootObservations).length} root observations for this session`);
             let counter = 0;
-            Object.entries(rootObservations).forEach(([context]) => {
-              commit('STORE_CONTEXT', context);
+            Object.entries(rootObservations).forEach((entry) => {
+              commit('STORE_CONTEXT', entry[1]);
               // console.debug(`Stored context with id ${contextId}`);
               counter += 1;
             });
@@ -154,17 +154,26 @@ export default {
     toTree = true,
     visible = false,
     restored = false,
+    updated = false,
   }) => new Promise((resolve/* , reject */) => {
-    const existingObservation = state.observations.find(obs => obs.id === observation.id);
-    if (typeof existingObservation !== 'undefined') {
+    const existingObservationIndex = state.observations.findIndex(obs => obs.id === observation.id);
+    if (existingObservationIndex !== -1) {
       // console.error(`Observation exists!!! ${existingObservation.label}`);
-      dispatch('view/addToKexplorerLog', {
-        type: MESSAGE_TYPES.TYPE_WARNING,
-        payload: {
-          message: `Existing observation received: ${existingObservation.label}`,
-        },
-        important: true,
-      }, { root: true });
+      if (updated) {
+        commit('UPDATE_OBSERVATION', {
+          observationIndex: existingObservationIndex,
+          newObservation: observation,
+        });
+        console.debug(`Observation$ ${observation.label} updated`);
+      } else {
+        dispatch('view/addToKexplorerLog', {
+          type: MESSAGE_TYPES.TYPE_WARNING,
+          payload: {
+            message: `Existing observation received: ${observation.label}`,
+          },
+          important: true,
+        }, { root: true });
+      }
       return resolve(); // reject(new Error(`Existing observation received: ${existingObservation.label}`));
     }
     dispatch('view/assignViewer', { observation }, { root: true }).then((viewerIdx) => {
@@ -216,6 +225,37 @@ export default {
     });
     return null;
   }),
+
+  updateObservation({ commit, dispatch, state }, { observationId, exportFormats }) {
+    const observationIndex = state.observations.findIndex(obs => obs.id === observationId);
+    if (observationIndex !== -1) {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${observationId}`, {
+        params: {
+          childLevel: 0,
+        },
+      }).then(({ data: newObservation }) => {
+        if (newObservation) {
+          if (exportFormats) {
+            newObservation.exportFormats = exportFormats;
+          }
+          commit('UPDATE_OBSERVATION', { observationIndex, newObservation });
+          if (newObservation.childrenCount > 0 && state.observations[observationIndex].children.length > 0) {
+            // we need to update previous loaded children
+            dispatch('askForChildren', {
+              parentId: observationId,
+              count: Math.max(state.observations[observationIndex].children.length, state.childrenToAskFor),
+              total: newObservation.childrenCount,
+              updated: true,
+            });
+          }
+        } else {
+          console.warn(`Ask for update observation ${observationId} but nothing found in engine`);
+        }
+      });
+    } else {
+      console.warn(`Try to update a not existing observation: ${observationId}`);
+    }
+  },
 
   addStub: ({ commit }, node) => {
     commit('ADD_NODE', {
@@ -273,12 +313,16 @@ export default {
             dispatch('addStub', node);
           }
           break;
+        case MODIFICATIONS_TYPE.CONTEXTUALIZATION_COMPLETED: {
+          dispatch('updateObservation', { observationId: modificationEvent.id, exportFormats: modificationEvent.exportFormats });
+          break;
+        }
         default:
           console.warn(`Unknown modification event: ${modificationEvent.type}`);
           break;
       }
     } else if (modificationEvent.id !== modificationEvent.contextId) {
-      console.warn('Modification event for a no existing node, Could be for context', modificationEvent);
+      console.debug('Modification event for a no existing node, probably still not loaded', modificationEvent);
     } else {
       console.debug('Modification event for context', modificationEvent);
     }
@@ -298,25 +342,12 @@ export default {
     commit('SET_TIMESTAMP', timestamp);
   },
 
-  scheduleAdvanced: ({ dispatch }, scheduleAdvanced) => {
-    if (scheduleAdvanced) {
-      switch (scheduleAdvanced.type) {
-        case 'TIME_ADVANCED':
-          dispatch('setEngineTimestamp', scheduleAdvanced.currentTime);
-          break;
-        default:
-          console.warn(`Unknown scheduleAdvanced type: ${scheduleAdvanced.type}`);
-          break;
-      }
+  setScheduling: ({ commit, getters }, scheduling) => {
+    if (getters.context && scheduling.contextId === getters.context.id) {
+      commit('SET_SCHEDULING_STATUS', scheduling);
+    } else {
+      console.debug(`Received a scheduling of other context: ${scheduling.contextId}`);
     }
-  },
-
-  setEngineTimestamp: ({ commit }, engineTimestamp) => {
-    commit('SET_ENGINE_TIMESTAMP', engineTimestamp);
-  },
-
-  setScheduling: ({ commit }, scheduling) => {
-    commit('SET_SCHEDULING_STATUS', scheduling);
   },
 
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
@@ -327,6 +358,7 @@ export default {
     toTree = true, // indicate that we ask for siblings but we don't want to put them on tree (only for view on map)
     visible = false,
     notified = true,
+    updated = false,
   }) => new Promise((resolve) => {
     console.debug(`Ask for children of node ${parentId}: count:${count} / offset ${offset}`);
     dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
@@ -345,6 +377,7 @@ export default {
                 observation: child,
                 toTree,
                 visible,
+                updated,
               }).then(() => {
                 if (index === array.length - 1) {
                   if (toTree) {

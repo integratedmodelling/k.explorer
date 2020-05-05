@@ -39,6 +39,7 @@
                cleanTopLayerId !== null && cleanTopLayerId === prop.node.id ? 'node-on-top' : '',
                checkObservationsOnTop(prop.node.id) ? 'node-on-top' : '',
                isUser ? 'node-user-element' : 'node-tree-element',
+               prop.node.needUpdate ? 'node-updatable' : '',
             ]"
             class="node-element"
             :id="`node-${prop.node.id}`"
@@ -444,32 +445,34 @@ export default {
       }
       const { [newExpanded.length - 1]: selectedId } = newExpanded;
       const expandedNode = findNodeById(this.tree, selectedId);
-      this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
-        { active: true, observationId: selectedId, rootContextId: expandedNode.rootContextId },
-        this.$store.state.data.session,
-      ).body);
-      this.watchedObservation.push({
-        observationId: selectedId,
-        rootContextId: expandedNode.rootContextId,
-      });
-      console.info(`Start watching observation ${selectedId} with rootContextId ${expandedNode.rootContextId}`);
-      if (expandedNode && expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
-        // remove the stub
-        expandedNode.children.splice(0, 1);
-        if (expandedNode.children.length < expandedNode.childrenLoaded && expandedNode.childrenLoaded > 0) { // we have the children, only need to add to tree
-          this.addChildrenToTree({ parent: expandedNode });
-          this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
-            folderId: expandedNode.id,
-            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
-          });
-        } else if (expandedNode.children.length === 0) {
-          this.askForChildren({
-            parentId: expandedNode.id,
-            offset: 0,
-            count: this.childrenToAskFor,
-            total: expandedNode.childrenCount,
-            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.isContainer ? expandedNode.ticked : false,
-          });
+      if (expandedNode) {
+        this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+          { active: true, observationId: selectedId, rootContextId: expandedNode.rootContextId },
+          this.$store.state.data.session,
+        ).body);
+        this.watchedObservation.push({
+          observationId: selectedId,
+          rootContextId: expandedNode.rootContextId,
+        });
+        console.info(`Start watching observation ${selectedId} with rootContextId ${expandedNode.rootContextId}`);
+        if (expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
+          // remove the stub
+          expandedNode.children.splice(0, 1);
+          if (expandedNode.children.length < expandedNode.childrenLoaded && expandedNode.childrenLoaded > 0) { // we have the children, only need to add to tree
+            this.addChildrenToTree({ parent: expandedNode });
+            this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
+              folderId: expandedNode.id,
+              visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+            });
+          } else if (expandedNode.children.length === 0) {
+            this.askForChildren({
+              parentId: expandedNode.id,
+              offset: 0,
+              count: this.childrenToAskFor,
+              total: expandedNode.childrenCount,
+              visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.isContainer ? expandedNode.ticked : false,
+            });
+          }
         }
       }
     },
@@ -689,6 +692,8 @@ export default {
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
+      .node-updatable
+        font-style italic
       .node-disabled
         opacity 0.6 !important
       .node-no-tick
