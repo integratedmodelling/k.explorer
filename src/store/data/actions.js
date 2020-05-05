@@ -239,14 +239,17 @@ export default {
             newObservation.exportFormats = exportFormats;
           }
           commit('UPDATE_OBSERVATION', { observationIndex, newObservation });
-          if (newObservation.childrenCount > 0 && state.observations[observationIndex].children.length > 0) {
-            // we need to update previous loaded children
-            dispatch('askForChildren', {
-              parentId: observationId,
-              count: Math.max(state.observations[observationIndex].children.length, state.childrenToAskFor),
-              total: newObservation.childrenCount,
-              updated: true,
-            });
+          if (newObservation.childrenCount > 0) {
+            // we need to update previous loaded children if there are someone
+            const childrenLoaded = findNodeById(state.tree, newObservation.id).children.length;
+            if (childrenLoaded > 0) {
+              dispatch('askForChildren', {
+                parentId: observationId,
+                count: Math.max(childrenLoaded, state.childrenToAskFor),
+                total: newObservation.childrenCount,
+                updated: true,
+              });
+            }
           }
         } else {
           console.warn(`Ask for update observation ${observationId} but nothing found in engine`);

@@ -10,11 +10,12 @@ is not available.
 ### Added
 - Time selection for scale
 - Speed selector on timeline with click and hold
-### Improvements
 - Implements observations in secondary context
+### Improvements
 - Click on map layer select it and give info
 - Right click on layer for more action (like Set as context)
 - Layer on top of secondary context has better management
+- Notification from engine are totally changed
 ### Solved
 - Various bug solved
 
