@@ -240,12 +240,16 @@ export default {
           }
           commit('UPDATE_OBSERVATION', { observationIndex, newObservation });
           if (newObservation.childrenCount > 0) {
-            // we need to update previous loaded children if there are someone
-            const childrenLoaded = findNodeById(state.tree, newObservation.id).children.length;
-            if (childrenLoaded > 0) {
+            // we need to update previous loaded children if there are someone and is not stub
+            const { children } = findNodeById(state.tree, newObservation.id);
+            let load = children.length > 0;
+            if (load && children.length === 1) {
+              load = !children[0].id.startsWith('STUB');
+            }
+            if (load) {
               dispatch('askForChildren', {
                 parentId: observationId,
-                count: Math.max(childrenLoaded, state.childrenToAskFor),
+                count: Math.max(children.length, state.childrenToAskFor),
                 total: newObservation.childrenCount,
                 updated: true,
               });

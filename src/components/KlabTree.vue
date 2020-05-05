@@ -87,7 +87,7 @@
               :style="{ right: (prop.node.childrenCount > 0 ?
                 calculateRightPosition([prop.node.childrenCount], '25px') :
                 prop.node.children.length > 0 ?
-                calculateRightPosition([prop.node.children.lengthh], '25px') :
+                calculateRightPosition([prop.node.children.length], '25px') :
                  '') }"
             >
               {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
@@ -113,6 +113,23 @@
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
           >
           </q-btn>
+          <!-- TODO: Check if there is a better style solution
+          <template v-if="typeof prop.node.idx !== 'undefined'">
+            <q-chip
+              class="node-chip transparent"
+              small
+              dense
+              text-color="grey-9"
+              :style="{ right: (prop.node.childrenCount > 0 ?
+                calculateRightPosition([prop.node.childrenCount], '25px') :
+                prop.node.children.length > 0 ?
+                calculateRightPosition([prop.node.children.length], '25px') :
+                 '') }"
+            >
+              {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
+            </q-chip>
+          </template>
+          -->
           <q-chip
             class="node-chip"
             :class="{ 'node-substituible': !prop.node.empty && !prop.node.noTick }"
