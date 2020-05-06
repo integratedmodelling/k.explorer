@@ -44,7 +44,7 @@
             class="node-element"
             :id="`node-${prop.node.id}`"
           >
-            <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
+            <q-icon name="mdi-buddhism" class="node-no-tick" size="17px" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
             {{ prop.node.label }}
             <q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': prop.node.loading }"></q-icon>
@@ -113,7 +113,6 @@
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
           >
           </q-btn>
-          <!-- TODO: Check if there is a better style solution
           <template v-if="typeof prop.node.idx !== 'undefined'">
             <q-chip
               class="node-chip transparent"
@@ -129,7 +128,6 @@
               {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
             </q-chip>
           </template>
-          -->
           <q-chip
             class="node-chip"
             :class="{ 'node-substituible': !prop.node.empty && !prop.node.noTick }"
@@ -709,6 +707,11 @@ export default {
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
+      .mdi-buddhism
+        // font-size 15px
+        padding-left 1px
+        margin-right 2px !important
+
       .node-updatable
         font-style italic
       .node-disabled
@@ -734,25 +737,36 @@ export default {
         .q-tree-arrow
           cursor pointer
 
-      .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible
-        .q-tree-node-parent
-          padding-left 1px
-          .q-tree-node-header
-            padding-left 0
-            &:before
-              width 12px
-              left -14px
-            > i
-              margin-right 2px
-          .q-tree-node-collapsible
-            .q-tree-children .q-tree-node
+      .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible // first parent is skipped
+          .q-tree-node-parent
+            padding-left 1px
             .q-tree-node-header
-              padding-left 7px
+              padding-left 0
               &:before
-                width 25px
-                left -24px
-              &:after
-                left -17px
+                width 12px
+                left -14px
+              > i
+                margin-right 2px
+            .q-tree-node-collapsible
+              .q-tree-children
+                padding-left 20px
+                .q-tree-node-child
+                  .q-tree-node-header
+                    padding-left 4px
+                    &:before
+                      width 25px
+                      left -28px
+                    &:after
+                      left -17px
+                .q-tree-node-parent
+                  .q-tree-node-collapsible
+                    padding-left 1px
+                    &:before
+                      width 25px
+                      left -28px
+                    &:after
+                      left -17px
+
 
   @keyframes flash {
     0% { opacity: 1; }

@@ -396,21 +396,23 @@ export default {
                       total,
                     });
                   }
+                  const setChildrenLoaded = (tree) => {
+                    const parent = findNodeById(tree, parentId);
+                    if (parent && parent !== null) {
+                      parent.childrenLoaded += data.length;
+                    }
+                  };
+                  setChildrenLoaded(state.tree);
+                  setChildrenLoaded(state.userTree);
+                  dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
                   resolve();
                 }
               });
-              const setChildrenLoaded = (tree) => {
-                const parent = findNodeById(tree, parentId);
-                if (parent && parent !== null) {
-                  parent.childrenLoaded += data.length;
-                }
-              };
-              setChildrenLoaded(state.tree);
-              setChildrenLoaded(state.userTree);
             });
+          } else {
+            dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
+            resolve();
           }
-          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
-          resolve();
         });
     });
   }),
