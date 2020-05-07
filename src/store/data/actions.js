@@ -299,39 +299,45 @@ export default {
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
-    const node = findNodeById(state.tree, modificationEvent.id);
-    if (node) {
-      switch (modificationEvent.type) {
-        case MODIFICATIONS_TYPE.BRING_FORWARD: {
-          commit('MOD_BRING_FORWARD', node);
-          dispatch('changeTreeOfNode', { id: modificationEvent.id, isUserTree: true });
-          break;
-        }
-        case MODIFICATIONS_TYPE.VALUE_CHANGE:
-          commit('MOD_VALUE_CHANGE', node);
-          commit('ADD_TIME_EVENT', modificationEvent);
-          if (state.modificationsTask === null) {
-            dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
+    const processModification = (node) => {
+      if (node) {
+        switch (modificationEvent.type) {
+          case MODIFICATIONS_TYPE.BRING_FORWARD: {
+            commit('MOD_BRING_FORWARD', node);
+            dispatch('changeTreeOfNode', { id: modificationEvent.id, isUserTree: true });
+            break;
           }
-          break;
-        case MODIFICATIONS_TYPE.STRUCTURE_CHANGE:
-          commit('MOD_STRUCTURE_CHANGE', { node, modificationEvent });
-          if (node.childrenCount > 0 && node.children.length === 0) {
-            dispatch('addStub', node);
+          case MODIFICATIONS_TYPE.VALUE_CHANGE:
+            commit('MOD_VALUE_CHANGE', node);
+            commit('ADD_TIME_EVENT', modificationEvent);
+            if (state.modificationsTask === null) {
+              dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
+            }
+            break;
+          case MODIFICATIONS_TYPE.STRUCTURE_CHANGE:
+            commit('MOD_STRUCTURE_CHANGE', { node, modificationEvent });
+            if (node.childrenCount > 0 && node.children.length === 0) {
+              dispatch('addStub', node);
+            }
+            break;
+          case MODIFICATIONS_TYPE.CONTEXTUALIZATION_COMPLETED: {
+            dispatch('updateObservation', { observationId: modificationEvent.id, exportFormats: modificationEvent.exportFormats });
+            break;
           }
-          break;
-        case MODIFICATIONS_TYPE.CONTEXTUALIZATION_COMPLETED: {
-          dispatch('updateObservation', { observationId: modificationEvent.id, exportFormats: modificationEvent.exportFormats });
-          break;
+          default:
+            console.warn(`Unknown modification event: ${modificationEvent.type}`);
+            break;
         }
-        default:
-          console.warn(`Unknown modification event: ${modificationEvent.type}`);
-          break;
+      } else if (modificationEvent.id !== modificationEvent.contextId) {
+        console.debug('Modification event for a no existing node, probably still not loaded', modificationEvent);
+      } else {
+        console.debug('Modification event for context', modificationEvent);
       }
-    } else if (modificationEvent.id !== modificationEvent.contextId) {
-      console.debug('Modification event for a no existing node, probably still not loaded', modificationEvent);
-    } else {
-      console.debug('Modification event for context', modificationEvent);
+    };
+    const mainNode = findNodeById(state.tree, modificationEvent.id);
+    processModification(mainNode);
+    if (mainNode.userNode) {
+      processModification(findNodeById(state.userTree, modificationEvent.id));
     }
   },
 

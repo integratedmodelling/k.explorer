@@ -39,6 +39,7 @@ export default {
     state.contextCustomLabel = null;
     state.timeEvents = [];
     state.timestamp = -1;
+    state.engineTimestamp = -1;
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {
@@ -101,15 +102,25 @@ export default {
     };
     state.observations.splice(observationIndex, 1, observation);
     // update node
-    const node = findNodeById(state.tree, observation.id);
-    node.needUpdate = !observation.contextualized;
-    node.dynamic = observation.dynamic;
-    node.childrenCount = observation.childrenCount;
-    node.children.forEach((child) => {
-      child.siblingsCount = observation.childrenCount;
-    });
-    node.tickable = (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0;
-    node.exportFormats = observation.exportFormats;
+    const updateNode = (node) => {
+      if (node) {
+        node.needUpdate = !observation.contextualized;
+        node.dynamic = observation.dynamic;
+        node.childrenCount = observation.childrenCount;
+        node.children.forEach((child) => {
+          child.siblingsCount = observation.childrenCount;
+        });
+        node.tickable = (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0;
+        node.exportFormats = observation.exportFormats;
+      } else {
+        console.warn(`Node of ${observation.id} - ${observation.label} not found`);
+      }
+    };
+    const mainNode = findNodeById(state.tree, observation.id);
+    updateNode(mainNode);
+    if (mainNode.userNode) {
+      updateNode(findNodeById(state.userTree, observation.id));
+    }
   },
 
   SET_CONTEXTMENU_OBSERVATIONID: (state, contextMenuObservationId) => {
@@ -141,6 +152,7 @@ export default {
 
   MOD_VALUE_CHANGE: (state, node) => {
     node.dynamic = true;
+    node.needUpdate = false;
   },
 
   ADD_TIME_EVENT: (state, event) => {
@@ -163,25 +175,24 @@ export default {
     if (state.scaleReference !== null) {
       switch (scheduling.type) {
         case 'TIME_ADVANCED':
-          state.engineTimestamp = scheduling.currentTime;
-          state.scaleReference.schedulingType = scheduling.type;
+          // state.scaleReference.schedulingType = scheduling.type;
           break;
         case 'STARTED':
           state.scaleReference.schedulingResolution = scheduling.resolution;
-          state.scaleReference.schedulingType = scheduling.type;
           break;
         case 'FINISHED':
-          state.scaleReference.schedulingType = scheduling.type;
           // if (scheduling.currentTime !== 0) {
           //   state.engineTimestamp = scheduling.currentTime;
           // } else { // TODO remove when engine send the current time
-          state.engineTimestamp = state.scaleReference.end;
+          // state.engineTimestamp = state.scaleReference.end;
           // }
           break;
         default:
           console.warn(`Unknown scheduling type: ${scheduling.type}`);
           break;
       }
+      state.engineTimestamp = scheduling.currentTime;
+      state.scaleReference.schedulingType = scheduling.type;
     } else {
       console.warn('Try to change scheduling type but no scaleReference');
     }
@@ -353,7 +364,7 @@ export default {
       if (node) {
         node.loading = loading;
         if (node.userNode) {
-          const userNode = findNodeById(state.tree, observation.id);
+          const userNode = findNodeById(state.userTree, observation.id);
           userNode.loading = loading;
         }
       }
