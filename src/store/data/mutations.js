@@ -118,7 +118,7 @@ export default {
     };
     const mainNode = findNodeById(state.tree, observation.id);
     updateNode(mainNode);
-    if (mainNode.userNode) {
+    if (mainNode && mainNode.userNode) {
       updateNode(findNodeById(state.userTree, observation.id));
     }
   },
@@ -140,19 +140,36 @@ export default {
     const observation = state.observations.find(o => o.id === modificationEvent.id);
     observation.childrenCount = modificationEvent.newSize;
     observation.empty = false;
-    node.childrenCount = modificationEvent.newSize;
-    node.children.forEach((child) => {
-      child.siblingsCount = modificationEvent.newSize;
-    });
-    node.tickable = true;
-    node.disabled = false;
-    node.empty = false;
-    node.needUpdate = true;
+    const updateNode = (n) => {
+      if (n) {
+        n.childrenCount = modificationEvent.newSize;
+        n.children.forEach((child) => {
+          child.siblingsCount = modificationEvent.newSize;
+        });
+        n.tickable = true;
+        n.disabled = false;
+        n.empty = false;
+        n.needUpdate = true;
+      }
+    };
+    updateNode(node);
+    if (node.userNode) {
+      updateNode(findNodeById(state.userTree, node.id));
+    }
   },
 
   MOD_VALUE_CHANGE: (state, node) => {
     node.dynamic = true;
     node.needUpdate = false;
+    if (node.userNode) {
+      const userNode = findNodeById(state.userTree, node.id);
+      if (userNode) {
+        userNode.dynamic = true;
+        userNode.needUpdate = false;
+      } else {
+        console.warn(`Node theoretically in user tree but not found: ${node.id} - ${node.label}`);
+      }
+    }
   },
 
   ADD_TIME_EVENT: (state, event) => {
@@ -173,26 +190,26 @@ export default {
 
   SET_SCHEDULING_STATUS: (state, scheduling) => {
     if (state.scaleReference !== null) {
+      state.scaleReference.schedulingType = scheduling.type;
       switch (scheduling.type) {
         case 'TIME_ADVANCED':
-          // state.scaleReference.schedulingType = scheduling.type;
+          state.engineTimestamp = scheduling.currentTime;
           break;
         case 'STARTED':
+          state.engineTimestamp = scheduling.currentTime;
           state.scaleReference.schedulingResolution = scheduling.resolution;
           break;
         case 'FINISHED':
           // if (scheduling.currentTime !== 0) {
           //   state.engineTimestamp = scheduling.currentTime;
           // } else { // TODO remove when engine send the current time
-          // state.engineTimestamp = state.scaleReference.end;
+          state.engineTimestamp = state.scaleReference.end;
           // }
           break;
         default:
           console.warn(`Unknown scheduling type: ${scheduling.type}`);
           break;
       }
-      state.engineTimestamp = scheduling.currentTime;
-      state.scaleReference.schedulingType = scheduling.type;
     } else {
       console.warn('Try to change scheduling type but no scaleReference');
     }

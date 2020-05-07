@@ -245,6 +245,9 @@ export default {
       if (this.timeEvents.length === 0) {
         return;
       }
+      if (date === -1) {
+        this.stop();
+      }
       if (date > this.scaleReference.end) {
         this.visibleTimestamp = this.scaleReference.end;
         this.setTimestamp(this.scaleReference.end);
