@@ -88,7 +88,7 @@
             </div>
             <div
               class="ot-loaded-time"
-              :style="{ width: engineTimestamp <= 0 ? 0 : `calc(${calculatePosition(engineTimestamp)}px + 4px)` }"
+              :style="{ width: engineTimestamp > 0 ? `calc(${calculatePosition(engineTimestamp)}px + 4px)` : 0 }"
             ></div>
             <!--
             <div
