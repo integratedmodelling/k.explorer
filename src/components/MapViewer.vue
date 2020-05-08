@@ -303,7 +303,7 @@ export default {
             if (diff <= 0) {
               return result;
             }
-            if (result === -1 || diff < result) {
+            if (result === -1 || diff < timestamp - result) {
               return me.timestamp;
             }
             return result;
