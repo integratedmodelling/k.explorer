@@ -6,6 +6,19 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.10.5
+### Added
+- Time selection for scale
+- Speed selector on timeline with click and hold
+- Implements observations in secondary context
+### Improvements
+- Click on map layer select it and give info
+- Right click on layer for more action (like Set as context)
+- Layer on top of secondary context has better management
+- Notification from engine are totally changed
+### Solved
+- Various bug solved
+
 ## 0.10.2
 ### Added
 - Time selector

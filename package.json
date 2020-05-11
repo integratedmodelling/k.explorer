@@ -1,13 +1,13 @@
 {
   "name": "klab.explorer",
-  "version": "0.10.1",
+  "version": "0.10.5",
   "description": "k.Explorer module of k.LAB",
   "productName": "k.Explorer",
   "license": "AGPL-3.0-only",
   "author": "Enrico Girotto <enrico.girotto@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org:integratedmodelling/k.explorer.git"
+    "url": "https://bitbucket.org/integratedmodelling/k.explorer.git"
   },
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
