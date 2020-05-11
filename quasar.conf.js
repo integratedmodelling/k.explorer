@@ -43,10 +43,12 @@ module.exports = function (ctx) {
           ? { // so on dev we'll have
             WS_BASE_URL: JSON.stringify('http://localhost:8283'),
             STOMP_CLIENT_DEBUG: true,
+            KEXPLORER_DEBUG: true,
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
             STOMP_CLIENT_DEBUG: false,
+            KEXPLORER_DEBUG: false,
           },
         PACKAGE_VERSION: JSON.stringify(version),
         PACKAGE_BUILD: JSON.stringify(build),

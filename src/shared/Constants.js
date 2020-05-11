@@ -1,6 +1,8 @@
 /**
  * Constants of application
  */
+import { getI18N } from 'plugins/vue-i18n';
+
 export const CONSTANTS = {
   /**
    * Used to centralize the default empty map selection
@@ -417,7 +419,7 @@ export const WEB_CONSTANTS = {
   COOKIE_MAPDEFAULT: 'klab_mapdefault',
   COOKIE_SAVELOCATION: 'klab_saveLocation',
   COOKIE_HELP_ON_START: 'klab_helponstart',
-  COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not setted
+  COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not set
 };
 
 export const COLORS = {
@@ -645,6 +647,53 @@ export const SCALE_UNITS = [
   },
 ];
 
+export const MODIFICATIONS_TYPE = {
+  /**
+   * Spatial context has changed location
+   */
+  SPATIAL_TRANSLATION: 'SpatialTranslation',
+
+  /**
+   * Spatial context has changed shape
+   */
+  SPATIAL_CHANGE: 'SpatialChange',
+
+  /**
+   * Observation has been terminated and is no longer in the context
+   */
+  TERMINATION: 'Termination',
+
+  /**
+   * Number of children has changed: newSize contains the new number
+   */
+  STRUCTURE_CHANGE: 'StructureChange',
+
+  /**
+   * Name of object has changed
+   */
+  NAME_CHANGE: 'NameChange',
+
+  /**
+   * Attributes linked to an object or a folder have changed
+   */
+  ATTRIBUTE_CHANGE: 'AttributeChange',
+
+  /**
+   * Values of a state have changed
+   */
+  VALUE_CHANGE: 'ValueChange',
+
+  /**
+   * Observation becomes "main"
+   */
+  BRING_FORWARD: 'BringForward',
+
+  /**
+   * Observation becomes "main"
+   */
+  CONTEXTUALIZATION_COMPLETED: 'ContextualizationCompleted',
+};
+
 export const TIMES = {
   DEFAULT_STEP: 24 * 60 * 60 * 1000,
   DEFAULT_INTERVAL: 100,
@@ -672,6 +721,30 @@ export const HELP_CONSTANTS = {
   DEFAULT_HELP_BASE_URL: 'http://www.integratedmodelling.org/statics/help',
 };
 
+export const OBSERVATION_CONTEXT_EMPTY_ITEM = {
+  actionLabel: null,
+  actionId: null,
+  downloadUrl: null,
+  downloadFileExtension: null,
+  enabled: false,
+  separator: false,
+  submenu: [],
+};
+
+export const OBSERVATION_CONTEXT_ITEMS = {
+  SEPARATOR_ITEM: {
+    ...OBSERVATION_CONTEXT_EMPTY_ITEM,
+    enabled: true,
+    separator: true,
+  },
+  RECONTEXTUALIZATION_ITEM: {
+    ...OBSERVATION_CONTEXT_EMPTY_ITEM,
+    actionId: 'Recontextualization',
+    actionLabel: getI18N().tc('label.recontextualization'),
+    enabled: true,
+  },
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,
@@ -696,6 +769,8 @@ export default {
   CUSTOM_EVENTS,
   SCALE_TYPE,
   TIMES,
+  MODIFICATIONS_TYPE,
   SETTING_NAMES,
   HELP_CONSTANTS,
+  OBSERVATION_CONTEXT_ITEMS,
 };

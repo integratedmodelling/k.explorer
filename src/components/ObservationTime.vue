@@ -1,5 +1,5 @@
 <template>
-  <transition name="fade" v-if="modificationEvents.length > 0" >
+  <transition name="fade" v-if="timeEvents.length > 0" >
     <div
       class="otv-now"
       :class="{ 'otv-novisible': timestamp === -1, 'otv-docked': isMainControlDocked, 'otv-running': isTimeRunning }"
@@ -22,7 +22,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'timestamp',
-      'modificationEvents',
+      'timeEvents',
     ]),
     ...mapGetters('view', [
       'isMainControlDocked',

@@ -45,8 +45,11 @@ export default {
       methods: {
         // send a stomp message
         sendStompMessage(message, headers, destination = opts.defaultMessageDestination) {
-          observer.send(destination, message, headers);
-          console.debug(`Message sent: ${JSON.stringify(message, null, 4)}`);
+          if (observer.send(destination, message, headers)) {
+            console.debug(`Message sent: ${JSON.stringify(message, null, 4)}`);
+          } else {
+            console.debug(`Message not sent, still no connected:\n${JSON.stringify(message, null, 4)}`);
+          }
         },
 
         // In this app, the subscribe destination need an id

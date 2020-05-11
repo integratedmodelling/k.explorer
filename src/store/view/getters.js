@@ -70,9 +70,6 @@ export default {
     return null;
   },
 
-  loadingLayers: state => state.loadingLayers,
-  isLoadingLayer: state => observationId => state.loadingLayers.indexOf(observationId) !== -1,
-
   spinnerIsAnimated: state => state.spinner.animated,
   spinner: state => state.spinner,
   spinnerOwners: state => state.spinnerOwners,
@@ -121,4 +118,11 @@ export default {
   fuzzyMode: state => state.fuzzyMode,
   largeMode: state => state.largeMode,
   isTimeRunning: state => state.timeRunning,
+
+  /**
+   * View components from k.LAB
+   */
+  viewComponents: state => state.viewComponents,
+  viewComponentsByType: state => types => state.viewComponents.filter(vc => types.includes(vc.type)),
+
 };

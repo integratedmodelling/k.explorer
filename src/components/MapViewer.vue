@@ -57,6 +57,7 @@
       ></q-btn>
       <div id="mv-popup-content" class="ol-popup-content" v-html="popupContent"></div>
     </div>
+    <observation-context-menu @hide="contextMenuObservationId = null" :observation-id="contextMenuObservationId"></observation-context-menu>
   </div>
 </template>
 
@@ -73,6 +74,8 @@ import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, OBSERV
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
+import MapDrawer from 'components/MapDrawer';
+import ObservationContextMenu from 'components/ObservationContextMenu';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import Collection from 'ol/Collection';
@@ -81,17 +84,19 @@ import ImageLayer from 'ol/layer/Image';
 import Overlay from 'ol/Overlay';
 import LayerSwitcher from 'ol-layerswitcher';
 import WKT from 'ol/format/WKT';
-import MapDrawer from 'components/MapDrawer';
 import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
+import { click } from 'ol/events/condition';
+import Select from 'ol/interaction/Select';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
   name: 'MapViewer',
   components: {
     MapDrawer,
+    ObservationContextMenu,
   },
   props: {
     idx: {
@@ -150,11 +155,17 @@ export default {
       clicksOnMap: 0,
       bufferingLayers: false,
       lastModificationLoaded: null,
+      previousTopLayer: null,
+      lockedObservations: [],
+      contextMenuObservationId: null,
     };
   },
   computed: {
     observations() {
       return this.$store.getters['data/observationsOfViewer'](this.idx);
+    },
+    lockedObservationsIds() {
+      return this.lockedObservations.map(lo => lo.id);
     },
     ...mapGetters('data', [
       'hasContext',
@@ -163,8 +174,8 @@ export default {
       'session',
       'timestamp',
       'scaleReference',
-      'modificationEvents',
-      'modificationEventsOfObservation',
+      'timeEvents',
+      'timeEventsOfObservation',
     ]),
     ...mapGetters('view', [
       'contextGeometry',
@@ -196,6 +207,7 @@ export default {
   methods: {
     ...mapActions('data', [
       'setCrossingIDL',
+      'putObservationOnTop',
     ]),
     ...mapActions('view', [
       'addToKexplorerLog',
@@ -206,7 +218,7 @@ export default {
     ]),
     handleResize() {
       if (this.map !== null) {
-        console.debug('HandleResize called!!!');
+        // console.debug('HandleResize called!!!');
         this.map.updateSize();
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
       }
@@ -284,14 +296,14 @@ export default {
     findModificationTimestamp(observationId, timestamp) {
       if (timestamp !== -1) {
         // find the fist step of this observation
-        const modifications = observationId === null ? this.modificationEvents : this.modificationEventsOfObservation(observationId);
+        const modifications = observationId === null ? this.timeEvents : this.timeEventsOfObservation(observationId);
         if (modifications.length > 0) {
           return modifications.reduce((result, me) => {
             const diff = timestamp - me.timestamp;
             if (diff <= 0) {
               return result;
             }
-            if (result === -1 || diff < result) {
+            if (result === -1 || diff < timestamp - result) {
               return me.timestamp;
             }
             return result;
@@ -313,7 +325,7 @@ export default {
       }
       // need to create new layer
       try {
-        console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
+        console.log(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
         const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
@@ -339,7 +351,7 @@ export default {
 
     bufferLayerImages(buffer) {
       console.debug(`Ask preload from ${buffer.start} to ${buffer.stop}`);
-      const modifications = this.modificationEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
+      const modifications = this.timeEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
       const mtll = modifications.length;
       if (mtll > 0) {
         const loadImage = (index) => {
@@ -370,6 +382,8 @@ export default {
       if (oldContext !== null) {
         // if context is changed, everything disappear
         this.layers.clear();
+        this.lockedObservations = [];
+        this.previousTopLayer = null;
         if (this.contextLayer !== null) {
           this.map.removeLayer(this.contextLayer);
           this.contextLayer = null;
@@ -402,8 +416,31 @@ export default {
       }
     },
 
-    drawObservations() {
+    async drawObservations() {
       if (this.observations && this.observations.length > 0) {
+        // clean locked if someone now is hidden
+        this.lockedObservations = this.lockedObservations.filter(o => o.visible);
+        // search the observation on top and is a raster observation
+        const topObservation = this.observations.find(o => o.top && isRasterObservation(o));
+        if (topObservation) {
+          if (!this.previousTopLayer || !this.previousTopLayer.visible) { // no previous
+            this.previousTopLayer = topObservation;
+          } else if (topObservation.id !== this.previousTopLayer.id) { // different id, we need to put in the stack
+            // if (topObservation.parentId === this.previousTopLayer.parentId) {
+            // different observation, same context. Remove the previousTopLayer from array
+            //  const lockedIdx = this.lockedObservations.findIndex(ptl => ptl.id === this.previousTopLayer.id);
+            //  if (lockedIdx !== -1) {
+            //    this.lockedObservations.splice(-1, 1);
+            //  }
+            // } else {
+            // different observation, different context. Add to array
+            this.lockedObservations = this.lockedObservations.filter(o => o.id !== topObservation.id); // remove previous entry
+            this.lockedObservations.push(this.previousTopLayer); // add on top
+            // }
+            this.previousTopLayer = topObservation;
+          }
+        }
+        const waitForLayerLoading = typeof this.observations.find(o => o.visible && !o.loaded) !== 'undefined';
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
@@ -413,53 +450,35 @@ export default {
                 layer.setOpacity(observation.layerOpacity);
                 let { zIndex } = observation;
                 if (observation.top) {
-                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_OFFSET - 1);
+                  zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
+                } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
+                  zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
                 }
-                layer.setZIndex(zIndex);
-                if (
-                  (observation.visible && observation.top)
-                  && isRasterObservation(observation) // is RASTER...
-                  && observation.dataSummary.histogram.length > 0 // and has values
-                  && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
-                ) {
-                  this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
-                } else if ((!observation.visible || !observation.top)
-                  && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
-                  this.setTopLayer(null);
+                if (!waitForLayerLoading) {
+                  layer.setZIndex(zIndex);
+                  if (
+                    (observation.visible && observation.top)
+                    && isRasterObservation(observation) // is RASTER...
+                    && (this.topLayer === null || this.topLayer.id !== `${observation.id}T${timestamp}`)
+                  ) {
+                    this.setTopLayer({ id: `${observation.id}T${timestamp}`, desc: observation.label });
+                  } else if ((!observation.visible || !observation.top)
+                    && this.topLayer !== null && this.topLayer.id === `${observation.id}T${timestamp}`) {
+                    this.setTopLayer(null);
+                  }
                 }
                 if (founds.length > 0) {
                   if (observation.visible) {
                     founds.forEach((f) => {
                       if (f.get('id') === `${observation.id}T${timestamp}`) {
-                        f.setZIndex(zIndex + 1);
+                        if (!waitForLayerLoading) {
+                          f.setZIndex(zIndex + 1);
+                        }
                         f.setVisible(true);
-                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
+                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
                         f.setZIndex(zIndex);
                       }
                     });
-                    // }
-                    /*
-                    const visibleLayer = founds.find(f => f.get('id') === `${observation.id}T${this.timestamp}`);
-                    // console.warn(`Show ${visibleLayer.get('id')} with T: ${this.timestamp}: visible layer visible: ${visibleLayer.getVisible()}`);
-                    // console.dir(observation.tsImages);
-                    visibleLayer.setVisible(true);
-                    founds.forEach((f) => {
-                      console.warn(`${f.get('id')} visibility: ${f.getVisible()}`);
-                    });
-                    if (observation.tsImages.indexOf(`T${this.timestamp}`) !== -1) {
-                      founds.forEach((f) => {
-                        if (f.get('id') !== `${observation.id}T${this.timestamp}`) {
-                          f.setZIndex(0);
-                          this.$nextTick(() => {
-                            f.setVisible(false);
-                            // console.warn(`Hide ${f.get('id')} with T: ${this.timestamp}: visible layer visible: ${visibleLayer.getVisible()}`);
-                            // console.dir(observation.tsImages);
-                          });
-                        }
-                        console.warn(`${f.get('id')} visibility: ${f.getVisible()}`);
-                      });
-                    }
-                    */
                   } else { // no visibility
                     founds.forEach((f) => { f.setVisible(false); });
                   }
@@ -537,9 +556,9 @@ export default {
         this.popupOverlay.setPosition(undefined);
       }
     },
-    setMapInfoPoint({ event = null, locked = false } = {}) {
-      if ((this.exploreMode || this.topLayer !== null)
-        && (event === null || (!(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)))) {
+    setMapInfoPoint({ event = null, locked = false, layer = null } = {}) {
+      if ((this.exploreMode || this.topLayer !== null)) {
+        // && (event === null || (!(this.contextGeometry instanceof Array) && this.contextGeometry.intersectsCoordinate(event.coordinate)))) {
         let coordinate;
         if (event !== null) {
           ({ coordinate } = event);
@@ -552,21 +571,25 @@ export default {
           coordinate = this.mapSelection.pixelSelected;
         }
         let topLayerId;
-        if (this.exploreMode) {
-          topLayerId = `${this.observationInfo.id}T${this.findModificationTimestamp(this.observationInfo.id, this.timestamp)}`;
+        if (layer === null) {
+          if (this.exploreMode) {
+            topLayerId = `${this.observationInfo.id}T${this.findModificationTimestamp(this.observationInfo.id, this.timestamp)}`;
+          } else {
+            topLayerId = this.topLayer.id;
+          }
+          [layer] = this.findExistingLayerById(topLayerId);
         } else {
-          topLayerId = this.topLayer.id;
+          topLayerId = layer.get('id');
         }
-        const layerSelected = this.findExistingLayerById(topLayerId)[0];
         const clonedLayer = new ImageLayer({
           id: `cl_${topLayerId}`,
-          source: layerSelected.getSource(),
+          source: layer.getSource(),
         });
         this.setMapSelection({
           pixelSelected: coordinate,
           timestamp: this.timestamp,
           layerSelected: clonedLayer,
-          ...(!this.exploreMode && { observationId: this.topLayer.id.substring(0, this.topLayer.id.indexOf('T')) }),
+          ...(!this.exploreMode && { observationId: this.getObservationIdFromLayerId(topLayerId) }),
           locked,
         });
       } else {
@@ -587,7 +610,7 @@ export default {
           this.storedZoom = this.view.getZoom();
         }
         setTimeout(() => {
-          if (geometry instanceof Array) {
+          if (geometry instanceof Array && geometry.length === 2) {
             this.view.setCenter(geometry);
           } else {
             this.view.fit(geometry, {
@@ -610,8 +633,36 @@ export default {
     sendRegionOfInterestListener() {
       this.sendRegionOfInterest();
     },
-    imageBufferListener() {
-
+    findTopLayerFromClick(event, noVector = true) {
+      const selectedLayers = [];
+      const maxZIndex = [];
+      this.map.forEachLayerAtPixel(event.pixel, (layer) => {
+        if (maxZIndex[layer.getType()] && maxZIndex[layer.getType()] > layer.get('zIndex')) {
+          return;
+        }
+        maxZIndex[layer.getType()] = layer.get('zIndex');
+        selectedLayers.push({
+          layer,
+          type: layer.getType(),
+        });
+      }, {
+        layerFilter: (candidate) => {
+          if (candidate.getType() === 'TILE') {
+            return false;
+          }
+          if (noVector && candidate.getType() === 'VECTOR') {
+            return false;
+          }
+          return true;
+        },
+      });
+      return selectedLayers;
+    },
+    getObservationIdFromLayerId(layerId) {
+      if (layerId && layerId !== '') {
+        return layerId.substr(0, layerId.indexOf('T'));
+      }
+      return layerId;
     },
   },
   watch: {
@@ -669,7 +720,7 @@ export default {
           this.drawObservations();
         }
         */
-        this.drawObservations();
+        this.$nextTick(() => this.drawObservations());
       },
       deep: true,
     },
@@ -764,16 +815,9 @@ export default {
     });
     // Main map listeners...
     this.map.on('moveend', this.onMoveEnd);
-    /*
-    this.map.on('pointermove', (event) => {
-      if (this.exploreMode && !event.dragging && this.contextGeometry.intersectsCoordinate(event.coordinate)) {
-        this.map.getTargetElement().style.cursor = 'crosshair';
-      } else {
-        this.map.getTargetElement().style.cursor = '';
-      }
-    });
-    */
+
     this.map.on('click', (event) => {
+      /* EASTER EGG */
       if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
         const lastLayer = baseLayersGroup.getLayersArray().slice(-1)[0];
         if (lastLayer && lastLayer.get('name') === 'mapbox_got') {
@@ -796,17 +840,79 @@ export default {
         }
       }
       this.clicksOnMap += 1;
-      setTimeout(() => {
+      setTimeout(async () => {
         if (this.clicksOnMap === 1) {
-          this.setMapInfoPoint({ event });
+          // select the clicked layer (we don't know if the first is the top one)
+          const selectedLayers = this.findTopLayerFromClick(event, false); // Vector layer are skipped
+          if (selectedLayers.length > 0) {
+            selectedLayers.forEach((sl) => {
+              const layerId = sl.layer.get('id');
+              if (sl.type === 'VECTOR') {
+                this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+                if (selectedLayers.length === 1) {
+                  this.closePopup();
+                }
+              } else if (!this.topLayer || layerId !== this.topLayer.id) {
+                this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+                this.setMapInfoPoint({ event, layer: sl.layer });
+              } else {
+                this.setMapInfoPoint({ event });
+              }
+            });
+          }
           this.clicksOnMap = 0;
         }
       }, 300);
     });
     this.map.on('dblclick', (event) => {
-      this.setMapInfoPoint({ event, locked: true });
-      this.clicksOnMap = 0;
+      const selectedLayers = this.findTopLayerFromClick(event);
+      if (selectedLayers.length === 1) {
+        // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
+        const layerId = selectedLayers[0].layer.get('id');
+        if (!this.topLayer || layerId !== this.topLayer.id) {
+          this.putObservationOnTop(this.getObservationIdFromLayerId(layerId));
+          /* / TODO: make sense fit the layer?
+          const extent = transformExtent(selectedLayer.getSource().getImageExtent(), selectedLayer.getSource().getProjection(), MAP_CONSTANTS.PROJ_EPSG_3857);
+          this.needFitMapListener({ geometry: extent });
+          */
+          this.setMapInfoPoint({ event, locked: true, layer: selectedLayers[0].layer });
+          /*
+          if (selectedLayer.type === 'IMAGE') {
+            extent =
+          } else {
+            extent = selectedLayer.getSource().getExtent(); // Vector layer is ever in EPSG:4326
+          }
+          */
+        } else {
+          this.setMapInfoPoint({ event, locked: true });
+        }
+        this.clicksOnMap = 0;
+      } else {
+        console.warn('Multiple layer but must be one');
+      }
     });
+    this.map.on('contextmenu', (event) => {
+      const selectedLayers = this.findTopLayerFromClick(event, false);
+      if (selectedLayers.length > 0) {
+        // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
+        this.contextMenuObservationId = this.getObservationIdFromLayerId(selectedLayers[0].layer.get('id'));
+        event.preventDefault();
+      }
+    });
+    /*
+    const select = new Select({
+      condition: click,
+    });
+    this.map.addInteraction(select);
+    select.on('select', (e) => {
+      console.group();
+      console.warn(`${e.target.getFeatures().getLength()}
+        selected features (last operation selected ${e.selected.length}
+        and deselected ${e.deselected.length} features)`);
+      console.dir(e);
+      console.groupEnd();
+    });
+    */
     // ...and set some attribute for rapid access
     this.view = this.map.getView();
     this.proj = this.view.getProjection();

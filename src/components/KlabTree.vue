@@ -36,22 +36,26 @@
             :class="[
                prop.node.main ? 'node-emphasized' : '',
                hasObservationInfo && observationInfo.id === prop.node.id ? 'node-selected' : '',
-               topLayerId !== null && topLayerId === prop.node.id ? 'node-on-top' : '',
+               cleanTopLayerId !== null && cleanTopLayerId === prop.node.id ? 'node-on-top' : '',
+               checkObservationsOnTop(prop.node.id) ? 'node-on-top' : '',
                isUser ? 'node-user-element' : 'node-tree-element',
+               prop.node.needUpdate ? 'node-updatable' : '',
             ]"
             class="node-element"
             :id="`node-${prop.node.id}`"
           >
-            <q-icon name="mdi-buddhism" class="node-no-tick" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
+            <q-icon name="mdi-buddhism" class="node-no-tick" size="17px" v-if="prop.node.observationType === OBSERVATION_CONSTANTS.TYPE_PROCESS"></q-icon>
             <q-icon name="mdi-checkbox-blank-circle" v-else-if="prop.node.noTick"></q-icon>
-            {{ prop.node.label }}<q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': isLoadingLayer(prop.node.id) }"></q-icon>
+            {{ prop.node.label }}
+            <q-icon name="mdi-clock-outline" v-if="prop.node.dynamic" color="mc-green" class="node-icon-time" :class="{ 'animate-spin': prop.node.loading }"></q-icon>
+            <q-icon name="mdi-loading" class="node-icon-time node-loading-layer" :class="{ 'animate-spin': prop.node.loading }" v-else></q-icon>
             <q-tooltip
               :delay="300"
               :offset="[0, 8]"
               self="bottom left"
               anchor="top left"
               class="kt-q-tooltip"
-            >{{ clearObservable(prop.node.observable) }}</q-tooltip>
+            >{{ clearObservable(prop.node.observable) }}</q-tooltip> <!-- TODO: DELETE NODE ID -->
 
           </span>
           <template v-if="prop.node.childrenCount > 0 || prop.node.children.length > 0">
@@ -83,7 +87,7 @@
               :style="{ right: (prop.node.childrenCount > 0 ?
                 calculateRightPosition([prop.node.childrenCount], '25px') :
                 prop.node.children.length > 0 ?
-                calculateRightPosition([prop.node.children.lengthh], '25px') :
+                calculateRightPosition([prop.node.children.length], '25px') :
                  '') }"
             >
               {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
@@ -109,6 +113,21 @@
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
           >
           </q-btn>
+          <template v-if="typeof prop.node.idx !== 'undefined'">
+            <q-chip
+              class="node-chip transparent"
+              small
+              dense
+              text-color="grey-9"
+              :style="{ right: (prop.node.childrenCount > 0 ?
+                calculateRightPosition([prop.node.childrenCount], '25px') :
+                prop.node.children.length > 0 ?
+                calculateRightPosition([prop.node.children.length], '25px') :
+                 '') }"
+            >
+              {{  $t('label.itemCounter', { loaded: prop.node.idx + 1, total: prop.node.siblingsCount }) }}
+            </q-chip>
+          </template>
           <q-chip
             class="node-chip"
             :class="{ 'node-substituible': !prop.node.empty && !prop.node.noTick }"
@@ -126,19 +145,7 @@
       </klab-q-tree>
     </div>
 
-    <q-context-menu ref="observations-context" v-show="enableContextMenu" @hide="enableContextMenu = false">
-      <q-list dense no-border style="min-width: 150px">
-        <template v-for="(action, index) in itemActions">
-          <q-item-separator :key="action.actionId" v-if="action.separator && index !== 0"></q-item-separator>
-          <q-item v-if="!action.separator && action.enabled" link :key="action.actionId" @click.native="askForAction(itemObservationId, action.actionId)">
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-          <q-item v-if="!action.separator && !action.enabled" :key="action.actionId" disabled>
-            <q-item-main :label="action.actionLabel"></q-item-main>
-          </q-item>
-        </template>
-      </q-list>
-    </q-context-menu>
+    <observation-context-menu @hide="contextMenuObservationId = null" :observation-id="contextMenuObservationId"></observation-context-menu>
     <q-resize-observable @resize="$emit('resized')"></q-resize-observable>
   </div>
 </template>
@@ -150,6 +157,8 @@ import { CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
+import ObservationContextMenu from 'components/ObservationContextMenu';
+import { copyToClipboard } from 'shared/Utils';
 
 let scrollToTimeout = null;
 
@@ -157,6 +166,7 @@ export default {
   name: 'klabTree',
   components: {
     KlabQTree,
+    ObservationContextMenu,
   },
   props: {
     isUser: {
@@ -173,14 +183,15 @@ export default {
       ticked: [],
       selected: null,
       expanded: [],
-      enableContextMenu: false,
-      itemActions: [],
+
       itemObservationId: null,
       askingForChildren: false,
       scrollElement: null,
       showPopover: null,
       dragStart: false,
       dragEnter: 0,
+      watchedObservation: [],
+      contextMenuObservationId: null,
       OBSERVATION_CONSTANTS,
     };
   },
@@ -191,8 +202,9 @@ export default {
       'contextReloaded',
       'contextId',
       'observations',
-      'modificationEventsOfObservation',
+      'timeEventsOfObservation',
       'timestamp',
+      'observationsIdOnTop',
     ]),
     ...mapGetters('stomp', [
       'tasks',
@@ -202,7 +214,6 @@ export default {
       'observationInfo',
       'hasObservationInfo',
       'topLayerId',
-      'isLoadingLayer',
     ]),
     ...mapState('view', [
       'treeSelected',
@@ -210,8 +221,15 @@ export default {
       'treeExpanded',
       'showNotified',
     ]),
+    cleanTopLayerId() {
+      return this.topLayerId ? this.topLayerId.substr(0, this.topLayerId.indexOf('T')) : null;
+    },
   },
   methods: {
+    checkObservationsOnTop(id) {
+      return this.observationsIdOnTop.length > 0 && this.observationsIdOnTop.includes(id);
+    },
+    copyToClipboard,
     ...mapActions('data', [
       'setVisibility',
       'selectNode',
@@ -225,11 +243,6 @@ export default {
       'setSpinner',
       'setMainDataViewer',
     ]),
-    /*
-    filterMethod(node) {
-      return !this.contextReloaded || node.notified;
-    },
-    */
     filterUser(node, filter) {
       return node.userNode ? filter === 'user' : filter === 'tree';
     },
@@ -245,55 +258,10 @@ export default {
         }
       }
       if (spanNode !== null) {
-        const observationId = spanNode.id.substring(5);
-        const node = this.treeNode(observationId);
-        if (node && node !== null && node.actions && node.actions.length > 1) {
-          this.itemActions = node.actions.slice(1);
-          this.itemObservationId = observationId;
-          /*
-          else {
-            this.itemActions = [{
-              actionId: null,
-              actionLabel: this.$t('messages.noActionForObservation'),
-              enabled: false,
-              separator: false,
-            }];
-            this.itemObservationId = null;
-          }
-          */
-        } else {
-          this.itemActions = [];
-          this.itemObservationId = null;
-        }
-        if (node.observationType !== OBSERVATION_CONSTANTS.TYPE_STATE) {
-          this.itemActions = [{
-            actionId: 0,
-            actionLabel: this.$t('label.recontextualization'),
-            enabled: true,
-            separator: false,
-          }];
-          this.itemObservationId = observationId;
-        }
-        if (this.itemActions && this.itemActions.length > 0) {
-          this.enableContextMenu = (this.itemActions && this.itemActions.length > 0);
-        } else {
-          this.enableContextMenu = false;
-        }
+        this.contextMenuObservationId = spanNode.id.substring(5);
+      } else {
+        this.contextMenuObservationId = null;
       }
-    },
-    askForAction(observationId, actionId) {
-      console.debug(`Will ask for ${actionId} of observation ${observationId}`);
-      if (actionId === 0) { // is ricontextualization
-        const observation = this.observations.find(o => o.id === observationId);
-        if (observation && observation !== null) {
-          this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
-            { contextId: observationId, parentContext: this.contextId },
-            this.$store.state.data.session,
-          ).body);
-          this.setContext({ context: observation, isRecontext: true });
-        }
-      }
-      this.enableContextMenu = false;
     },
     clearObservable(text) {
       if (text.indexOf('(') === 0 && text.lastIndexOf(')') === text.length - 1) {
@@ -384,7 +352,7 @@ export default {
           this.fitMap(node, meta, geometry);
         }
       }
-      if (this.modificationEventsOfObservation(node.id).length > 0) {
+      if (this.timeEventsOfObservation(node.id).length > 0) {
         this.setTimestamp(-1);
       }
     },
@@ -465,7 +433,6 @@ export default {
     },
   },
   watch: {
-
     tree() {
       this.treeSizeChangeListener();
     },
@@ -474,30 +441,53 @@ export default {
         this.selected = value;
       }
     },
-    expanded(expanded, oldExpanded) {
-      this.$store.state.view.treeExpanded = expanded;
-      if (oldExpanded >= expanded) {
+    expanded(newExpanded, oldExpanded) {
+      this.$store.state.view.treeExpanded = newExpanded;
+      if (oldExpanded.length === newExpanded.length) {
         return;
       }
-      const { [expanded.length - 1]: selectedId } = expanded;
+      if (oldExpanded.length > newExpanded.length) {
+        // stop watch
+        const contractedId = oldExpanded.filter(n => newExpanded.indexOf(n) < 0)[0];
+        const contractedNode = findNodeById(this.tree, contractedId);
+        this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+          { active: false, observationId: contractedId, rootContextId: contractedNode.rootContextId },
+          this.$store.state.data.session,
+        ).body);
+        this.watchedObservation.splice(this.watchedObservation.findIndex(wo => wo.observationId === contractedId), 1);
+        console.info(`Stop watching observation ${contractedId} with rootContextId ${contractedNode.rootContextId}`);
+        return;
+      }
+      const { [newExpanded.length - 1]: selectedId } = newExpanded;
       const expandedNode = findNodeById(this.tree, selectedId);
-      if (expandedNode && expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
-        // remove the stub
-        expandedNode.children.splice(0, 1);
-        if (expandedNode.children.length < expandedNode.childrenLoaded && expandedNode.childrenLoaded > 0) { // we have the children, only need to add to tree
-          this.addChildrenToTree({ parent: expandedNode });
-          this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
-            folderId: expandedNode.id,
-            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
-          });
-        } else if (expandedNode.children.length === 0) {
-          this.askForChildren({
-            parentId: expandedNode.id,
-            offset: 0,
-            count: this.childrenToAskFor,
-            total: expandedNode.childrenCount,
-            visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
-          });
+      if (expandedNode) {
+        this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+          { active: true, observationId: selectedId, rootContextId: expandedNode.rootContextId },
+          this.$store.state.data.session,
+        ).body);
+        this.watchedObservation.push({
+          observationId: selectedId,
+          rootContextId: expandedNode.rootContextId,
+        });
+        console.info(`Start watching observation ${selectedId} with rootContextId ${expandedNode.rootContextId}`);
+        if (expandedNode.children.length > 0 && expandedNode.children[0].id.startsWith('STUB')) {
+          // remove the stub
+          expandedNode.children.splice(0, 1);
+          if (expandedNode.children.length < expandedNode.childrenLoaded && expandedNode.childrenLoaded > 0) { // we have the children, only need to add to tree
+            this.addChildrenToTree({ parent: expandedNode });
+            this.$eventBus.$emit(CUSTOM_EVENTS.UPDATE_FOLDER, {
+              folderId: expandedNode.id,
+              visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.ticked,
+            });
+          } else if (expandedNode.children.length === 0) {
+            this.askForChildren({
+              parentId: expandedNode.id,
+              offset: 0,
+              count: this.childrenToAskFor,
+              total: expandedNode.childrenCount,
+              visible: typeof expandedNode.ticked === 'undefined' ? false : expandedNode.isContainer ? expandedNode.ticked : false,
+            });
+          }
         }
       }
     },
@@ -629,6 +619,15 @@ export default {
 
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.UPDATE_FOLDER, this.updateFolderListener);
+    if (this.watchedObservation.length > 0) {
+      this.watchedObservation.forEach((wo) => {
+        this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(
+          { active: false, observationId: wo.observationId, rootContextId: wo.rootContextId },
+          this.$store.state.data.session,
+        ).body);
+        console.info(`Stop watching observation ${wo.observationId} with rootContextId ${wo.rootContextId}`);
+      });
+    }
   },
 
 };
@@ -708,18 +707,29 @@ export default {
       .node-selected
         text-decoration underline $main-control-yellow dotted
         color $main-control-yellow
+      .mdi-buddhism
+        // font-size 15px
+        padding-left 1px
+        margin-right 2px !important
+
+      .node-updatable
+        font-style italic
       .node-disabled
         opacity 0.6 !important
       .node-no-tick
         margin-right 5px
       .node-on-top
-        text-decoration underline
+        color $main-control-yellow
       .node-icon
         display inline
         padding-left 5px
       .node-icon-time
         position relative
         right -5px
+        &.node-loading-layer
+          opacity 0
+          &.animate-spin
+            opacity 1
       .kt-q-tooltip
         background-color #333
       .q-tree-node-link
@@ -727,25 +737,36 @@ export default {
         .q-tree-arrow
           cursor pointer
 
-      .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible
-        .q-tree-node-parent
-          padding-left 1px
-          .q-tree-node-header
-            padding-left 0
-            &:before
-              width 12px
-              left -14px
-            > i
-              margin-right 2px
-          .q-tree-node-collapsible
-            .q-tree-children .q-tree-node
+      .q-tree > .q-tree-node.q-tree-node-parent > .q-tree-node-collapsible // first parent is skipped
+          .q-tree-node-parent
+            padding-left 1px
             .q-tree-node-header
-              padding-left 7px
+              padding-left 0
               &:before
-                width 25px
-                left -24px
-              &:after
-                left -17px
+                width 12px
+                left -14px
+              > i
+                margin-right 2px
+            .q-tree-node-collapsible
+              .q-tree-children
+                padding-left 20px
+                .q-tree-node-child
+                  .q-tree-node-header
+                    padding-left 4px
+                    &:before
+                      width 25px
+                      left -28px
+                    &:after
+                      left -17px
+                .q-tree-node-parent
+                  .q-tree-node-collapsible
+                    padding-left 1px
+                    &:before
+                      width 25px
+                      left -28px
+                    &:after
+                      left -17px
+
 
   @keyframes flash {
     0% { opacity: 1; }

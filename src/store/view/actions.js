@@ -116,18 +116,17 @@ export default {
             // if valueCount === 1, is added to tree but is not something to view in viewer
             viewerType = null;
           } else {
-            // is a map but...
+            // viewer is a map but i need WKT from parent if I don't have it
             viewerType = VIEWER_COMPONENTS.VIEW_MAP;
-            // i need WKT from parent
-            let parent = null;
+            // a state ever has the same shape of the parent
+            let parent;
             if (observation.parentId === rootGetters['data/contextId']) {
               // parent is context
               parent = rootGetters['data/context'];
             } else {
-              // search for parent in tree
-              parent = findNodeById(rootGetters['data/tree'], observation.parentId);
+              parent = rootGetters['data/observations'].find(o => o.id === observation.parentId);
             }
-            if (parent !== null) {
+            if (typeof parent !== 'undefined') {
               observation.encodedShape = parent.encodedShape;
               ({ label } = parent);
             } else {
@@ -136,23 +135,26 @@ export default {
           }
           break;
         case OBSERVATION_CONSTANTS.TYPE_INITIAL:
-        case OBSERVATION_CONSTANTS.TYPE_SUBJECT:
         case OBSERVATION_CONSTANTS.TYPE_RELATIONSHIP: {
           viewerType = VIEWER_COMPONENTS.VIEW_MAP;
           // isn't context?
           let parent = null;
           if (observation.parentId !== null) {
-            parent = findNodeById(rootGetters['data/tree'], observation.rootContextId);
+            parent = findNodeById(rootGetters['data/tree'], observation.parentId);
             if (typeof parent === 'undefined') {
-              console.warn(`Observation with id ${observation.id} has an invalid rootContextId: ${observation.rootContextId}`);
+              console.warn(`Observation with id ${observation.id} has an invalid unknown parent: ${observation.parentId}`);
               parent = null;
             }
           }
-          if (parent !== null) {
+          if (parent) {
             ({ label } = parent);
           } else {
             ({ label } = observation);
           }
+          break;
+        }
+        case OBSERVATION_CONSTANTS.TYPE_SUBJECT: {
+          viewerType = VIEWER_COMPONENTS.VIEW_MAP;
           break;
         }
         case OBSERVATION_CONSTANTS.TYPE_CONFIGURATION:
@@ -284,10 +286,6 @@ export default {
     }
   },
 
-  setLoadingLayers: ({ commit }, { loading, observationId }) => {
-    commit('SET_LOADING_LAYERS', { loading, observationId });
-  },
-
   setScaleEditing: ({ commit }, { active, type }) => {
     commit('SET_SCALE_EDITING', { active, type });
     commit('SET_MODAL_MODE', active);
@@ -339,5 +337,9 @@ export default {
 
   setTimeRunning: ({ commit }, timeRunning) => {
     commit('SET_TIME_RUNNING', timeRunning);
+  },
+
+  addViewComponent: ({ commit }, component) => {
+    commit('ADD_VIEW_COMPONENT', component);
   },
 };

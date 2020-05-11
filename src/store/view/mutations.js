@@ -1,11 +1,11 @@
-import { pushElementInFixedQueue } from 'shared/Helpers';
+import { pushElementInFixedQueue, findNodeById } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
     pushElementInFixedQueue(state.kexplorerLog, log);
-    console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
+    // console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
   },
 
   ADD_TO_KLAB_LOG: (state, log) => {
@@ -34,16 +34,6 @@ export default {
     state.topLayer = null;
   },
 
-  SET_LOADING_LAYERS: (state, { loading, observationId }) => {
-    const index = state.loadingLayers.indexOf(observationId);
-    if (loading) {
-      if (index === -1) {
-        state.loadingLayers.push(observationId);
-      }
-    } else if (index !== -1) {
-      state.loadingLayers.splice(index, 1);
-    }
-  },
   /**
    * Set the main viewer in index page
    * @param viewer the viewer component name
@@ -333,5 +323,22 @@ export default {
 
   SET_TIME_RUNNING: (state, timeRunning) => {
     state.timeRunning = timeRunning;
+  },
+
+  ADD_VIEW_COMPONENT: (state, component) => {
+    if (component.id === null || component.parentId === null) {
+      state.viewComponents.push({
+        ...component,
+        children: [],
+      });
+    } else {
+      const parent = findNodeById(state.viewComponents, component.parentId);
+      if (parent != null) {
+        parent.children.push({
+          ...component,
+          children: [],
+        });
+      }
+    }
   },
 };

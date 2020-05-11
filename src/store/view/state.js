@@ -146,8 +146,11 @@ export default {
   treeSelected: null,
   treeTicked: [],
   treeExpanded: [],
+  /**
+   * The raster layer on the top
+   * Vector layer are not used
+  */
   topLayer: null,
-  loadingLayers: [],
   /**
    * true if we are editing the scale. Need for no intercept events
    */
@@ -172,4 +175,9 @@ export default {
   largeMode: 0, // search bar steps 0: normal; >0: larger
   helpBaseUrl: null,
   timeRunning: false,
+
+  /**
+   * View components coming from k.LAb
+   */
+  viewComponents: [],
 };

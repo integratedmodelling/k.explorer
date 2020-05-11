@@ -158,7 +158,7 @@ export default {
     hasMapInfo() {
       return this.exploreMode
         && this.mapSelection.pixelSelected !== null
-        && `cl_${this.observationInfo.id}` === this.mapSelection.layerSelected.get('id');
+        && this.mapSelection.layerSelected.get('id').startsWith(`cl_${this.observationInfo.id}`);
     },
     infoShowedText() {
       let text;
@@ -265,16 +265,17 @@ export default {
   @import '~variables'
 
   #oi-container
-    height $main-control-height - $main-control-spc-height - $main-control-scrollbar
-    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + ($main-control-scrollbar * 2) + $main-control-header-height + $main-control-actions-height)
+    height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
+    max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     // min-height $oi-histogram-height + $main-control-spc-height
     // padding 10px 0 0 0
 
   #oi-metadata-map-wrapper
-    height 100%
-    padding-top 10px
+    height "calc(100% - %s)" % ($oi-controls-height)
     &.with-histogram
       height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height)
+    #oi-scroll-metadata-container
+      padding-top 5px
 
   .oi-text
     color $main-control-yellow

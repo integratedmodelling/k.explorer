@@ -37,8 +37,9 @@ export default {
     state.nextScale = null;
     state.crossingIDL = false;
     state.contextCustomLabel = null;
-    state.modificationEvents = [];
+    state.timeEvents = [];
     state.timestamp = -1;
+    state.engineTimestamp = -1;
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {
@@ -92,19 +93,87 @@ export default {
     console.debug(`Observation content: ${JSON.stringify(observation, null, 2)}`);
   },
 
-  ADD_MODIFICATION_EVENT: (state, modificationEvent) => {
-    const context = state.contexts.peek();
-    if (context && context.id === modificationEvent.contextId) {
-      const node = findNodeById(state.tree, modificationEvent.id);
+  UPDATE_OBSERVATION: (state, { observationIndex, newObservation }) => {
+    const oldObservation = state.observations[observationIndex];
+    // change the original observation with the fusion of new and old
+    const observation = {
+      ...oldObservation,
+      ...newObservation,
+    };
+    state.observations.splice(observationIndex, 1, observation);
+    // update node
+    const updateNode = (node) => {
       if (node) {
-        node.dynamic = true;
-        state.modificationEvents.push(modificationEvent);
+        node.needUpdate = !observation.contextualized;
+        node.dynamic = observation.dynamic;
+        node.childrenCount = observation.childrenCount;
+        node.children.forEach((child) => {
+          child.siblingsCount = observation.childrenCount;
+        });
+        node.tickable = (observation.viewerIdx !== null && !observation.empty) || observation.isContainer || observation.childrenCount > 0;
+        node.exportFormats = observation.exportFormats;
       } else {
-        console.warn(`Received a modification event but there is no observation with id ${modificationEvent.id}`);
+        console.warn(`Node of ${observation.id} - ${observation.label} not found`);
       }
-    } else {
-      console.warn(`Received a modification event from another context (${modificationEvent.contextId})`);
+    };
+    const mainNode = findNodeById(state.tree, observation.id);
+    updateNode(mainNode);
+    if (mainNode && mainNode.userNode) {
+      updateNode(findNodeById(state.userTree, observation.id));
     }
+  },
+
+  SET_CONTEXTMENU_OBSERVATIONID: (state, contextMenuObservationId) => {
+    state.contextMenuObservationId = contextMenuObservationId;
+  },
+
+  MOD_BRING_FORWARD: (state, node) => {
+    const observation = state.observations.find(o => o.id === node.id);
+    if (!observation) {
+      console.warn(`Receive a bring forward for an unknown observation: ${node.id} - ${node.label}`);
+    }
+    observation.main = true;
+    node.main = true;
+  },
+
+  MOD_STRUCTURE_CHANGE: (state, { node, modificationEvent }) => {
+    const observation = state.observations.find(o => o.id === modificationEvent.id);
+    observation.childrenCount = modificationEvent.newSize;
+    observation.empty = false;
+    const updateNode = (n) => {
+      if (n) {
+        n.childrenCount = modificationEvent.newSize;
+        n.children.forEach((child) => {
+          child.siblingsCount = modificationEvent.newSize;
+        });
+        n.tickable = true;
+        n.disabled = false;
+        n.empty = false;
+        n.needUpdate = true;
+      }
+    };
+    updateNode(node);
+    if (node.userNode) {
+      updateNode(findNodeById(state.userTree, node.id));
+    }
+  },
+
+  MOD_VALUE_CHANGE: (state, node) => {
+    node.dynamic = true;
+    node.needUpdate = false;
+    if (node.userNode) {
+      const userNode = findNodeById(state.userTree, node.id);
+      if (userNode) {
+        userNode.dynamic = true;
+        userNode.needUpdate = false;
+      } else {
+        console.warn(`Node theoretically in user tree but not found: ${node.id} - ${node.label}`);
+      }
+    }
+  },
+
+  ADD_TIME_EVENT: (state, event) => {
+    state.timeEvents.push(event);
   },
 
   SET_MODIFICATIONS_TASK: (state, task) => {
@@ -115,16 +184,34 @@ export default {
     state.timestamp = timestamp;
   },
 
-  SET_SCHEDULING: (state, scheduling) => {
+  SET_ENGINE_TIMESTAMP: (state, engineTimestamp) => {
+    state.engineTimestamp = engineTimestamp;
+  },
+
+  SET_SCHEDULING_STATUS: (state, scheduling) => {
     if (state.scaleReference !== null) {
-      if (scheduling.type === 'STARTED') {
-        state.scaleReference.schedulingType = 'STARTED';
-        state.scaleReference.schedulingResolution = scheduling.resolution;
-      } else {
-        state.scaleReference.schedulingType = 'FINISHED';
+      state.scaleReference.schedulingType = scheduling.type;
+      switch (scheduling.type) {
+        case 'TIME_ADVANCED':
+          state.engineTimestamp = scheduling.currentTime;
+          break;
+        case 'STARTED':
+          state.engineTimestamp = scheduling.currentTime;
+          state.scaleReference.schedulingResolution = scheduling.resolution;
+          break;
+        case 'FINISHED':
+          // if (scheduling.currentTime !== 0) {
+          //   state.engineTimestamp = scheduling.currentTime;
+          // } else { // TODO remove when engine send the current time
+          state.engineTimestamp = state.scaleReference.end;
+          // }
+          break;
+        default:
+          console.warn(`Unknown scheduling type: ${scheduling.type}`);
+          break;
       }
     } else {
-      console.warn('Try to set scheduling but no scaleReference');
+      console.warn('Try to change scheduling type but no scaleReference');
     }
   },
   /**
@@ -134,11 +221,12 @@ export default {
   ADD_NODE: (state, { node, parentId, toUserTreeOnly = false }) => {
     const context = state.contexts.peek();
     if (context === null) {
-      console.info(`Context is null, is it just resetted or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
+      console.info(`Context is null, it's just set or is a new observation of previous search for this session, so added to orphans. ID: ${node.id}`);
       state.orphans.push(node);
       return;
     }
-    if (node.rootContextId !== context.id) {
+    const isRoot = context.id === context.rootContextId;
+    if ((isRoot && node.rootContextId !== context.id) || (!isRoot && node.contextId !== context.id)) {
       console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
     }
     if (context.id === node.id) {
@@ -158,6 +246,14 @@ export default {
       const addToParent = (tree, localNode = node) => {
         const parent = findNodeById(tree, parentId);
         if (parent !== null) {
+          if (parent.children.length === parent.childrenCount) {
+            // is a live appending observation
+            parent.childrenCount++;
+            // update other children
+            parent.children.forEach((child) => {
+              child.siblingsCount = parent.childrenCount;
+            });
+          }
           parent.children.push({
             ...localNode,
             idx: parent.children.length,
@@ -244,11 +340,11 @@ export default {
   },
 
   SET_VISIBLE: (state, {
-    nodeId,
+    id,
     visible,
   }) => {
     // set observation visible (for layer)
-    const observationIdx = state.observations.findIndex(o => o.id === nodeId);
+    const observationIdx = state.observations.findIndex(o => o.id === id);
     const observation = state.observations[observationIdx];
     if (typeof observation !== 'undefined') {
       // store the offset, we need to set top to false only for observations with same offset
@@ -258,14 +354,14 @@ export default {
       // if hide, nothing else, else need to put down others
       if (visible) {
         state.observations.forEach((o) => {
-          if (o.id !== nodeId && o.zIndexOffset === offset) {
+          if (o.id !== id && o.zIndexOffset === offset) {
             o.top = false;
           }
         });
       }
       // set node ticked (for tree view)
       const setNodeTicked = (tree) => {
-        const node = findNodeById(tree, nodeId);
+        const node = findNodeById(tree, id);
         if (node) {
           node.ticked = visible;
         }
@@ -274,7 +370,21 @@ export default {
       setNodeTicked(state.userTree);
       state.observations.splice(observationIdx, 1, observation);
     } else {
-      console.warn(`Try to change visibility to no existing observations with id ${nodeId}`);
+      console.warn(`Try to change visibility to no existing observations with id ${id}`);
+    }
+  },
+
+  SET_LOADING_LAYERS: (state, { loading, observation }) => {
+    if (observation) {
+      observation.loading = loading;
+      const node = findNodeById(state.tree, observation.id);
+      if (node) {
+        node.loading = loading;
+        if (node.userNode) {
+          const userNode = findNodeById(state.userTree, observation.id);
+          userNode.loading = loading;
+        }
+      }
     }
   },
 
@@ -320,6 +430,7 @@ export default {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
     state.scaleReference = scaleReference;
+    console.info(`Scale reference set: ${JSON.stringify(scaleReference, null, 2)}`);
   },
 
   UPDATE_SCALE_REFERENCE: (state, scaleReference) => {

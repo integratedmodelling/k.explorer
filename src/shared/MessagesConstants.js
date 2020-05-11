@@ -38,6 +38,7 @@ export const OUT = Object.freeze({
   TYPE_DATAFLOWNODERATING: 'DataflowNodeRating',
   TYPE_CHANGESETTING: 'ChangeSetting',
   TYPE_USERINPUTPROVIDED: 'UserInputProvided',
+  TYPE_WATCHOBSERVATION: 'WatchObservation',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -51,6 +52,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_CONTEXTUALIZATIONREQUEST: 'ContextualizationRequest',
   PAYLOAD_CLASS_SETTINGCHANGEREQUEST: 'SettingChangeRequest',
   PAYLOAD_CLASS_USERINPUTRESPONSE: 'UserInputResponse',
+  PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
 });
 
@@ -68,6 +70,7 @@ export const IN = Object.freeze({
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
   CLASS_USERINTERFACE: 'UserInterface',
   CLASS_AUTHORIZATION: 'Authorization',
+  CLASS_VIEWACTOR: 'ViewActor',
 
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
   TYPE_DATAFLOWSTATECHANGED: 'DataflowStateChanged',
@@ -82,6 +85,8 @@ export const IN = Object.freeze({
   TYPE_SCHEDULINGSTARTED: 'SchedulingStarted',
   TYPE_SCHEDULINGFINISHED: 'SchedulingFinished',
   TYPE_NETWORKSTATUS: 'NetworkStatus',
+  TYPE_CREATEVIEWCOMPONENT: 'CreateViewComponent',
+  TYPE_SCHEDULEADVANCED: 'ScheduleAdvanced',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -101,4 +106,5 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_SCHEDULERNOTIFICATION: 'SchedulerNotification',
   PAYLOAD_CLASS_NETWORKREFERENCE: 'NetworkReference',
   PAYLOAD_CLASS_EMPTY: 'String',
+  PAYLOAD_CLASS_VIEWCOMPONENT: 'ViewComponent',
 });
