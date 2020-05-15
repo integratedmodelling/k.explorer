@@ -23,6 +23,7 @@ export const OUT = Object.freeze({
   CLASS_TASKLIFECYCLE: 'TaskLifecycle',
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
   CLASS_USERINTERFACE: 'UserInterface',
+  CLASS_NOTIFICATION: 'Notification',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_FEATUREADDED: 'FeatureAdded',
@@ -39,6 +40,7 @@ export const OUT = Object.freeze({
   TYPE_CHANGESETTING: 'ChangeSetting',
   TYPE_USERINPUTPROVIDED: 'UserInputProvided',
   TYPE_WATCHOBSERVATION: 'WatchObservation',
+  TYPE_ENGINEEVENT: 'EngineEvent',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -54,6 +56,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_USERINPUTRESPONSE: 'UserInputResponse',
   PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
+
 });
 
 /**
@@ -87,6 +90,7 @@ export const IN = Object.freeze({
   TYPE_NETWORKSTATUS: 'NetworkStatus',
   TYPE_CREATEVIEWCOMPONENT: 'CreateViewComponent',
   TYPE_SCHEDULEADVANCED: 'ScheduleAdvanced',
+  TYPE_ENGINEEVENT: 'EngineEvent',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -107,4 +111,5 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_NETWORKREFERENCE: 'NetworkReference',
   PAYLOAD_CLASS_EMPTY: 'String',
   PAYLOAD_CLASS_VIEWCOMPONENT: 'ViewComponent',
+  PAYLOAD_CLASS_ENGINEEVENT: 'EngineEvent',
 });

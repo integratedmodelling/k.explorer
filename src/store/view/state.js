@@ -180,4 +180,9 @@ export default {
    * View components coming from k.LAb
    */
   viewComponents: [],
+
+  /**
+   * Engine events
+   */
+  engineEvents: [],
 };

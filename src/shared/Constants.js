@@ -745,6 +745,10 @@ export const OBSERVATION_CONTEXT_ITEMS = {
   },
 };
 
+export const ENGINE_EVENTS = {
+  RESOURCE_VALIDATION: 'ResourceValidation',
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,
@@ -773,4 +777,5 @@ export default {
   SETTING_NAMES,
   HELP_CONSTANTS,
   OBSERVATION_CONTEXT_ITEMS,
+  ENGINE_EVENTS,
 };

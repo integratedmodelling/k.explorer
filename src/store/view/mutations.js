@@ -1,6 +1,7 @@
 import { pushElementInFixedQueue, findNodeById } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
+import { ENGINE_EVENTS } from '../../shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
@@ -339,6 +340,33 @@ export default {
           children: [],
         });
       }
+    }
+  },
+
+  SET_ENGINE_EVENT: (state, event) => {
+    if (state.engineEvents !== null) {
+      switch (event.type) {
+        case ENGINE_EVENTS.RESOURCE_VALIDATION: {
+          const eventIndex = state.engineEvents.findIndex(ee => ee.id === event.id);
+          if (event.started) {
+            if (eventIndex === -1) {
+              state.engineEvents.push({ id: event.id, timestamp: event.timestamp });
+            } else {
+              console.warn('Try to start an existing engine event', event);
+            }
+          } else if (eventIndex !== -1) {
+            state.engineEvents.splice(eventIndex, 1);
+          } else {
+            console.warn('Try to stop an unexisting engine event', event);
+          }
+          console.debug(`Engine event with id ${event.id} ${event.started ? 'start' : 'stop'} / total engine events: ${state.engineEvents.length}`);
+          break;
+        }
+        default:
+          break;
+      }
+    } else {
+      console.debug('Receive an engine event before subscription');
     }
   },
 };

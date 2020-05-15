@@ -125,4 +125,7 @@ export default {
   viewComponents: state => state.viewComponents,
   viewComponentsByType: state => types => state.viewComponents.filter(vc => types.includes(vc.type)),
 
+  engineEvents: state => state.engineEvents,
+  engineEventsCount: state => state.engineEvents.length,
+
 };
