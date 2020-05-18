@@ -330,7 +330,7 @@ export default {
           break;
       }
     } else if (modificationEvent.id !== modificationEvent.contextId) {
-      console.debug('Modification event for a no existing node, probably still not loaded', modificationEvent);
+      console.debug('Modification event for a not existing node, probably still not loaded', modificationEvent);
     } else {
       console.debug('Modification event for context', modificationEvent);
     }

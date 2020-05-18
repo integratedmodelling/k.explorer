@@ -11,6 +11,7 @@ is not available.
 - Time selection for scale
 - Speed selector on timeline with click and hold
 - Implements observations in secondary context
+- Intercept engine event and stop search if is busy
 ### Improvements
 - Click on map layer select it and give info
 - Right click on layer for more action (like Set as context)
