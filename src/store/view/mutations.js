@@ -352,12 +352,12 @@ export default {
             if (eventIndex === -1) {
               state.engineEvents.push({ id: event.id, timestamp: event.timestamp });
             } else {
-              console.warn('Try to start an existing engine event', event);
+              console.debug('Try to start an existing engine event', event);
             }
           } else if (eventIndex !== -1) {
             state.engineEvents.splice(eventIndex, 1);
           } else {
-            console.warn('Try to stop an unexisting engine event', event);
+            console.debug('Try to stop an unregistered engine event', event);
           }
           console.debug(`Engine event with id ${event.id} ${event.started ? 'start' : 'stop'} / total engine events: ${state.engineEvents.length}`);
           break;

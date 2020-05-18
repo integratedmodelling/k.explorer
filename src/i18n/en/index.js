@@ -163,6 +163,7 @@ export default {
     timeEndBeforeTimeStart: 'End time cannot be before start time',
     timeEndModified: 'Multiplier is not used because the end time was manually changed',
     pressToChangeSpeed: 'Press to play<br />Hold to change speed<br />Actual speed x{multiplier}',
+    resourcesValidating: 'Engine is busy',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

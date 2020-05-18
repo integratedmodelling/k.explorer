@@ -45,7 +45,11 @@ export default {
     },
     animated: {
       type: Boolean,
-      default: true,
+      default: false,
+    },
+    forceColor: {
+      type: Boolean,
+      default: false,
     },
     storeControlled: {
       type: Boolean,
@@ -64,10 +68,10 @@ export default {
       'spinner',
     ]),
     moving() {
-      return this.storeControlled ? this.spinner.animated : this.animated;
+      return this.storeControlled ? this.spinner.animated || this.animated : this.animated;
     },
     realColor() {
-      return this.storeControlled ? this.spinner.color : this.getBrand(this.color);
+      return this.storeControlled ? (this.forceColor ? this.getBrand(this.color) : this.spinner.color) : this.getBrand(this.color);
     },
   },
   methods: {

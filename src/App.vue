@@ -9,7 +9,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
-import { MESSAGE_TYPES, OBSERVATION_DEFAULT } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'App',
@@ -51,6 +51,11 @@ export default {
         console.warn(`Invalidate session ${this.session}`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
+      // watch engine event
+      this.sendStompMessage(MESSAGES_BUILDERS.WATCH_ENGINE_EVENT({
+        active: true,
+        eventType: ENGINE_EVENTS.RESOURCE_VALIDATION,
+      }, this.session).body);
       // before subscribe, we load contexts linked to this session
       this.getSessionContexts()
         .then((restored) => {
@@ -61,7 +66,7 @@ export default {
           this.sendQueue();
         })
         .catch((error) => {
-          console.warn(`Problems with session restauration: ${error}`);
+          console.warn(`Problems with session restoration: ${error}`);
           this.disconnect();
         });
     },
