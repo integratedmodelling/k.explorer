@@ -116,6 +116,11 @@ export default {
       m10: 'November',
       m11: 'December',
     },
+    levelDebug: 'Debug',
+    levelInfo: 'Info',
+    levelWarning: 'Warning',
+    levelError: 'Error',
+    levelEngineEvent: 'Engine event',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -141,6 +146,7 @@ export default {
     geolocationErrorUnknown: 'An unknown error occurred',
     unknownSearchObservation: 'Previous observations results',
     noLogItems: 'Empty log',
+    noLevelSelected: 'No levels selected',
     uploadComplete: 'Upload of file {fileName} complete',
     IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
     lastTermAlertText: 'No more terms allowed',
@@ -201,6 +207,9 @@ export default {
     connectionError: 'Connection error',
     searchTimeout: 'Search timeout',
     uploadError: 'Upload error for the file {fileName}',
+  },
+  engineEventLabels: {
+    evtResourceValidation: 'Resource validation',
   },
   langName: 'English',
 };

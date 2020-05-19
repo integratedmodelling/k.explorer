@@ -11,15 +11,15 @@ export default {
   // reverseLogActions: state => state.kexplorerLog.slice().reverse(),
   klabLog: state => state.klabLog,
   lastKlabLog: state => type => lastFilteredLogElement(state.klabLog, type),
-  klabLogReversedAndFiltered: state => (type) => {
+  klabLogReversedAndFiltered: state => (types = []) => {
     if (state.klabLog.length === 0) {
       return [];
     }
     const reversed = [...state.klabLog].reverse();
-    if (type === undefined) {
+    if (types.length === 0) {
       return reversed;
     }
-    return reversed.find(log => log.type === type);
+    return reversed.filter(log => types.includes(log.type));
   },
 
   statusTexts: state => state.statusTexts,

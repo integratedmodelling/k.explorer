@@ -157,8 +157,8 @@ const PARSERS = {
     dispatch('data/setScheduling', scheduling, { root: true });
   },
   [IN.TYPE_ENGINEEVENT]: ({ payload: event }, { dispatch }) => {
-    dispatch('view/setEngineEvent', event, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Engine event received', event);
+    dispatch('view/setEngineEvent', event, { root: true });
   },
   // k.LAB log messages
   [IN.TYPE_DEBUG]: ({ payload: message }, { dispatch }) => {
