@@ -21,6 +21,7 @@ export default {
     }
     return reversed.filter(log => types.includes(log.type));
   },
+  levels: state => state.levels,
 
   statusTexts: state => state.statusTexts,
   statusTextsLength: state => state.statusTexts.length,

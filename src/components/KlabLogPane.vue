@@ -3,13 +3,19 @@
     <div class="klp-level-selector">
       <ul>
         <li v-for="(level, key) in LOG_ICONS" :key="key" :class="{ 'klp-selected': hasLevel(key) }">
-          <q-chip
+          <q-btn
             dense
+            size="sm"
             class="klp-chip"
             :icon="level.icon"
             :color="level.color"
-            @click="setLevel(key)"
-          >{{ $t(level.i18nlabel) }}</q-chip>
+            @click="toggleLevel(key)"
+          >
+            <q-tooltip
+              :delay="600"
+              :offset="[0, 5]"
+            >{{ $t(level.i18nlabel) }}</q-tooltip>
+          </q-btn>
         </li>
       </ul>
     </div>
@@ -55,16 +61,16 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import SimpleBar from 'simplebar';
 import moment from 'moment';
 
 const LOG_ICONS = {
-  [IN.TYPE_DEBUG]: { i18nlabel: 'label.levelDebug', icon: 'mdi-console-line', color: 'grey-6' },
-  [IN.TYPE_INFO]: { i18nlabel: 'label.levelInfo', icon: 'mdi-information', color: 'info' },
-  [IN.TYPE_WARNING]: { i18nlabel: 'label.levelWarning', icon: 'mdi-alert', color: 'warning' },
   [IN.TYPE_ERROR]: { i18nlabel: 'label.levelError', icon: 'mdi-close-circle', color: 'negative' },
+  [IN.TYPE_WARNING]: { i18nlabel: 'label.levelWarning', icon: 'mdi-alert', color: 'warning' },
+  [IN.TYPE_INFO]: { i18nlabel: 'label.levelInfo', icon: 'mdi-information', color: 'info' },
+  [IN.TYPE_DEBUG]: { i18nlabel: 'label.levelDebug', icon: 'mdi-console-line', color: 'grey-6' },
   [IN.TYPE_ENGINEEVENT]: { i18nlabel: 'label.levelEngineEvent', icon: 'mdi-settings-outline', color: 'secondary' },
 };
 
@@ -74,19 +80,23 @@ export default {
     return {
       scrollBar: null,
       log: null,
-      levels: [IN.TYPE_DEBUG, IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR, IN.TYPE_ENGINEEVENT],
       LOG_ICONS,
     };
   },
   computed: {
     ...mapGetters('view', [
       'klabLogReversedAndFiltered',
+      'levels',
     ]),
     logs() {
       return this.levels.length === 0 ? [] : this.klabLogReversedAndFiltered(this.levels.length === 5 ? [] : this.levels);
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setLevels',
+      'toggleLevel',
+    ]),
     logText(log) {
       if (log && log.payload) {
         if (log.type === IN.TYPE_ENGINEEVENT) {
@@ -105,14 +115,6 @@ export default {
     },
     isSeparator(log) {
       return log && log.payload && log.payload.separator;
-    },
-    setLevel(level) {
-      const idx = this.levels.indexOf(level);
-      if (idx === -1) {
-        this.levels.push(level);
-      } else {
-        this.levels.splice(idx, 1);
-      }
     },
     hasLevel(level) {
       return this.levels.indexOf(level) !== -1;
@@ -164,7 +166,7 @@ export default {
         li
           display inline-block
           padding-right 10px
-          opacity 0.4
+          opacity .5
           &.klp-selected
             opacity 1
           .klp-chip

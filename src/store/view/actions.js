@@ -24,6 +24,14 @@ export default {
     });
   },
 
+  setLevels({ commit }, levels) {
+    commit('SET_LEVELS', levels);
+  },
+
+  toggleLevel({ commit }, level) {
+    commit('TOGGLE_LEVEL', level);
+  },
+
   addToStatusTexts: ({ commit }, { id, text }) => {
     commit('ADD_TO_STATUS_TEXTS', { id, text });
   },

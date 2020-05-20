@@ -13,6 +13,21 @@ export default {
     pushElementInFixedQueue(state.klabLog, log);
   },
 
+  SET_LEVELS: (state, levels) => {
+    if (levels) {
+      state.levels = levels;
+    }
+  },
+
+  TOGGLE_LEVEL: (state, level) => {
+    const idx = state.levels.indexOf(level);
+    if (idx === -1) {
+      state.levels.push(level);
+    } else {
+      state.levels.splice(idx, 1);
+    }
+  },
+
   ADD_TO_STATUS_TEXTS: (state, { id, text }) => {
     state.statusTexts.push({ id, text });
   },

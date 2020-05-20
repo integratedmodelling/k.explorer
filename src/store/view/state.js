@@ -2,6 +2,7 @@
  * State of view
  */
 import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
+import { IN } from 'shared/MessagesConstants';
 
 export default {
   /**
@@ -185,4 +186,9 @@ export default {
    * Engine events
    */
   engineEvents: [],
+
+  /**
+   * Log levels
+   */
+  levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
 };
