@@ -17,6 +17,7 @@ is not available.
 - Right click on layer for more action (like Set as context)
 - Layer on top of secondary context has better management
 - Notification from engine are totally changed
+- Log pane with filter by level or type
 ### Solved
 - Various bug solved
 
