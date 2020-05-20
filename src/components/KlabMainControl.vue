@@ -393,7 +393,7 @@ export default {
       cursor move
       transition background-color 0.8s
     .q-card // no selection permitted
-      overflow auto
+      // overflow auto
       width $main-control-width
       transition width .5s
       &.with-context
