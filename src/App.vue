@@ -129,7 +129,15 @@ export default {
           icon: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'mdi-alert-circel' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'mdi-alert' : 'mdi-information'),
           timeout: 1500,
         });
-        const message = `${lastKexplorerLog.payload.message}\n${JSON.stringify(lastKexplorerLog.attach)}`;
+        let message = `${lastKexplorerLog.payload.message}`;
+        const { attach } = lastKexplorerLog.payload;
+        if (attach) {
+          if (typeof attach === 'object') {
+            message += `:\n${JSON.stringify(attach, null, 4)}`;
+          } else {
+            message += `: ${attach}`;
+          }
+        }
         switch (lastKexplorerLog.type) {
           case MESSAGE_TYPES.TYPE_DEBUG:
             if (process.env.KEXPLORER_DEBUG) {

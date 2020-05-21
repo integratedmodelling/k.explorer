@@ -13,7 +13,7 @@ const PARSERS = {
   },
   [IN.TYPE_TASKABORTED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskAbort', task, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Aborted task with id ${task.id}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Aborted task with id ${task.id}`, task);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
   [IN.TYPE_TASKFINISHED]: ({ payload: task }, { dispatch }) => {
@@ -194,7 +194,7 @@ const PARSERS = {
 export const parseAndExecute = ({ body }, context = null) => {
   const parsedBody = JSON.parse(body);
   const { dispatch } = context;
-  if (parsedBody.messageClass === IN.CLASS_NOTIFICATION) {
+  if ([IN.CLASS_NOTIFICATION, IN.CLASS_TASKLIFECYCLE].includes(parsedBody.messageClass)) {
     dispatch('view/addToKlabLog', parsedBody, { root: true });
   }
   if (!Object.prototype.hasOwnProperty.call(PARSERS, parsedBody.type)) {

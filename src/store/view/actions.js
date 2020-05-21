@@ -16,6 +16,15 @@ export default {
   addToKlabLog: ({ commit }, {
     type, id, payload, timestamp,
   }) => {
+    /*
+    if (type === 'TaskAborted') {
+      type = 'Error';
+      payload = payload.error;
+    } else if (type === 'TaskStarted' || type === 'TaskStopped') {
+      type = 'Info';
+      payload = `${type}: ${payload.description}`;
+    }
+    */
     commit('ADD_TO_KLAB_LOG', {
       type,
       id,
