@@ -222,6 +222,9 @@ export async function getContextGeometry(contextObservation) {
   const { spatialProjection } = contextObservation;
   const dataProjection = await findProjection(spatialProjection); // .then((dataProjection) => {
   let { encodedShape } = contextObservation;
+  if (!encodedShape) {
+    return null;
+  }
   // normalize encodedShape
   if (encodedShape.indexOf('LINEARRING') === 0) {
     encodedShape = encodedShape.replace('LINEARRING', 'LINESTRING');

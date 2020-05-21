@@ -46,6 +46,7 @@ export default {
     state.contextGeometry = contextGeometry;
     state.treeExpanded = [];
     state.treeTicked = [];
+    state.statusTexts = [];
     state.treeSelected = null;
     state.topLayer = null;
   },

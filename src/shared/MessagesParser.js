@@ -194,7 +194,7 @@ const PARSERS = {
 export const parseAndExecute = ({ body }, context = null) => {
   const parsedBody = JSON.parse(body);
   const { dispatch } = context;
-  if ([IN.CLASS_NOTIFICATION, IN.CLASS_TASKLIFECYCLE].includes(parsedBody.messageClass)) {
+  if (parsedBody.messageClass === IN.CLASS_NOTIFICATION) {
     dispatch('view/addToKlabLog', parsedBody, { root: true });
   }
   if (!Object.prototype.hasOwnProperty.call(PARSERS, parsedBody.type)) {
