@@ -2,7 +2,7 @@
   <div id="klab-log-pane" class="klab-menu-component kp-container">
     <div class="klp-level-selector">
       <ul>
-        <li v-for="(level, key) in LOG_ICONS" :key="key" :class="{ 'klp-selected': hasLevel(key) }">
+        <li v-for="(level, key, index) in LOG_ICONS" :key="index" :class="{ 'klp-selected': hasLevel(key) }">
           <q-btn
             dense
             size="sm"
@@ -27,8 +27,8 @@
     >
       <template v-if="logs.length !== 0">
         <q-item
-          v-for="log in logs"
-          :key="log.id"
+          v-for="(log, index) in logs"
+          :key="index"
           class="log-item q-pa-xs"
         >
           <template v-if="isSeparator(log)">
@@ -111,6 +111,11 @@ export default {
       return this.$t('label.klabNoMessage');
     },
     logColorAndIcon(log) {
+      const ret = LOG_ICONS[log.type];
+      if (!ret) {
+        console.warn(`Log type: ${log.type}`, log);
+        return LOG_ICONS.Error;
+      }
       return LOG_ICONS[log.type];
     },
     isSeparator(log) {

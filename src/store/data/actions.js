@@ -2,6 +2,7 @@ import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
 import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { IN } from 'shared/MessagesConstants';
 
 export default {
   /**
@@ -43,7 +44,7 @@ export default {
           main: true,
         });
       }
-      dispatch('view/addToKlabLog', { type: MESSAGE_TYPES.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
+      dispatch('view/addToKlabLog', { type: IN.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
       console.debug(`Send stop watch context ${oldContext.id}`);
       sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST, { active: false, observationId: oldContext.id, rootContextId: oldContext.rootContextId });
     } else {
