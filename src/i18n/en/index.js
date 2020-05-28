@@ -170,6 +170,7 @@ export default {
     timeEndModified: 'Multiplier is not used because the end time was manually changed',
     pressToChangeSpeed: 'Press to play<br />Hold to change speed<br />Actual speed x{multiplier}',
     resourcesValidating: 'Engine is busy',
+    presentationBlocked: '<p>Can\'t access online help resources: check your network connection</p><p class="klab-small">A browser extension may also be interfering</p>',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

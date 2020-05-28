@@ -28,6 +28,7 @@
             color="white"
             no-swipe
             @slide-trigger="initStack"
+            v-if="!presentationBlocked"
           >
             <q-carousel-slide
               class="kp-slide full-height"
@@ -121,7 +122,15 @@
           flat
         ></q-btn>
       </div>
-      <div class="kp-help-inner modal-backdrop" v-if="typeof initialSize === 'undefined' || activeSectionIndex === -1"><q-spinner class="fixed-center" color="mc-yellow" :size="40"></q-spinner></div>
+      <div class="kp-help-inner" :class="{ 'modal-backdrop': !presentationBlocked && waitForPresentation }">
+        <div class=" kp-no-presentation" v-if="presentationBlocked" >
+          <div class="fixed-center text-center">
+            <div class="kp-np-content" v-html="$t('messages.presentationBlocked')"></div>
+            <q-btn flat no-caps icon="mdi-refresh" @click="initPresentation" :label="$t('label.appRetry')"></q-btn>
+          </div>
+        </div>
+        <q-spinner v-else-if="waitForPresentation" class="fixed-center" color="mc-yellow" :size="40"></q-spinner>
+      </div>
     </div>
   </div>
 </template>
@@ -158,6 +167,7 @@ export default {
       tooltipTitle: '',
       activePresentation: [],
       url: undefined,
+      presentationBlocked: null,
     };
   },
   computed: {
@@ -168,6 +178,9 @@ export default {
       'isInModalMode',
       'modalSize',
     ]),
+    waitForPresentation() {
+      return typeof this.initialSize === 'undefined' || this.activeSectionIndex === -1;
+    },
     helpBaseUrl() {
       return this.$store.state.view.helpBaseUrl;
     },
@@ -265,6 +278,9 @@ export default {
       this.tooltipTitle = title;
     },
     loadPresentation(presentationIndex) {
+      if (this.presentationBlocked) {
+        return;
+      }
       if (this.presentations[presentationIndex]) {
         this.activePresentation = this.presentations[presentationIndex].slides;
         this.activeSectionIndex = presentationIndex;
@@ -280,6 +296,51 @@ export default {
         });
         this.onResize();
       });
+    },
+    initPresentation() {
+      const self = this;
+      this.presentationsLoading = true;
+      try {
+        jsonp(`${this.helpBaseUrl}/index.php`, { param: 'callback', timeout: 5000 }, (error, data) => {
+          if (error) {
+            console.error(`Error loading presentation: ${error.message}`);
+            this.presentationsLoading = false;
+            this.presentationBlocked = error;
+          } else {
+            this.presentationBlocked = null;
+            const config = data;
+            if (config && config.length > 0) {
+              let counter = 0;
+              config.forEach((sec, index) => {
+                counter += 1;
+                jsonp(`${this.helpBaseUrl}/index.php?sec=${sec.id}`, { param: 'callback' }, (sectionError, sectionData) => {
+                  if (sectionError) {
+                    console.error(sectionError.message);
+                  } else {
+                    self.presentations.push({
+                      id: sec.id,
+                      baseFolder: sec.baseFolder,
+                      linkTitle: sec.name,
+                      linkDescription: sec.description,
+                      slides: sectionData,
+                      index,
+                    });
+                  }
+                  counter -= 1;
+                  if (counter === 0) {
+                    this.presentationsLoading = false;
+                    this.presentations.sort((p1, p2) => p1.index - p2.index);
+                  }
+                });
+              });
+            }
+          }
+        });
+      } catch (error) {
+        console.error(`Error loading presentation: ${error.message}`);
+        this.presentationsLoading = false;
+        this.presentationBlocked = error;
+      }
     },
   },
   watch: {
@@ -306,41 +367,7 @@ export default {
     },
   },
   created() {
-    const self = this;
-    this.presentationsLoading = true;
-    jsonp(`${this.helpBaseUrl}/index.php`, { param: 'callback' }, (err, data) => {
-      if (err) {
-        console.error(err.message);
-        this.presentationsLoading = false;
-      } else {
-        const config = data;
-        if (config && config.length > 0) {
-          let counter = 0;
-          config.forEach((sec, index) => {
-            counter += 1;
-            jsonp(`${this.helpBaseUrl}/index.php?sec=${sec.id}`, { param: 'callback' }, (sectionError, sectionData) => {
-              if (sectionError) {
-                console.error(sectionError.message);
-              } else {
-                self.presentations.push({
-                  id: sec.id,
-                  baseFolder: sec.baseFolder,
-                  linkTitle: sec.name,
-                  linkDescription: sec.description,
-                  slides: sectionData,
-                  index,
-                });
-              }
-              counter -= 1;
-              if (counter === 0) {
-                this.presentationsLoading = false;
-                this.presentations.sort((p1, p2) => p1.index - p2.index);
-              }
-            });
-          });
-        }
-      }
-    });
+    this.initPresentation();
   },
   mounted() {
     // const self = this;
@@ -391,6 +418,13 @@ export default {
       right: 0;
       bottom: 0;
       left: 0;
+      .kp-no-presentation
+        font-weight bold
+        position relative
+        .kp-refresh-btn
+          position relative
+        .klab-small
+          font-size smaller
 
     .kp-help-content
       position relative
