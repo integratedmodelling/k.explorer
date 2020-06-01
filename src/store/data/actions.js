@@ -5,6 +5,15 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN } from 'shared/MessagesConstants';
 
 export default {
+
+  loadSessionReference: ({ commit }) => {
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_INFO}`, {})
+      .then(({ data }) => {
+        if (data) {
+          commit('SET_SESSION_REFERENCE', data);
+        }
+      });
+  },
   /**
    * Set the context for this session.
    * If context doesn't exists, a map with a default context is shown.

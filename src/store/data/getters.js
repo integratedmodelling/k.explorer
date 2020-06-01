@@ -4,6 +4,14 @@ import { SCALE_TYPE } from 'shared/Constants';
 
 export default {
   /**
+   * Session reference
+   *
+   * @param state
+   * @returns {null}
+   */
+  sessionReference: state => state.sessionReference,
+
+  /**
    * The observations tree
    */
   tree: state => state.tree,

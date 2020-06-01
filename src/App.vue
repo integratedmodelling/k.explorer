@@ -36,6 +36,7 @@ export default {
       }
     },
     ...mapActions('data', [
+      'loadSessionReference',
       'getSessionContexts',
     ]),
     ...mapActions('stomp', {
@@ -164,6 +165,7 @@ export default {
       observation: OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
+    this.loadSessionReference();
   },
   mounted() {
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
