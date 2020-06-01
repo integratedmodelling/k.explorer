@@ -9,7 +9,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
-import { MESSAGE_TYPES, OBSERVATION_DEFAULT } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'App',
@@ -36,6 +36,7 @@ export default {
       }
     },
     ...mapActions('data', [
+      'loadSessionReference',
       'getSessionContexts',
     ]),
     ...mapActions('stomp', {
@@ -51,6 +52,11 @@ export default {
         console.warn(`Invalidate session ${this.session}`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
+      // watch engine event
+      this.sendStompMessage(MESSAGES_BUILDERS.WATCH_ENGINE_EVENT({
+        active: true,
+        eventType: ENGINE_EVENTS.RESOURCE_VALIDATION,
+      }, this.session).body);
       // before subscribe, we load contexts linked to this session
       this.getSessionContexts()
         .then((restored) => {
@@ -61,7 +67,7 @@ export default {
           this.sendQueue();
         })
         .catch((error) => {
-          console.warn(`Problems with session restauration: ${error}`);
+          console.warn(`Problems with session restoration: ${error}`);
           this.disconnect();
         });
     },
@@ -88,9 +94,7 @@ export default {
     onerror: (error) => {
       console.log(`Error: ${JSON.stringify(error)}`);
     },
-    onerrorsend: (error) => {
-      console.log(`Error on send: ${JSON.stringify(error)}`);
-    },
+
     onmessage: (frame) => {
       /*
       let body = '';
@@ -104,11 +108,14 @@ export default {
     onclose: () => {
       console.log('Disconnected');
     },
+    onerrorsend: (error) => {
+      console.log(`Error sending: ${JSON.stringify(error)}`);
+    },
     */
-    onsend({ headers, message }) {
+    onsend({ message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
-        console.debug(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
+        // console.debug(`Send a queued message: ${JSON.stringify(message)} with this headers: ${JSON.stringify(headers)}`);
       }
     },
   },
@@ -123,10 +130,32 @@ export default {
           icon: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'mdi-alert-circel' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'mdi-alert' : 'mdi-information'),
           timeout: 1500,
         });
-        if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING) {
-          console.warn(lastKexplorerLog.payload.message);
-        } else if (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR) {
-          console.error(lastKexplorerLog.payload.message);
+        let message = `${lastKexplorerLog.payload.message}`;
+        const { attach } = lastKexplorerLog.payload;
+        if (attach) {
+          if (typeof attach === 'object') {
+            message += `:\n${JSON.stringify(attach, null, 4)}`;
+          } else {
+            message += `: ${attach}`;
+          }
+        }
+        switch (lastKexplorerLog.type) {
+          case MESSAGE_TYPES.TYPE_DEBUG:
+            if (process.env.KEXPLORER_DEBUG) {
+              console.debug();
+            }
+            break;
+          case MESSAGE_TYPES.TYPE_INFO:
+            console.info(message);
+            break;
+          case MESSAGE_TYPES.TYPE_WARNING:
+            console.warn(message);
+            break;
+          case MESSAGE_TYPES.TYPE_ERROR:
+            console.error(message);
+            break;
+          default:
+            console.warn(`Unknown type: ${lastKexplorerLog.type}`, message);
         }
       }
     },
@@ -136,9 +165,11 @@ export default {
       observation: OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
+    this.loadSessionReference();
   },
   mounted() {
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
+    this.$store.$app = this;
     Vue.config.warnHandler = (msg, vm, trace) => {
       if (msg.indexOf('"letter"') === -1) {
         console.warn(`[Intercepted Vue warn]: ${msg}${trace}`);

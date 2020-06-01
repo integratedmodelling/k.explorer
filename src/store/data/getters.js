@@ -4,6 +4,14 @@ import { SCALE_TYPE } from 'shared/Constants';
 
 export default {
   /**
+   * Session reference
+   *
+   * @param state
+   * @returns {null}
+   */
+  sessionReference: state => state.sessionReference,
+
+  /**
    * The observations tree
    */
   tree: state => state.tree,
@@ -32,18 +40,22 @@ export default {
 
   hasObservations: state => state.observations.length !== 0,
   visibleObservations: state => state.observations.filter(observation => observation.visible),
+  observationsIdOnTop: state => state.observations.filter(o => o.top).map(o => o.id),
 
-  modificationEvents: state => state.modificationEvents,
-  modificationEventsOfObservation: state => id => state.modificationEvents.filter(e => e.id === id),
-  modificationEventsUntil: state => timestamp => state.modificationEvents.filter(e => e.timestamp <= timestamp),
+  contextMenuObservationId: state => state.contextMenuObservationId,
+
+  timeEvents: state => state.timeEvents,
+  timeEventsOfObservation: state => id => state.timeEvents.filter(e => e.id === id),
+  timeEventsUntil: state => timestamp => state.timeEventsEvents.filter(e => e.timestamp <= timestamp),
   modificationsTask: state => state.modificationsTask,
 
   visibleEvents: (state) => {
     const ids = state.observations.filter(observation => observation.visible).map(o => o.id);
-    return state.modificationEvents.filter(me => ids.includes(me.id));
+    return state.timeEvents.filter(me => ids.includes(me.id));
   },
 
   timestamp: state => state.timestamp,
+  engineTimestamp: state => state.engineTimestamp,
 
   dataflow: state => state.dataflow,
   hasDataflow: state => state.dataflow !== null,

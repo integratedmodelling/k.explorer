@@ -38,13 +38,13 @@ export default class {
    */
   validateJsonSchema(json, schema) {
     if (!this.initialized) {
-      console.info('djvEnv not read');
+      console.info('djvEnv not ready');
       return false;
     }
     if (this.djvEnv.resolve(schema)) {
       const valError = this.djvEnv.validate(schema, json);
       if (typeof valError === 'undefined') {
-        console.debug(`Validation of schema ${schema} ok`);
+        // console.debug(`Validation of schema ${schema} ok`);
         return true;
       }
       throw Error(valError);

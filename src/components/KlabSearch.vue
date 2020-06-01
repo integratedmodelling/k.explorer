@@ -133,6 +133,7 @@ export default {
       'fuzzyMode',
       'largeMode',
       'isDocked',
+      'engineEventsCount',
     ]),
     inputSearchColor: {
       get() {
@@ -532,6 +533,16 @@ export default {
         return;
       }
       if (this.acceptedTokens.length > 0) {
+        if (this.engineEventsCount > 0) {
+          this.$emit('busy-search');
+          this.$q.notify({
+            message: this.$t('messages.resourcesValidating'),
+            type: 'warning',
+            icon: 'mdi-alert',
+            timeout: 2000,
+          });
+          return;
+        }
         const urn = this.acceptedTokens.map(token => token.id).join(' ');
         this.sendStompMessage(MESSAGES_BUILDERS.OBSERVATION_REQUEST({
           urn,
@@ -926,7 +937,7 @@ export default {
       background-color: $main-control-green;
       transition background-color 0.8s
 
-   #ks-autocomplete
+  #ks-autocomplete
     .q-item-side.q-item-section.q-item-side-left
        align-self start
     .q-item-sublabel

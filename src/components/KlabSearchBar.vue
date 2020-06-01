@@ -16,7 +16,7 @@
         :ball="22"
         wrapperId="ksb-spinner"
         id="spinner-searchbar"
-        :style="{ 'box-shadow': searchIsFocused ? `0px 0px 3gitpx ${getBGColor('.4')}` : 'none' }"
+        :style="{ 'box-shadow': searchIsFocused ? `0px 0px 3px ${getBGColor('.4')}` : 'none' }"
         @dblclick.native="emitSpinnerDoubleclick"
         @touchstart.native.stop="handleTouch($event, showSuggestions, emitSpinnerDoubleclick)"
       ></klab-spinner>
@@ -28,7 +28,7 @@
           'background-color': !isDocked ? 'rgba(0,0,0,0)' : getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : isDocked ? '1.0' : '.2'),
           // 'border-right': '2px solid '+ spinnerColor.color
         }">
-      <klab-search class="klab-search" ref="klab-search" v-if="searchIsActive"></klab-search>
+      <klab-search class="klab-search" ref="klab-search" @busy-search="busySearch" v-if="searchIsActive"></klab-search>
       <div class="ksb-context-text text-white" v-else>
         <scrolling-text
           :with-edge="true"
@@ -57,7 +57,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FAKE_TEXTS, CUSTOM_EVENTS, VIEWERS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { FAKE_TEXTS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
@@ -74,7 +74,11 @@ export default {
   },
   mixins: [HandleTouch],
   data() {
-    return {};
+    return {
+      searchAsked: false,
+      busyInformed: false,
+      searchAskedInterval: null,
+    };
   },
   computed: {
     ...mapGetters('data', [
@@ -93,6 +97,7 @@ export default {
       'fuzzyMode',
       'largeMode',
       'isDocked',
+      'engineEventsCount',
     ]),
     isDocked() {
       return !this.hasMainControl;
@@ -100,6 +105,11 @@ export default {
     mainContextLabel() {
       return this.contextLabel ? this.contextLabel : this.contextCustomLabel;
     },
+    /*
+    isBusy() {
+      return this.engineEventsCount > 0 && this.searchAsked;
+    },
+    */
   },
   methods: {
     ...mapActions('view', [
@@ -130,12 +140,37 @@ export default {
     emitSpinnerDoubleclick() {
       this.$eventBus.$emit(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK);
     },
+    /* TODO check why this
     undock(event) {
       console.dir(event);
       this.setMainViewer(VIEWERS.DATA_VIEWER);
     },
+    */
     askForSuggestionsListener(event) {
       this.showSuggestions(event);
+    },
+    busySearch() {
+      this.searchAsked = true;
+      this.updateBusy();
+    },
+    updateBusy() {
+      if (this.searchAskedInterval !== null) {
+        clearTimeout(this.searchAskedInterval);
+        this.searchAskedInterval = null;
+      }
+      if (this.searchAsked) {
+        if (this.engineEventsCount === 0) {
+          // wait some millisecond to avoid rapid changes
+          this.searchAskedInterval = setTimeout(() => {
+            this.searchAsked = false;
+            this.busyInformed = false;
+            this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: 'BusySearch' });
+          }, 600);
+        } else if (!this.busyInformed) {
+          this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: 'BusySearch' });
+          this.busyInformed = true;
+        }
+      }
     },
   },
   watch: {
@@ -157,9 +192,20 @@ export default {
         this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: 'KlabSearch' });
       }
     },
+    engineEventsCount() {
+      this.updateBusy();
+    },
+    /*
+    searchAsked() {
+      if (this.searchAsked) {
+        this.updateBusy();
+      }
+    },
+    */
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, this.askForSuggestionsListener);
+    this.updateBusy();
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_SUGGESTIONS, this.askForSuggestionsListener);

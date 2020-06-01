@@ -1,15 +1,34 @@
 <template>
   <div id="klab-log-pane" class="klab-menu-component kp-container">
+    <div class="klp-level-selector">
+      <ul>
+        <li v-for="(level, key, index) in LOG_ICONS" :key="index" :class="{ 'klp-selected': hasLevel(key) }">
+          <q-btn
+            dense
+            size="sm"
+            class="klp-chip"
+            :icon="level.icon"
+            :color="level.color"
+            @click="toggleLevel(key)"
+          >
+            <q-tooltip
+              :delay="600"
+              :offset="[0, 5]"
+            >{{ $t(level.i18nlabel) }}</q-tooltip>
+          </q-btn>
+        </li>
+      </ul>
+    </div>
     <q-list
       dense
       dark
       id="log-container"
-      class="no-padding no-margin no-border"
+      class="no-padding no-border"
     >
-      <template v-if="klabLogReversedAndFiltered().length !== 0">
+      <template v-if="logs.length !== 0">
         <q-item
-          v-for="log in klabLogReversedAndFiltered()"
-          :key="log.id"
+          v-for="(log, index) in logs"
+          :key="index"
           class="log-item q-pa-xs"
         >
           <template v-if="isSeparator(log)">
@@ -27,10 +46,13 @@
       </template>
       <template v-else>
         <q-item
-          class="log-no-items q-pa-xs"
+          class="log-item log-no-items q-pa-xs"
         >
+          <q-item-side>
+            <q-item-tile style="font-size: 18px" :icon="levels.length === 0 ? 'mdi-alert-outline' : 'mdi-information-outline'"></q-item-tile>
+          </q-item-side>
           <q-item-main>
-            <q-item-tile>{{ $t('messages.noLogItems') }}</q-item-tile>
+            <q-item-tile>{{ levels.length === 0 ? $t('messages.noLevelSelected') : $t('messages.noLogItems') }}</q-item-tile>
           </q-item-main>
         </q-item>
       </template>
@@ -39,15 +61,17 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import SimpleBar from 'simplebar';
+import moment from 'moment';
 
-const LOG_ICON_COLORS = {
-  [IN.TYPE_DEBUG]: { icon: 'mdi-console-line', color: 'grey-6' },
-  [IN.TYPE_INFO]: { icon: 'mdi-information', color: 'info' },
-  [IN.TYPE_WARNING]: { icon: 'mdi-alert', color: 'warning' },
-  [IN.TYPE_ERROR]: { icon: 'mdi-close-circle', color: 'negative' },
+const LOG_ICONS = {
+  [IN.TYPE_ERROR]: { i18nlabel: 'label.levelError', icon: 'mdi-close-circle', color: 'negative' },
+  [IN.TYPE_WARNING]: { i18nlabel: 'label.levelWarning', icon: 'mdi-alert', color: 'warning' },
+  [IN.TYPE_INFO]: { i18nlabel: 'label.levelInfo', icon: 'mdi-information', color: 'info' },
+  [IN.TYPE_DEBUG]: { i18nlabel: 'label.levelDebug', icon: 'mdi-console-line', color: 'grey-6' },
+  [IN.TYPE_ENGINEEVENT]: { i18nlabel: 'label.levelEngineEvent', icon: 'mdi-settings-outline', color: 'secondary' },
 };
 
 export default {
@@ -56,25 +80,49 @@ export default {
     return {
       scrollBar: null,
       log: null,
+      LOG_ICONS,
     };
   },
   computed: {
     ...mapGetters('view', [
       'klabLogReversedAndFiltered',
+      'levels',
     ]),
+    logs() {
+      return this.levels.length === 0 ? [] : this.klabLogReversedAndFiltered(this.levels.length === 5 ? [] : this.levels);
+    },
   },
   methods: {
+    ...mapActions('view', [
+      'setLevels',
+      'toggleLevel',
+    ]),
     logText(log) {
       if (log && log.payload) {
+        if (log.type === IN.TYPE_ENGINEEVENT) {
+          let { time } = log;
+          if (log.payload.timestamp) {
+            time = moment(log.payload.timestamp);
+          }
+          return `${time.format('HH:mm:ss')}: ${this.$t(`engineEventLabels.evt${log.payload.type}`)} ${log.payload.started ? 'started' : 'stopped'}`;
+        }
         return `${log.time ? log.time.format('HH:mm:ss') : this.$t('messages.noTime')}: ${log.payload}`;
       }
       return this.$t('label.klabNoMessage');
     },
     logColorAndIcon(log) {
-      return LOG_ICON_COLORS[log.type];
+      const ret = LOG_ICONS[log.type];
+      if (!ret) {
+        console.warn(`Log type: ${log.type}`, log);
+        return LOG_ICONS.Error;
+      }
+      return LOG_ICONS[log.type];
     },
     isSeparator(log) {
       return log && log.payload && log.payload.separator;
+    },
+    hasLevel(level) {
+      return this.levels.indexOf(level) !== -1;
     },
   },
   mounted() {
@@ -90,17 +138,20 @@ export default {
     max-height "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
     &.lm-component
       max-height 100%
-    .q-item.log-item
-      font-size 10px
-    .log-item .q-item-side
+    #log-container
+      margin 10px 0
+    .q-item
+      &.log-item
+        font-size 10px
+      &.log-no-items
+        font-size 12px
+        color #ccc
+        text-shadow 1px 0 0 #777
+
+  .log-item .q-item-side
       min-width auto
     .q-list-dense > .q-item
       padding-left 10px
-    .log-no-items
-      font-size 1em
-      margin 10px 0
-      color #ccc
-      text-shadow 1px 0 0 #777
     .klp-separator
       width 100%
       text-align center
@@ -111,4 +162,20 @@ export default {
       &>span
         padding 0 10px
         background-color rgb(113,112,112)
+    .klp-level-selector
+      border-bottom 1px dotted #ccc
+      ul
+        margin 10px 0
+        padding-left 10px
+        list-style none
+        li
+          display inline-block
+          padding-right 10px
+          opacity .5
+          &.klp-selected
+            opacity 1
+          .klp-chip
+            padding 2px 8px
+            cursor pointer
+
 </style>

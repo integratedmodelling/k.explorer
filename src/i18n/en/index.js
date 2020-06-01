@@ -116,6 +116,11 @@ export default {
       m10: 'November',
       m11: 'December',
     },
+    levelDebug: 'Debug',
+    levelInfo: 'Info',
+    levelWarning: 'Warning',
+    levelError: 'Error',
+    levelEngineEvent: 'Engine event',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -141,6 +146,7 @@ export default {
     geolocationErrorUnknown: 'An unknown error occurred',
     unknownSearchObservation: 'Previous observations results',
     noLogItems: 'Empty log',
+    noLevelSelected: 'No levels selected',
     uploadComplete: 'Upload of file {fileName} complete',
     IDLAlertText: 'Actual view crossing the International Date Line. A drawn context is needed',
     lastTermAlertText: 'No more terms allowed',
@@ -162,6 +168,9 @@ export default {
     availableInFuture: 'This feature will be available soon',
     timeEndBeforeTimeStart: 'End time cannot be before start time',
     timeEndModified: 'Multiplier is not used because the end time was manually changed',
+    pressToChangeSpeed: 'Press to play<br />Hold to change speed<br />Actual speed x{multiplier}',
+    resourcesValidating: 'Engine is busy',
+    presentationBlocked: '<p>Can\'t access online help resources: check your network connection</p><p class="klab-small">A browser extension may also be interfering</p>',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
@@ -199,6 +208,9 @@ export default {
     connectionError: 'Connection error',
     searchTimeout: 'Search timeout',
     uploadError: 'Upload error for the file {fileName}',
+  },
+  engineEventLabels: {
+    evtResourceValidation: 'Resource validation',
   },
   langName: 'English',
 };

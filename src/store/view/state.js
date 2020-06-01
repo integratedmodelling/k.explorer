@@ -2,6 +2,7 @@
  * State of view
  */
 import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
+import { IN } from 'shared/MessagesConstants';
 
 export default {
   /**
@@ -146,8 +147,11 @@ export default {
   treeSelected: null,
   treeTicked: [],
   treeExpanded: [],
+  /**
+   * The raster layer on the top
+   * Vector layer are not used
+  */
   topLayer: null,
-  loadingLayers: [],
   /**
    * true if we are editing the scale. Need for no intercept events
    */
@@ -177,4 +181,14 @@ export default {
    * View components coming from k.LAb
    */
   viewComponents: [],
+
+  /**
+   * Engine events
+   */
+  engineEvents: [],
+
+  /**
+   * Log levels
+   */
+  levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
 };

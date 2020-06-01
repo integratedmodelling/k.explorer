@@ -1,8 +1,19 @@
 import { axiosInstance } from 'plugins/axios';
-import { findNodeById, getAxiosContent, getNodeFromObservation } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT } from 'shared/Constants';
+import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { IN } from 'shared/MessagesConstants';
 
 export default {
+
+  loadSessionReference: ({ commit }) => {
+    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_INFO}`, {})
+      .then(({ data }) => {
+        if (data) {
+          commit('SET_SESSION_REFERENCE', data);
+        }
+      });
+  },
   /**
    * Set the context for this session.
    * If context doesn't exists, a map with a default context is shown.
@@ -10,8 +21,9 @@ export default {
    * In one moment, only one context can exists
    * @param context the temporal or spatial context
    */
-  setContext: ({ commit, getters, dispatch }, { context, isRecontext }) => {
-    // If set context, everything is resetted
+  setContext: (vuexContext, { context, isRecontext }) => {
+    const { commit, getters, dispatch } = vuexContext;
+    // If set context, everything is re-set
     // set new context
     if (getters.context !== null && getters.context.id === context.id) {
       return;
@@ -21,10 +33,14 @@ export default {
       dispatch('view/resetContext', null, { root: true });
     }
     dispatch('view/setContextLayer', context, { root: true });
+    console.debug(`Send start watch context ${context.id}`);
+    sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST, { active: true, observationId: context.id, rootContextId: context.rootContextId });
   },
 
   resetContext: ({ commit, dispatch, state, getters }) => {
-    if (getters.context !== null) {
+    const { context } = getters;
+    if (context !== null) {
+      const oldContext = { id: context.id, rootContextId: context.rootContextId };
       commit('SET_CONTEXT', {});
       dispatch('getSessionContexts');
       dispatch('view/resetContext', null, { root: true });
@@ -37,7 +53,9 @@ export default {
           main: true,
         });
       }
-      dispatch('view/addToKlabLog', { type: MESSAGE_TYPES.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
+      dispatch('view/addToKlabLog', { type: IN.TYPE_INFO, payload: { message: 'Context reset', separator: true } }, { root: true });
+      console.debug(`Send stop watch context ${oldContext.id}`);
+      sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST, { active: false, observationId: oldContext.id, rootContextId: oldContext.rootContextId });
     } else {
       console.warn('Try to reset null context');
     }
@@ -58,7 +76,7 @@ export default {
       // remove children so no reactive observations are loaded
       await dispatch('setContext', { context: { ...context, children: [] } });
       commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
-      console.debug(`Context received: \n${JSON.stringify(context, null, 2)}`);
+      console.debug(`Context received with id ${context.id}`);
       // console.dir(context);
       if (context.children.length > 0) {
         const tasks = [];
@@ -118,9 +136,9 @@ export default {
           if (rootObservations !== null && !(Object.keys(rootObservations).length === 0 && rootObservations.constructor === Object)) {
             console.debug(`Find ${Object.keys(rootObservations).length} root observations for this session`);
             let counter = 0;
-            Object.entries(rootObservations).forEach(([contextId, context]) => {
-              commit('STORE_CONTEXT', context);
-              console.debug(`Stored context with id ${contextId}`);
+            Object.entries(rootObservations).forEach((entry) => {
+              commit('STORE_CONTEXT', entry[1]);
+              // console.debug(`Stored context with id ${contextId}`);
               counter += 1;
             });
             resolve(counter);
@@ -141,22 +159,31 @@ export default {
     commit('SET_CONTEXT_CUSTOM_LABEL', contextCustomLabel);
   },
 
-  addObservation: ({ commit, state, dispatch }, {
+  addObservation: ({ commit, rootGetters, state, dispatch }, {
     observation,
     toTree = true,
     visible = false,
     restored = false,
+    updated = false,
   }) => new Promise((resolve/* , reject */) => {
-    const existingObservation = state.observations.find(obs => obs.id === observation.id);
-    if (typeof existingObservation !== 'undefined') {
+    const existingObservationIndex = state.observations.findIndex(obs => obs.id === observation.id);
+    if (existingObservationIndex !== -1) {
       // console.error(`Observation exists!!! ${existingObservation.label}`);
-      dispatch('view/addToKexplorerLog', {
-        type: MESSAGE_TYPES.TYPE_WARNING,
-        payload: {
-          message: `Existing observation received: ${existingObservation.label}`,
-        },
-        important: true,
-      }, { root: true });
+      if (updated) {
+        commit('UPDATE_OBSERVATION', {
+          observationIndex: existingObservationIndex,
+          newObservation: observation,
+        });
+        console.debug(`Observation$ ${observation.label} updated`);
+      } else {
+        dispatch('view/addToKexplorerLog', {
+          type: MESSAGE_TYPES.TYPE_WARNING,
+          payload: {
+            message: `Existing observation received: ${observation.label}`,
+          },
+          important: true,
+        }, { root: true });
+      }
       return resolve(); // reject(new Error(`Existing observation received: ${existingObservation.label}`));
     }
     dispatch('view/assignViewer', { observation }, { root: true }).then((viewerIdx) => {
@@ -169,6 +196,18 @@ export default {
       observation.tsImages = [];
       observation.isContainer = observation.observationType === OBSERVATION_CONSTANTS.TYPE_GROUP || observation.observationType === OBSERVATION_CONSTANTS.TYPE_VIEW;
       observation.singleValue = observation.observationType === OBSERVATION_CONSTANTS.TYPE_STATE && observation.valueCount === 1;
+      observation.loading = false;
+      observation.loaded = true; // change to false if is a raster
+      if (observation.contextId === null) {
+        const task = rootGetters['stomp/tasks'].find(t => observation.taskId.startsWith(t.id));
+        if (task) {
+          const { contextId } = task;
+          observation.contextId = contextId;
+        } else {
+          observation.contextId = observation.rootContextId;
+        }
+      }
+
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
       if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {
@@ -197,6 +236,44 @@ export default {
     return null;
   }),
 
+  updateObservation({ commit, dispatch, state }, { observationId, exportFormats }) {
+    const observationIndex = state.observations.findIndex(obs => obs.id === observationId);
+    if (observationIndex !== -1) {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${observationId}`, {
+        params: {
+          childLevel: 0,
+        },
+      }).then(({ data: newObservation }) => {
+        if (newObservation) {
+          if (exportFormats) {
+            newObservation.exportFormats = exportFormats;
+          }
+          commit('UPDATE_OBSERVATION', { observationIndex, newObservation });
+          if (newObservation.childrenCount > 0) {
+            // we need to update previous loaded children if there are someone and is not stub
+            const { children } = findNodeById(state.tree, newObservation.id);
+            let load = children.length > 0;
+            if (load && children.length === 1) {
+              load = !children[0].id.startsWith('STUB');
+            }
+            if (load) {
+              dispatch('askForChildren', {
+                parentId: observationId,
+                count: Math.max(children.length, state.childrenToAskFor),
+                total: newObservation.childrenCount,
+                updated: true,
+              });
+            }
+          }
+        } else {
+          console.warn(`Ask for update observation ${observationId} but nothing found in engine`);
+        }
+      });
+    } else {
+      console.warn(`Try to update a not existing observation: ${observationId}`);
+    }
+  },
+
   addStub: ({ commit }, node) => {
     commit('ADD_NODE', {
       node: {
@@ -220,6 +297,7 @@ export default {
         observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
         noTick: true,
         parentId: node.id,
+        ...(node.userNode && { userNode: node.userNode }),
       },
       parentId: node.id,
     });
@@ -232,9 +310,39 @@ export default {
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
-    commit('ADD_MODIFICATION_EVENT', modificationEvent);
-    if (state.modificationsTask === null) {
-      dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
+    const node = findNodeById(state.tree, modificationEvent.id);
+    if (node) {
+      switch (modificationEvent.type) {
+        case MODIFICATIONS_TYPE.BRING_FORWARD: {
+          commit('MOD_BRING_FORWARD', node);
+          dispatch('changeTreeOfNode', { id: modificationEvent.id, isUserTree: true });
+          break;
+        }
+        case MODIFICATIONS_TYPE.VALUE_CHANGE:
+          commit('MOD_VALUE_CHANGE', node);
+          commit('ADD_TIME_EVENT', modificationEvent);
+          if (state.modificationsTask === null) {
+            dispatch('setModificationsTask', rootGetters['stomp/lastActiveTask']());
+          }
+          break;
+        case MODIFICATIONS_TYPE.STRUCTURE_CHANGE:
+          commit('MOD_STRUCTURE_CHANGE', { node, modificationEvent });
+          if (node.childrenCount > 0 && node.children.length === 0) {
+            dispatch('addStub', node);
+          }
+          break;
+        case MODIFICATIONS_TYPE.CONTEXTUALIZATION_COMPLETED: {
+          dispatch('updateObservation', { observationId: modificationEvent.id, exportFormats: modificationEvent.exportFormats });
+          break;
+        }
+        default:
+          console.warn(`Unknown modification event: ${modificationEvent.type}`);
+          break;
+      }
+    } else if (modificationEvent.id !== modificationEvent.contextId) {
+      console.debug('Modification event for a not existing node, probably still not loaded', modificationEvent);
+    } else {
+      console.debug('Modification event for context', modificationEvent);
     }
   },
 
@@ -252,8 +360,12 @@ export default {
     commit('SET_TIMESTAMP', timestamp);
   },
 
-  setScheduling: ({ commit }, scheduling) => {
-    commit('SET_SCHEDULING', scheduling);
+  setScheduling: ({ commit, getters }, scheduling) => {
+    if (getters.context && scheduling.contextId === getters.context.id) {
+      commit('SET_SCHEDULING_STATUS', scheduling);
+    } else {
+      console.debug(`Received a scheduling of other context: ${scheduling.contextId}`);
+    }
   },
 
   askForChildren: ({ commit, dispatch, state /* , getters */ }, {
@@ -264,17 +376,18 @@ export default {
     toTree = true, // indicate that we ask for siblings but we don't want to put them on tree (only for view on map)
     visible = false,
     notified = true,
+    updated = false,
   }) => new Promise((resolve) => {
     console.debug(`Ask for children of node ${parentId}: count:${count} / offset ${offset}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${parentId}`, {
-      params: {
-        count,
-        offset,
-      },
-    })
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
+    dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${parentId}`, {
+        params: {
+          count,
+          offset,
+        },
+      })
+        .then(({ data }) => {
+          if (data && data.length > 0) {
             data.forEach((child, index, array) => {
               child.notified = notified;
               child.siblingsCount = total; // the total of element for [INDEX] of [TOTAL]
@@ -282,6 +395,7 @@ export default {
                 observation: child,
                 toTree,
                 visible,
+                updated,
               }).then(() => {
                 if (index === array.length - 1) {
                   if (toTree) {
@@ -293,23 +407,25 @@ export default {
                       total,
                     });
                   }
+                  const setChildrenLoaded = (tree) => {
+                    const parent = findNodeById(tree, parentId);
+                    if (parent && parent !== null) {
+                      parent.childrenLoaded += data.length;
+                    }
+                  };
+                  setChildrenLoaded(state.tree);
+                  setChildrenLoaded(state.userTree);
                   dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
                   resolve();
                 }
               });
             });
-            const setChildrenLoaded = (tree) => {
-              const parent = findNodeById(tree, parentId);
-              if (parent && parent !== null) {
-                parent.childrenLoaded += data.length;
-              }
-            };
-            setChildrenLoaded(state.tree);
-            setChildrenLoaded(state.userTree);
-          });
-        }
-        resolve();
-      });
+          } else {
+            dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: parentId }, { root: true });
+            resolve();
+          }
+        });
+    });
   }),
 
   /**
@@ -350,7 +466,7 @@ export default {
         commit('UPDATE_USER_NODE', { node, userNode: true });
         commit('ADD_NODE', { node, parentId: node.parentArtifactId || node.parentId, toUserTreeOnly: true });
       } else {
-        console.warn(`Try to move to user tree an existing node: ${id}`);
+        console.warn(`Try to move to user tree an existing node: ${id} - ${node.label}`);
       }
     } else {
       commit('UPDATE_USER_NODE', { node, userNode: false });
@@ -395,10 +511,21 @@ export default {
         visible,
       }, { root: true });
       commit('SET_VISIBLE', {
-        nodeId: node.id,
+        id: node.id,
         visible,
       });
     }
+  },
+
+  putObservationOnTop: ({ commit }, id) => {
+    commit('SET_VISIBLE', {
+      id,
+      visible: true,
+    });
+  },
+
+  setContextMenuObservationId: ({ commit }, contextMenuObservationId) => {
+    commit('SET_CONTEXTMENU_OBSERVATIONID', contextMenuObservationId);
   },
 
   selectNode: ({ dispatch, state }, selectedId) => {
@@ -412,6 +539,12 @@ export default {
         }
         dispatch('view/setObservationInfo', selectedObservation, { root: true });
       }
+    }
+  },
+
+  setLoadingLayers: ({ commit }, { loading, observation }) => {
+    if (observation) {
+      commit('SET_LOADING_LAYERS', { loading, observation });
     }
   },
 
@@ -449,7 +582,6 @@ export default {
   },
 
   setScaleReference: ({ commit }, scaleReference) => {
-    console.debug(`Set scale reference: ${JSON.stringify(scaleReference, null, 2)}`);
     commit('SET_SCALE_REFERENCE', scaleReference);
     // commit('SET_SCALE_LOCKED', { scaleType: 'all', scaleLocked: false });
   },

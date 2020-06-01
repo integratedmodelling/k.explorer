@@ -10,16 +10,18 @@ k.Explorer is developed using the [0.17 version of Quasar Framework](https://v0-
 
 First, we install Quasar CLI. Make sure you have Node >=8 and NPM >=5 installed on your machine.
 
-*Make sure you have vue-cli globally installed*
 ```bash
-$ yarn global add vue-cli
-# or:
-$ npm install -g vue-cli
+# remove old quasar-cli package if you have it
+$ npm uninstall -g quasar-cli
 
-# Node.js >= 8.9.0 is required.
-$ yarn global add quasar-cli
-# or:
-$ npm install -g quasar-cli
+# or with yarn
+$ yarn global remove quasar-cli 
+
+# install the latest cli
+$ npm install -g @quasar/cli
+
+# or with yarn
+$ yarn global add @quasar/cli
 ```
 
 Use yarn to install
@@ -46,7 +48,9 @@ The result of building must be copied in the folder `klab.engine/src/main/resour
 
 ```bash
 $ quasar build
-# or $ yarn quasar-build
+
+# or
+$ yarn quasar-build
 ```
 ## Releases
 See [CHANGELOG.md](CHANGELOG.md)

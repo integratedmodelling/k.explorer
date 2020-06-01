@@ -11,16 +11,17 @@ export default {
   // reverseLogActions: state => state.kexplorerLog.slice().reverse(),
   klabLog: state => state.klabLog,
   lastKlabLog: state => type => lastFilteredLogElement(state.klabLog, type),
-  klabLogReversedAndFiltered: state => (type) => {
+  klabLogReversedAndFiltered: state => (types = []) => {
     if (state.klabLog.length === 0) {
       return [];
     }
     const reversed = [...state.klabLog].reverse();
-    if (type === undefined) {
+    if (types.length === 0) {
       return reversed;
     }
-    return reversed.find(log => log.type === type);
+    return reversed.filter(log => types.includes(log.type));
   },
+  levels: state => state.levels,
 
   statusTexts: state => state.statusTexts,
   statusTextsLength: state => state.statusTexts.length,
@@ -69,9 +70,6 @@ export default {
     }
     return null;
   },
-
-  loadingLayers: state => state.loadingLayers,
-  isLoadingLayer: state => observationId => state.loadingLayers.indexOf(observationId) !== -1,
 
   spinnerIsAnimated: state => state.spinner.animated,
   spinner: state => state.spinner,
@@ -127,5 +125,8 @@ export default {
    */
   viewComponents: state => state.viewComponents,
   viewComponentsByType: state => types => state.viewComponents.filter(vc => types.includes(vc.type)),
+
+  engineEvents: state => state.engineEvents,
+  engineEventsCount: state => state.engineEvents.length,
 
 };

@@ -13,7 +13,7 @@ const PARSERS = {
   },
   [IN.TYPE_TASKABORTED]: ({ payload: task }, { dispatch }) => {
     dispatch('stomp/taskAbort', task, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Aborted task with id ${task.id}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Aborted task with id ${task.id}`, task);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
   [IN.TYPE_TASKFINISHED]: ({ payload: task }, { dispatch }) => {
@@ -50,7 +50,7 @@ const PARSERS = {
   },
   [IN.TYPE_DATAFLOWDOCUMENTATION]: ({ payload }, { dispatch }) => {
     if (payload && payload !== null && payload.dataflowId && payload.htmlDescription) {
-      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', JSON.stringify(payload, null, 4));
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', payload);
       dispatch('data/setDataflowInfo', {
         id: payload.dataflowId,
         html: payload.htmlDescription,
@@ -59,18 +59,19 @@ const PARSERS = {
         averageRating: payload.averageRating,
       }, { root: true });
     } else {
-      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, `Strange payload of dataflow element info received: ${JSON.stringify(payload, null, 4)}`);
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, 'Strange payload of dataflow element info received', payload);
     }
   },
   [IN.TYPE_NEWOBSERVATION]: ({ payload: observation }, vuexContext) => {
     const { rootState, rootGetters, dispatch } = vuexContext;
-    if (rootState.stomp.tasks.findIndex(task => task.id === observation.taskId) === -1
-      && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.rootContextId) !== -1) {
+    const observationTask = rootState.stomp.tasks.find(task => task.id === observation.taskId);
+    if (typeof observationTask === 'undefined'
+      && rootState.data.contextsHistory.findIndex(ctx => ctx.id === observation.contextId) !== -1) {
       // task not exists and context is one of possible, so I start a fake task
       dispatch('stomp/taskStart', {
         id: observation.taskId,
         description: FAKE_TEXTS.UNKNOWN_SEARCH_OBSERVATION,
-        contextId: observation.rootContextId,
+        contextId: observation.contextId,
       }, { root: true });
       dispatch('view/addToStatusTexts', {
         id: observation.taskId,
@@ -80,7 +81,7 @@ const PARSERS = {
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
         'Received an observation of previous context with no task associated. Session was been reloaded?',
-        JSON.stringify(observation, null, 4),
+        observation,
       );
     }
     // check if is context and is a new context
@@ -91,7 +92,7 @@ const PARSERS = {
           dispatch,
           MESSAGE_TYPES.TYPE_DEBUG,
           `New context received with id ${observation.id}`,
-          JSON.stringify(observation, null, 4),
+          observation,
         );
         dispatch('data/setContext', { context: observation }, { root: true });
         if (typeof observation.scaleReference !== 'undefined' && observation.scaleReference !== null) {
@@ -99,15 +100,17 @@ const PARSERS = {
         }
       } else {
         addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR,
-          `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`);
+          `Strange behaviour: observation with no parent in existing context: ${observation.id} - ${observation.label}`, observation);
       }// else is the second message, so nothing to do
-    } else if (rootGetters['data/context'] !== null && rootGetters['data/context'].id === observation.rootContextId) {
+    } else if (rootGetters['data/context'] !== null && (
+      rootGetters['data/context'].id === observation.rootContextId
+      || (observationTask && rootGetters['data/context'].id === observationTask.contextId))) {
       // check if it is an observation linkable to actual context (checking rootContextId)
       addToKexplorerLog(
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
-        `New observation received with id ${observation.id} and rootContextId ${observation.rootContextId}`,
-        JSON.stringify(observation, null, 4),
+        `New observation received with id ${observation.id}, rootContextId ${observation.rootContextId} and contextId ${observation.contextId}`,
+        observation,
       );
       observation.notified = true; // needed in case of observation added to a reloaded context
       dispatch('data/addObservation', { observation }, { root: true });
@@ -116,16 +119,17 @@ const PARSERS = {
         dispatch,
         MESSAGE_TYPES.TYPE_INFO,
         'Received an observation of different context',
-        JSON.stringify(observation, null, 4),
+        observation, null, 4,
       );
     }
   },
   [IN.TYPE_MODIFIEDOBSERVATION]: ({ payload: modificationEvent }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Received a modification event: ${JSON.stringify(modificationEvent, null, 2)}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG,
+      'Received a modification event', modificationEvent);
     dispatch('data/addModificationEvent', modificationEvent, { root: true });
   },
   [IN.TYPE_QUERYRESULT]: ({ payload: results }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received search results', JSON.stringify(results));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received search results', results);
     dispatch('data/storeSearchResult', results, { root: true });
   },
   [IN.TYPE_RESETCONTEXT]: (message, { dispatch }) => {
@@ -133,20 +137,28 @@ const PARSERS = {
     dispatch('data/resetContext', null, { root: true });
   },
   [IN.TYPE_SCALEDEFINED]: ({ payload: scaleReference }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scale reference', JSON.stringify(scaleReference));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scale reference', scaleReference);
     dispatch('data/setScaleReference', scaleReference, { root: true });
   },
   [IN.TYPE_USERINPUTREQUESTED]: (message, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received input request', message.payload);
     dispatch('view/inputRequest', message, { root: true });
   },
+  [IN.TYPE_SCHEDULEADVANCED]: ({ payload: scheduling }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received schedule advanced', scheduling);
+    dispatch('data/setScheduling', scheduling, { root: true }); // TODO implement IT
+  },
   [IN.TYPE_SCHEDULINGSTARTED]: ({ payload: scheduling }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling started', JSON.stringify(scheduling));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling started', scheduling);
     dispatch('data/setScheduling', scheduling, { root: true });
   },
   [IN.TYPE_SCHEDULINGFINISHED]: ({ payload: scheduling }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling finished', JSON.stringify(scheduling));
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received scheduling finished', scheduling);
     dispatch('data/setScheduling', scheduling, { root: true });
+  },
+  [IN.TYPE_ENGINEEVENT]: ({ payload: event }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Engine event received', event);
+    dispatch('view/setEngineEvent', event, { root: true });
   },
   // k.LAB log messages
   [IN.TYPE_DEBUG]: ({ payload: message }, { dispatch }) => {
@@ -165,11 +177,11 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project opened in k.Modeler');
   },
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Network status received: ${JSON.stringify(message, null, 4)}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Network status received', message);
   },
   [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
     dispatch('view/addViewComponent', component, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Created view compoment received: ${JSON.stringify(component, null, 4)}`);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Created view compoment received', component);
   },
 };
 

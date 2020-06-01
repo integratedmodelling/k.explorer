@@ -1,15 +1,31 @@
 import { pushElementInFixedQueue, findNodeById } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
+import { ENGINE_EVENTS } from '../../shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
     pushElementInFixedQueue(state.kexplorerLog, log);
-    console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
+    // console.debug(`${log.type}: ${JSON.stringify(log.payload, null, 4)}`);
   },
 
   ADD_TO_KLAB_LOG: (state, log) => {
     pushElementInFixedQueue(state.klabLog, log);
+  },
+
+  SET_LEVELS: (state, levels) => {
+    if (levels) {
+      state.levels = levels;
+    }
+  },
+
+  TOGGLE_LEVEL: (state, level) => {
+    const idx = state.levels.indexOf(level);
+    if (idx === -1) {
+      state.levels.push(level);
+    } else {
+      state.levels.splice(idx, 1);
+    }
   },
 
   ADD_TO_STATUS_TEXTS: (state, { id, text }) => {
@@ -30,20 +46,11 @@ export default {
     state.contextGeometry = contextGeometry;
     state.treeExpanded = [];
     state.treeTicked = [];
+    state.statusTexts = [];
     state.treeSelected = null;
     state.topLayer = null;
   },
 
-  SET_LOADING_LAYERS: (state, { loading, observationId }) => {
-    const index = state.loadingLayers.indexOf(observationId);
-    if (loading) {
-      if (index === -1) {
-        state.loadingLayers.push(observationId);
-      }
-    } else if (index !== -1) {
-      state.loadingLayers.splice(index, 1);
-    }
-  },
   /**
    * Set the main viewer in index page
    * @param viewer the viewer component name
@@ -349,6 +356,33 @@ export default {
           children: [],
         });
       }
+    }
+  },
+
+  SET_ENGINE_EVENT: (state, event) => {
+    if (state.engineEvents !== null) {
+      switch (event.type) {
+        case ENGINE_EVENTS.RESOURCE_VALIDATION: {
+          const eventIndex = state.engineEvents.findIndex(ee => ee.id === event.id);
+          if (event.started) {
+            if (eventIndex === -1) {
+              state.engineEvents.push({ id: event.id, timestamp: event.timestamp });
+            } else {
+              console.debug('Try to start an existing engine event', event);
+            }
+          } else if (eventIndex !== -1) {
+            state.engineEvents.splice(eventIndex, 1);
+          } else {
+            console.debug('Try to stop an unregistered engine event', event);
+          }
+          console.debug(`Engine event with id ${event.id} ${event.started ? 'start' : 'stop'} / total engine events: ${state.engineEvents.length}`);
+          break;
+        }
+        default:
+          break;
+      }
+    } else {
+      console.debug('Receive an engine event before subscription');
     }
   },
 };

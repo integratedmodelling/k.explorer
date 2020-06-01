@@ -41,13 +41,14 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            // WS_BASE_URL: JSON.stringify('http://localhost:8283'),
-            WS_BASE_URL: JSON.stringify('http://192.168.0.105:8283'),
+            WS_BASE_URL: JSON.stringify('http://localhost:8283'),
             STOMP_CLIENT_DEBUG: true,
+            KEXPLORER_DEBUG: true,
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
             STOMP_CLIENT_DEBUG: false,
+            KEXPLORER_DEBUG: false,
           },
         PACKAGE_VERSION: JSON.stringify(version),
         PACKAGE_BUILD: JSON.stringify(build),
@@ -57,6 +58,7 @@ module.exports = function (ctx) {
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
         REST_STATUS: JSON.stringify('/modeler/engine/status'),
+        REST_SESSION_INFO: JSON.stringify('/modeler/engine/session/info'),
         REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
         REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
         REST_UPLOAD: JSON.stringify('/modeler/resource/put'),

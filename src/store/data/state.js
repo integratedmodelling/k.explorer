@@ -4,6 +4,10 @@ import { CONSTANTS } from 'shared/Constants';
  * Data states
  */
 export default {
+  /**
+   * The session reference, we aks for it on start
+   */
+  sessionReference: null,
 
   /**
    * Tree of observation
@@ -150,7 +154,7 @@ export default {
     time: false,
   },
   /**
-   * Ir a context is setted, we can ask for a "rescale".
+   * Ir a context is set, we can ask for a "rescale".
    * The new scale is stored here until refresh and confirmation
    */
   nextScale: null,
@@ -218,7 +222,7 @@ export default {
    "colormap"
    */
   observations: [],
-
+  contextMenuObservationId: null,
   /**
    * Modification Events
    * {
@@ -235,13 +239,18 @@ export default {
    *  "terminated": true | false (is the observation terminated?)
    * }
    */
-  modificationEvents: [],
+  timeEvents: [],
   modificationsTask: null,
 
   /**
    * Indicate the selected timestamp, need to retrieve the correct observations layer
    */
   timestamp: -1,
+
+  /**
+   * Engine timestamp
+   */
+  engineTimestamp: -1,
 
   /**
    * The dataflow of context as JSON ELK object

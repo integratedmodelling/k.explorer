@@ -56,12 +56,16 @@ export default {
   },
 
   TASK_START(state, { id, contextId, description }) {
-    state.tasks.push({
-      id,
-      contextId,
-      description,
-      alive: true,
-    });
+    if (state.tasks.findIndex(t => t.id === id) !== -1) {
+      console.debug(`Received duplicated start task id: ${id} - ${description}`);
+    } else {
+      state.tasks.push({
+        id,
+        contextId,
+        description,
+        alive: true,
+      });
+    }
   },
 
   TASK_END(state, { id }) {

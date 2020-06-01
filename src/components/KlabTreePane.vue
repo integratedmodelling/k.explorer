@@ -233,7 +233,7 @@ export default {
         position: absolute
         width 22px
         height 22px
-        right 10px
+        right 9px
         top -18px
         color #fff
         background-color #555
