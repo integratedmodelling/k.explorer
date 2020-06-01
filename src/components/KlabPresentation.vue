@@ -122,7 +122,7 @@
           flat
         ></q-btn>
       </div>
-      <div class="kp-help-inner" :class="{ 'modal-backdrop': !presentationBlocked && waitForPresentation }">
+      <div class="kp-help-inner" v-if="waitForPresentation || presentationBlocked" :class="{ 'modal-backdrop': !presentationBlocked && waitForPresentation }">
         <div class=" kp-no-presentation" v-if="presentationBlocked" >
           <div class="fixed-center text-center">
             <div class="kp-np-content" v-html="$t('messages.presentationBlocked')"></div>
