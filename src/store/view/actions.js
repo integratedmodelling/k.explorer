@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { URLS } from 'shared/MessagesConstants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import { transform } from 'ol/proj';
 
@@ -282,7 +283,7 @@ export default {
       if (observationId === null) {
         observationId = state.observationInfo.id;
       }
-      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`;
+      const url = `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${observationId}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
       const time = timestamp !== -1 ? `T1(1){time=${timestamp.toFixed(0)}}` : '';
       getAxiosContent(`pv_${observationId}`, url, {

@@ -159,6 +159,7 @@ import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
 import ObservationContextMenu from 'components/ObservationContextMenu';
 import { copyToClipboard } from 'shared/Utils';
+import { URLS } from 'shared/MessagesConstants';
 
 let scrollToTimeout = null;
 
@@ -310,7 +311,7 @@ export default {
       const selectedFormat = formats.find(f => f.value === outputFormat);
       getAxiosContent(
         `dw_${observationId}`,
-        `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`,
+        `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${observationId}`,
         {
           params: {
             format: 'RAW', // TODO change when RAW call work as expected

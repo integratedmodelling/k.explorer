@@ -15,6 +15,7 @@
 import D3Network from 'vue-d3-network';
 import { getAxiosContent } from 'shared/Helpers';
 import { graphDefaultData, CUSTOM_EVENTS } from 'shared/Constants';
+import { URLS } from 'shared/MessagesConstants';
 
 export default {
   name: 'GraphViewer',
@@ -42,7 +43,7 @@ export default {
   },
   methods: {
     loadGraph() {
-      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${this.observation.id}`;
+      const url = `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${this.observation.id}`;
       getAxiosContent(`gr_${this.observation.id}`, url, {
         params: {
           format: 'NETWORK',

@@ -1,5 +1,6 @@
 /* eslint-disable object-curly-newline,prefer-destructuring,no-multi-spaces */
-import { CONSTANTS, GEOMETRY_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, GEOMETRY_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
+import { URLS } from 'shared/MessagesConstants';
 import store from 'store/index';
 import { MAP_CONSTANTS, MAP_STYLES } from 'shared/MapConstants';
 import { getGradient, interpolateArray, createMarker } from 'shared/Utils';
@@ -14,7 +15,6 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
-import { OBSERVATION_CONSTANTS } from './Constants';
 
 const WKTInstance = new WKT();
 
@@ -373,7 +373,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
       viewport = GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MAX_SIZE;
     }
     const layerExtent = geometry.getExtent();
-    const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
+    const url = `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${observation.id}`;
     const source = new Static({
       projection: dataProjection,
       imageExtent: layerExtent,

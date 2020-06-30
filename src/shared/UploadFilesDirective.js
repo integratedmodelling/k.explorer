@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import { axiosInstance } from 'plugins/axios';
+import { URLS } from 'shared/MessagesConstants';
 
-const url = `${process.env.WS_BASE_URL}${process.env.REST_UPLOAD}`;
+const url = `${process.env.WS_BASE_URL}${URLS.REST_UPLOAD}`;
 const maxSize = process.env.REST_UPLOAD_MAX_SIZE;
 
 const maxUploadUnit = maxSize.substr(maxSize.length - 2);
