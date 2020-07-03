@@ -14,7 +14,7 @@
 
     <q-page-container>
       <q-page class="column">
-        <div class="col row full-height" id="viewer-container">
+        <div class="col row full-height" id="kexplorer-container">
           <keep-alive>
             <!-- <transition name="component-fade" mode="out-in"> -->
             <component :is="mainViewer.name"></component>
@@ -103,10 +103,6 @@ export default {
     mainPanelStyle: {
       type: Object,
       default: () => ({}),
-    },
-    isContainer: {
-      type: Boolean,
-      default: true,
     },
   },
   data() {
@@ -225,9 +221,6 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, {});
       });
-    },
-    mainPanelStyle() {
-      console.error(`IS CONTAINER ->${this.isContainer}; ${JSON.stringify(this.mainPanelStyle, null, 4)}`);
     },
   },
   created() {

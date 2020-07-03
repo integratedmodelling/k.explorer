@@ -32,7 +32,7 @@
       id="mc-q-card"
       class="no-box-shadow absolute lot-of-flow"
       :class="[hasContext ? 'with-context' : 'bg-transparent without-context', `mc-large-mode-${largeMode}`]"
-      :style="{ top: `${defaultTop}px`, left: `${centeredLeft}px` }"
+      :style="qCardStyle"
       :flat="true"
       v-draggable="dragMCConfig"
       v-show="!isHidden"
@@ -185,6 +185,7 @@ import ScaleButtons from 'components/ScaleButtons.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
+const DEFAULT_POSITION = { top: 25, left: 15 };
 
 export default {
   name: 'klabMainControl',
@@ -211,12 +212,14 @@ export default {
         handle: undefined,
         resetInitialPos: false,
         onPositionChange: debounce((positionDiff, absolutePosition, event) => {
+          console.error(event);
           this.onDebouncedPositionChanged(event);
         }, 100),
         onDragStart: () => { this.dragging = true; },
         onDragEnd: this.checkWhereWasDragged,
         fingers: 2,
       },
+      correctedPosition: { top: 0, left: 0 },
       dragging: false,
       askForDocking: false,
       leftMenuMaximized: `${LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE}px`,
@@ -243,6 +246,14 @@ export default {
       'fuzzyMode',
       'largeMode',
     ]),
+    qCardStyle() {
+      return {
+        top: `${this.defaultTop + this.correctedPosition.top}px`,
+        left: `${this.centeredLeft + this.correctedPosition.left}px`,
+        'margin-top': `-${this.correctedPosition.top}px`,
+        'margin-left': `-${this.correctedPosition.left}px`,
+      };
+    },
   },
   methods: {
     ...mapActions('view', [
@@ -269,12 +280,15 @@ export default {
       this.isHidden = false;
     },
     getCenteredLeft() {
+      let centeredLeft;
       if (typeof this.draggableElement !== 'undefined' && !this.hasContext) {
         const elWidth = this.draggableElementWidth;
         const contWidth = width(this.boundingElement);
-        return (contWidth - elWidth) / 2;
+        centeredLeft = (contWidth - elWidth) / 2;
+      } else {
+        centeredLeft = this.defaultLeft;
       }
-      return this.defaultLeft;
+      return centeredLeft + this.correctedPosition.left;
     },
     /**
      * Change draggable position
@@ -319,9 +333,9 @@ export default {
     },
     mapSizeChangedListener(event) {
       if (event === 'changelayout') {
+        this.updateCorrectedPosition();
         this.$nextTick(() => {
-          this.centeredLeft = this.getCenteredLeft();
-          this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+          this.changeDraggablePosition({ left: this.centeredLeft, top: this.defaultTop });
         });
         return;
       }
@@ -331,6 +345,26 @@ export default {
     },
     spinnerDoubleClickListener() {
       this.hide();
+    },
+    updateCorrectedPosition() {
+      const header = document.getElementById('klab-main-header');
+      const leftPanels = document.querySelector('#klab-main-left-panel aside');
+      const top = header ? height(header) : 0;
+      const left = leftPanels ? width(leftPanels) : 0;
+      this.correctedPosition = { top, left };
+      this.defaultTop = DEFAULT_POSITION.top + top;
+      this.defaultleft = DEFAULT_POSITION.left + left;
+      this.centeredLeft = this.getCenteredLeft();
+    },
+    updateDraggable() {
+      this.updateCorrectedPosition();
+      this.draggableElement = document.getElementById('mc-q-card');
+      this.draggableElementWidth = width(this.draggableElement);
+      this.dragMCConfig.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
+      // this.dragMCConfig.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
+      this.boundingElement = document.getElementById('kexplorer-container');
+      this.centeredLeft = this.getCenteredLeft();
+      this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
     },
   },
   watch: {
@@ -369,18 +403,12 @@ export default {
     },
   },
   created() {
-    this.defaultTop = 25;
-    this.defaultLeft = 15;
+    this.defaultTop = DEFAULT_POSITION.top;
+    this.defaultLeft = DEFAULT_POSITION.left;
     this.VIEWERS = VIEWERS;
   },
   mounted() {
-    this.draggableElement = document.getElementById('mc-q-card');
-    this.draggableElementWidth = width(this.draggableElement);
-    this.dragMCConfig.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
-    // this.dragMCConfig.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
-    this.boundingElement = document.getElementById('viewer-container');
-    this.centeredLeft = this.getCenteredLeft();
-    this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+    this.updateDraggable();
     this.$eventBus.$on(CUSTOM_EVENTS.SPINNER_DOUBLE_CLICK, this.spinnerDoubleClickListener);
     this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.mapSizeChangedListener);
   },

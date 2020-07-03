@@ -29,6 +29,7 @@
           <klab-components-viewer class="klab-main-container" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-components-viewer>
         </template>
     </q-page-container>
+    <q-resize-observable @resize="updateLayout" />
   </q-layout>
 </template>
 

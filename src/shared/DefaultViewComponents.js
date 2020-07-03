@@ -20,7 +20,6 @@ export default {
         ...(component.name && { ref: component.name }),
       },
     };
-    console.error(`returned ${JSON.stringify(ret, null, 4)}`);
     return ret;
   },
   TEXT: (component) => {
