@@ -179,9 +179,9 @@ const PARSERS = {
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Network status received', message);
   },
-  [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
-    dispatch('view/addViewComponent', component, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Created view compoment received', component);
+  [IN.TYPE_SETUPINTERFACE]: ({ payload: layout }, { dispatch }) => {
+    dispatch('view/setLayout', layout, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New setup interface received', layout);
   },
 };
 

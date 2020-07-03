@@ -179,8 +179,48 @@ export default {
 
   /**
    * View components coming from k.LAb
+   * Array contains all layout objects.
+   * Each one contains the main panels and each of them has components
+   * Layout object
+   * {
+      "id": null,
+      "identity": null,
+      "applicationId": null,
+      "parentId": null,
+      "type": "View",
+      "name": "example.ui.minimal",
+      "style": null,
+      "title": null,
+      "contentType": null,
+      "content": null,
+      "tree": null,
+      "components": [],
+      "attributes": {},
+      "panels": [...panelObjects...],
+      "leftPanels": [],
+      "rightPanels": [],
+      "header": null,
+      "footer": null,
+      "receivingIdentity": null
+    }
+    Panel object:
+    {
+      "id": "main",
+      "identity": null,
+      "applicationId": null,
+      "parentId": null,
+      "type": null,
+      "name": "main",
+      "style": null,
+      "title": null,
+      "contentType": null,
+      "content": null,
+      "tree": null,
+      "components": [...],
+      "attributes": {}
+    }
    */
-  viewComponents: [],
+  layout: null,
 
   /**
    * Engine events
@@ -189,6 +229,7 @@ export default {
 
   /**
    * Log levels
+   * Initialized with the start options
    */
   levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
 };

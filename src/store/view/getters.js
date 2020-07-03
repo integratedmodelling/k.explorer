@@ -121,10 +121,10 @@ export default {
   isTimeRunning: state => state.timeRunning,
 
   /**
-   * View components from k.LAB
+   * Layout from k.LAB
    */
-  viewComponents: state => state.viewComponents,
-  viewComponentsByType: state => types => state.viewComponents.filter(vc => types.includes(vc.type)),
+  layout: state => state.layout,
+  // layoutsByType: state => types => state.layouts.filter(vc => types.includes(vc.type)),
 
   engineEvents: state => state.engineEvents,
   engineEventsCount: state => state.engineEvents.length,

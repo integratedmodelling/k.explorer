@@ -342,6 +342,15 @@ export default {
     state.timeRunning = timeRunning;
   },
 
+  SET_LAYOUT: (state, layout) => {
+    state.layout = layout;
+    /*
+    if (!state.layouts.find(l => l.id === layout.id)) {
+      state.layouts.push(layout);
+    }
+    */
+  },
+
   ADD_VIEW_COMPONENT: (state, component) => {
     if (component.id === null || component.parentId === null) {
       state.viewComponents.push({

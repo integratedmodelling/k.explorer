@@ -317,8 +317,14 @@ export default {
     getBGColor(alpha) {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
-    mapSizeChangedListener() {
-      // eslint-disable-next-line no-underscore-dangle
+    mapSizeChangedListener(event) {
+      if (event === 'changelayout') {
+        this.$nextTick(() => {
+          this.centeredLeft = this.getCenteredLeft();
+          this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+        });
+        return;
+      }
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
       // check if main control windows is gone out of screen
       this.checkWhereWasDragged();

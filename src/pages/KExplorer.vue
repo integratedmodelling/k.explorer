@@ -1,57 +1,72 @@
 <template>
-  <q-page class="column">
-    <components-viewer></components-viewer>
-    <div class="col row full-height" id="viewer-container">
-      <keep-alive>
-        <!-- <transition name="component-fade" mode="out-in"> -->
-        <component :is="mainViewer.name"></component>
-        <!-- </transition> -->
-      </keep-alive>
-      <q-resize-observable @resize="setChildrenToAskFor" />
-    </div>
-    <div class="col-1 row">
-      <klab-log v-if="logVisible"></klab-log>
-    </div>
-    <transition name="component-fade" mode="out-in">
-      <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
-    </transition>
-    <transition appear
-                enter-active-class="animated zoomIn"
-                leave-active-class="animated zoomOut">
-      <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
-    </transition>
-    <observation-time v-if="!isMainControlDocked"></observation-time>
-    <q-modal
-        id="modal-connection-status"
-        v-model="modalVisible"
-        no-esc-dismiss
-        no-backdrop-dismiss
-        :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
-        :content-classes="['modal-borders', 'no-padding', 'no-margin']"
+  <q-layout view="hHh lpr fFf" :style="mainPanelStyle" container>
+    <q-layout-drawer
+      side="left"
+      :overlay="false"
+      v-model="leftMenuVisible"
+      :breakpoint="0"
+      :width="leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED ? LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE : LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE"
+      :content-class="['klab-left', 'no-scroll', largeMode ? 'klab-large-mode' : '' ]"
+      class="print-hide"
     >
-      <div class="bg-opaque-white modal-borders">
-          <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
-            <klab-spinner
-              :color="modalColor"
-              :size="40"
-              :ball="18"
-              id="modal-spinner"
-              :animated="modalAnimated"
-              wrapperId="modal-connection-status"
-            ></klab-spinner>
-            <span class="text-white">{{ modalText }}</span>
+      <klab-left-menu></klab-left-menu>
+    </q-layout-drawer>
+
+    <q-page-container>
+      <q-page class="column">
+        <div class="col row full-height" id="viewer-container">
+          <keep-alive>
+            <!-- <transition name="component-fade" mode="out-in"> -->
+            <component :is="mainViewer.name"></component>
+            <!-- </transition> -->
+          </keep-alive>
+          <q-resize-observable @resize="setChildrenToAskFor" />
+        </div>
+        <div class="col-1 row">
+          <klab-log v-if="logVisible"></klab-log>
+        </div>
+        <transition name="component-fade" mode="out-in">
+          <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
+        </transition>
+        <transition appear
+                    enter-active-class="animated zoomIn"
+                    leave-active-class="animated zoomOut">
+          <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
+        </transition>
+        <observation-time v-if="!isMainControlDocked"></observation-time>
+        <q-modal
+          id="modal-connection-status"
+          v-model="modalVisible"
+          no-esc-dismiss
+          no-backdrop-dismiss
+          :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
+          :content-classes="['modal-borders', 'no-padding', 'no-margin']"
+        >
+          <div class="bg-opaque-white modal-borders">
+            <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
+              <klab-spinner
+                :color="modalColor"
+                :size="40"
+                :ball="18"
+                id="modal-spinner"
+                :animated="modalAnimated"
+                wrapperId="modal-connection-status"
+              ></klab-spinner>
+              <span class="text-white">{{ modalText }}</span>
+            </div>
           </div>
-      </div>
-    </q-modal>
-    <klab-presentation></klab-presentation>
-    <input-request-modal></input-request-modal>
-    <scale-change-dialog></scale-change-dialog>
-  </q-page>
+        </q-modal>
+        <klab-presentation></klab-presentation>
+        <input-request-modal></input-request-modal>
+        <scale-change-dialog></scale-change-dialog>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, CONNECTION_CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, CONNECTION_CONSTANTS, WEB_CONSTANTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
@@ -61,15 +76,16 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ObservationTime from 'components/ObservationTime.vue';
-import ComponentsViewer from 'components/KlabComponentsViewer.vue';
+import LayoutViewer from 'components/KlabLayoutViewer.vue';
 import { colors } from 'quasar';
 import KlabPresentation from 'components/KlabPresentation';
+import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
 
 export default {
   /* eslint-disable object-shorthand */
-  name: 'IndexPage',
+  name: 'KExplorer',
   components: {
     KlabMainControl,
     DataViewer,
@@ -80,11 +96,23 @@ export default {
     ScaleChangeDialog,
     KlabPresentation,
     ObservationTime,
-    ComponentsViewer,
+    LayoutViewer,
+    KlabLeftMenu,
+  },
+  props: {
+    mainPanelStyle: {
+      type: Object,
+      default: () => ({}),
+    },
+    isContainer: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
       askForUndocking: false,
+      LEFTMENU_CONSTANTS,
     };
   },
   computed: {
@@ -104,6 +132,9 @@ export default {
       'isMainControlDocked',
       'admitSearch',
       'isHelpShown',
+      'mainViewer',
+      'leftMenuState',
+      'largeMode',
     ]),
     waitingGeolocation: {
       get() {
@@ -122,6 +153,14 @@ export default {
       },
       set(visible) {
         console.warn(`Try to set modalVisible as ${visible}`);
+      },
+    },
+    leftMenuVisible: {
+      get() {
+        return this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN;
+      },
+      set(visibility) {
+        this.setLeftMenuState(visibility);
       },
     },
     modalText() {
@@ -155,6 +194,7 @@ export default {
       'searchStop',
       'searchFocus',
       'setMainViewer',
+      'setLeftMenuState',
     ]),
     setChildrenToAskFor() {
       // calculate and set min results for children
@@ -180,6 +220,14 @@ export default {
           timeout: 1000,
         });
       }
+    },
+    leftMenuVisible() {
+      this.$nextTick(() => {
+        this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, {});
+      });
+    },
+    mainPanelStyle() {
+      console.error(`IS CONTAINER ->${this.isContainer}; ${JSON.stringify(this.mainPanelStyle, null, 4)}`);
     },
   },
   created() {
@@ -267,4 +315,9 @@ export default {
 
   #modal-connection-status.fullscreen
     z-index 10000
+
+  .klab-left
+    background-color rgba(35, 35, 35, 0.8)
+  .klab-large-mode.no-scroll
+    overflow visible !important
 </style>

@@ -357,8 +357,8 @@ export default {
     commit('SET_TIME_RUNNING', timeRunning);
   },
 
-  addViewComponent: ({ commit }, component) => {
-    commit('ADD_VIEW_COMPONENT', component);
+  setLayout: ({ commit }, layout) => {
+    commit('SET_LAYOUT', layout);
   },
 
   setEngineEvent: ({ commit }, event) => {
