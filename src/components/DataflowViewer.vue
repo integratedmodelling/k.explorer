@@ -68,7 +68,7 @@ export default {
               jsonElkLayout.restored = this.context.restored;
               this.addDataflow(jsonElkLayout);
             } catch (e) {
-              console.error(`Error in dataflos layout for the context ${data.taskId}: ${e}`);
+              console.error(`Error in dataflow layout for the context ${data.taskId}: ${e}`);
             }
           } else {
             console.error(`Dataflow in task ${data.taskId} has no layout`);

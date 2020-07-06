@@ -643,6 +643,8 @@ export default {
       background-color #555
     .kt-tree-container
       // special class to solve the noNode
+      .simplebar-scroll-content
+        padding-right 17px !important
       .klab-no-nodes
         padding 5px 0
         margin 0

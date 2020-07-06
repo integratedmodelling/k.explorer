@@ -198,7 +198,7 @@ export default {
         width 20px
         border-radius 10px
         text-align center
-        padding 5px 0 0 0
+        padding 3px 0 0 0
         display inline-block
         margin 0 5px
       &.sr-full

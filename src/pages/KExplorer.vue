@@ -310,6 +310,7 @@ export default {
     z-index 10000
 
   .klab-left
+    position absolute
     background-color rgba(35, 35, 35, 0.8)
   .klab-large-mode.no-scroll
     overflow visible !important

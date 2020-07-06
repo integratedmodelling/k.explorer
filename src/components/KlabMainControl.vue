@@ -212,7 +212,6 @@ export default {
         handle: undefined,
         resetInitialPos: false,
         onPositionChange: debounce((positionDiff, absolutePosition, event) => {
-          console.error(event);
           this.onDebouncedPositionChanged(event);
         }, 100),
         onDragStart: () => { this.dragging = true; },

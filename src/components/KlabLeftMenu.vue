@@ -147,9 +147,9 @@ export default {
   @import '~variables'
   #lm-container
     width 100%
+    overflow hidden
     // background: linear-gradient(to right, rgba(35, 35, 35, .5) 0, rgba(35, 35, 35, .5) 95%, rgba(35, 35, 35, 0) 100%)
     // box-shadow 1px 0 3px 0 rgba(150,150,150,0.5)
-
     #spinner-leftmenu-container
       padding-top 10px
       padding-bottom 20px

@@ -136,6 +136,8 @@ export default {
   @import '~variables'
   #klab-log-pane
     max-height "calc(var(--main-control-max-height) - %s - 10px)" % ($main-control-header-height + $main-control-actions-height)
+    .simplebar-scroll-content
+      padding-right 15px !important
     &.lm-component
       max-height 100%
     #log-container
