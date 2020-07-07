@@ -183,6 +183,10 @@ const PARSERS = {
     dispatch('view/setLayout', layout, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New setup interface received', layout);
   },
+  [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
+    dispatch('view/createViewComponent', component, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New create view component received', component);
+  },
 };
 
 /**

@@ -16,7 +16,7 @@
       content-class="klab-main-left-panel"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
-      :width="400"
+      :width="600"
     >
       <template v-if="leftPanel">
         <klab-components-viewer id="left-panel-0" :component="layout.leftPanels[0]" direction="vertical"></klab-components-viewer>

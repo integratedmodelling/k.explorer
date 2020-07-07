@@ -365,4 +365,8 @@ export default {
     commit('SET_ENGINE_EVENT', event);
   },
 
+  createViewComponent: ({ commit }, component) => {
+    commit('CREATE_VIEW_COMPONENT', component);
+  },
+
 };

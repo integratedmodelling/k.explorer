@@ -1,4 +1,4 @@
-import { pushElementInFixedQueue, findNodeById } from 'shared/Helpers';
+import { pushElementInFixedQueue } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 import { ENGINE_EVENTS } from '../../shared/Constants';
@@ -343,6 +343,32 @@ export default {
   },
 
   SET_LAYOUT: (state, layout) => {
+    const panels = [
+      ...layout.panels,
+      ...layout.leftPanels,
+      ...layout.rightPanels,
+      layout.header,
+      layout.footer,
+    ].filter(p => p !== null);
+    if (panels.length > 0) {
+      const updateTree = (node) => {
+        if (node.type === 'Tree') {
+          node.ticked = [];
+          node.expanded = [];
+          node.selected = null;
+        } else if (node.type === 'CheckButton') {
+          node.selected = false;
+        }
+        if (node.components && node.components.length > 0) {
+          node.components.forEach((c) => {
+            updateTree(c);
+          });
+        }
+      };
+      panels.forEach((p) => {
+        updateTree(p);
+      });
+    }
     state.layout = layout;
     /*
     if (!state.layouts.find(l => l.id === layout.id)) {
@@ -351,19 +377,45 @@ export default {
     */
   },
 
-  ADD_VIEW_COMPONENT: (state, component) => {
-    if (component.id === null || component.parentId === null) {
-      state.viewComponents.push({
-        ...component,
-        children: [],
-      });
+  CREATE_VIEW_COMPONENT: (state, component) => {
+    const findComponent = (layout, key = null) => {
+      if (layout && key !== null) {
+        const { reduce } = [];
+        const find = (result, c) => {
+          if (result || !c) {
+            return result;
+          }
+          if (Array.isArray(c)) {
+            return reduce.call(Object(c), find, result);
+          }
+          if (c.id === key) {
+            return c;
+          }
+          if (c !== null && c.components && c.components.length > 0) {
+            return find(null, c.components);
+          }
+          return null;
+        };
+        return find(null, layout);
+      }
+      return null;
+    };
+    const existingComponent = findComponent([
+      ...state.layout.panels,
+      ...state.layout.leftPanels,
+      ...state.layout.rightPanels,
+      state.layout.header,
+      state.layout.footer,
+    ], component.id);
+    if (existingComponent) {
+      console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
+      Object.assign(existingComponent, component);
+      console.log('Updated component: ', JSON.stringify(existingComponent, null, 2));
     } else {
-      const parent = findNodeById(state.viewComponents, component.parentId);
-      if (parent != null) {
-        parent.children.push({
-          ...component,
-          children: [],
-        });
+      const parent = findComponent(state.layout, component.parentId);
+      if (parent) {
+        parent.children.push(component);
+        console.warn('Update parent: ', parent);
       }
     }
   },
