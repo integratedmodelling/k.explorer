@@ -175,7 +175,7 @@ export default {
       .main-subtitle
         font-size small
   .klab-main-left-panel
-    background-color white
   .klab-main-container
-    background-color #eee
+    padding-top 10px
+    background-color white
 </style>

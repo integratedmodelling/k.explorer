@@ -54,7 +54,7 @@ export default {
       },
     },
   }),
-  TREE: (component, h, eventBus) => {
+  TREE: (component, h, vueInstance) => {
     const tree = [];
     if (component.tree) {
       const cTree = component.tree;
@@ -105,15 +105,15 @@ export default {
           on: {
             'update:ticked': (value) => {
               component.ticked = value;
-              eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:ticked', id: component.id, value });
+              vueInstance.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:ticked', id: component.id, value });
             },
             'update:selected': (value) => {
               component.selected = value;
-              eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:selected', id: component.id, value });
+              vueInstance.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:selected', id: component.id, value });
             },
             'update:expanded': (value) => {
               component.expanded = value;
-              eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:expanded', id: component.id, value });
+              vueInstance.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:expanded', id: component.id, value });
             },
           },
         }),

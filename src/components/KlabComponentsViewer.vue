@@ -63,7 +63,7 @@ export default {
         return [];
       }
       let shelf = null;
-      if (node.groupId) {
+      if (node.groupId && node.shelf) {
         shelf = COMPONENTS.SHELF(node.name, node.groupId);
       }
       let component;
@@ -77,17 +77,18 @@ export default {
           break;
         case 'Group':
           component = COMPONENTS.GROUP(node, h);
-          if (node.attributes.shelf && node.components && node.components.length > 0) {
+          if (node.components && node.components.length > 0) {
             node.components.forEach((comp) => {
               comp.groupId = node.id;
+              comp.shelf = node.attributes.shelf;
             });
           }
           break;
         case 'CheckButton':
-          component = COMPONENTS.CHECK_BUTTON(node, h, this.$eventBus);
+          component = COMPONENTS.CHECK_BUTTON(node, h, this);
           break;
         case 'Tree':
-          component = COMPONENTS.TREE(node, h, this.$eventBus);
+          component = COMPONENTS.TREE(node, h, this);
           break;
         case 'Text':
           component = COMPONENTS.TEXT(node, h);
@@ -167,8 +168,8 @@ export default {
     padding 8px 0
   .kvc-tree-container
   .kvc-group-container
-    padding 10px
-    margin 10px 20px
+    padding 15px 10px
+    margin 15px 20px 10px 20px
     border 1px solid #eee
     position relative
     .kvc-tree-legend
