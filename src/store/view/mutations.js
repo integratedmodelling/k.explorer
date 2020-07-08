@@ -343,6 +343,7 @@ export default {
   },
 
   SET_LAYOUT: (state, layout) => {
+    /*
     const panels = [
       ...layout.panels,
       ...layout.leftPanels,
@@ -369,6 +370,7 @@ export default {
         updateTree(p);
       });
     }
+     */
     state.layout = layout;
     /*
     if (!state.layouts.find(l => l.id === layout.id)) {

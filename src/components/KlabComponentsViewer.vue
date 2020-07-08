@@ -75,6 +75,12 @@ export default {
             direction: this.direction,
           });
           break;
+        case 'CheckButton':
+          component = COMPONENTS.CHECK_BUTTON(node, h, this);
+          break;
+        case 'Tree':
+          component = COMPONENTS.TREE(node, h, this);
+          break;
         case 'Group':
           component = COMPONENTS.GROUP(node, h);
           if (node.components && node.components.length > 0) {
@@ -83,12 +89,6 @@ export default {
               comp.shelf = node.attributes.shelf;
             });
           }
-          break;
-        case 'CheckButton':
-          component = COMPONENTS.CHECK_BUTTON(node, h, this);
-          break;
-        case 'Tree':
-          component = COMPONENTS.TREE(node, h, this);
           break;
         case 'Text':
           component = COMPONENTS.TEXT(node, h);
@@ -102,16 +102,12 @@ export default {
           components.push(this.createComponent(comp, h));
         });
       }
+      /*
       const internalContent = components.length > 0 ? components : component.content;
       const content = component.container ? component.container(internalContent) : internalContent;
       const element = h(component.type, component.attributes, shelf ? [h(shelf.type, shelf.attributes, content)] : content);
-      /*
-      if (node.groupId) {
-        const shelf = COMPONENTS.SHELF(node.name, node.groupId);
-        element = ;
-      }
       */
-      return element;
+      return h(component, {}, shelf ? [h(shelf, {}, components)] : components);
     },
     componentClickedListener(event) {
       console.info(JSON.stringify(event, null, 4));
