@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QCheckbox } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio } from 'quasar';
 import { findNodeById } from './Helpers';
 import { CUSTOM_EVENTS } from './Constants';
 
@@ -69,6 +69,7 @@ export default {
   SHELF: (label, group) => Vue.component('KAppShelf', {
     render(h) {
       return h(QCollapsible, {
+        staticClass: 'kvc-collapsible',
         props: {
           staticClass: 'no-padding',
           headerClass: 'kvc-collapsible-header',
@@ -132,6 +133,7 @@ export default {
               ticked: this.ticked,
               selected: this.selected,
               expanded: this.expanded,
+              color: 'app-container',
             },
             on: {
               'update:ticked': (value) => {
@@ -162,10 +164,10 @@ export default {
       return h('div', {
         staticClass: 'kvc-checkbutton',
       }, [
-        h(QCheckbox, {
+        h(QRadio, {
           props: {
             value: this.selected,
-            color: 'mc-main',
+            color: 'app-container',
             label: component.name,
           },
           on: {

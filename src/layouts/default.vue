@@ -143,12 +143,13 @@ export default {
 </script>
 
 <style lang="stylus">
+  @import '~variables'
   .q-layout
     border 0
     padding 0
     margin 0
   #klab-main-header
-    background-color white
+    background-color $app-main-background
     padding 0
     margin 0
     .main-logo
@@ -160,7 +161,7 @@ export default {
         max-width 80px
         max-height 80px
     .main-title-container
-      color #333
+      color $app-main-text-color
       float left
       height 80px
       vertical-align center
@@ -172,10 +173,11 @@ export default {
         height 20px
       .main-title
         font-weight 500
+        color $app-title-color
       .main-subtitle
         font-size small
   .klab-main-left-panel
   .klab-main-container
     padding-top 10px
-    background-color white
+    background-color $app-main-background
 </style>

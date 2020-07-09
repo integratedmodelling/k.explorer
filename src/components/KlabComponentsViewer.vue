@@ -158,22 +158,42 @@ export default {
   .kcv-alert .modal-backdrop
     background-color transparent
   .kvc-collapsible-header
-    background-color $main-control-main-color
-    color #eee
+    background-color $app-main-color
+    color $app-main-background
+    position: relative
+    .q-item-side
+      color $app-main-background
+  .kvc-collapsible
+    clear both
+    .kvc-tree-container
+      margin 15px 10px 15px 10px
+    .kvc-text
+      margin 5px 10px
+    .kvc-tree-container
+    .kvc-text
+      padding 15px 10px 5px 10px
+      position relative
+      width 45%
+      float left
+
   .q-collapsible-sub-item
     padding 8px 0
   .kvc-tree-container
   .kvc-group-container
     padding 15px 10px
     margin 15px 20px 10px 20px
-    border 1px solid #eee
+    border 1px solid $app-container
+    border-radius 6px
     position relative
     .kvc-tree-legend
     .kvc-group-legend
       position absolute
-      background-color white
-      padding 5px
+      background-color $app-container
+      color $app-main-background
+      padding 5px 10px
+      font-weight 400
       top -14px
+      border-radius 6px
   .kvc-checkbutton
     display block
     width 100%
@@ -191,5 +211,5 @@ export default {
       right 0
     .kvc-internal-text
       p
-        margin-botto 5px
+        margin-bottom 15px
 </style>
