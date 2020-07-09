@@ -43,9 +43,7 @@ export default {
     */
   GROUP: component => Vue.component('KAppGroup', {
     data() {
-      return {
-        test: 'STICAZZI',
-      };
+      return {};
     },
     render(h) {
       return h('div', {
