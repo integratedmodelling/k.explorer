@@ -181,7 +181,7 @@ export default {
       return h(QInput, {
         staticClass: ['kvc-text-input'],
         props: {
-          value: '',
+          value: component.content,
           color: 'app-main',
           hideUnderline: true,
           dense: true,
