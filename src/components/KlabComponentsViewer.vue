@@ -15,7 +15,21 @@
 -->
 <script>
 import COMPONENTS from 'shared/DefaultViewComponents';
-import { CUSTOM_EVENTS } from '../shared/Constants';
+import { CUSTOM_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from '../shared/MessageBuilders';
+
+const EMPTY_VIEWACTION_MESSAGE = {
+  component: null,
+  componentTag: null,
+  applicationId: null,
+  booleanValue: null,
+  doubleValue: null,
+  intValue: null,
+  stringValue: null,
+  dateValue: null,
+  data: null,
+  operation: null,
+};
 
 export default {
   name: 'KlabComponentsViewer',
@@ -63,8 +77,8 @@ export default {
         return [];
       }
       let shelf = null;
-      if (node.groupId && node.shelf) {
-        shelf = COMPONENTS.SHELF(node.name, node.groupId);
+      if (node.attributes.groupId && node.attributes.shelf) {
+        shelf = COMPONENTS.SHELF(node.name, node.attributes.groupId);
       }
       let component;
       switch (node.type) {
@@ -75,23 +89,32 @@ export default {
             direction: this.direction,
           });
           break;
-        case 'CheckButton':
-          component = COMPONENTS.CHECK_BUTTON(node, h, this);
+        case APPS_COMPONENTS.LABEL:
+          component = COMPONENTS.LABEL(node);
           break;
-        case 'Tree':
-          component = COMPONENTS.TREE(node, h, this);
+        case APPS_COMPONENTS.TEXT_INPUT:
+          component = COMPONENTS.TEXT_INPUT(node);
           break;
-        case 'Group':
-          component = COMPONENTS.GROUP(node, h);
+        case APPS_COMPONENTS.PUSH_BUTTON:
+          component = COMPONENTS.PUSH_BUTTON(node);
+          break;
+        case APPS_COMPONENTS.CHECK_BUTTON:
+          component = COMPONENTS.CHECK_BUTTON(node);
+          break;
+        case APPS_COMPONENTS.TREE:
+          component = COMPONENTS.TREE(node);
+          break;
+        case APPS_COMPONENTS.GROUP:
+          component = COMPONENTS.GROUP(node);
           if (node.components && node.components.length > 0) {
             node.components.forEach((comp) => {
-              comp.groupId = node.id;
-              comp.shelf = node.attributes.shelf;
+              comp.attributes.groupId = node.id;
+              comp.attributes.shelf = node.attributes.shelf;
             });
           }
           break;
-        case 'Text':
-          component = COMPONENTS.TEXT(node, h);
+        case APPS_COMPONENTS.TEXT:
+          component = COMPONENTS.TEXT(node);
           break;
         default:
           component = COMPONENTS.UNKNOWN(node);
@@ -110,7 +133,10 @@ export default {
       return h(component, {}, shelf ? [h(shelf, {}, components)] : components);
     },
     componentClickedListener(event) {
-      console.info(JSON.stringify(event, null, 4));
+      this.sendStompMessage(MESSAGES_BUILDERS.VIEW_ACTION({
+        ...EMPTY_VIEWACTION_MESSAGE,
+        ...event,
+      }, this.$store.state.data.session).body);
     },
     createAlert(h, alert) {
       return h(COMPONENTS.ALERT.component, {
@@ -147,6 +173,7 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  $label-width = 150px
   /*
   .kcv-main-container
     display flex
@@ -175,6 +202,7 @@ export default {
       position relative
       width 45%
       float left
+      clear right
 
   .q-collapsible-sub-item
     padding 8px 0
@@ -182,9 +210,12 @@ export default {
   .kvc-group-container
     padding 15px 10px
     margin 15px 20px 10px 20px
-    border 1px solid $app-container
     border-radius 6px
     position relative
+    &:not(.kvc-group-no-label)
+      border 1px solid $app-container
+      margin-bottom 30px
+      padding-top 30px
     .kvc-tree-legend
     .kvc-group-legend
       position absolute
@@ -194,11 +225,31 @@ export default {
       font-weight 400
       top -14px
       border-radius 6px
+  .kvc-label
+    float left
+    padding 5px 10px
+    font-weight 400
+    border-radius 6px
+    width $label-width
+    overflow hidden
+    white-space nowrap
+    text-overflow ellipsis
+    color $app-title-color
+    vertical-align middle
+    line-height 1em
+  .kvc-text-input
+    line-height 1em
+    vertical-align middle
+    border 1px solid $app-main-color
+    padding 5px
+  .kvc-pushbutton
+    margin 0 5px
   .kvc-checkbutton
     display block
     width 100%
     padding 10px
   .kvc-text
+    clear both
     margin 10px 10px 5px 10px
     padding 10px 10px 5px 10px
     // border 1px solid #999

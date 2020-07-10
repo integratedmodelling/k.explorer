@@ -1,7 +1,7 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio, QInput, QBtn } from 'quasar';
 import { findNodeById } from './Helpers';
-import { CUSTOM_EVENTS } from './Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS } from './Constants';
 
 export default {
   ALERT: {
@@ -54,10 +54,11 @@ export default {
       }, !component.attributes.shelf && !component.groupId
         ? [h('div', {
           staticClass: 'kvc-group-container',
+          class: { 'kvc-group-no-label': !component.name },
         }, [
-          h('div', {
+          component.name ? h('div', {
             staticClass: 'kvc-group-legend',
-          }, component.name),
+          }, component.name) : null,
           h('div', {
             staticClass: 'kvc-group-content',
           }, this.$slots.default),
@@ -69,8 +70,8 @@ export default {
       return h(QCollapsible, {
         staticClass: 'kvc-collapsible',
         props: {
-          staticClass: 'no-padding',
           headerClass: 'kvc-collapsible-header',
+          separator: true,
           group,
           label,
         },
@@ -136,15 +137,22 @@ export default {
             on: {
               'update:ticked': (value) => {
                 this.ticked = value;
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:ticked', id: component.id, value });
+                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  stringValue: value,
+                });
               },
               'update:selected': (value) => {
                 this.selected = value;
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:selected', id: component.id, value });
+                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:selected', id: component.id, value });
               },
               'update:expanded': (value) => {
                 this.expanded = value;
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:expanded', id: component.id, value });
+                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:expanded', id: component.id, value });
               },
             },
           }),
@@ -152,10 +160,83 @@ export default {
       },
     });
   },
+  LABEL: component => Vue.component('KAppText', {
+    render(h) {
+      return h('div', {
+        staticClass: 'kvc-label',
+        attrs: {
+          id: component.id,
+        },
+      }, component.content);
+    },
+  }),
+
+  TEXT_INPUT: component => Vue.component('KAppTextInput', {
+    data() {
+      return {
+        component,
+      };
+    },
+    render(h) {
+      return h(QInput, {
+        staticClass: ['kvc-text-input'],
+        props: {
+          value: '',
+          color: 'app-main',
+          hideUnderline: true,
+          dense: true,
+        },
+        on: {
+          input: (value) => {
+            this.value = value;
+            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+              operation: APPS_OPERATION.USER_ACTION,
+              component: {
+                ...component,
+                components: [],
+              },
+              stringValue: value,
+            });
+          },
+        },
+      });
+    },
+  }),
+
+  PUSH_BUTTON: component => Vue.component('KAppPushButton', {
+    data() {
+      return {};
+    },
+    render(h) {
+      return h(QBtn, {
+        staticClass: 'kvc-pushbutton',
+        props: {
+          label: component.name,
+          color: 'app-main-color',
+          textColor: 'app-main-background',
+          noCaps: true,
+
+        },
+        on: {
+          click: () => {
+            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+              operation: APPS_OPERATION.USER_ACTION,
+              component: {
+                ...component,
+                components: [],
+              },
+            });
+          },
+        },
+      });
+    },
+  }),
+
   CHECK_BUTTON: component => Vue.component('KAppCheckButton', {
     data() {
       return {
-        selected: false,
+        value: null,
+        component,
       };
     },
     render(h) {
@@ -164,14 +245,22 @@ export default {
       }, [
         h(QRadio, {
           props: {
-            value: this.selected,
+            val: false,
+            value: false,
             color: 'app-container',
             label: component.name,
           },
           on: {
             input: (value) => {
-              this.selected = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'input', id: component.id, value });
+              this.value = value;
+              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+                operation: APPS_OPERATION.USER_ACTION,
+                component: {
+                  ...component,
+                  components: [],
+                },
+                booleanValue: value,
+              });
             },
           },
         }),

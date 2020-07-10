@@ -1,7 +1,6 @@
-import { pushElementInFixedQueue } from 'shared/Helpers';
-import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+import { pushElementInFixedQueue, findInLayout } from 'shared/Helpers';
+import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
-import { ENGINE_EVENTS } from '../../shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
@@ -402,13 +401,7 @@ export default {
       }
       return null;
     };
-    const existingComponent = findComponent([
-      ...state.layout.panels,
-      ...state.layout.leftPanels,
-      ...state.layout.rightPanels,
-      state.layout.header,
-      state.layout.footer,
-    ], component.id);
+    const existingComponent = findInLayout(state.layout, component.id);
     if (existingComponent) {
       console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
       Object.assign(existingComponent, component);
@@ -446,6 +439,29 @@ export default {
       }
     } else {
       console.debug('Receive an engine event before subscription');
+    }
+  },
+
+  VIEW_ACTION: (state, action) => {
+    if (state.layout) {
+      const component = findInLayout(state.layout, action.componentTag, (n, needle) => {
+        if (n.attributes.tag === needle) {
+          return n;
+        }
+        return null;
+      });
+      if (component) {
+        switch (component.type) {
+          case APPS_COMPONENTS.LABEL:
+          case APPS_COMPONENTS.TEXT:
+          case APPS_COMPONENTS.TEXT_INPUT:
+            component.content = action.stringValue;
+            break;
+          default:
+            component.content = action.stringValue;
+            break;
+        }
+      }
     }
   },
 };

@@ -41,6 +41,7 @@ export const OUT = Object.freeze({
   TYPE_USERINPUTPROVIDED: 'UserInputProvided',
   TYPE_WATCHOBSERVATION: 'WatchObservation',
   TYPE_ENGINEEVENT: 'EngineEvent',
+  TYPE_VIEWACTION: 'ViewAction',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -56,6 +57,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_USERINPUTRESPONSE: 'UserInputResponse',
   PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
+  PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
 
 });
 
@@ -92,6 +94,7 @@ export const IN = Object.freeze({
   TYPE_SCHEDULEADVANCED: 'ScheduleAdvanced',
   TYPE_ENGINEEVENT: 'EngineEvent',
   TYPE_SETUPINTERFACE: 'SetupInterface',
+  TYPE_VIEWACTION: 'ViewAction',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -114,6 +117,7 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_VIEWCOMPONENT: 'ViewComponent',
   PAYLOAD_CLASS_ENGINEEVENT: 'EngineEvent',
   PAYLOAD_CLASS_LAYOUT: 'Layout',
+  PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
 });
 
 export const URLS = Object.freeze({

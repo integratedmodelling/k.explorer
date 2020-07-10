@@ -369,4 +369,8 @@ export default {
     commit('CREATE_VIEW_COMPONENT', component);
   },
 
+  viewAction: ({ commit }, action) => {
+    commit('VIEW_ACTION', action);
+  },
+
 };

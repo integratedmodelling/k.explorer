@@ -755,6 +755,36 @@ export const ENGINE_EVENTS = {
   RESOURCE_VALIDATION: 'ResourceValidation',
 };
 
+export const APPS_COMPONENTS = {
+  PANEL: 'Panel',
+  ALERT: 'Alert',
+  PUSH_BUTTON: 'PushButton',
+  CHECK_BUTTON: 'CheckButton',
+  RADIO_BUTTON: 'RadioButton',
+  TEXT_INPUT: 'TextInput',
+  COMBO: 'Combo',
+  GROUP: 'Group',
+  MAP: 'Map',
+  TREE: 'Tree',
+  TREE_ITEM: 'TreeItem',
+  CONFIRM: 'Confirm',
+  VIEW: 'View',
+  CONTAINER: 'Container',
+  MULTICONTAINER: 'MultiContainer',
+  LABEL: 'Label',
+  TEXT: 'Text',
+  TABLE: 'Table',
+  NOTIFICATION: 'Notification',
+  INPUT_GROUP: 'InputGroup',
+};
+
+export const APPS_OPERATION = {
+  USER_ACTION: 'UserAction',
+  ENABLE: 'Enable',
+  HIDE: 'Hide',
+  UPDATE: 'Update',
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,

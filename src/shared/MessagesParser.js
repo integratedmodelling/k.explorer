@@ -187,6 +187,10 @@ const PARSERS = {
     dispatch('view/createViewComponent', component, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New create view component received', component);
   },
+  [IN.TYPE_VIEWACTION]: ({ payload: action }, { dispatch }) => {
+    dispatch('view/viewAction', action, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view action received', action);
+  },
 };
 
 /**
