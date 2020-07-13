@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpr fFf" :style="mainPanelStyle" container>
+  <q-layout view="hHh lpr fFf" :style="mainPanelStyle" class="kexp-main-container" container>
     <q-layout-drawer
       side="left"
       :overlay="false"
@@ -273,6 +273,10 @@ export default {
   }
 </style>
 <style lang="stylus">
+  @import '~variables'
+  #kexplorer-container
+    background-color $blue-grey-10
+    background-image url("../assets/dark-dot.png")
   .modal-borders
     border-radius 40px
   .klab-spinner

@@ -1,18 +1,3 @@
-<!--
-<template>
-  <div>
-  <div v-for="(alert, index) in alerts" :key="index">
-    <q-dialog
-      v-show="hasAlerts"
-    >
-      <span slot="title">{{ alert.title }}</span>
-
-      <span slot="message">{{ alert.content }}</span>
-    </q-dialog>
-  </div>
-  </div>
-</template>
--->
 <script>
 import COMPONENTS from 'shared/DefaultViewComponents';
 import { CUSTOM_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
