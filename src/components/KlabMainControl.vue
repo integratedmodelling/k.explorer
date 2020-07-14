@@ -219,6 +219,9 @@ export default {
         fingers: 2,
       },
       correctedPosition: { top: 0, left: 0 },
+      defaultLeft: DEFAULT_POSITION.left,
+      defaultTop: DEFAULT_POSITION.top,
+      centeredLeft: DEFAULT_POSITION.left,
       dragging: false,
       askForDocking: false,
       leftMenuMaximized: `${LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE}px`,
@@ -226,7 +229,6 @@ export default {
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       draggableElementWidth: 0,
-      centeredLeft: this.defaultLeft,
       paletteOpen: false,
     };
   },
@@ -293,7 +295,11 @@ export default {
      * Change draggable position
      * @param position top, left object
      */
-    changeDraggablePosition(position) {
+    changeDraggablePosition(position, correct = true) {
+      if (correct) {
+        position.top += this.correctedPosition.top;
+        position.left += this.correctedPosition.left;
+      }
       this.draggableElement.style.left = `${position.left}px`;
       this.draggableElement.style.top = `${position.top}px`;
       const draggableState = JSON.parse(this.dragMCConfig.handle.getAttribute('draggable-state'));
@@ -334,7 +340,7 @@ export default {
       if (event === 'changelayout') {
         this.updateCorrectedPosition();
         this.$nextTick(() => {
-          this.changeDraggablePosition({ left: this.centeredLeft, top: this.defaultTop });
+          this.changeDraggablePosition({ left: this.centeredLeft, top: this.defaultTop }, false);
         });
         return;
       }
@@ -352,7 +358,7 @@ export default {
       const left = leftPanels ? width(leftPanels) : 0;
       this.correctedPosition = { top, left };
       this.defaultTop = DEFAULT_POSITION.top + top;
-      this.defaultleft = DEFAULT_POSITION.left + left;
+      this.defaultLeft = DEFAULT_POSITION.left + left;
       this.centeredLeft = this.getCenteredLeft();
     },
     updateDraggable() {
@@ -378,7 +384,7 @@ export default {
         this.changeDraggablePosition({
           top: this.defaultTop,
           left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
-        });
+        }, false);
       });
       // this.draggableElement.classList.remove('vuela');
     },
@@ -395,7 +401,7 @@ export default {
             this.changeDraggablePosition({
               top: parseFloat(this.draggableElement.style.top),
               left: this.getCenteredLeft() - offset,
-            });
+            }, false);
           }
         }
       });
