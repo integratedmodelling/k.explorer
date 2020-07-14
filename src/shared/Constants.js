@@ -785,6 +785,61 @@ export const APPS_OPERATION = {
   UPDATE: 'Update',
 };
 
+const VALUE_WITH_UNIT = /^\d+\D{1,2}/;
+
+export const DEFAULT_STYLE_FUNCTION = (component) => {
+  const retStyle = {};
+  Object.keys(component.attributes).forEach((key) => {
+    const value = component.attributes[key];
+    switch (key) {
+      case 'width':
+        retStyle['min-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        retStyle['max-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        retStyle.width = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        break;
+      case 'height':
+        retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        if (component.type !== 'Group' && component.type !== 'Tree') {
+          retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        }
+        // retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        break;
+      case 'hfill':
+        retStyle.width = '100%';
+        break;
+      case 'vfill':
+        retStyle.height = '100%';
+        break;
+      case 'top':
+      case 'bottom':
+      case 'center':
+        if (component.parentAttributes && component.parentAttributes.hbox) {
+          retStyle['align-self'] = key === 'top' ? 'flex-start' : key === 'bottom' ? 'flex-end' : 'center';
+        } else {
+          retStyle['vertical-align'] = key;
+        }
+        break;
+      case 'hbox':
+      case 'vbox':
+        retStyle.display = 'flex';
+        retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
+        break;
+      default:
+        retStyle.key = value;
+    }
+    /*
+    if (component.attributes.parentAttributes) {
+      if (component.attributes.parentAttributes.hbox) {
+
+      }
+    }
+    */
+  });
+  return retStyle;
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,

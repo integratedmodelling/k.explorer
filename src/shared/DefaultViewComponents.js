@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QInput, QBtn } from 'quasar';
 import { findNodeById } from './Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS } from './Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION } from './Constants';
 
 export default {
   ALERT: {
@@ -16,42 +16,29 @@ export default {
           id: `${component.applicationId}-${component.id}`,
         },
         style: {
-          ...(component.style && { ...component.style }),
+          ...component.style,
           ...component.mainPanelStyle,
         },
         ...(component.name && { ref: component.name }),
       }, this.$slots.default);
     },
   }),
-  /*
-    const ret = {
-      type: 'div',
-      attributes: {
-        staticClass: 'kcv-main-container',
-        class: `kcv-dir-${component.direction}`,
-        attrs: {
-          id: `${component.applicationId}-${component.id}`,
-        },
-        style: {
-          ...(component.style && { ...component.style }),
-          ...component.mainPanelStyle,
-        },
-        ...(component.name && { ref: component.name }),
-      },
-    };
-    return ret;
-    */
   GROUP: component => Vue.component('KAppGroup', {
     data() {
       return {};
     },
     render(h) {
+      const style = {
+        ...component.style,
+        ...DEFAULT_STYLE_FUNCTION(component),
+      };
       return h('div', {
         staticClass: 'kcv-group',
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
-      }, !component.attributes.shelf && !component.groupId
+        style,
+      }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kvc-group-container',
           class: { 'kvc-group-no-label': !component.name },
@@ -65,15 +52,15 @@ export default {
         ])] : this.$slots.default);
     },
   }),
-  SHELF: (label, group) => Vue.component('KAppShelf', {
+  SHELF: component => Vue.component('KAppShelf', {
     render(h) {
       return h(QCollapsible, {
         staticClass: 'kvc-collapsible',
         props: {
           headerClass: 'kvc-collapsible-header',
           separator: true,
-          group,
-          label,
+          group: component.attributes.parentId,
+          label: component.name,
         },
       }, this.$slots.default);
     },
@@ -118,6 +105,10 @@ export default {
       render(h) {
         return h('div', {
           staticClass: 'kvc-tree-container',
+          style: {
+            ...component.style,
+            ...DEFAULT_STYLE_FUNCTION(component),
+          },
         },
         [
           h('div', {
@@ -128,7 +119,7 @@ export default {
             props: {
               nodes: tree,
               nodeKey: 'id',
-              tickStrategy: 'leaf',
+              tickStrategy: component.attributes.check ? 'leaf' : 'none',
               ticked: this.ticked,
               selected: this.selected,
               expanded: this.expanded,

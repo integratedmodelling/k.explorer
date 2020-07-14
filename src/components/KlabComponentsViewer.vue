@@ -62,8 +62,8 @@ export default {
         return [];
       }
       let shelf = null;
-      if (node.attributes.groupId && node.attributes.shelf) {
-        shelf = COMPONENTS.SHELF(node.name, node.attributes.groupId);
+      if (node.attributes.parentAttributes && node.attributes.parentAttributes.shelf) {
+        shelf = COMPONENTS.SHELF(node);
       }
       let component;
       switch (node.type) {
@@ -93,8 +93,8 @@ export default {
           component = COMPONENTS.GROUP(node);
           if (node.components && node.components.length > 0) {
             node.components.forEach((comp) => {
-              comp.attributes.groupId = node.id;
-              comp.attributes.shelf = node.attributes.shelf;
+              comp.attributes.parentId = node.id;
+              comp.attributes.parentAttributes = node.attributes;
             });
           }
           break;
@@ -115,7 +115,10 @@ export default {
       const content = component.container ? component.container(internalContent) : internalContent;
       const element = h(component.type, component.attributes, shelf ? [h(shelf.type, shelf.attributes, content)] : content);
       */
-      return h(component, {}, shelf ? [h(shelf, {}, components)] : components);
+      if (shelf) {
+        return h(shelf, {}, [h(component, {}, components)]);
+      }
+      return h(component, {}, components);
     },
     componentClickedListener(event) {
       this.sendStompMessage(MESSAGES_BUILDERS.VIEW_ACTION({
@@ -185,9 +188,6 @@ export default {
     .kvc-text
       padding 15px 10px 5px 10px
       position relative
-      width 45%
-      float left
-      clear right
 
   .q-collapsible-sub-item
     padding 8px 0
