@@ -1,12 +1,23 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio, QInput, QBtn } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn } from 'quasar';
 import { findNodeById } from './Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION } from './Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS } from './Constants';
 
-export default {
-  ALERT: {
-    component: QDialog,
-  },
+export const COMPONENTS = {
+  ALERT: component => Vue.component('KAppAlert', {
+    render(h) {
+      return h(QDialog, {
+        props: {
+          value: true,
+          title: component.title,
+          message: component.content,
+        },
+        class: {
+          'kcv-alert': true,
+        },
+      });
+    },
+  }),
   MAIN: component => Vue.component('KAppMain', {
     render(h) {
       return h('div', {
@@ -40,14 +51,14 @@ export default {
         style,
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
-          staticClass: 'kvc-group-container',
-          class: { 'kvc-group-no-label': !component.name },
+          staticClass: 'kcv-group-container',
+          class: { 'kcv-group-no-label': !component.name },
         }, [
           component.name ? h('div', {
-            staticClass: 'kvc-group-legend',
+            staticClass: 'kcv-group-legend',
           }, component.name) : null,
           h('div', {
-            staticClass: 'kvc-group-content',
+            staticClass: 'kcv-group-content',
           }, this.$slots.default),
         ])] : this.$slots.default);
     },
@@ -55,9 +66,9 @@ export default {
   SHELF: component => Vue.component('KAppShelf', {
     render(h) {
       return h(QCollapsible, {
-        staticClass: 'kvc-collapsible',
+        staticClass: 'kcv-collapsible',
         props: {
-          headerClass: 'kvc-collapsible-header',
+          headerClass: 'kcv-collapsible-header',
           separator: true,
           group: component.attributes.parentId,
           label: component.name,
@@ -104,7 +115,7 @@ export default {
       },
       render(h) {
         return h('div', {
-          staticClass: 'kvc-tree-container',
+          staticClass: 'kcv-tree-container',
           style: {
             ...component.style,
             ...DEFAULT_STYLE_FUNCTION(component),
@@ -112,10 +123,10 @@ export default {
         },
         [
           h('div', {
-            staticClass: 'kvc-tree-legend',
+            staticClass: 'kcv-tree-legend',
           }, component.name),
           h(QTree, {
-            staticClass: 'kvc-tree',
+            staticClass: 'kcv-tree',
             props: {
               nodes: tree,
               nodeKey: 'id',
@@ -154,7 +165,7 @@ export default {
   LABEL: component => Vue.component('KAppText', {
     render(h) {
       return h('div', {
-        staticClass: 'kvc-label',
+        staticClass: 'kcv-label',
         attrs: {
           id: component.id,
         },
@@ -170,7 +181,7 @@ export default {
     },
     render(h) {
       return h(QInput, {
-        staticClass: ['kvc-text-input'],
+        staticClass: ['kcv-text-input'],
         props: {
           value: component.content,
           color: 'app-main',
@@ -186,7 +197,7 @@ export default {
                 ...component,
                 components: [],
               },
-              stringValue: value,
+              stringValue: Array.isArray(value) ? value[0] : value,
             });
           },
         },
@@ -200,7 +211,7 @@ export default {
     },
     render(h) {
       return h(QBtn, {
-        staticClass: 'kvc-pushbutton',
+        staticClass: 'kcv-pushbutton',
         props: {
           label: component.name,
           color: 'app-main-color',
@@ -226,13 +237,47 @@ export default {
   CHECK_BUTTON: component => Vue.component('KAppCheckButton', {
     data() {
       return {
+        value: component.content !== null,
+        component,
+      };
+    },
+    render(h) {
+      return h('div', {
+        staticClass: 'kcv-checkbutton',
+      }, [
+        h(QCheckbox, {
+          props: {
+            value: this.value,
+            color: 'app-container',
+            label: component.name,
+          },
+          on: {
+            input: (value) => {
+              this.value = value;
+              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+                operation: APPS_OPERATION.USER_ACTION,
+                component: {
+                  ...component,
+                  components: [],
+                },
+                booleanValue: value,
+              });
+            },
+          },
+        }),
+      ]);
+    },
+  }),
+  RADIO_BUTTON: component => Vue.component('KAppRadioButton', {
+    data() {
+      return {
         value: null,
         component,
       };
     },
     render(h) {
       return h('div', {
-        staticClass: 'kvc-checkbutton',
+        staticClass: 'kcv-checkbutton',
       }, [
         h(QRadio, {
           props: {
@@ -276,16 +321,16 @@ export default {
     return Vue.component('KAppText', {
       render(h) {
         return h('div', {
-          staticClass: 'kvc-text',
+          staticClass: 'kcv-text',
           class: {
-            'kvc-collapsible': component.attributes.collapse,
+            'kcv-collapsible': component.attributes.collapse,
           },
           attrs: {
             id: component.id,
           },
           style,
         }, [h('div', {
-          staticClass: 'kvc-internal-text',
+          staticClass: 'kcv-internal-text',
           domProps: {
             innerHTML: component.content,
           },
@@ -294,7 +339,7 @@ export default {
     });
     /*
     component.attributes.collapse ? h('div', {
-      staticClass: 'kvc-collapsible-icon',
+      staticClass: 'kcv-collapsible-icon',
     }, [
       h(QIcon, {
         props: {
@@ -315,4 +360,80 @@ export default {
       }, component.type);
     },
   }),
+};
+
+export function createComponent(node, h, options = {}) {
+  // Handle empty elements and return empty array in case the dNode passed in is empty
+  if (!node) {
+    return [];
+  }
+  let shelf = null;
+  if (node.attributes.parentAttributes && node.attributes.parentAttributes.shelf) {
+    shelf = COMPONENTS.SHELF(node);
+  }
+  let component;
+  const skipChildren = false;
+  switch (node.type) {
+    case null: {
+      const { mainPanelStyle, direction } = options;
+      component = COMPONENTS.MAIN({
+        ...node,
+        mainPanelStyle,
+        direction,
+      });
+      break;
+    }
+    case APPS_COMPONENTS.LABEL:
+      component = COMPONENTS.LABEL(node);
+      break;
+    case APPS_COMPONENTS.TEXT_INPUT:
+      component = COMPONENTS.TEXT_INPUT(node);
+      break;
+    case APPS_COMPONENTS.PUSH_BUTTON:
+      component = COMPONENTS.PUSH_BUTTON(node);
+      break;
+    case APPS_COMPONENTS.CHECK_BUTTON:
+      component = COMPONENTS.CHECK_BUTTON(node);
+      break;
+    case APPS_COMPONENTS.RADIO_BUTTON:
+      component = COMPONENTS.RADIO_BUTTON(node);
+      break;
+    case APPS_COMPONENTS.TREE:
+      component = COMPONENTS.TREE(node);
+      break;
+    case APPS_COMPONENTS.GROUP:
+      component = COMPONENTS.GROUP(node);
+      if (node.components && node.components.length > 0) {
+        node.components.forEach((comp) => {
+          comp.attributes.parentId = node.id;
+          comp.attributes.parentAttributes = node.attributes;
+        });
+      }
+      break;
+    case APPS_COMPONENTS.TEXT:
+      component = COMPONENTS.TEXT(node);
+      break;
+    default:
+      component = COMPONENTS.UNKNOWN(node);
+  }
+  const components = [];
+  if (!skipChildren && node.components && node.components.length > 0) {
+    node.components.forEach((comp) => {
+      components.push(createComponent(comp, h));
+    });
+  }
+  /*
+  const internalContent = components.length > 0 ? components : component.content;
+  const content = component.container ? component.container(internalContent) : internalContent;
+  const element = h(component.type, component.attributes, shelf ? [h(shelf.type, shelf.attributes, content)] : content);
+  */
+  if (shelf) {
+    return h(shelf, {}, [h(component, {}, components)]);
+  }
+  return h(component, {}, components);
+}
+
+export default {
+  COMPONENTS,
+  createComponent,
 };

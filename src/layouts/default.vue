@@ -36,7 +36,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import KExplorer from 'pages/KExplorer.vue';
-import KlabLayoutViewer from 'components/KlabLayoutViewer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
@@ -50,7 +49,6 @@ export default {
   name: 'LayoutDefault',
   components: {
     KExplorer,
-    KlabLayoutViewer,
     KlabComponentsViewer,
   },
   data() {

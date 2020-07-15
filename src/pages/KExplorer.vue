@@ -76,7 +76,6 @@ import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ObservationTime from 'components/ObservationTime.vue';
-import LayoutViewer from 'components/KlabLayoutViewer.vue';
 import { colors } from 'quasar';
 import KlabPresentation from 'components/KlabPresentation';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
@@ -96,7 +95,6 @@ export default {
     ScaleChangeDialog,
     KlabPresentation,
     ObservationTime,
-    LayoutViewer,
     KlabLeftMenu,
   },
   props: {
