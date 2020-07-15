@@ -110,6 +110,7 @@ export default {
     && (type === null || (type === SCALE_TYPE.ST_SPACE && state.nextScale.spaceChanged)
       || (type === SCALE_TYPE.ST_SPACE && state.nextScale.spaceChanged)),
 
+  capabilities: state => state.capabilities,
 
   /**
    * The search results

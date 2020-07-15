@@ -29,6 +29,70 @@
           <klab-components-viewer class="klab-main-container" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-components-viewer>
         </template>
     </q-page-container>
+    <div class="klab-settings-button q-layout-transition">
+      <q-fab
+        ref="klab-settings"
+        color="app-title-color"
+        icon="mdi-settings"
+        direction="up"
+      >
+        <q-fab-action
+          v-if="layout !== null"
+          color="app-main-background"
+          text-color="app-title-color"
+          @click="setLayout(null)"
+          icon="mdi-exit-to-app"
+        />
+        <q-fab-action
+          color="app-main-background"
+          text-color="app-title-color"
+          icon="mdi-account-circle"
+          @click="userDetailsVisible = true"
+        />
+      </q-fab>
+    </div>
+    <q-modal
+      id="modal-connection-status"
+      v-model="modalVisible"
+      no-esc-dismiss
+      no-backdrop-dismiss
+      :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
+      :content-classes="['modal-borders', 'no-padding', 'no-margin']"
+    >
+      <div class="bg-opaque-white modal-borders">
+        <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
+          <klab-spinner
+            :color="modalColor"
+            :size="40"
+            :ball="18"
+            id="modal-spinner"
+            :animated="modalAnimated"
+            wrapperId="modal-connection-status"
+          ></klab-spinner>
+          <span class="text-white">{{ modalText }}</span>
+        </div>
+      </div>
+    </q-modal>
+    <q-modal
+      id="klab-user-details"
+      :content-classes="['kud-container']"
+      v-model="userDetailsVisible"
+    >
+      <div class="kud-button">
+        <q-btn round size="xs" flat color="app-title-color" @click="userDetailsVisible = false" icon="mdi-close"></q-btn>
+      </div>
+      <div class="kud-title">{{ $t('label.userDetails') }}</div>
+      <div class="kud-owner">
+        <div class="kud-owner-unknown" v-if="owner.unknown">{{ owner.unknown }}</div>
+        <template v-else>
+          <div class="kud-owner-id"><span class="kud-label">{{ $t('label.userId') }}</span><span class="kud-value">{{ owner.id }}</span></div>
+          <div class="kud-owner-email"><span class="kud-label">{{ $t('label.userEmail') }}</span><span class="kud-value">{{ owner.email }}</span></div>
+          <div class="kud-owner-lastlogin"><span class="kud-label">{{ $t('label.userLastLogin') }}</span><span class="kud-value">{{ owner.lastLogin }}</span></div>
+          <div class="kud-owner-groups"><span class="kud-label">{{ $t('label.userGroups') }}</span><span class="kud-value">{{ owner.groups }}</span></div>
+        </template>
+      </div>
+    </q-modal>
+    <klab-presentation></klab-presentation>
     <q-resize-observable @resize="updateLayout" />
   </q-layout>
 </template>
@@ -37,10 +101,12 @@
 import { mapGetters, mapActions } from 'vuex';
 import KExplorer from 'pages/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import KlabPresentation from 'components/KlabPresentation';
+import KlabSpinner from 'components/KlabSpinner.vue';
+import { CUSTOM_EVENTS, CONNECTION_CONSTANTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { dom } from 'quasar';
+import { colors, dom } from 'quasar';
 import { axiosInstance } from 'plugins/axios';
 
 const { width, height } = dom;
@@ -51,6 +117,8 @@ export default {
   components: {
     KExplorer,
     KlabComponentsViewer,
+    KlabPresentation,
+    KlabSpinner,
   },
   data() {
     return {
@@ -64,12 +132,56 @@ export default {
       },
       logoImage: DEFAULT_LOGO,
       showLeft: true,
+      userDetailsVisible: false,
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'sessionReference',
+    ]),
+    ...mapGetters('stomp', [
+      'connectionState',
+    ]),
     ...mapGetters('view', [
       'layout',
     ]),
+    modalVisible: {
+      get() {
+        return this.connectionState !== CONNECTION_CONSTANTS.CONNECTION_UP;
+      },
+      set(visible) {
+        console.warn(`Try to set modalVisible as ${visible}`);
+      },
+    },
+    modalText() {
+      return {
+        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: this.$t('messages.connectionClosed'),
+        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
+        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
+        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: this.$t('errors.connectionError'),
+      }[this.connectionState];
+    },
+    modalColor() {
+      return {
+        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: colors.getBrand('warning'),
+        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: colors.getBrand('warning'),
+        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: colors.getBrand('info'),
+        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: colors.getBrand('negative'),
+      }[this.connectionState];
+    },
+    modalAnimated() {
+      return {
+        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: false,
+        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: false,
+        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: true,
+        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: false,
+      }[this.connectionState];
+    },
+    owner() {
+      return (this.sessionReference && this.sessionReference.owner) ? this.sessionReference.owner : {
+        unknown: this.$t('label.unknownUser'),
+      };
+    },
     hasHeader() {
       return this.logo !== null || this.layout.header !== null;
     },
@@ -89,6 +201,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setLayout',
+    ]),
     setLogoImage() {
       if (this.layout && this.layout.logo) {
         axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`, {
@@ -124,6 +239,9 @@ export default {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, 'changelayout');
       });
     },
+    closeSettings() {
+      this.$refs['klab-settings'].hide();
+    },
   },
   watch: {
     layout(newLayout, oldLayout) {
@@ -149,6 +267,27 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  .bg-opaque-white
+    background rgba(255, 255, 255, 0.3)
+  .modal-borders
+    border-radius 40px
+
+  #modal-spinner
+    margin-right 10px
+    margin-left 1px
+
+  .modal-klab-content > span
+    display inline-block
+    line-height 100%
+    vertical-align middle
+    margin-right 15px
+
+  #modal-connection-status .modal-content
+    min-width 200px
+
+  #modal-connection-status.fullscreen
+    z-index 10000
+
   .q-layout
     border 0
     padding 0
@@ -185,11 +324,64 @@ export default {
   .klab-main-container
     padding-top 10px
     background-color $app-main-background
-  .klab-closeapp-container
+  .klab-settings-button
     position fixed
-    top 50px
-    left 50px
-    z-index 1000000
-
+    bottom 26px
+    right 6px
+    opacity 0.2
+    .q-btn-fab
+      height 32px
+      width 32px
+      .q-icon
+        font-size 16px
+    .q-btn-fab-mini
+      height 24px
+      width 24px
+      .q-icon
+        font-size 12px
+  .q-fab-up
+    bottom 100%
+    padding-bottom 10%
+  .klab-settings-button
+  .q-fab-actions
+    &:hover
+      opacity 1
+      .q-btn-fab
+        height 56px
+        width 56px
+        .q-icon
+          font-size 28px
+      .q-btn-fab-mini
+        height 48px
+        width 48px
+        .q-icon
+          font-size 24px
+  .kud-container
+    background-color rgba(253,253,253,.8)
+    padding 15px
+    width 500px
+    border-radius 5px
+    .kud-title
+      font-size 1.3em
+      color $app-title-color
+      font-width: 400;
+    .kud-owner
+      border 1px solid $app-title-color
+      border-radius 5px
+      padding 20px
+      .kud-label
+        display inline-block
+        width 100px
+        line-height 1.5em
+        color $app-title-color
+      .kud-value
+        display inline-block
+        line-height 1.5em
+    .kud-button
+      position absolute
+      width 10px
+      height 10px
+      top 5px
+      right 20px
 
 </style>

@@ -121,6 +121,12 @@ export default {
     levelWarning: 'Warning',
     levelError: 'Error',
     levelEngineEvent: 'Engine event',
+    userDetails: 'User details',
+    unknownUser: 'Unknown user',
+    userId: 'Id:',
+    userEmail: 'Email:',
+    userLastLogin: 'Last login:',
+    userGroups: 'Groups:',
   },
   messages: {
     connectionClosed: 'Connection closed',

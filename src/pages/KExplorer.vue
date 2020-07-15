@@ -34,29 +34,6 @@
           <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
         </transition>
         <observation-time v-if="!isMainControlDocked"></observation-time>
-        <q-modal
-          id="modal-connection-status"
-          v-model="modalVisible"
-          no-esc-dismiss
-          no-backdrop-dismiss
-          :content-css="{'background-color': `rgba(${hexToRgbValues(modalColor)}, 0.5)`}"
-          :content-classes="['modal-borders', 'no-padding', 'no-margin']"
-        >
-          <div class="bg-opaque-white modal-borders">
-            <div class="q-pa-xs text-bold modal-klab-content" :style="{color: modalColor}">
-              <klab-spinner
-                :color="modalColor"
-                :size="40"
-                :ball="18"
-                id="modal-spinner"
-                :animated="modalAnimated"
-                wrapperId="modal-connection-status"
-              ></klab-spinner>
-              <span class="text-white">{{ modalText }}</span>
-            </div>
-          </div>
-        </q-modal>
-        <klab-presentation></klab-presentation>
         <input-request-modal></input-request-modal>
         <scale-change-dialog></scale-change-dialog>
       </q-page>
@@ -66,18 +43,15 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, CONNECTION_CONSTANTS, WEB_CONSTANTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, WEB_CONSTANTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
 import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
-import KlabSpinner from 'components/KlabSpinner.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ObservationTime from 'components/ObservationTime.vue';
-import { colors } from 'quasar';
-import KlabPresentation from 'components/KlabPresentation';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 import 'ol/ol.css';
 import 'simplebar/dist/simplebar.css';
@@ -90,10 +64,8 @@ export default {
     DataViewer,
     ReportViewer,
     DataflowViewer,
-    KlabSpinner,
     InputRequestModal,
     ScaleChangeDialog,
-    KlabPresentation,
     ObservationTime,
     KlabLeftMenu,
   },
@@ -112,9 +84,6 @@ export default {
   computed: {
     ...mapGetters('data', [
       'session',
-    ]),
-    ...mapGetters('stomp', [
-      'connectionState',
     ]),
     ...mapGetters('view', [
       'searchIsActive',
@@ -141,14 +110,6 @@ export default {
     logVisible() {
       return this.$logVisibility === WEB_CONSTANTS.PARAMS_LOG_VISIBLE;
     },
-    modalVisible: {
-      get() {
-        return this.connectionState !== CONNECTION_CONSTANTS.CONNECTION_UP;
-      },
-      set(visible) {
-        console.warn(`Try to set modalVisible as ${visible}`);
-      },
-    },
     leftMenuVisible: {
       get() {
         return this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN;
@@ -156,30 +117,6 @@ export default {
       set(visibility) {
         this.setLeftMenuState(visibility);
       },
-    },
-    modalText() {
-      return {
-        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: this.$t('messages.connectionClosed'),
-        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: this.$t('messages.connectionClosed'),
-        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: this.$t('messages.connectionWorking'),
-        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: this.$t('errors.connectionError'),
-      }[this.connectionState];
-    },
-    modalColor() {
-      return {
-        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: colors.getBrand('warning'),
-        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: colors.getBrand('warning'),
-        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: colors.getBrand('info'),
-        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: colors.getBrand('negative'),
-      }[this.connectionState];
-    },
-    modalAnimated() {
-      return {
-        [CONNECTION_CONSTANTS.CONNECTION_UNKNOWN]: false,
-        [CONNECTION_CONSTANTS.CONNECTION_DOWN]: false,
-        [CONNECTION_CONSTANTS.CONNECTION_WORKING]: true,
-        [CONNECTION_CONSTANTS.CONNECTION_ERROR]: false,
-      }[this.connectionState];
     },
   },
   methods: {
@@ -258,25 +195,12 @@ export default {
   },
 };
 </script>
-<style scoped>
-  .row > div {
-    /*
-    padding: 10px 15px;
-    background: rgba(86, 61, 124, .15);
-    border: 1px solid rgba(86, 61, 124, .2);
-    */
-  }
-  .bg-opaque-white {
-    background: rgba(255, 255, 255, 0.3)
-  }
-</style>
 <style lang="stylus">
   @import '~variables'
   #kexplorer-container
     background-color $blue-grey-10
     background-image url("../assets/dark-dot.png")
-  .modal-borders
-    border-radius 40px
+
   .klab-spinner
     display inline
     vertical-align middle
@@ -286,19 +210,6 @@ export default {
     border-radius 40px
     padding 3px
     margin 0
-
-  #modal-spinner
-    margin-right 10px
-    margin-left 1px
-  .modal-klab-content > span
-    display inline-block
-    line-height 100%
-    vertical-align middle
-    margin-right 15px
-
-  #modal-connection-status .modal-content
-    min-width 200px
-
   #mc-undocking
     position fixed
     left 0
@@ -307,9 +218,6 @@ export default {
     border 4px solid rgba(135, 135, 135, .6)
     animation-duration .2s
     cursor move
-
-  #modal-connection-status.fullscreen
-    z-index 10000
 
   .klab-left
     position absolute
