@@ -14,6 +14,7 @@ const EMPTY_VIEWACTION_MESSAGE = {
   dateValue: null,
   data: null,
   operation: null,
+  listValue: [],
 };
 
 export default {

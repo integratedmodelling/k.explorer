@@ -42,13 +42,17 @@
           text-color="app-title-color"
           @click="setLayout(null)"
           icon="mdi-exit-to-app"
-        />
+        >
+          <q-tooltip anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appClose') }}</q-tooltip>
+        </q-fab-action>
         <q-fab-action
           color="app-main-background"
           text-color="app-title-color"
           icon="mdi-account-circle"
           @click="userDetailsVisible = true"
-        />
+        >
+          <q-tooltip class="klab-setting-tooltip" anchor="center left" self="center right" :offset="[16, 0]">{{ $t('label.userDetails') }}</q-tooltip>
+        </q-fab-action>
       </q-fab>
     </div>
     <q-modal
@@ -356,6 +360,8 @@ export default {
         width 48px
         .q-icon
           font-size 24px
+  .klab-setting-tooltip
+    background-color $app-title-color
   .kud-container
     background-color rgba(253,253,253,.8)
     padding 15px

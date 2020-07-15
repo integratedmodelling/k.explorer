@@ -145,7 +145,7 @@ export const COMPONENTS = {
                     ...component,
                     components: [],
                   },
-                  stringValue: value,
+                  listValue: value,
                 });
               },
               'update:selected': (value) => {
@@ -197,7 +197,7 @@ export const COMPONENTS = {
                 ...component,
                 components: [],
               },
-              stringValue: Array.isArray(value) ? value[0] : value,
+              stringValue: value,
             });
           },
         },
