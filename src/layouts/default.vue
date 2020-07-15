@@ -34,13 +34,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import KExplorer from 'pages/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
-import { axiosInstance } from '../plugins/axios';
+import { axiosInstance } from 'plugins/axios';
 
 const { width, height } = dom;
 const DEFAULT_LOGO = 'statics/klab-logo.png';
@@ -125,12 +126,18 @@ export default {
     },
   },
   watch: {
-    layout() {
+    layout(newLayout, oldLayout) {
       // setTimeout(() => {
       this.$nextTick(() => {
         this.updateLayout();
       // }, 400);
       });
+      if (oldLayout !== null) {
+        this.sendStompMessage(MESSAGES_BUILDERS.STOP_APPLICATION(
+          { applicationId: oldLayout.applicationId },
+          this.$store.state.data.session,
+        ).body);
+      }
     },
   },
   created() {},
@@ -178,4 +185,11 @@ export default {
   .klab-main-container
     padding-top 10px
     background-color $app-main-background
+  .klab-closeapp-container
+    position fixed
+    top 50px
+    left 50px
+    z-index 1000000
+
+
 </style>

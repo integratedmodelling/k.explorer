@@ -24,6 +24,7 @@ export const OUT = Object.freeze({
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
   CLASS_USERINTERFACE: 'UserInterface',
   CLASS_NOTIFICATION: 'Notification',
+  CLASS_RUN: 'Run',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_FEATUREADDED: 'FeatureAdded',
@@ -42,6 +43,7 @@ export const OUT = Object.freeze({
   TYPE_WATCHOBSERVATION: 'WatchObservation',
   TYPE_ENGINEEVENT: 'EngineEvent',
   TYPE_VIEWACTION: 'ViewAction',
+  TYPE_RUNAPP: 'RunApp',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -58,6 +60,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
   PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
+  PAYLOAD_CLASS_LOADAPPLICATIONREQUEST: 'LoadApplicationRequest',
 
 });
 
