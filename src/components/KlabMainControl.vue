@@ -230,6 +230,7 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       paletteOpen: false,
+      windowSide: 'left',
     };
   },
   computed: {
@@ -342,9 +343,12 @@ export default {
     },
     mapSizeChangedListener(event) {
       if (event && event.type === 'changelayout') {
+        if (event.align) {
+          this.windowSide = event.align;
+        }
         this.updateCorrectedPosition();
         this.$nextTick(() => {
-          this.changeDraggablePosition({ left: this.hasContext ? (event.align === 'left' ? this.defaultLeft : this.getRightLeft()) : this.getCenteredLeft(), top: this.defaultTop }, false);
+          this.changeDraggablePosition({ left: this.hasContext ? (this.windowSide === 'left' ? this.defaultLeft : this.getRightLeft()) : this.getCenteredLeft(), top: this.defaultTop }, false);
         });
         return;
       }
@@ -387,7 +391,7 @@ export default {
       this.$nextTick(() => {
         this.changeDraggablePosition({
           top: this.defaultTop,
-          left: this.hasContext ? this.defaultLeft : this.getCenteredLeft(),
+          left: this.hasContext ? (this.windowSide === 'left' ? this.defaultLeft : this.getRightLeft()) : this.getCenteredLeft(),
         }, false);
       });
       // this.draggableElement.classList.remove('vuela');

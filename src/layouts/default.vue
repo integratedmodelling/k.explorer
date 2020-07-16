@@ -306,6 +306,8 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  $title-size = 26px;
+  $subtitle-size = 16px;
   .bg-opaque-white
     background rgba(255, 255, 255, 0.3)
   .modal-borders
@@ -348,17 +350,20 @@ export default {
       float left
       height 80px
       vertical-align center
-      font-weight 400
-      padding-top 20px
+      padding-top 'calc((80px - %s - 5px) / 2)' % ($title-size + $subtitle-size)
       padding-left 10px
       .main-title
-      .main-subtitle
-        height 20px
-      .main-title
+        height $title-size
+        line-height $title-size
         font-weight 500
         color $app-title-color
+        font-size $title-size
+        margin-bottom 5px
       .main-subtitle
-        font-size small
+        height $subtitle-size
+        line-height $subtitle-size
+        font-size $subtitle-size
+        font-weight 300
   .klab-main-left-panel
   .klab-main-container
     padding-top 10px
