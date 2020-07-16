@@ -43,7 +43,7 @@
           @click="setLayout(null)"
           icon="mdi-exit-to-app"
         >
-          <q-tooltip anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appClose') }}</q-tooltip>
+          <q-tooltip class="klab-setting-tooltip" anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appClose') }}</q-tooltip>
         </q-fab-action>
         <q-fab-action
           color="app-main-background"

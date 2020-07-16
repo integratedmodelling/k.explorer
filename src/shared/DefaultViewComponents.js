@@ -137,15 +137,15 @@ export const COMPONENTS = {
               color: 'app-container',
             },
             on: {
-              'update:ticked': (value) => {
-                this.ticked = value;
+              'update:ticked': (values) => {
+                this.ticked = values;
                 this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
                     components: [],
                   },
-                  listValue: value,
+                  listValue: values,
                 });
               },
               'update:selected': (value) => {

@@ -59,6 +59,7 @@ export default {
   methods: {
     componentClickedListener(event) {
       delete event.component.attributes.parentAttributes;
+      delete event.component.attributes.parentId;
       this.sendStompMessage(MESSAGES_BUILDERS.VIEW_ACTION({
         ...EMPTY_VIEWACTION_MESSAGE,
         ...event,
@@ -152,7 +153,7 @@ export default {
     border 1px solid $app-main-color
     padding 5px
   .kcv-pushbutton
-    margin 0 5px
+    margin 5px
   .kcv-checkbutton
     display block
     width 100%
