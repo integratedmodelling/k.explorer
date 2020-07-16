@@ -127,6 +127,7 @@ export default {
     userEmail: 'Email:',
     userLastLogin: 'Last login:',
     userGroups: 'Groups:',
+    acceptAlert: 'Ok',
   },
   messages: {
     connectionClosed: 'Connection closed',

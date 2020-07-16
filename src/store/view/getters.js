@@ -124,7 +124,7 @@ export default {
    * Layout from k.LAB
    */
   layout: state => state.layout,
-  // layoutsByType: state => types => state.layouts.filter(vc => types.includes(vc.type)),
+  activeAlerts: state => state.alerts.filter(a => !a.dismiss),
 
   engineEvents: state => state.engineEvents,
   engineEventsCount: state => state.engineEvents.length,

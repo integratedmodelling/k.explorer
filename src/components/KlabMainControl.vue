@@ -280,6 +280,10 @@ export default {
       this.dragMCConfig.resetInitialPos = false;
       this.isHidden = false;
     },
+    getRightLeft() {
+      const boundingWidth = width(this.boundingElement);
+      return boundingWidth - this.draggableElement.offsetWidth - DEFAULT_POSITION.left + this.correctedPosition.left;
+    },
     getCenteredLeft() {
       let centeredLeft;
       if (typeof this.draggableElement !== 'undefined' && !this.hasContext) {
@@ -337,10 +341,10 @@ export default {
       return `rgba(${this.spinnerColor.rgb.r},${this.spinnerColor.rgb.g},${this.spinnerColor.rgb.b}, ${alpha})`;
     },
     mapSizeChangedListener(event) {
-      if (event === 'changelayout') {
+      if (event && event.type === 'changelayout') {
         this.updateCorrectedPosition();
         this.$nextTick(() => {
-          this.changeDraggablePosition({ left: this.centeredLeft, top: this.defaultTop }, false);
+          this.changeDraggablePosition({ left: this.hasContext ? (event.align === 'left' ? this.defaultLeft : this.getRightLeft()) : this.getCenteredLeft(), top: this.defaultTop }, false);
         });
         return;
       }

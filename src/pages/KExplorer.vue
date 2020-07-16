@@ -85,6 +85,9 @@ export default {
     ...mapGetters('data', [
       'session',
     ]),
+    ...mapGetters('stomp', [
+      'connectionDown',
+    ]),
     ...mapGetters('view', [
       'searchIsActive',
       'searchIsFocused',
@@ -166,7 +169,7 @@ export default {
   mounted() {
     // const self = this;
     window.addEventListener('keydown', (event) => {
-      if (this.modalVisible || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
+      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {

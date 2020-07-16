@@ -96,6 +96,20 @@
         </template>
       </div>
     </q-modal>
+    <q-modal
+      v-model="hasActiveAlerts"
+      v-if="activeAlert"
+      content-classes="kaa-container"
+    >
+      <div class="kaa-content" v-html="activeAlert.content"></div>
+      <div class="kaa-button">
+        <q-btn
+          color="app-title-color"
+          @click="activeAlert.dismiss = true"
+          :label="$t('label.acceptAlert')"
+        />
+      </div>
+    </q-modal>
     <klab-presentation></klab-presentation>
     <q-resize-observable @resize="updateLayout" />
   </q-layout>
@@ -137,6 +151,7 @@ export default {
       logoImage: DEFAULT_LOGO,
       showLeft: true,
       userDetailsVisible: false,
+      activeAlert: null,
     };
   },
   computed: {
@@ -145,13 +160,23 @@ export default {
     ]),
     ...mapGetters('stomp', [
       'connectionState',
+      'connectionDown',
     ]),
     ...mapGetters('view', [
       'layout',
+      'activeAlerts',
     ]),
+    hasActiveAlerts: {
+      get() {
+        return this.activeAlerts.length > 0;
+      },
+      set() {
+        // nothing to do
+      },
+    },
     modalVisible: {
       get() {
-        return this.connectionState !== CONNECTION_CONSTANTS.CONNECTION_UP;
+        return this.connectionDown;
       },
       set(visible) {
         console.warn(`Try to set modalVisible as ${visible}`);
@@ -240,11 +265,17 @@ export default {
       }
       this.leftPanel.height = window.innerHeight - this.header.height;
       this.$nextTick(() => {
-        this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, 'changelayout');
+        this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
     },
-    closeSettings() {
-      this.$refs['klab-settings'].hide();
+    setActiveAlert() {
+      if (this.activeAlerts.length > 0) {
+        this.activeAlert = this.activeAlerts[this.activeAlerts.length - 1];
+      } else {
+        this.$nextTick(() => {
+          this.activeAlert = null;
+        });
+      }
     },
   },
   watch: {
@@ -261,10 +292,14 @@ export default {
         ).body);
       }
     },
+    activeAlerts() {
+      this.setActiveAlert();
+    },
   },
   created() {},
   mounted() {
     this.updateLayout();
+    this.setActiveAlert();
   },
 };
 </script>
@@ -363,10 +398,12 @@ export default {
   .klab-setting-tooltip
     background-color $app-title-color
   .kud-container
+  .kaa-container
     background-color rgba(253,253,253,.8)
     padding 15px
-    width 500px
     border-radius 5px
+  .kud-container
+    width 500px
     .kud-title
       font-size 1.3em
       color $app-title-color
@@ -389,5 +426,14 @@ export default {
       height 10px
       top 5px
       right 20px
-
+  .kaa-container
+    .kaa-content
+      border 1px solid $app-title-color
+      border-radius 5px
+      padding 20px
+      color $app-title-color
+    .kaa-button
+      margin 10px 0 0 0
+      width 100%
+      text-align right
 </style>

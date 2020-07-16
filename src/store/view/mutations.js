@@ -379,6 +379,13 @@ export default {
   },
 
   CREATE_VIEW_COMPONENT: (state, component) => {
+    if (component.type === APPS_COMPONENTS.ALERT) {
+      state.alerts.push({
+        ...component,
+        dismiss: false,
+      });
+      return;
+    }
     const findComponent = (layout, key = null) => {
       if (layout && key !== null) {
         const { reduce } = [];

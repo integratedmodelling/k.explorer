@@ -358,6 +358,10 @@ export default {
   },
 
   setLayout: ({ commit }, layout) => {
+    if (layout !== null && (layout.platform === 'DESKTOP' || layout.platform === 'MOBILE')) {
+      console.info(`Received an app for another platform: ${layout.platform}`);
+      return;
+    }
     commit('SET_LAYOUT', layout);
   },
 

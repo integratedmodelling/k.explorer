@@ -3,6 +3,7 @@ import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn } from 'q
 import { findNodeById } from './Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS } from './Constants';
 
+
 export const COMPONENTS = {
   ALERT: component => Vue.component('KAppAlert', {
     render(h) {
@@ -172,7 +173,6 @@ export const COMPONENTS = {
       }, component.content);
     },
   }),
-
   TEXT_INPUT: component => Vue.component('KAppTextInput', {
     data() {
       return {
@@ -189,6 +189,9 @@ export const COMPONENTS = {
           dense: true,
         },
         on: {
+          keydown: (event) => {
+            event.stopPropagation();
+          },
           input: (value) => {
             this.value = value;
             this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
