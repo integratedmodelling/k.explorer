@@ -174,4 +174,6 @@ export default {
     .kcv-internal-text
       p
         margin-bottom 15px
+      strong
+        color var(--app-title-color)
 </style>

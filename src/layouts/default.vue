@@ -450,7 +450,7 @@ export default {
           font-size 24px
   .klab-setting-tooltip
     background-color var(--app-main-color)
-    color var(--app-text-color)
+    color var(--app-background-color)
   .kud-container
   .kaa-container
     background-color rgba(253,253,253,.8)

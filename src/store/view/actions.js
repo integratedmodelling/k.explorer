@@ -365,11 +365,11 @@ export default {
     commit('SET_LAYOUT', {
       ...layout,
       /*
-      style: 'light',
+      style: 'worst',
 
       styleSpecs: {
         ...layout.styleSpecs,
-        'main-color': 'red',
+        // 'main-color': 'red',
         /*
         'background-color': 'green',
         'text-color': 'blue',
@@ -379,7 +379,9 @@ export default {
         density: 'confortable',
         'title-size': '4em',
         'subtitle-size': '4em',
+
       },
+
        */
     });
   },

@@ -868,6 +868,17 @@ export const DEFAULT_STYLES = {
     'subtitle-size': '16px',
     'line-height': '1em',
   },
+  worst: {
+    'main-color': 'Green',
+    'background-color': 'yellow',
+    'text-color': 'Red',
+    'title-color': 'Indigo',
+    'font-family': 'comics',
+    'font-size': '1.2em',
+    'title-size': '32px',
+    'subtitle-size': '20px',
+    'line-height': '1.2em',
+  },
   default: {
     'main-color': 'rgb(0, 92, 129)',
     'background-color': 'rgb(250, 250, 250)',
