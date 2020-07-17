@@ -32,22 +32,23 @@
     <div class="klab-settings-button q-layout-transition">
       <q-fab
         ref="klab-settings"
-        color="app-title-color"
+        color="app-main-color"
+        text-color="app-background-color"
         icon="mdi-settings"
         direction="up"
       >
         <q-fab-action
           v-if="layout !== null"
-          color="app-main-background"
-          text-color="app-title-color"
+          text-color="app-main-color"
+          color="app-background-color"
           @click="setLayout(null)"
           icon="mdi-exit-to-app"
         >
           <q-tooltip class="klab-setting-tooltip" anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appClose') }}</q-tooltip>
         </q-fab-action>
         <q-fab-action
-          color="app-main-background"
-          text-color="app-title-color"
+          color="app-background-color"
+          text-color="app-main-color"
           icon="mdi-account-circle"
           @click="userDetailsVisible = true"
         >
@@ -126,6 +127,7 @@ import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { colors, dom } from 'quasar';
 import { axiosInstance } from 'plugins/axios';
+import { DEFAULT_STYLES } from '../shared/Constants';
 
 const { width, height } = dom;
 const DEFAULT_LOGO = 'statics/klab-logo.png';
@@ -248,6 +250,46 @@ export default {
         this.logoImage = DEFAULT_LOGO;
       }
     },
+    setStyle() {
+      if (this.layout) {
+        let style = null;
+        if (this.layout.style) {
+          if (DEFAULT_STYLES[this.layout.style]) {
+            style = {
+              ...DEFAULT_STYLES[this.layout.style],
+            };
+          }
+        }
+        if (this.layout.styleSpecs) {
+          style = {
+            ...style,
+            ...this.layout.styleSpecs,
+          };
+        }
+        if (style !== null) {
+          Object.keys(style).forEach((key) => {
+            let value = style[key];
+            if (key === 'density') {
+              key = 'line-height';
+              switch (style.density) {
+                case 'default':
+                  value = 1;
+                  break;
+                case 'confortable':
+                  value = 1.5;
+                  break;
+                case 'compact':
+                  value = 0.5;
+                  break;
+                default:
+                  value = 1;
+              }
+            }
+            document.documentElement.style.setProperty(`--app-${key}`, value);
+          });
+        }
+      }
+    },
     updateLayout() {
       this.setLogoImage();
       const header = document.getElementById('klab-main-header');
@@ -267,28 +309,7 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
-      if (this.layout && this.layout.styleSpecs) {
-        Object.keys(this.layout.styleSpecs).forEach((key) => {
-          let value = this.layout.styleSpecs[key];
-          if (key === 'density') {
-            key = 'line-height';
-            switch (this.layout.styleSpecs.density) {
-              case 'default':
-                value = 1;
-                break;
-              case 'confortable':
-                value = 1.5;
-                break;
-              case 'compact':
-                value = 0.5;
-                break;
-              default:
-                value = 1;
-            }
-          }
-          document.documentElement.style.setProperty(`--app-${key}`, value);
-        });
-      }
+      this.setStyle();
     },
     setActiveAlert() {
       if (this.activeAlerts.length > 0) {
@@ -429,6 +450,7 @@ export default {
           font-size 24px
   .klab-setting-tooltip
     background-color var(--app-main-color)
+    color var(--app-text-color)
   .kud-container
   .kaa-container
     background-color rgba(253,253,253,.8)

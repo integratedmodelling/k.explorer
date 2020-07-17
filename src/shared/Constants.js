@@ -845,6 +845,42 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
   return retStyle;
 };
 
+export const DEFAULT_STYLES = {
+  dark: {
+    'main-color': 'white',
+    'background-color': 'black',
+    'text-color': 'white',
+    'title-color': 'white',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+  light: {
+    'main-color': 'black',
+    'background-color': 'white',
+    'text-color': 'black',
+    'title-color': 'black',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+  default: {
+    'main-color': 'rgb(0, 92, 129)',
+    'background-color': 'rgb(250, 250, 250)',
+    'text-color': 'rgb(0, 92, 129)',
+    'title-color': 'rgb(0, 92, 129)',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,
@@ -874,4 +910,6 @@ export default {
   HELP_CONSTANTS,
   OBSERVATION_CONTEXT_ITEMS,
   ENGINE_EVENTS,
+  DEFAULT_STYLE_FUNCTION,
+  DEFAULT_STYLES,
 };

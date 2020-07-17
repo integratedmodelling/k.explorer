@@ -165,6 +165,7 @@ export default {
     // border 1px solid #999
     text-align justify
     position relative
+    color var(--app-text-color)
     .kcv-collapsible-icon
       position absolute
       width 20px

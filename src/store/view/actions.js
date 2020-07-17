@@ -364,10 +364,13 @@ export default {
     }
     commit('SET_LAYOUT', {
       ...layout,
+      /*
+      style: 'light',
+
       styleSpecs: {
         ...layout.styleSpecs,
-        /*
         'main-color': 'red',
+        /*
         'background-color': 'green',
         'text-color': 'blue',
         'title-color': 'yellow',
@@ -376,8 +379,8 @@ export default {
         density: 'confortable',
         'title-size': '4em',
         'subtitle-size': '4em',
-        */
       },
+       */
     });
   },
 
