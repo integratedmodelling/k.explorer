@@ -160,6 +160,8 @@ module.exports = function (ctx) {
         'QCarouselSlide',
         'QCarouselControl',
         'QDatetime',
+        'QFab',
+        'QFabAction',
       ],
       directives: [
         'Ripple',
