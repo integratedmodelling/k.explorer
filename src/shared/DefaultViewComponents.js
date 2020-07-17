@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn } from 'quasar';
+import SimpleBar from 'simplebar';
 import { findNodeById } from './Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS } from './Constants';
 
@@ -300,37 +301,32 @@ export const COMPONENTS = {
     },
   }),
   TEXT: component => Vue.component('KAppText', {
+    data() {
+      return {
+        scrollbar: undefined,
+      };
+    },
+    mounted() {
+      this.scrollbar = new SimpleBar(document.getElementById(component.id));
+    },
     render(h) {
       return h('div', {
         staticClass: 'kcv-text',
         class: {
           'kcv-collapsible': component.attributes.collapse,
         },
-        attrs: {
-          id: component.id,
-        },
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [h('div', {
         staticClass: 'kcv-internal-text',
+        attrs: {
+          id: component.id,
+        },
         domProps: {
           innerHTML: component.content,
         },
       })]);
     },
   }),
-  /*
-  component.attributes.collapse ? h('div', {
-    staticClass: 'kcv-collapsible-icon',
-  }, [
-    h(QIcon, {
-      props: {
-        name: 'mdi-menu-up',
-        color: 'black',
-        size: '20px',
-      },
-    }),
-  ]) : null,
-   */
 
   UNKNOWN: component => Vue.component('KAppUnknown', {
     render(h) {

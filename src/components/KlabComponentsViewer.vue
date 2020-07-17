@@ -171,7 +171,10 @@ export default {
       width 20px
       height 20px
       right 0
+    .simplebar-scrollbar::before
+      background-color var(--app-main-color)
     .kcv-internal-text
+      overflow auto
       p
         margin-bottom 15px
       strong

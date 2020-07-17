@@ -253,13 +253,9 @@ export default {
     setStyle() {
       if (this.layout) {
         let style = null;
-        if (this.layout.style) {
-          if (DEFAULT_STYLES[this.layout.style]) {
-            style = {
-              ...DEFAULT_STYLES[this.layout.style],
-            };
-          }
-        }
+        style = {
+          ...(this.layout.style && DEFAULT_STYLES[this.layout.style] ? DEFAULT_STYLES[this.layout.style] : DEFAULT_STYLES.default),
+        };
         if (this.layout.styleSpecs) {
           style = {
             ...style,

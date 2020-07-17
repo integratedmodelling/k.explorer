@@ -364,9 +364,8 @@ export default {
     }
     commit('SET_LAYOUT', {
       ...layout,
+      // style: 'worst',
       /*
-      style: 'worst',
-
       styleSpecs: {
         ...layout.styleSpecs,
         // 'main-color': 'red',
@@ -381,8 +380,7 @@ export default {
         'subtitle-size': '4em',
 
       },
-
-       */
+      */
     });
   },
 
