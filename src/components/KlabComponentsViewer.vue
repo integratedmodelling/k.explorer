@@ -92,11 +92,11 @@ export default {
   .kcv-alert .modal-backdrop
     background-color transparent
   .kcv-collapsible-header
-    background-color $app-main-color
-    color $app-main-background
+    background-color var(--app-main-color)
+    color var(--app-background-color)
     position: relative
     .q-item-side
-      color $app-main-background
+      color var(--app-background-color)
   .kcv-collapsible
     clear both
     .kcv-tree-container
@@ -117,14 +117,14 @@ export default {
     border-radius 6px
     position relative
     &:not(.kcv-group-no-label)
-      border 1px solid $app-container
+      border 1px solid var(--app-main-color)
       margin-bottom 30px
       padding-top 20px
     .kcv-tree-legend
     .kcv-group-legend
       position absolute
-      background-color $app-container
-      color $app-main-background
+      background-color var(--app-main-color)
+      color var(--app-background-color)
       padding 5px 10px
       font-weight 400
       top -14px
@@ -144,13 +144,13 @@ export default {
     overflow hidden
     white-space nowrap
     text-overflow ellipsis
-    color $app-title-color
+    color var(--app-main-color)
     vertical-align middle
     line-height 1.8em
   .kcv-text-input
     line-height 1em
     vertical-align middle
-    border 1px solid $app-main-color
+    border 1px solid var(--app-main-color)
     padding 5px
   .kcv-pushbutton
     margin 5px

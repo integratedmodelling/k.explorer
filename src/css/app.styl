@@ -1,14 +1,10 @@
 @import '~variables'
 // App specifics sytles
-body
-  background-color $blue-grey-10
-  background-image url("../assets/dark-dot.png")
 body .ol-zoom
   position absolute
   left unset
   right .5em
   top .5em
-
 
 .text-sem-quality
   color $sem-quality
@@ -125,29 +121,24 @@ body .ol-zoom
   background $main-control-red
 
 .text-app-main-color
-  color $app-main-color
+  color var(--app-main-color)
 .bg-app-main-color
-  background $app-main-color
+  background var(--app-main-color)
 
-.text-app-main-text-color
-  color $app-main-text-color
+.text-app-text-color
+  color var(--app-text-color)
 .bg-app-main-text-color
-  background $app-main-text-color
+  background var(--app-text-color)
 
 .text-app-title-color
-  color $app-title-color
+  color var(--app-title-color)
 .bg-app-title-color
-  background $app-title-color
+  background var(--app-title-color)
 
-.text-app-container
-  color $app-container
-.bg-app-container
-  background-color $app-container
-
-.text-app-main-background
-  color $app-main-background
+.text-app-background-color
+  color var(--app-background-color)
 .bg-app-main-background
-  background $app-main-background
+  background var(--app-background-color)
 
 /* States of models */
 

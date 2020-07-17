@@ -362,7 +362,23 @@ export default {
       console.info(`Received an app for another platform: ${layout.platform}`);
       return;
     }
-    commit('SET_LAYOUT', layout);
+    commit('SET_LAYOUT', {
+      ...layout,
+      styleSpecs: {
+        ...layout.styleSpecs,
+        /*
+        'main-color': 'red',
+        'background-color': 'green',
+        'text-color': 'blue',
+        'title-color': 'yellow',
+        'font-type': 'klab-font',
+        'font-size': '2em',
+        density: 'confortable',
+        'title-size': '4em',
+        'subtitle-size': '4em',
+        */
+      },
+    });
   },
 
   setEngineEvent: ({ commit }, event) => {

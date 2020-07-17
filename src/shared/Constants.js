@@ -801,9 +801,11 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        /*
         if (component.type !== 'Group' && component.type !== 'Tree') {
           retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         }
+        */
         // retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         break;
       case 'hfill':
@@ -825,6 +827,9 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
       case 'vbox':
         retStyle.display = 'flex';
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
+        break;
+      case 'scroll':
+        retStyle.overflow = 'auto';
         break;
       default:
         retStyle.key = value;

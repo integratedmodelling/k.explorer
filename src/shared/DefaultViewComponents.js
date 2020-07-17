@@ -40,16 +40,12 @@ export const COMPONENTS = {
       return {};
     },
     render(h) {
-      const style = {
-        ...component.style,
-        ...DEFAULT_STYLE_FUNCTION(component),
-      };
       return h('div', {
         staticClass: 'kcv-group',
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
-        style,
+        style: DEFAULT_STYLE_FUNCTION(component),
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kcv-group-container',
@@ -117,10 +113,7 @@ export const COMPONENTS = {
       render(h) {
         return h('div', {
           staticClass: 'kcv-tree-container',
-          style: {
-            ...component.style,
-            ...DEFAULT_STYLE_FUNCTION(component),
-          },
+          style: DEFAULT_STYLE_FUNCTION(component),
         },
         [
           h('div', {
@@ -135,7 +128,7 @@ export const COMPONENTS = {
               ticked: this.ticked,
               selected: this.selected,
               expanded: this.expanded,
-              color: 'app-container',
+              color: 'app-main-color',
             },
             on: {
               'update:ticked': (values) => {
@@ -184,7 +177,7 @@ export const COMPONENTS = {
         staticClass: ['kcv-text-input'],
         props: {
           value: component.content,
-          color: 'app-main',
+          color: 'app-main-color',
           hideUnderline: true,
           dense: true,
         },
@@ -218,7 +211,7 @@ export const COMPONENTS = {
         props: {
           label: component.name,
           color: 'app-main-color',
-          textColor: 'app-main-background',
+          textColor: 'app-background-color',
           noCaps: true,
 
         },
@@ -251,7 +244,7 @@ export const COMPONENTS = {
         h(QCheckbox, {
           props: {
             value: this.value,
-            color: 'app-container',
+            color: 'app-main-color',
             label: component.name,
           },
           on: {
@@ -286,7 +279,7 @@ export const COMPONENTS = {
           props: {
             val: false,
             value: false,
-            color: 'app-container',
+            color: 'app-main-color',
             label: component.name,
           },
           on: {
@@ -306,54 +299,39 @@ export const COMPONENTS = {
       ]);
     },
   }),
-  TEXT: (component) => {
-    let style = {};
-    if (component.style) {
-      style = {
-        ...component.style,
-      };
-    }
-    if (component.attributes) {
-      if (component.attributes.height) {
-        style['min-height'] = `${component.attributes.height}px`;
-      }
-      if (component.attributes.width) {
-        style.width = `${component.attributes.width}px`;
-      }
-    }
-    return Vue.component('KAppText', {
-      render(h) {
-        return h('div', {
-          staticClass: 'kcv-text',
-          class: {
-            'kcv-collapsible': component.attributes.collapse,
-          },
-          attrs: {
-            id: component.id,
-          },
-          style,
-        }, [h('div', {
-          staticClass: 'kcv-internal-text',
-          domProps: {
-            innerHTML: component.content,
-          },
-        })]);
-      },
-    });
-    /*
-    component.attributes.collapse ? h('div', {
-      staticClass: 'kcv-collapsible-icon',
-    }, [
-      h(QIcon, {
-        props: {
-          name: 'mdi-menu-up',
-          color: 'black',
-          size: '20px',
+  TEXT: component => Vue.component('KAppText', {
+    render(h) {
+      return h('div', {
+        staticClass: 'kcv-text',
+        class: {
+          'kcv-collapsible': component.attributes.collapse,
         },
-      }),
-    ]) : null,
-     */
-  },
+        attrs: {
+          id: component.id,
+        },
+        style: DEFAULT_STYLE_FUNCTION(component),
+      }, [h('div', {
+        staticClass: 'kcv-internal-text',
+        domProps: {
+          innerHTML: component.content,
+        },
+      })]);
+    },
+  }),
+  /*
+  component.attributes.collapse ? h('div', {
+    staticClass: 'kcv-collapsible-icon',
+  }, [
+    h(QIcon, {
+      props: {
+        name: 'mdi-menu-up',
+        color: 'black',
+        size: '20px',
+      },
+    }),
+  ]) : null,
+   */
+
   UNKNOWN: component => Vue.component('KAppUnknown', {
     render(h) {
       return h('p', {

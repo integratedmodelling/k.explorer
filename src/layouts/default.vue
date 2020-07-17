@@ -267,6 +267,28 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
+      if (this.layout && this.layout.styleSpecs) {
+        Object.keys(this.layout.styleSpecs).forEach((key) => {
+          let value = this.layout.styleSpecs[key];
+          if (key === 'density') {
+            key = 'line-height';
+            switch (this.layout.styleSpecs.density) {
+              case 'default':
+                value = 1;
+                break;
+              case 'confortable':
+                value = 1.5;
+                break;
+              case 'compact':
+                value = 0.5;
+                break;
+              default:
+                value = 1;
+            }
+          }
+          document.documentElement.style.setProperty(`--app-${key}`, value);
+        });
+      }
     },
     setActiveAlert() {
       if (this.activeAlerts.length > 0) {
@@ -306,8 +328,13 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  $title-size = 26px;
-  $subtitle-size = 16px;
+  $title-size = var(--app-title-size);
+  $subtitle-size = var(--app-subtitle-size);
+  body
+    color var(--app-text-color)
+    font-family var(--app-font-family)
+    font-size var(--app-font-size)
+    line-height var(--app-line-height)
   .bg-opaque-white
     background rgba(255, 255, 255, 0.3)
   .modal-borders
@@ -334,7 +361,7 @@ export default {
     padding 0
     margin 0
   #klab-main-header
-    background-color $app-main-background
+    background-color var(--app-background-color)
     padding 0
     margin 0
     .main-logo
@@ -346,32 +373,32 @@ export default {
         max-width 80px
         max-height 80px
     .main-title-container
-      color $app-main-text-color
+      color var(--app-title-color)
       float left
-      height 80px
-      vertical-align center
-      padding-top 'calc((80px - %s - 5px) / 2)' % ($title-size + $subtitle-size)
+      height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+      min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+      vertical-align middle
+      padding-top 17px // 20px padding - 6px/2 separation
       padding-left 10px
       .main-title
-        height $title-size
-        line-height $title-size
+        height var(--app-title-size)
+        line-height var(--app-title-size)
         font-weight 500
-        color $app-title-color
-        font-size $title-size
-        margin-bottom 5px
+        font-size var(--app-title-size)
+        margin-bottom 6px
       .main-subtitle
-        height $subtitle-size
-        line-height $subtitle-size
-        font-size $subtitle-size
+        height var(--app-subtitle-size)
+        line-height var(--app-subtitle-size)
+        font-size var(--app-subtitle-size)
         font-weight 300
   .klab-main-left-panel
   .klab-main-container
     padding-top 10px
-    background-color $app-main-background
+    background-color var(--app-background-color)
   .klab-settings-button
     position fixed
-    bottom 26px
-    right 6px
+    bottom 36px
+    right 26px
     opacity 0.2
     .q-btn-fab
       height 32px
@@ -401,7 +428,7 @@ export default {
         .q-icon
           font-size 24px
   .klab-setting-tooltip
-    background-color $app-title-color
+    background-color var(--app-main-color)
   .kud-container
   .kaa-container
     background-color rgba(253,253,253,.8)
@@ -411,17 +438,17 @@ export default {
     width 500px
     .kud-title
       font-size 1.3em
-      color $app-title-color
+      color var(--app-title-color)
       font-width: 400;
     .kud-owner
-      border 1px solid $app-title-color
+      border 1px solid var(--app-main-color)
       border-radius 5px
       padding 20px
       .kud-label
         display inline-block
         width 100px
         line-height 1.5em
-        color $app-title-color
+        color var(--app-title-color)
       .kud-value
         display inline-block
         line-height 1.5em
@@ -433,10 +460,10 @@ export default {
       right 20px
   .kaa-container
     .kaa-content
-      border 1px solid $app-title-color
+      border 1px solid var(--app-main-color)
       border-radius 5px
       padding 20px
-      color $app-title-color
+      color var(--app-title-color)
     .kaa-button
       margin 10px 0 0 0
       width 100%
