@@ -1,18 +1,17 @@
 <template>
-  <div ref="main-control-container" id="mc-container" class="print-hide small" v-show="!isDrawMode">
+  <div ref="main-control-container" class="mc-container print-hide small" v-show="!isDrawMode">
     <transition
       appear
       enter-active-class="animated fadeInLeft"
       leave-active-class="animated fadeOutLeft"
     >
       <div
-        id="spinner-lonely-div"
-        class="klab-spinner-div"
+        class="spinner-lonely-div klab-spinner-div"
         :style="{ left: `${defaultLeft}px`, top: `${defaultTop}px`, 'border-color': hasTasks() ? spinnerColor.color : 'rgba(0,0,0,0)' }"
         v-show="isHidden"
       >
         <klab-spinner
-          id="spinner-lonely"
+          class="spinner-lonely"
           :store-controlled="true"
           :size="40"
           :ball="22"
@@ -29,8 +28,7 @@
     >
     <q-card
       draggable="false"
-      id="mc-q-card"
-      class="no-box-shadow absolute lot-of-flow"
+      class="mc-q-card no-box-shadow absolute lot-of-flow"
       :class="[hasContext ? 'with-context' : 'bg-transparent without-context', `mc-large-mode-${largeMode}`]"
       :style="qCardStyle"
       :flat="true"
@@ -39,8 +37,7 @@
       @contextmenu.native.prevent
     >
       <q-card-title
-        id="mc-q-card-title"
-        class="q-pa-xs"
+        class="mc-q-card-title q-pa-xs"
         ref="mc-draggable"
         :class="[ fuzzyMode ? 'klab-fuzzy' : '', searchIsFocused ? 'klab-search-focused' : '']"
         :style="{
@@ -53,11 +50,10 @@
       </q-card-title>
       <q-card-actions
         v-show="hasContext && !isHidden"
-        class="no-margin"
-        id="context-actions"
+        class="context-actions no-margin"
       >
         <!-- TABS -->
-        <div id="mc-tabs">
+        <div class="mc-tabs">
           <div class="klab-button mc-tab"
                :class="['tab-button', { active: selectedTab === 'klab-log-pane' }]"
                @click="selectedTab = 'klab-log-pane'"
@@ -97,7 +93,7 @@
         </keep-alive>
       </q-card-main>
       <q-card-actions
-        id="kmc-bottom-actions"
+        class="kmc-bottom-actions"
         v-show="hasContext && !isHidden"
       >
         <div class="klab-button klab-action">
@@ -310,7 +306,7 @@ export default {
       const draggableState = JSON.parse(this.dragMCConfig.handle.getAttribute('draggable-state'));
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
-      document.getElementById('mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
+      document.querySelector('.mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
     },
     checkWhereWasDragged() {
       this.dragging = false;
@@ -371,11 +367,11 @@ export default {
     },
     updateDraggable() {
       this.updateCorrectedPosition();
-      this.draggableElement = document.getElementById('mc-q-card');
+      this.draggableElement = document.querySelector('.kexplorer-main-container .mc-q-card');
       this.draggableElementWidth = width(this.draggableElement);
-      this.dragMCConfig.handle = document.getElementById('mc-q-card-title'); // this.$refs['mc-draggable'];
+      this.dragMCConfig.handle = document.querySelector('.kexplorer-main-container .mc-q-card-title'); // this.$refs['mc-draggable'];
       // this.dragMCConfig.boundingElement = document.getElementById('viewer-container'); // .getBoundingClientRect();
-      this.boundingElement = document.getElementById('kexplorer-container');
+      this.boundingElement = document.querySelector('.kexplorer-container');
       this.centeredLeft = this.getCenteredLeft();
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
     },
@@ -434,8 +430,8 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  #mc-container
-    #mc-q-card-title
+  .mc-container
+    .q-card > .mc-q-card-title
       border-radius 30px
       cursor move
       transition background-color 0.8s
@@ -447,7 +443,7 @@ export default {
         width $main-control-width - 30px
         background-color rgba(35, 35, 35 ,.8)
         border-radius 5px
-        #mc-q-card-title
+        .mc-q-card-title
           overflow hidden
           margin 15px
       for $value in (1..6)
@@ -457,7 +453,7 @@ export default {
     .q-card-title
       position relative
 
-    #spinner-lonely-div
+    .spinner-lonely-div
       position absolute
       width 44px
       height 44px
@@ -476,7 +472,7 @@ export default {
       background-color alpha($faded, 85%)
       padding 0 /* 0 0 10px 0*/
 
-    #kmc-bottom-actions.q-card-actions
+    .kmc-bottom-actions.q-card-actions
       padding 0 4px 4px 6px
       .klab-button
         font-size 18px
@@ -492,7 +488,7 @@ export default {
       width 10px
       height 10px
 
-    #context-actions
+    .context-actions
       padding 0
       margin 0
       position relative
@@ -567,7 +563,7 @@ export default {
       .klab-button
         padding-right 2px
 
-    #context-actions
+    .context-actions
       .sr-scaletype
       .sr-locked
         font-size 9px

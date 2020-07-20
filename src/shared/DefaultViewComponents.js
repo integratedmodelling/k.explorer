@@ -122,6 +122,9 @@ export const COMPONENTS = {
           }, component.name),
           h(QTree, {
             staticClass: 'kcv-tree',
+            attrs: {
+              id: `${component.applicationId}-${component.id}`,
+            },
             props: {
               nodes: tree,
               nodeKey: 'id',
@@ -162,7 +165,7 @@ export const COMPONENTS = {
       return h('div', {
         staticClass: 'kcv-label',
         attrs: {
-          id: component.id,
+          id: `${component.applicationId}-${component.id}`,
         },
       }, component.content);
     },
@@ -176,6 +179,9 @@ export const COMPONENTS = {
     render(h) {
       return h(QInput, {
         staticClass: ['kcv-text-input'],
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
         props: {
           value: component.content,
           color: 'app-main-color',
@@ -209,6 +215,9 @@ export const COMPONENTS = {
     render(h) {
       return h(QBtn, {
         staticClass: 'kcv-pushbutton',
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
         props: {
           label: component.name,
           color: 'app-main-color',
@@ -248,6 +257,9 @@ export const COMPONENTS = {
             color: 'app-main-color',
             label: component.name,
           },
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
           on: {
             input: (value) => {
               this.value = value;
@@ -283,6 +295,9 @@ export const COMPONENTS = {
             color: 'app-main-color',
             label: component.name,
           },
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
           on: {
             input: (value) => {
               this.value = value;
@@ -307,7 +322,7 @@ export const COMPONENTS = {
       };
     },
     mounted() {
-      this.scrollbar = new SimpleBar(document.getElementById(component.id));
+      this.scrollbar = new SimpleBar(document.getElementById(`${component.applicationId}-${component.id}`));
     },
     render(h) {
       return h('div', {
@@ -319,7 +334,7 @@ export const COMPONENTS = {
       }, [h('div', {
         staticClass: 'kcv-internal-text',
         attrs: {
-          id: component.id,
+          id: `${component.applicationId}-${component.id}`,
         },
         domProps: {
           innerHTML: component.content,
@@ -332,7 +347,7 @@ export const COMPONENTS = {
     render(h) {
       return h('p', {
         attrs: {
-          id: component.id,
+          id: `${component.applicationId}-${component.id}`,
         },
       }, component.type);
     },
