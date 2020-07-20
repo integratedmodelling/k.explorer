@@ -257,10 +257,15 @@ export default {
           ...(this.layout.style && DEFAULT_STYLES[this.layout.style] ? DEFAULT_STYLES[this.layout.style] : DEFAULT_STYLES.default),
         };
         if (this.layout.styleSpecs) {
-          style = {
-            ...style,
-            ...this.layout.styleSpecs,
-          };
+          try {
+            const jsonStyle = JSON.parse(this.layout.styleSpecs);
+            style = {
+              ...style,
+              ...jsonStyle,
+            };
+          } catch (error) {
+            console.error('Error parsing style specs', error);
+          }
         }
         if (style !== null) {
           Object.keys(style).forEach((key) => {
