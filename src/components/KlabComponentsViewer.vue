@@ -67,10 +67,10 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_CLICKED, this.componentClickedListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
   },
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_CLICKED, this.viewerClosedListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
   },
   render(h) {
     const ret = createComponent(this.component, h, { mainPanelStyle: this.mainPanelStyle, direction: this.direction });

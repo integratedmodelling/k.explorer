@@ -134,7 +134,7 @@ export const COMPONENTS = {
             on: {
               'update:ticked': (values) => {
                 this.ticked = values;
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
@@ -145,11 +145,11 @@ export const COMPONENTS = {
               },
               'update:selected': (value) => {
                 this.selected = value;
-                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:selected', id: component.id, value });
+                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:selected', id: component.id, value });
               },
               'update:expanded': (value) => {
                 this.expanded = value;
-                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, { type: 'update:expanded', id: component.id, value });
+                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:expanded', id: component.id, value });
               },
             },
           }),
@@ -188,7 +188,7 @@ export const COMPONENTS = {
           },
           input: (value) => {
             this.value = value;
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
@@ -218,7 +218,7 @@ export const COMPONENTS = {
         },
         on: {
           click: () => {
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
@@ -251,7 +251,7 @@ export const COMPONENTS = {
           on: {
             input: (value) => {
               this.value = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
                   ...component,
@@ -286,7 +286,7 @@ export const COMPONENTS = {
           on: {
             input: (value) => {
               this.value = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_CLICKED, {
+              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
                   ...component,

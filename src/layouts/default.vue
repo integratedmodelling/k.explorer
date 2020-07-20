@@ -29,7 +29,7 @@
           <klab-components-viewer class="klab-main-container" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-components-viewer>
         </template>
     </q-page-container>
-    <div class="klab-settings-button q-layout-transition">
+    <div class="klab-settings-button">
       <q-fab
         ref="klab-settings"
         color="app-main-color"
@@ -98,16 +98,22 @@
       </div>
     </q-modal>
     <q-modal
-      v-model="hasActiveAlerts"
-      v-if="activeAlert"
+      v-model="hasActiveDialogs"
+      v-if="activeDialog"
       content-classes="kaa-container"
     >
-      <div class="kaa-content" v-html="activeAlert.content"></div>
+      <div class="kaa-content" v-html="activeDialog.content"></div>
       <div class="kaa-button">
         <q-btn
           color="app-title-color"
-          @click="activeAlert.dismiss = true"
-          :label="$t('label.acceptAlert')"
+          @click="dialogAction(activeDialog, true)"
+          :label="$t('label.appOK')"
+        />
+        <q-btn
+          v-if="activeDialog.type === APPS_COMPONENTS.CONFIRM"
+          color="app-title-color"
+          @click="dialogAction(activeDialog, false)"
+          :label="$t('label.appCancel')"
         />
       </div>
     </q-modal>
@@ -122,12 +128,12 @@ import KExplorer from 'pages/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import KlabPresentation from 'components/KlabPresentation';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import { CUSTOM_EVENTS, CONNECTION_CONSTANTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, CONNECTION_CONSTANTS, APPS_COMPONENTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { colors, dom } from 'quasar';
 import { axiosInstance } from 'plugins/axios';
-import { DEFAULT_STYLES } from '../shared/Constants';
+import { APPS_OPERATION, DEFAULT_STYLES } from '../shared/Constants';
 
 const { width, height } = dom;
 const DEFAULT_LOGO = 'statics/klab-logo.png';
@@ -153,7 +159,8 @@ export default {
       logoImage: DEFAULT_LOGO,
       showLeft: true,
       userDetailsVisible: false,
-      activeAlert: null,
+      activeDialog: null,
+      APPS_COMPONENTS,
     };
   },
   computed: {
@@ -166,11 +173,11 @@ export default {
     ]),
     ...mapGetters('view', [
       'layout',
-      'activeAlerts',
+      'activeDialogs',
     ]),
-    hasActiveAlerts: {
+    hasActiveDialogs: {
       get() {
-        return this.activeAlerts.length > 0;
+        return this.activeDialogs.length > 0;
       },
       set() {
         // nothing to do
@@ -312,12 +319,25 @@ export default {
       });
       this.setStyle();
     },
-    setActiveAlert() {
-      if (this.activeAlerts.length > 0) {
-        this.activeAlert = this.activeAlerts[this.activeAlerts.length - 1];
+    setActiveDialog() {
+      if (this.activeDialogs.length > 0) {
+        this.activeDialog = this.activeDialogs[this.activeDialogs.length - 1];
       } else {
         this.$nextTick(() => {
-          this.activeAlert = null;
+          this.activeDialog = null;
+        });
+      }
+    },
+    dialogAction(component, value) {
+      this.activeDialog.dismiss = true;
+      if (component.type === APPS_COMPONENTS.CONFIRM) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+          operation: APPS_OPERATION.USER_ACTION,
+          component: {
+            ...component,
+            components: [],
+          },
+          booleanValue: value,
         });
       }
     },
@@ -336,14 +356,14 @@ export default {
         ).body);
       }
     },
-    activeAlerts() {
-      this.setActiveAlert();
+    activeDialogs() {
+      this.setActiveDialog();
     },
   },
   created() {},
   mounted() {
     this.updateLayout();
-    this.setActiveAlert();
+    this.setActiveDialog();
   },
 };
 </script>
@@ -357,8 +377,7 @@ export default {
     font-family var(--app-font-family)
     font-size var(--app-font-size)
     line-height var(--app-line-height)
-  .bg-opaque-white
-    background rgba(255, 255, 255, 0.3)
+
   .modal-borders
     border-radius 40px
 
@@ -491,4 +510,6 @@ export default {
       margin 10px 0 0 0
       width 100%
       text-align right
+      .q-btn
+        margin-left 10px
 </style>

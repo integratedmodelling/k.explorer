@@ -515,7 +515,7 @@ export const CUSTOM_EVENTS = {
   NEED_HELP: 'needhelp',
   OBSERVATION_BY_TIME: 'observationbytime',
   NEED_LAYER_BUFFER: 'needlayerbuffer',
-  COMPONENT_CLICKED: 'componentclicked',
+  COMPONENT_ACTION: 'componentaction',
 };
 
 export const SCALE_TYPE = {

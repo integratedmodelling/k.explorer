@@ -362,7 +362,7 @@ export default {
       console.info(`Received an app for another platform: ${layout.platform}`);
       return;
     }
-    commit('SET_LAYOUT', {
+    commit('SET_LAYOUT', layout === null ? null : {
       ...layout,
       // style: 'worst',
       /*
