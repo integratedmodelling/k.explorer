@@ -67,10 +67,10 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_CLICKED, this.componentClickedListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
   },
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_CLICKED, this.viewerClosedListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
   },
   render(h) {
     const ret = createComponent(this.component, h, { mainPanelStyle: this.mainPanelStyle, direction: this.direction });
@@ -92,11 +92,11 @@ export default {
   .kcv-alert .modal-backdrop
     background-color transparent
   .kcv-collapsible-header
-    background-color $app-main-color
-    color $app-main-background
+    background-color var(--app-main-color)
+    color var(--app-background-color)
     position: relative
     .q-item-side
-      color $app-main-background
+      color var(--app-background-color)
   .kcv-collapsible
     clear both
     .kcv-tree-container
@@ -117,14 +117,14 @@ export default {
     border-radius 6px
     position relative
     &:not(.kcv-group-no-label)
-      border 1px solid $app-container
+      border 1px solid var(--app-main-color)
       margin-bottom 30px
       padding-top 20px
     .kcv-tree-legend
     .kcv-group-legend
       position absolute
-      background-color $app-container
-      color $app-main-background
+      background-color var(--app-main-color)
+      color var(--app-background-color)
       padding 5px 10px
       font-weight 400
       top -14px
@@ -144,13 +144,13 @@ export default {
     overflow hidden
     white-space nowrap
     text-overflow ellipsis
-    color $app-title-color
+    color var(--app-main-color)
     vertical-align middle
     line-height 1.8em
   .kcv-text-input
     line-height 1em
     vertical-align middle
-    border 1px solid $app-main-color
+    border 1px solid var(--app-main-color)
     padding 5px
   .kcv-pushbutton
     margin 5px
@@ -165,12 +165,18 @@ export default {
     // border 1px solid #999
     text-align justify
     position relative
+    color var(--app-text-color)
     .kcv-collapsible-icon
       position absolute
       width 20px
       height 20px
       right 0
+    .simplebar-scrollbar::before
+      background-color var(--app-main-color)
     .kcv-internal-text
+      overflow auto
       p
         margin-bottom 15px
+      strong
+        color var(--app-title-color)
 </style>

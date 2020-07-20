@@ -379,8 +379,8 @@ export default {
   },
 
   CREATE_VIEW_COMPONENT: (state, component) => {
-    if (component.type === APPS_COMPONENTS.ALERT) {
-      state.alerts.push({
+    if (component.type === APPS_COMPONENTS.ALERT || component.type === APPS_COMPONENTS.CONFIRM) {
+      state.dialogs.push({
         ...component,
         dismiss: false,
       });

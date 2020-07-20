@@ -70,6 +70,7 @@ module.exports = function (ctx) {
       // analyze: true,
       // extractCSS: false,
       // useNotifier: false,
+      // vueCompiler: true,
       extendWebpack(cfg) {
         extendTypescriptToWebpack(cfg);
         cfg.module.rules.push({

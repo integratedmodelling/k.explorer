@@ -200,6 +200,9 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
+  body
+    background-color $blue-grey-10
+    background-image url("../assets/dark-dot.png")
   #kexplorer-container
     background-color $blue-grey-10
     background-image url("../assets/dark-dot.png")

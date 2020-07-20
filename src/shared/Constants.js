@@ -515,7 +515,7 @@ export const CUSTOM_EVENTS = {
   NEED_HELP: 'needhelp',
   OBSERVATION_BY_TIME: 'observationbytime',
   NEED_LAYER_BUFFER: 'needlayerbuffer',
-  COMPONENT_CLICKED: 'componentclicked',
+  COMPONENT_ACTION: 'componentaction',
 };
 
 export const SCALE_TYPE = {
@@ -801,9 +801,11 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        /*
         if (component.type !== 'Group' && component.type !== 'Tree') {
           retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         }
+        */
         // retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         break;
       case 'hfill':
@@ -826,6 +828,9 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle.display = 'flex';
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
         break;
+      case 'scroll':
+        retStyle.overflow = 'auto';
+        break;
       default:
         retStyle.key = value;
     }
@@ -838,6 +843,53 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
     */
   });
   return retStyle;
+};
+
+export const DEFAULT_STYLES = {
+  dark: {
+    'main-color': 'white',
+    'background-color': 'black',
+    'text-color': 'white',
+    'title-color': 'white',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+  light: {
+    'main-color': 'black',
+    'background-color': 'white',
+    'text-color': 'black',
+    'title-color': 'black',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+  worst: {
+    'main-color': 'Green',
+    'background-color': 'yellow',
+    'text-color': 'Red',
+    'title-color': 'Indigo',
+    'font-family': 'comics',
+    'font-size': '1.2em',
+    'title-size': '32px',
+    'subtitle-size': '20px',
+    'line-height': '1.2em',
+  },
+  default: {
+    'main-color': 'rgb(0, 92, 129)',
+    'background-color': 'rgb(250, 250, 250)',
+    'text-color': 'rgb(0, 92, 129)',
+    'title-color': 'rgb(0, 92, 129)',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
 };
 
 export default {
@@ -869,4 +921,6 @@ export default {
   HELP_CONSTANTS,
   OBSERVATION_CONTEXT_ITEMS,
   ENGINE_EVENTS,
+  DEFAULT_STYLE_FUNCTION,
+  DEFAULT_STYLES,
 };

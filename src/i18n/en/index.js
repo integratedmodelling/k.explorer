@@ -4,6 +4,8 @@ export default {
     appRunning: 'Running on Quasar v{version}',
     appClose: 'Close',
     appOK: 'Ok',
+    appYES: 'Yes',
+    appNO: 'No',
     appCancel: 'Cancel',
     appRetry: 'Retry',
     appNext: 'Next',
@@ -127,7 +129,6 @@ export default {
     userEmail: 'Email:',
     userLastLogin: 'Last login:',
     userGroups: 'Groups:',
-    acceptAlert: 'Ok',
   },
   messages: {
     connectionClosed: 'Connection closed',

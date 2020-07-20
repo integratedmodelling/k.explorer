@@ -221,7 +221,7 @@ export default {
     }
    */
   layout: null,
-  alerts: [],
+  dialogs: [],
 
   /**
    * Engine events

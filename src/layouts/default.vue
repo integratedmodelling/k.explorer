@@ -29,25 +29,26 @@
           <klab-components-viewer class="klab-main-container" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-components-viewer>
         </template>
     </q-page-container>
-    <div class="klab-settings-button q-layout-transition">
+    <div class="klab-settings-button">
       <q-fab
         ref="klab-settings"
-        color="app-title-color"
+        color="app-main-color"
+        text-color="app-background-color"
         icon="mdi-settings"
         direction="up"
       >
         <q-fab-action
           v-if="layout !== null"
-          color="app-main-background"
-          text-color="app-title-color"
+          text-color="app-main-color"
+          color="app-background-color"
           @click="setLayout(null)"
           icon="mdi-exit-to-app"
         >
           <q-tooltip class="klab-setting-tooltip" anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appClose') }}</q-tooltip>
         </q-fab-action>
         <q-fab-action
-          color="app-main-background"
-          text-color="app-title-color"
+          color="app-background-color"
+          text-color="app-main-color"
           icon="mdi-account-circle"
           @click="userDetailsVisible = true"
         >
@@ -97,16 +98,22 @@
       </div>
     </q-modal>
     <q-modal
-      v-model="hasActiveAlerts"
-      v-if="activeAlert"
+      v-model="hasActiveDialogs"
+      v-if="activeDialog"
       content-classes="kaa-container"
     >
-      <div class="kaa-content" v-html="activeAlert.content"></div>
+      <div class="kaa-content" v-html="activeDialog.content"></div>
       <div class="kaa-button">
         <q-btn
           color="app-title-color"
-          @click="activeAlert.dismiss = true"
-          :label="$t('label.acceptAlert')"
+          @click="dialogAction(activeDialog, true)"
+          :label="$t('label.appOK')"
+        />
+        <q-btn
+          v-if="activeDialog.type === APPS_COMPONENTS.CONFIRM"
+          color="app-title-color"
+          @click="dialogAction(activeDialog, false)"
+          :label="$t('label.appCancel')"
         />
       </div>
     </q-modal>
@@ -121,11 +128,12 @@ import KExplorer from 'pages/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import KlabPresentation from 'components/KlabPresentation';
 import KlabSpinner from 'components/KlabSpinner.vue';
-import { CUSTOM_EVENTS, CONNECTION_CONSTANTS } from 'shared/Constants';
+import { CUSTOM_EVENTS, CONNECTION_CONSTANTS, APPS_COMPONENTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { colors, dom } from 'quasar';
 import { axiosInstance } from 'plugins/axios';
+import { APPS_OPERATION, DEFAULT_STYLES } from '../shared/Constants';
 
 const { width, height } = dom;
 const DEFAULT_LOGO = 'statics/klab-logo.png';
@@ -151,7 +159,8 @@ export default {
       logoImage: DEFAULT_LOGO,
       showLeft: true,
       userDetailsVisible: false,
-      activeAlert: null,
+      activeDialog: null,
+      APPS_COMPONENTS,
     };
   },
   computed: {
@@ -164,11 +173,11 @@ export default {
     ]),
     ...mapGetters('view', [
       'layout',
-      'activeAlerts',
+      'activeDialogs',
     ]),
-    hasActiveAlerts: {
+    hasActiveDialogs: {
       get() {
-        return this.activeAlerts.length > 0;
+        return this.activeDialogs.length > 0;
       },
       set() {
         // nothing to do
@@ -248,6 +257,47 @@ export default {
         this.logoImage = DEFAULT_LOGO;
       }
     },
+    setStyle() {
+      if (this.layout) {
+        let style = null;
+        style = {
+          ...(this.layout.style && DEFAULT_STYLES[this.layout.style] ? DEFAULT_STYLES[this.layout.style] : DEFAULT_STYLES.default),
+        };
+        if (this.layout.styleSpecs) {
+          try {
+            const jsonStyle = JSON.parse(this.layout.styleSpecs);
+            style = {
+              ...style,
+              ...jsonStyle,
+            };
+          } catch (error) {
+            console.error('Error parsing style specs', error);
+          }
+        }
+        if (style !== null) {
+          Object.keys(style).forEach((key) => {
+            let value = style[key];
+            if (key === 'density') {
+              key = 'line-height';
+              switch (style.density) {
+                case 'default':
+                  value = 1;
+                  break;
+                case 'confortable':
+                  value = 1.5;
+                  break;
+                case 'compact':
+                  value = 0.5;
+                  break;
+                default:
+                  value = 1;
+              }
+            }
+            document.documentElement.style.setProperty(`--app-${key}`, value);
+          });
+        }
+      }
+    },
     updateLayout() {
       this.setLogoImage();
       const header = document.getElementById('klab-main-header');
@@ -267,13 +317,27 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
+      this.setStyle();
     },
-    setActiveAlert() {
-      if (this.activeAlerts.length > 0) {
-        this.activeAlert = this.activeAlerts[this.activeAlerts.length - 1];
+    setActiveDialog() {
+      if (this.activeDialogs.length > 0) {
+        this.activeDialog = this.activeDialogs[this.activeDialogs.length - 1];
       } else {
         this.$nextTick(() => {
-          this.activeAlert = null;
+          this.activeDialog = null;
+        });
+      }
+    },
+    dialogAction(component, value) {
+      this.activeDialog.dismiss = true;
+      if (component.type === APPS_COMPONENTS.CONFIRM) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+          operation: APPS_OPERATION.USER_ACTION,
+          component: {
+            ...component,
+            components: [],
+          },
+          booleanValue: value,
         });
       }
     },
@@ -292,24 +356,28 @@ export default {
         ).body);
       }
     },
-    activeAlerts() {
-      this.setActiveAlert();
+    activeDialogs() {
+      this.setActiveDialog();
     },
   },
   created() {},
   mounted() {
     this.updateLayout();
-    this.setActiveAlert();
+    this.setActiveDialog();
   },
 };
 </script>
 
 <style lang="stylus">
   @import '~variables'
-  $title-size = 26px;
-  $subtitle-size = 16px;
-  .bg-opaque-white
-    background rgba(255, 255, 255, 0.3)
+  $title-size = var(--app-title-size);
+  $subtitle-size = var(--app-subtitle-size);
+  body
+    color var(--app-text-color)
+    font-family var(--app-font-family)
+    font-size var(--app-font-size)
+    line-height var(--app-line-height)
+
   .modal-borders
     border-radius 40px
 
@@ -334,7 +402,7 @@ export default {
     padding 0
     margin 0
   #klab-main-header
-    background-color $app-main-background
+    background-color var(--app-background-color)
     padding 0
     margin 0
     .main-logo
@@ -346,32 +414,32 @@ export default {
         max-width 80px
         max-height 80px
     .main-title-container
-      color $app-main-text-color
+      color var(--app-title-color)
       float left
-      height 80px
-      vertical-align center
-      padding-top 'calc((80px - %s - 5px) / 2)' % ($title-size + $subtitle-size)
+      height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+      min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+      vertical-align middle
+      padding-top 17px // 20px padding - 6px/2 separation
       padding-left 10px
       .main-title
-        height $title-size
-        line-height $title-size
+        height var(--app-title-size)
+        line-height var(--app-title-size)
         font-weight 500
-        color $app-title-color
-        font-size $title-size
-        margin-bottom 5px
+        font-size var(--app-title-size)
+        margin-bottom 6px
       .main-subtitle
-        height $subtitle-size
-        line-height $subtitle-size
-        font-size $subtitle-size
+        height var(--app-subtitle-size)
+        line-height var(--app-subtitle-size)
+        font-size var(--app-subtitle-size)
         font-weight 300
   .klab-main-left-panel
   .klab-main-container
     padding-top 10px
-    background-color $app-main-background
+    background-color var(--app-background-color)
   .klab-settings-button
     position fixed
-    bottom 26px
-    right 6px
+    bottom 36px
+    right 26px
     opacity 0.2
     .q-btn-fab
       height 32px
@@ -401,7 +469,8 @@ export default {
         .q-icon
           font-size 24px
   .klab-setting-tooltip
-    background-color $app-title-color
+    background-color var(--app-main-color)
+    color var(--app-background-color)
   .kud-container
   .kaa-container
     background-color rgba(253,253,253,.8)
@@ -411,17 +480,17 @@ export default {
     width 500px
     .kud-title
       font-size 1.3em
-      color $app-title-color
+      color var(--app-title-color)
       font-width: 400;
     .kud-owner
-      border 1px solid $app-title-color
+      border 1px solid var(--app-main-color)
       border-radius 5px
       padding 20px
       .kud-label
         display inline-block
         width 100px
         line-height 1.5em
-        color $app-title-color
+        color var(--app-title-color)
       .kud-value
         display inline-block
         line-height 1.5em
@@ -433,12 +502,14 @@ export default {
       right 20px
   .kaa-container
     .kaa-content
-      border 1px solid $app-title-color
+      border 1px solid var(--app-main-color)
       border-radius 5px
       padding 20px
-      color $app-title-color
+      color var(--app-title-color)
     .kaa-button
       margin 10px 0 0 0
       width 100%
       text-align right
+      .q-btn
+        margin-left 10px
 </style>
