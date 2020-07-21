@@ -217,9 +217,9 @@ export default {
 <style lang="stylus">
   @import '~variables'
   body
-    .kapp-header
-    .kapp-footer
-    .kapp-left-container
+    .kapp-header-container
+    .kapp-footer-container
+    .kapp-left-inner-container
     .kapp-main-container:not(.is-kexplorer)
       color var(--app-text-color)
       font-family var(--app-font-family)
