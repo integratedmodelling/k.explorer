@@ -46,7 +46,6 @@ export const COMPONENTS = {
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
-        style: DEFAULT_STYLE_FUNCTION(component),
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kcv-group-container',
@@ -57,6 +56,7 @@ export const COMPONENTS = {
           }, component.name) : null,
           h('div', {
             staticClass: 'kcv-group-content',
+            style: DEFAULT_STYLE_FUNCTION(component),
           }, this.$slots.default),
         ])] : this.$slots.default);
     },

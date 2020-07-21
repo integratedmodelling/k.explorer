@@ -827,6 +827,10 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
       case 'vbox':
         retStyle.display = 'flex';
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
+        retStyle['align-items'] = 'center';
+        if (component.attributes.hfill) {
+          retStyle['flex-wrap'] = 'nowrap';
+        }
         break;
       case 'scroll':
         retStyle.overflow = 'auto';
