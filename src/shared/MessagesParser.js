@@ -21,6 +21,7 @@ const PARSERS = {
     // dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
+    dispatch('view/setReloadReport', true, { root: true });
   },
   [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch }) => {
     if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {

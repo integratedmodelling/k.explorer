@@ -84,7 +84,7 @@ export default {
   .klab-settings-container
     .klab-settings-button
       position fixed
-      bottom 36px
+      bottom 28px
       right 26px
       opacity 0.2
       .q-btn-fab

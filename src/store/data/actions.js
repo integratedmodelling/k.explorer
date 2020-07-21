@@ -230,7 +230,6 @@ export default {
           dispatch('addStub', node);
         }
       }
-      dispatch('view/setReloadReport', true, { root: true });
       return resolve();
     });
     return null;
