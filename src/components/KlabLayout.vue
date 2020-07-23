@@ -264,7 +264,10 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+  /*
   .kapp-left-inner-container
   .kapp-main-container
     padding-top 10px
+
+   */
 </style>

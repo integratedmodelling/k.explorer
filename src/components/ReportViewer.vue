@@ -114,7 +114,7 @@ export default {
 
     .mc-report-content table td
     .mc-report-content p
-      word-break break-all
+      word-break break-word
 
     .mc-report-content
       display: block !important

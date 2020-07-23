@@ -46,6 +46,7 @@ export const COMPONENTS = {
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
+        style: component.attributes.hfill ? { width: '100%' } : {},
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kcv-group-container',
@@ -58,7 +59,10 @@ export const COMPONENTS = {
             staticClass: 'kcv-group-content',
             style: DEFAULT_STYLE_FUNCTION(component),
           }, this.$slots.default),
-        ])] : this.$slots.default);
+        ])] : [h('div', {
+          staticClass: 'kcv-group-content',
+          style: DEFAULT_STYLE_FUNCTION(component),
+        }, this.$slots.default)]);
     },
   }),
   SHELF: component => Vue.component('KAppShelf', {
@@ -133,6 +137,8 @@ export const COMPONENTS = {
               selected: this.selected,
               expanded: this.expanded,
               color: 'app-main-color',
+              controlColor: 'app-main-color',
+              textColor: 'app-main-color',
             },
             on: {
               'update:ticked': (values) => {
@@ -255,6 +261,7 @@ export const COMPONENTS = {
           props: {
             value: this.value,
             color: 'app-main-color',
+            keepColor: true,
             label: component.name,
           },
           attrs: {
@@ -319,6 +326,7 @@ export const COMPONENTS = {
     data() {
       return {
         scrollbar: undefined,
+        collapsed: false,
       };
     },
     mounted() {
@@ -328,18 +336,37 @@ export const COMPONENTS = {
       return h('div', {
         staticClass: 'kcv-text',
         class: {
-          'kcv-collapsible': component.attributes.collapse,
+          'kcv-collapse': component.attributes.collapse,
+          'kcv-collapsed': this.collapsed,
         },
         style: DEFAULT_STYLE_FUNCTION(component),
-      }, [h('div', {
-        staticClass: 'kcv-internal-text',
-        attrs: {
-          id: `${component.applicationId}-${component.id}`,
-        },
-        domProps: {
-          innerHTML: component.content,
-        },
-      })]);
+      }, [
+        h('div', {
+          staticClass: 'kcv-internal-text',
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
+          domProps: {
+            innerHTML: component.content,
+          },
+        }),
+        component.attributes.collapse
+          ? h(QBtn, {
+            staticClass: 'kcv-collapse-button',
+            props: {
+              icon: this.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
+              color: 'app-main-color',
+              flat: true,
+              size: 'sm',
+              rounded: true,
+            },
+            on: {
+              click: () => {
+                this.collapsed = !this.collapsed;
+              },
+            },
+          }) : null,
+      ]);
     },
   }),
 
