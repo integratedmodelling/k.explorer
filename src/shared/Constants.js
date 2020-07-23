@@ -809,15 +809,19 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         // retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         break;
       case 'hfill':
+        if (component.attributes.hbox) {
+          retStyle['flex-wrap'] = 'nowrap';
+        }
         retStyle.width = '100%';
         break;
       case 'vfill':
+        // TODO check it
         retStyle.height = '100%';
         break;
       case 'top':
       case 'bottom':
       case 'center':
-        if (component.parentAttributes && component.parentAttributes.hbox) {
+        if (component.attributes.parentAttributes && component.attributes.parentAttributes.hbox) {
           retStyle['align-self'] = key === 'top' ? 'flex-start' : key === 'bottom' ? 'flex-end' : 'center';
         } else {
           retStyle['vertical-align'] = key;
@@ -827,6 +831,7 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
       case 'vbox':
         retStyle.display = 'flex';
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
+        retStyle['align-items'] = 'center';
         break;
       case 'scroll':
         retStyle.overflow = 'auto';

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpr fFf" :style="mainPanelStyle" class="kexp-main-container" container>
+  <q-layout view="hHh lpr fFf" :style="mainPanelStyle" class="kexplorer-main-container print-hide" container>
     <q-layout-drawer
       side="left"
       :overlay="false"
@@ -7,14 +7,13 @@
       :breakpoint="0"
       :width="leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED ? LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE : LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE"
       :content-class="['klab-left', 'no-scroll', largeMode ? 'klab-large-mode' : '' ]"
-      class="print-hide"
     >
       <klab-left-menu></klab-left-menu>
     </q-layout-drawer>
 
     <q-page-container>
       <q-page class="column">
-        <div class="col row full-height" id="kexplorer-container">
+        <div class="col row full-height kexplorer-container">
           <keep-alive>
             <!-- <transition name="component-fade" mode="out-in"> -->
             <component :is="mainViewer.name"></component>
@@ -31,7 +30,7 @@
         <transition appear
                     enter-active-class="animated zoomIn"
                     leave-active-class="animated zoomOut">
-          <div id="mc-undocking" class="full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
+          <div class="kexplorer-undocking full-height full-width" v-if="askForUndocking && !mainViewer.mainControl"></div>
         </transition>
         <observation-time v-if="!isMainControlDocked"></observation-time>
         <input-request-modal></input-request-modal>
@@ -142,6 +141,25 @@ export default {
     askForUndockListener(ask) {
       this.askForUndocking = ask;
     },
+    keydownListener(event) {
+      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
+        return;
+      }
+      if (event.keyCode === 27 && this.searchIsActive) {
+        this.searchStop();
+        event.preventDefault();
+        return;
+      }
+      if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 32 || this.isAcceptedKey(event.key)) {
+        if (!this.searchIsActive) {
+          this.searchStart(event.key);
+          event.preventDefault();
+        } else if (!this.searchIsFocused) {
+          this.searchFocus({ char: event.key, focused: true });
+          event.preventDefault();
+        }
+      }
+    },
   },
   watch: {
     spinnerErrorMessage(newValue, oldValue) {
@@ -168,25 +186,7 @@ export default {
   },
   mounted() {
     // const self = this;
-    window.addEventListener('keydown', (event) => {
-      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
-        return;
-      }
-      if (event.keyCode === 27 && this.searchIsActive) {
-        this.searchStop();
-        event.preventDefault();
-        return;
-      }
-      if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 32 || this.isAcceptedKey(event.key)) {
-        if (!this.searchIsActive) {
-          this.searchStart(event.key);
-          event.preventDefault();
-        } else if (!this.searchIsFocused) {
-          this.searchFocus({ char: event.key, focused: true });
-          event.preventDefault();
-        }
-      }
-    });
+    window.addEventListener('keydown', this.keydownListener);
     this.setChildrenToAskFor();
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
@@ -194,16 +194,14 @@ export default {
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
   },
   beforeDestroy() {
+    window.removeEventListener('keydown', this.keydownListener);
     this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
   },
 };
 </script>
 <style lang="stylus">
   @import '~variables'
-  body
-    background-color $blue-grey-10
-    background-image url("../assets/dark-dot.png")
-  #kexplorer-container
+  .kexplorer-container
     background-color $blue-grey-10
     background-image url("../assets/dark-dot.png")
 
@@ -216,7 +214,7 @@ export default {
     border-radius 40px
     padding 3px
     margin 0
-  #mc-undocking
+  .kexplorer-undocking
     position fixed
     left 0
     top 0

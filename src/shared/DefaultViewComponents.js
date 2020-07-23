@@ -46,7 +46,7 @@ export const COMPONENTS = {
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
-        style: DEFAULT_STYLE_FUNCTION(component),
+        style: component.attributes.hfill ? { width: '100%' } : {},
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kcv-group-container',
@@ -57,8 +57,12 @@ export const COMPONENTS = {
           }, component.name) : null,
           h('div', {
             staticClass: 'kcv-group-content',
+            style: DEFAULT_STYLE_FUNCTION(component),
           }, this.$slots.default),
-        ])] : this.$slots.default);
+        ])] : [h('div', {
+          staticClass: 'kcv-group-content',
+          style: DEFAULT_STYLE_FUNCTION(component),
+        }, this.$slots.default)]);
     },
   }),
   SHELF: component => Vue.component('KAppShelf', {
@@ -122,6 +126,9 @@ export const COMPONENTS = {
           }, component.name),
           h(QTree, {
             staticClass: 'kcv-tree',
+            attrs: {
+              id: `${component.applicationId}-${component.id}`,
+            },
             props: {
               nodes: tree,
               nodeKey: 'id',
@@ -130,6 +137,8 @@ export const COMPONENTS = {
               selected: this.selected,
               expanded: this.expanded,
               color: 'app-main-color',
+              controlColor: 'app-main-color',
+              textColor: 'app-main-color',
             },
             on: {
               'update:ticked': (values) => {
@@ -162,7 +171,7 @@ export const COMPONENTS = {
       return h('div', {
         staticClass: 'kcv-label',
         attrs: {
-          id: component.id,
+          id: `${component.applicationId}-${component.id}`,
         },
       }, component.content);
     },
@@ -176,6 +185,9 @@ export const COMPONENTS = {
     render(h) {
       return h(QInput, {
         staticClass: ['kcv-text-input'],
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
         props: {
           value: component.content,
           color: 'app-main-color',
@@ -209,6 +221,9 @@ export const COMPONENTS = {
     render(h) {
       return h(QBtn, {
         staticClass: 'kcv-pushbutton',
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
         props: {
           label: component.name,
           color: 'app-main-color',
@@ -246,7 +261,11 @@ export const COMPONENTS = {
           props: {
             value: this.value,
             color: 'app-main-color',
+            keepColor: true,
             label: component.name,
+          },
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
           },
           on: {
             input: (value) => {
@@ -283,6 +302,9 @@ export const COMPONENTS = {
             color: 'app-main-color',
             label: component.name,
           },
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
           on: {
             input: (value) => {
               this.value = value;
@@ -304,27 +326,47 @@ export const COMPONENTS = {
     data() {
       return {
         scrollbar: undefined,
+        collapsed: false,
       };
     },
     mounted() {
-      this.scrollbar = new SimpleBar(document.getElementById(component.id));
+      this.scrollbar = new SimpleBar(document.getElementById(`${component.applicationId}-${component.id}`));
     },
     render(h) {
       return h('div', {
         staticClass: 'kcv-text',
         class: {
-          'kcv-collapsible': component.attributes.collapse,
+          'kcv-collapse': component.attributes.collapse,
+          'kcv-collapsed': this.collapsed,
         },
         style: DEFAULT_STYLE_FUNCTION(component),
-      }, [h('div', {
-        staticClass: 'kcv-internal-text',
-        attrs: {
-          id: component.id,
-        },
-        domProps: {
-          innerHTML: component.content,
-        },
-      })]);
+      }, [
+        h('div', {
+          staticClass: 'kcv-internal-text',
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
+          domProps: {
+            innerHTML: component.content,
+          },
+        }),
+        component.attributes.collapse
+          ? h(QBtn, {
+            staticClass: 'kcv-collapse-button',
+            props: {
+              icon: this.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
+              color: 'app-main-color',
+              flat: true,
+              size: 'sm',
+              rounded: true,
+            },
+            on: {
+              click: () => {
+                this.collapsed = !this.collapsed;
+              },
+            },
+          }) : null,
+      ]);
     },
   }),
 
@@ -332,7 +374,7 @@ export const COMPONENTS = {
     render(h) {
       return h('p', {
         attrs: {
-          id: component.id,
+          id: `${component.applicationId}-${component.id}`,
         },
       }, component.type);
     },

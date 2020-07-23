@@ -160,23 +160,33 @@ export default {
     padding 10px
   .kcv-text
     clear both
-    margin 10px 10px 5px 10px
+    margin 10px 10px 0
     padding 10px 10px 5px 10px
     // border 1px solid #999
     text-align justify
     position relative
     color var(--app-text-color)
-    .kcv-collapsible-icon
-      position absolute
-      width 20px
-      height 20px
-      right 0
     .simplebar-scrollbar::before
       background-color var(--app-main-color)
     .kcv-internal-text
+      display block
       overflow auto
       p
         margin-bottom 15px
       strong
         color var(--app-title-color)
+    &.kcv-collapse
+      margin-bottom 1em
+    &.kcv-collapsed
+      margin-top 0
+      padding-top 0
+      min-height 2em !important
+      max-height 2em !important
+      height 2em !important
+      .kcv-internal-text
+        display none
+    .kcv-collapse-button
+      position absolute
+      bottom -10px
+      left calc((100% - 20px) / 2)
 </style>
