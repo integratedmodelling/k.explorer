@@ -12,6 +12,7 @@ import LinearRing from 'ol/geom/LinearRing';
  * @type {RegExp}
  */
 const reRGBA = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
+// const reCSS_COLOR = /^#([\da-f]{3}){1,2}$|^#([\da-f]{4}){1,2}$|(rgb|hsl)a?\((\s*-?\d+%?\s*,){2}(\s*-?\d+%?\s*,?\s*\)?)(,\s*(0?\.\d+)?|1)?\)/;
 /**
  * Get color utility function from quasar
  */

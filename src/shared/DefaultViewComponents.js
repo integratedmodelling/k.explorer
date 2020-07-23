@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn, QIcon } from 'quasar';
 import SimpleBar from 'simplebar';
 import { findNodeById } from './Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS } from './Constants';
@@ -351,21 +351,23 @@ export const COMPONENTS = {
           },
         }),
         component.attributes.collapse
-          ? h(QBtn, {
+          ? h('div', {
             staticClass: 'kcv-collapse-button',
-            props: {
-              icon: this.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
-              color: 'app-main-color',
-              flat: true,
-              size: 'sm',
-              rounded: true,
-            },
             on: {
               click: () => {
                 this.collapsed = !this.collapsed;
               },
             },
-          }) : null,
+          }, [
+            h(QIcon, {
+              staticClass: 'kcv-collapse-icon',
+              props: {
+                name: this.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
+                color: 'app-main-color',
+                size: 'sm',
+              },
+            }),
+          ]) : null,
       ]);
     },
   }),

@@ -52,6 +52,7 @@
 import KExplorer from 'components/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import { CUSTOM_EVENTS, DEFAULT_STYLES } from 'shared/Constants';
+import { getColorObject } from 'shared/Utils';
 import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
@@ -166,6 +167,16 @@ export default {
               }
             }
             document.documentElement.style.setProperty(`--app-${key}`, value);
+            if (key.includes('color')) {
+              try {
+                const color = getColorObject(value);
+                if (color && color.rgb) {
+                  document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
+                }
+              } catch (error) {
+                console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);
+              }
+            }
           });
         }
       }

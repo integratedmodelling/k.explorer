@@ -160,8 +160,8 @@ export default {
     padding 10px
   .kcv-text
     clear both
-    margin 10px 10px 0
-    padding 10px 10px 5px 10px
+    margin 20px 10px
+    // padding 10px 10px 5px 10px
     // border 1px solid #999
     text-align justify
     position relative
@@ -175,18 +175,34 @@ export default {
         margin-bottom 15px
       strong
         color var(--app-title-color)
+    .kcv-collapse-button
+      width 100%
+      position absolute
+      bottom 0
+      left 0
+      text-align center
+      vertical-align middle
+      line-height 30px
+      opacity 0
+      transition opacity 0.3s
+      cursor pointer
+      background-color "rgba(%s, .1)" % var(--app-rgb-main-color)
+      border-radius 5px
+    &:hover
+      .kcv-collapse-button
+        opacity 1
     &.kcv-collapse
       margin-bottom 1em
     &.kcv-collapsed
-      margin-top 0
+      margin-top 10px
+      margin-bottom 0
       padding-top 0
       min-height 2em !important
       max-height 2em !important
       height 2em !important
       .kcv-internal-text
         display none
-    .kcv-collapse-button
-      position absolute
-      bottom -10px
-      left calc((100% - 20px) / 2)
+      .kcv-collapse-button
+        opacity 1
+
 </style>
