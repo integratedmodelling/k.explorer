@@ -214,7 +214,7 @@ export default {
       });
       if (oldLayout !== null) {
         this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
-          { applicationId: oldLayout.name, stop: true },
+          { applicationId: oldLayout.applicationId, stop: true },
           this.$store.state.data.session,
         ).body);
       }
