@@ -308,14 +308,16 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
-  STOP_APPLICATION: ({ applicationId }, session) => buildMessage(
+  RUN_APPLICATION: ({ applicationId, test = false, stop = false }, session) => buildMessage(
     OUT.CLASS_RUN,
     OUT.TYPE_RUNAPP,
     OUT.PAYLOAD_CLASS_LOADAPPLICATIONREQUEST,
     {
+      // scriptUrl: null,
       behavior: applicationId,
-      test: false,
-      stop: true,
+      test,
+      stop,
+      parameters: {},
     },
     session,
   ),

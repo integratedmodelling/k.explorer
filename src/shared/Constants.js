@@ -785,6 +785,10 @@ export const APPS_OPERATION = {
   UPDATE: 'Update',
 };
 
+export const APPS_DEFAULT_VALUES = {
+  LABEL_MIN_WIDTH: '150px',
+};
+
 const VALUE_WITH_UNIT = /^\d+\D{1,2}/;
 
 export const DEFAULT_STYLE_FUNCTION = (component) => {

@@ -131,8 +131,10 @@ export default {
       }
     },
     setStyle() {
-      if (this.layout) {
-        let style = null;
+      let style = null;
+      if (this.layout === null) {
+        style = DEFAULT_STYLES.default;
+      } else {
         style = {
           ...(this.layout.style && DEFAULT_STYLES[this.layout.style] ? DEFAULT_STYLES[this.layout.style] : DEFAULT_STYLES.default),
         };
@@ -147,38 +149,38 @@ export default {
             console.error('Error parsing style specs', error);
           }
         }
-        if (style !== null) {
-          Object.keys(style).forEach((key) => {
-            let value = style[key];
-            if (key === 'density') {
-              key = 'line-height';
-              switch (style.density) {
-                case 'default':
-                  value = 1;
-                  break;
-                case 'confortable':
-                  value = 1.5;
-                  break;
-                case 'compact':
-                  value = 0.5;
-                  break;
-                default:
-                  value = 1;
-              }
+      }
+      if (style !== null) {
+        Object.keys(style).forEach((key) => {
+          let value = style[key];
+          if (key === 'density') {
+            key = 'line-height';
+            switch (style.density) {
+              case 'default':
+                value = 1;
+                break;
+              case 'confortable':
+                value = 1.5;
+                break;
+              case 'compact':
+                value = 0.5;
+                break;
+              default:
+                value = 1;
             }
-            document.documentElement.style.setProperty(`--app-${key}`, value);
-            if (key.includes('color')) {
-              try {
-                const color = getColorObject(value);
-                if (color && color.rgb) {
-                  document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
-                }
-              } catch (error) {
-                console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);
+          }
+          document.documentElement.style.setProperty(`--app-${key}`, value);
+          if (key.includes('color')) {
+            try {
+              const color = getColorObject(value);
+              if (color && color.rgb) {
+                document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
               }
+            } catch (error) {
+              console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);
             }
-          });
-        }
+          }
+        });
       }
     },
     updateLayout() {
@@ -211,8 +213,8 @@ export default {
         // }, 400);
       });
       if (oldLayout !== null) {
-        this.sendStompMessage(MESSAGES_BUILDERS.STOP_APPLICATION(
-          { applicationId: oldLayout.applicationId },
+        this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
+          { applicationId: oldLayout.applicationId, stop: true },
           this.$store.state.data.session,
         ).body);
       }

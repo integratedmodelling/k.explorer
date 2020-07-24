@@ -182,7 +182,7 @@ const PARSERS = {
   },
   [IN.TYPE_SETUPINTERFACE]: ({ payload: layout }, { dispatch }) => {
     dispatch('view/setLayout', layout, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New setup interface received', layout);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `App ${layout.name} loaded`, layout, true);
   },
   [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
     dispatch('view/createViewComponent', component, { root: true });

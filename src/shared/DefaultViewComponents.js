@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn, QIcon } from 'quasar';
 import SimpleBar from 'simplebar';
 import { findNodeById } from './Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS } from './Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from './Constants';
 
 
 export const COMPONENTS = {
@@ -166,16 +166,22 @@ export const COMPONENTS = {
       },
     });
   },
-  LABEL: component => Vue.component('KAppText', {
-    render(h) {
-      return h('div', {
-        staticClass: 'kcv-label',
-        attrs: {
-          id: `${component.applicationId}-${component.id}`,
-        },
-      }, component.content);
-    },
-  }),
+  LABEL: (component) => {
+    if (!component.attributes.width) {
+      component.attributes.width = APPS_DEFAULT_VALUES.LABEL_MIN_WIDTH;
+    }
+    return Vue.component('KAppText', {
+      render(h) {
+        return h('div', {
+          staticClass: 'kcv-label',
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
+          style: DEFAULT_STYLE_FUNCTION(component),
+        }, component.content);
+      },
+    });
+  },
   TEXT_INPUT: component => Vue.component('KAppTextInput', {
     data() {
       return {
@@ -185,6 +191,7 @@ export const COMPONENTS = {
     render(h) {
       return h(QInput, {
         staticClass: ['kcv-text-input'],
+        style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -221,6 +228,7 @@ export const COMPONENTS = {
     render(h) {
       return h(QBtn, {
         staticClass: 'kcv-pushbutton',
+        style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -256,6 +264,7 @@ export const COMPONENTS = {
     render(h) {
       return h('div', {
         staticClass: 'kcv-checkbutton',
+        style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QCheckbox, {
           props: {
@@ -294,6 +303,7 @@ export const COMPONENTS = {
     render(h) {
       return h('div', {
         staticClass: 'kcv-checkbutton',
+        style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QRadio, {
           props: {
@@ -378,6 +388,7 @@ export const COMPONENTS = {
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
+        style: DEFAULT_STYLE_FUNCTION(component),
       }, component.type);
     },
   }),

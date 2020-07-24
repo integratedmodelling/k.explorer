@@ -133,6 +133,8 @@ export default {
       white-space nowrap
       overflow hidden
       text-overflow ellipsis
+      line-height 1.2em
+      vertical-align center
   .kcv-group
     margin 10px 0
   .kcv-label
@@ -140,7 +142,6 @@ export default {
     padding 5px 10px
     font-weight 400
     border-radius 6px
-    width $label-width
     overflow hidden
     white-space nowrap
     text-overflow ellipsis
