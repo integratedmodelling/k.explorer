@@ -183,6 +183,7 @@ export default {
     resourcesValidating: 'Engine is busy',
     presentationBlocked: '<p>Can\'t access online help resources: check your network connection</p><p class="klab-small">A browser extension may also be interfering</p>',
     noAppsAvailable: 'No available apps',
+    noGroupsAssigned: 'No groups assigned',
     appLoading: 'Loading app {app}',
     youHaveGOT: 'Winter is coming',
   },

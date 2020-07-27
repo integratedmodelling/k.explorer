@@ -53,10 +53,9 @@ import KExplorer from 'components/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import { CUSTOM_EVENTS, DEFAULT_STYLES } from 'shared/Constants';
 import { getColorObject } from 'shared/Utils';
-import { URLS } from 'shared/MessagesConstants';
+import { getBase64Resource } from 'shared/Helpers';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
-import { axiosInstance } from 'plugins/axios';
 
 const { width, height } = dom;
 const DEFAULT_LOGO = 'statics/klab-logo.png';
@@ -117,15 +116,18 @@ export default {
   methods: {
     setLogoImage() {
       if (this.layout && this.layout.logo) {
-        axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`, {
-          responseType: 'arraybuffer',
-        }).then((response) => {
-          if (response.data) {
-            this.logoImage = `data:image/png;base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
-          } else {
+        getBase64Resource(this.layout.projectId, this.layout.logo)
+          .then((logo) => {
+            if (logo !== null) {
+              this.logoImage = logo;
+            } else {
+              this.logoImage = DEFAULT_LOGO;
+            }
+          })
+          .catch((error) => {
+            console.error(error);
             this.logoImage = DEFAULT_LOGO;
-          }
-        });
+          });
       } else {
         this.logoImage = DEFAULT_LOGO;
       }
