@@ -11,7 +11,8 @@ _This release has important changes in the base layout, so there could be some u
 ### Added
 - Implementation of apps
 - Settings menu
-- User informations
+- User information
+- App launcher
 ### Improvements
 - Print using a print button
 - Added a refresh button in report view to avoid missing updates
