@@ -321,6 +321,26 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
 };
 
 /**
+ * Return a resource from engine
+ * @param projectId the project id
+ * @param resourceName the resource url using
+ */
+export const getBase64Resource = (projectId, resourceName) => new Promise((resolve, reject) => {
+  axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${projectId}/${resourceName.replace('/', ':')}`, {
+    responseType: 'arraybuffer',
+  })
+    .then((response) => {
+      if (response.data) {
+        resolve(`data:image/png;base64,${Buffer.from(response.data, 'binary').toString('base64')}`);
+      }
+      resolve(null);
+    })
+    .catch((error) => {
+      reject(error);
+    });
+});
+
+/**
  * Build a layer object. If needed ask for projection (reason for async function)
  * @param observation the observations: needed for projection ad type of representation
  * @param isContext if is context, a lot of thing are not needed

@@ -787,6 +787,7 @@ export const APPS_OPERATION = {
 
 export const APPS_DEFAULT_VALUES = {
   LABEL_MIN_WIDTH: '150px',
+  DEFAULT_LOGO: 'statics/klab-logo.png',
 };
 
 const VALUE_WITH_UNIT = /^\d+\D{1,2}/;
