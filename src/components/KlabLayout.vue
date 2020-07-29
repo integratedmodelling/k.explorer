@@ -1,5 +1,17 @@
 <template>
   <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" :id="`kapp-${idSuffix}`">
+    <q-btn
+      v-if="layout !== null && isRootLayout"
+      color="app-main-color"
+      flat
+      round
+      @click="setLayout(null)"
+      icon="mdi-exit-to-app"
+      class="klab-close-app"
+      :style="{ top: header && header.height ? `${(header.height - 40) / 2}px` : '26px' }"
+    >
+      <q-tooltip class="klab-app-tooltip" anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appsClose') }}</q-tooltip>
+    </q-btn>
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
       class="kapp-header-container print-hide"
@@ -49,16 +61,16 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import KExplorer from 'components/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
-import { CUSTOM_EVENTS, DEFAULT_STYLES } from 'shared/Constants';
+import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Constants';
 import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 
 const { width, height } = dom;
-const DEFAULT_LOGO = 'statics/klab-logo.png';
 
 export default {
   name: 'KlabLayout',
@@ -81,7 +93,7 @@ export default {
         width: 0,
         height: 0,
       },
-      logoImage: DEFAULT_LOGO,
+      logoImage: APPS_DEFAULT_VALUES.DEFAULT_LOGO,
       showLeft: true,
     };
   },
@@ -114,6 +126,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setLayout',
+    ]),
     setLogoImage() {
       if (this.layout && this.layout.logo) {
         getBase64Resource(this.layout.projectId, this.layout.logo)
@@ -121,15 +136,15 @@ export default {
             if (logo !== null) {
               this.logoImage = logo;
             } else {
-              this.logoImage = DEFAULT_LOGO;
+              this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
             }
           })
           .catch((error) => {
             console.error(error);
-            this.logoImage = DEFAULT_LOGO;
+            this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
           });
       } else {
-        this.logoImage = DEFAULT_LOGO;
+        this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
       }
     },
     setStyle() {
@@ -279,6 +294,11 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+  .klab-close-app
+    position absolute
+    top 26px
+    right 26px
+    z-index 100000
   /*
   .kapp-left-inner-container
   .kapp-main-container

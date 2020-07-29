@@ -94,7 +94,9 @@ export default {
   .kcv-collapsible-header
     background-color var(--app-main-color)
     color var(--app-background-color)
-    position: relative
+    position relative
+    .q-item-label
+      font-size var(--app-font-size)
     .q-item-side
       color var(--app-background-color)
   .kcv-collapsible
@@ -154,6 +156,7 @@ export default {
     border 1px solid var(--app-main-color)
     padding 5px
   .kcv-pushbutton
+    font-size var(--app-font-size)
     margin 5px
   .kcv-checkbutton
     display block

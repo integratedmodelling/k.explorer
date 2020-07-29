@@ -132,6 +132,7 @@ export default {
     userLastLogin: 'Last login:',
     userGroups: 'Groups:',
     appsList: 'Available apps',
+    appsClose: 'Close app',
   },
   messages: {
     connectionClosed: 'Connection closed',
