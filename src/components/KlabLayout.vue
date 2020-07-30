@@ -8,9 +8,12 @@
       @click="setLayout(null)"
       icon="mdi-exit-to-app"
       class="klab-close-app"
-      :style="{ top: header && header.height ? `${(header.height - 40) / 2}px` : '26px' }"
+      :class="[ header.height > 0 ? 'klab-close-app-on-header' : leftPanel.width > 0 ? 'klab-close-app-on-left' : 'klab-close-app-on-panel']"
+      :style="{
+        ...((header.height > 0 && { top: `${(header.height - 40) / 2}px`, right: '16px' }) || (leftPanel.width > 0) && { left: `${(leftPanel.width - 34)}px`, top: '4px' } || { top: '16px', left: '16px' }),
+      }"
     >
-      <q-tooltip class="klab-app-tooltip" anchor="center left" self="center right" :offset="[20, 0]">{{ $t('label.appsClose') }}</q-tooltip>
+      <q-tooltip class="klab-app-tooltip" anchor="center right" self="center left" :offset="[8, 0]" delay="1000">{{ $t('label.appsClose') }}</q-tooltip>
     </q-btn>
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
@@ -58,6 +61,7 @@
     </q-page-container>
     <q-resize-observable @resize="updateLayout" />
   </q-layout>
+
 </template>
 
 <script>
@@ -299,9 +303,26 @@ export default {
         font-weight 300
   .klab-close-app
     position absolute
-    top 26px
-    right 26px
     z-index 100000
+    &.klab-close-app-on-left
+    &.klab-close-app-on-panel
+      height 32px
+      width 32px
+      opacity 0.2
+      .q-icon
+        font-size 16px
+      &:hover
+        height 50px
+        width 50px
+        opacity 1
+        .q-icon
+          font-size 22px
+    &.klab-close-app-on-left
+      &:hover
+        transform translate(-22px, 0)
+    &.klab-close-app-on-panel
+      background-color var(--app-main-color)
+      color var(--app-background-color)
   /*
   .kapp-left-inner-container
   .kapp-main-container

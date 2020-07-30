@@ -133,6 +133,8 @@ export default {
     userGroups: 'Groups:',
     appsList: 'Available apps',
     appsClose: 'Close app',
+    noLayoutLabel: '<em>No title</em>',
+    noLayoutDescription: '<em>No description</em>',
   },
   messages: {
     connectionClosed: 'Connection closed',

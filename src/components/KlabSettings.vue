@@ -87,8 +87,8 @@
                     <img valign="middle" :src="app.logoSrc"/>
                   </div>
                   <div class="kal-info" @click="runApp(app.name)">
-                    <div class="kal-name">{{ app.label }}</div>
-                    <div class="kal-description">{{ app.description }}</div>
+                    <div class="kal-name" v-html="app.label ? app.label : app.name ? app.name : $t('label.noLayoutLabel')"></div>
+                    <div class="kal-description" v-html="app.description ? app.description : $t('label.noLayoutDescription')"></div>
                   </div>
                 </div>
               </template>
@@ -223,7 +223,7 @@ export default {
   */
   created() {
     if (this.sessionReference && this.sessionReference.publicApps) {
-      const apps = this.sessionReference.publicApps.filter(app => app.platform === 'WEB');
+      const apps = this.sessionReference.publicApps.filter(app => app.platform === 'WEB' || app.platform === 'ANY');
       apps.forEach((app) => {
         if (app.logo) {
           getBase64Resource(app.projectId, app.logo)
