@@ -40,7 +40,7 @@
       content-class="kapp-left-inner-container"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
-      :width="600"
+      :width="leftPanelWidth"
     >
       <template v-if="leftPanel">
         <klab-components-viewer
@@ -111,6 +111,9 @@ export default {
       set() {
         // nothing to do
       },
+    },
+    leftPanelWidth() {
+      return this.layout && this.layout.leftPanels && this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? this.layout.leftPanels[0].attributes.width : 512;
     },
     mainPanelStyle() {
       return {
