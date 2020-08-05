@@ -15,6 +15,7 @@ import KlabSettings from 'components/KlabSettings';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
+import 'simplebar/dist/simplebar.css';
 
 export default {
   name: 'LayoutDefault',

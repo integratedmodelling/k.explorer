@@ -160,8 +160,6 @@ export default {
       text-align right
     .simplebar-scrollbar:before
       background #888
-    .simplebar-scroll-content
-      padding-right 15px !important
     article
       padding 0 10px
       hr

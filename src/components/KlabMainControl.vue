@@ -267,7 +267,7 @@ export default {
     },
     onDebouncedPositionChanged(event) {
       // this.askForDocking = !!(this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3));
-      this.askForDocking = !!(this.hasContext && this.dragging && event && event.x <= 30);
+      this.askForDocking = !!(this.hasContext && this.dragging && event && event.x <= 30 + this.correctedPosition.left);
     },
     hide() {
       this.dragMCConfig.resetInitialPos = false;
@@ -356,8 +356,8 @@ export default {
       this.hide();
     },
     updateCorrectedPosition() {
-      const header = document.getElementById('klab-main-header');
-      const leftPanels = document.querySelector('#klab-main-left-panel aside');
+      const header = document.querySelector('.kapp-header-container');
+      const leftPanels = document.querySelector('.kapp-left-container aside');
       const top = header ? height(header) : 0;
       const left = leftPanels ? width(leftPanels) : 0;
       this.correctedPosition = { top, left };

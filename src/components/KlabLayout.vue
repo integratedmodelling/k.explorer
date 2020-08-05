@@ -13,7 +13,7 @@
         ...((header.height > 0 && { top: `${(header.height - 40) / 2}px`, right: '16px' }) || (leftPanel.width > 0) && { left: `${(leftPanel.width - 34)}px`, top: '4px' } || { top: '16px', left: '16px' }),
       }"
     >
-      <q-tooltip class="klab-app-tooltip" anchor="center right" self="center left" :offset="[8, 0]" delay="1000">{{ $t('label.appsClose') }}</q-tooltip>
+      <q-tooltip class="klab-app-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.appsClose') }}</q-tooltip>
     </q-btn>
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
@@ -39,7 +39,6 @@
       side="left"
       :class="{ 'kapp-main':  isRootLayout}"
       class="kapp-left-container print-hide"
-      :id="`kapp-${idSuffix}-left`"
       content-class="kapp-left-inner-container"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
@@ -66,6 +65,7 @@
 
 <script>
 import { mapActions } from 'vuex';
+import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Constants';
@@ -206,6 +206,14 @@ export default {
           }
         });
       }
+
+      this.$nextTick(() => {
+        const leftInnerContainer = document.querySelector('.kapp-left-inner-container');
+        if (leftInnerContainer) {
+          // eslint-disable-next-line no-new
+          new SimpleBar(leftInnerContainer);
+        }
+      });
     },
     updateLayout() {
       this.setLogoImage();
@@ -263,13 +271,15 @@ export default {
       font-size var(--app-font-size)
       line-height var(--app-line-height)
       background-color var(--app-background-color)
-
+  .kapp-left-inner-container
+    position absolute !important
   .kapp-main
     &.q-layout
       border 0
       padding 0
       margin 0
-
+    .simplebar-scrollbar::before
+      background-color var(--app-main-color)
   .kapp-header
     background-color var(--app-background-color)
     padding 0

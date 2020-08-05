@@ -798,13 +798,13 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
     const value = component.attributes[key];
     switch (key) {
       case 'width':
-        retStyle['min-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        retStyle['max-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        // retStyle['min-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        // retStyle['max-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle.width = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         break;
       case 'height':
-        retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        // retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        // retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         /*
         if (component.type !== 'Group' && component.type !== 'Tree') {
