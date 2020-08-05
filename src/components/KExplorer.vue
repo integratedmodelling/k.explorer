@@ -53,7 +53,6 @@ import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
 import ObservationTime from 'components/ObservationTime.vue';
 import KlabLeftMenu from 'components/KlabLeftMenu.vue';
 import 'ol/ol.css';
-import 'simplebar/dist/simplebar.css';
 
 export default {
   /* eslint-disable object-shorthand */

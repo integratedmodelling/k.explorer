@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn, QIcon } from 'quasar';
-import SimpleBar from 'simplebar';
 import { findNodeById } from './Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from './Constants';
 
@@ -335,12 +334,8 @@ export const COMPONENTS = {
   TEXT: component => Vue.component('KAppText', {
     data() {
       return {
-        scrollbar: undefined,
         collapsed: false,
       };
-    },
-    mounted() {
-      this.scrollbar = new SimpleBar(document.getElementById(`${component.applicationId}-${component.id}`));
     },
     render(h) {
       return h('div', {
@@ -355,6 +350,7 @@ export const COMPONENTS = {
           staticClass: 'kcv-internal-text',
           attrs: {
             id: `${component.applicationId}-${component.id}`,
+            'data-simplebar': 'data-simplebar',
           },
           domProps: {
             innerHTML: component.content,

@@ -635,16 +635,10 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
-    /*
-    [data-simplebar]
-      padding-bottom 10px
-    */
     .kt-drag-enter
       background-color #555
     .kt-tree-container
       // special class to solve the noNode
-      .simplebar-scroll-content
-        padding-right 17px !important
       .klab-no-nodes
         padding 5px 0
         margin 0
