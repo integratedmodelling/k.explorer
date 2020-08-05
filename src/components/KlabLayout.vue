@@ -39,7 +39,6 @@
       side="left"
       :class="{ 'kapp-main':  isRootLayout}"
       class="kapp-left-container print-hide"
-      :id="`kapp-${idSuffix}-left`"
       content-class="kapp-left-inner-container"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
