@@ -141,13 +141,13 @@ export default {
       return 100 / this.observationInfo.dataSummary.histogram.length;
     },
     histogramMin() {
-      if (this.observationInfo.dataSummary.minValue === 'NaN') {
+      if (this.observationInfo.dataSummary.minValue === 'NaN' || this.observationInfo.dataSummary.categorized) {
         return '';
       }
       return Math.round(this.observationInfo.dataSummary.minValue * 100) / 100;
     },
     histogramMax() {
-      if (this.observationInfo.dataSummary.maxValue === 'NaN') {
+      if (this.observationInfo.dataSummary.maxValue === 'NaN' || this.observationInfo.dataSummary.categorized) {
         return '';
       }
       return Math.round(this.observationInfo.dataSummary.maxValue * 100) / 100;
