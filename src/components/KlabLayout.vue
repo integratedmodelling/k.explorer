@@ -60,7 +60,6 @@
     </q-page-container>
     <q-resize-observable @resize="updateLayout" />
   </q-layout>
-
 </template>
 
 <script>
@@ -85,6 +84,7 @@ export default {
   props: {
     layout: {
       type: Object,
+      default: null,
     },
   },
   data() {

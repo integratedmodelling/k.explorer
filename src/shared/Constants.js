@@ -838,9 +838,6 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
         retStyle['align-items'] = 'center';
         break;
-      case 'scroll':
-        retStyle.overflow = 'auto';
-        break;
       default:
         retStyle.key = value;
     }

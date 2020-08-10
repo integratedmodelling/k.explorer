@@ -107,7 +107,7 @@ export default {
       margin 5px 10px
     .kcv-tree-container
     .kcv-text
-      padding 15px 10px 5px 10px
+      padding 10px 0 5px
       position relative
 
   .q-collapsible-sub-item
@@ -164,15 +164,15 @@ export default {
     padding 10px
   .kcv-text
     // clear both
-    margin 10px 0px
-    padding 10px
+    margin 10px
+
     // border 1px solid #999
     text-align justify
     position relative
     color var(--app-text-color)
     .kcv-internal-text
       // display block
-      // overflow auto
+      overflow hidden
       p
         padding 0 5px
         margin-bottom 15px
@@ -199,9 +199,9 @@ export default {
       margin-bottom 1em
     &.kcv-collapsed
       padding-top 0
-      min-height 2em !important
-      max-height 2em !important
       height 2em !important
+      overflow: hidden
+      padding-bottom 14px
       .kcv-internal-text
         display none
       .kcv-collapse-button
