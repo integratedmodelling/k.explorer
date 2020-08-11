@@ -1,10 +1,10 @@
 {
   "name": "klab.explorer",
-  "version": "0.10.5",
-  "description": "k.Explorer module of k.LAB",
+  "version": "0.11.0",
+  "description": "Web based explorer for k.LAB engine",
   "productName": "k.Explorer",
   "license": "AGPL-3.0-only",
-  "author": "Enrico Girotto <enrico.girotto@gmail.com>",
+  "author": "Enrico Girotto <enrico.girotto@bc3research.org>",
   "repository": {
     "type": "git",
     "url": "https://bitbucket.org/integratedmodelling/k.explorer.git"

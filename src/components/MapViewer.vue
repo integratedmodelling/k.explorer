@@ -817,6 +817,11 @@ export default {
     this.map.on('moveend', this.onMoveEnd);
 
     this.map.on('click', (event) => {
+      if (this.isDrawMode) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       /* EASTER EGG */
       if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
         const lastLayer = baseLayersGroup.getLayersArray().slice(-1)[0];
@@ -865,6 +870,11 @@ export default {
       }, 300);
     });
     this.map.on('dblclick', (event) => {
+      if (this.isDrawMode) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       const selectedLayers = this.findTopLayerFromClick(event);
       if (selectedLayers.length === 1) {
         // if (selectedLayer.type === 'VECTOR' || selectedLayer.get('id') !== this.topLayer.id) {
