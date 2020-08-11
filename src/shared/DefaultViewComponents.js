@@ -45,6 +45,19 @@ export const COMPONENTS = {
       }, this.$slots.default);
     },
   }),
+  PANEL: component => Vue.component('KAppPanel', {
+    render(h) {
+      return h('div', {
+        staticClass: 'kcv-panel-container',
+        class: `kcv-dir-${component.direction}`,
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        style: DEFAULT_STYLE_FUNCTION(component),
+        ...(component.name && { ref: component.name }),
+      }, this.$slots.default);
+    },
+  }),
   GROUP: component => Vue.component('KAppGroup', {
     data() {
       return {};
@@ -428,7 +441,7 @@ export function createComponent(node, h, options = {}) {
   let component;
   switch (node.type) {
     case null: {
-      const { mainPanelStyle, direction } = options;
+      const { mainPanelStyle = {}, direction = 'vertical' } = options;
       component = COMPONENTS.MAIN({
         ...node,
         mainPanelStyle,
@@ -436,6 +449,9 @@ export function createComponent(node, h, options = {}) {
       });
       break;
     }
+    case APPS_COMPONENTS.PANEL:
+      component = COMPONENTS.PANEL(node);
+      break;
     case APPS_COMPONENTS.LABEL:
       component = COMPONENTS.LABEL(node);
       break;
