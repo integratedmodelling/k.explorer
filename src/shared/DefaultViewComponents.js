@@ -417,12 +417,10 @@ export function createComponent(node, h, options = {}) {
   if (!node) {
     return [];
   }
-  /*
+
   if (node.type === APPS_COMPONENTS.VIEW) {
     return h(COMPONENTS.LAYOUT);
   }
-
-   */
   let shelf = null;
   if (node.attributes.parentAttributes && node.attributes.parentAttributes.shelf) {
     shelf = COMPONENTS.SHELF(node);
