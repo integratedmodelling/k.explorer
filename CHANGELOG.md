@@ -7,9 +7,8 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 ## 0.11.0
-_This release has important changes in the base layout, so there could be some unknown issue_
 ### Added
-- Implementation of apps
+- First implementation of apps on left or center panel
 - Settings menu
 - User information
 - App launcher
@@ -17,7 +16,9 @@ _This release has important changes in the base layout, so there could be some u
 - Print using a print button
 - Added a refresh button in report view to avoid missing updates
 ### Solved
-- Various bugs
+- Histogram with discrete values doesn't show min and max (no sense)
+- Draw mode bug
+- Styles bug
 
 ## 0.10.5
 ### Added
