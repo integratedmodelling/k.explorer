@@ -18,7 +18,7 @@ const EMPTY_VIEWACTION_MESSAGE = {
 };
 
 export default {
-  name: 'KlabComponentsViewer',
+  name: 'KlabAppViewer',
   props: {
     component: {
       type: Object,
@@ -103,24 +103,18 @@ export default {
     clear both
     .kcv-tree-container
       margin 15px 10px 15px 10px
-    .kcv-text
-      margin 5px 10px
-    .kcv-tree-container
-    .kcv-text
       padding 10px 0 5px
-      position relative
-
   .q-collapsible-sub-item
     padding 8px 0
   .kcv-tree-container
   .kcv-group-container
     padding 15px 10px
-    margin 15px 20px 10px 20px
+    margin 15px 10px
     border-radius 6px
     position relative
     &:not(.kcv-group-no-label)
       border 1px solid var(--app-main-color)
-      margin-bottom 30px
+      margin-top 30px
       padding-top 20px
     .kcv-tree-legend
     .kcv-group-legend
@@ -163,10 +157,7 @@ export default {
     width 100%
     padding 10px
   .kcv-text
-    // clear both
-    margin 10px
-
-    // border 1px solid #999
+    margin 15px 10px
     text-align justify
     position relative
     color var(--app-text-color)
@@ -199,7 +190,7 @@ export default {
       margin-bottom 1em
     &.kcv-collapsed
       padding-top 0
-      height 2em !important
+      height 20px !important
       overflow: hidden
       padding-bottom 14px
       .kcv-internal-text

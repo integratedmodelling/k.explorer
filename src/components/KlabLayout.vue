@@ -21,12 +21,12 @@
       :id="`kapp-${idSuffix}-header`"
       v-if="hasHeader"
       >
-      <klab-components-viewer
+      <klab-app-viewer
         class="kapp-header"
         v-if="layout.header"
         :component="layout.header"
         direction="horizontal"
-      ></klab-components-viewer>
+      ></klab-app-viewer>
       <div class="kapp-header" v-else>
         <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
         <div class="kapp-title-container">
@@ -45,17 +45,17 @@
       :width="leftPanelWidth"
     >
       <template v-if="leftPanel">
-        <klab-components-viewer
+        <klab-app-viewer
           :id="`kapp-${idSuffix}-left-0`"
           :component="layout.leftPanels[0]"
           direction="vertical">
-        </klab-components-viewer>
+        </klab-app-viewer>
       </template>
     </q-layout-drawer>
     <q-page-container>
       <k-explorer v-if="!layout || layout.panels.length === 0" class="kapp-main-container is-kexplorer" :id="`kapp-${idSuffix}-main`" :mainPanelStyle="mainPanelStyle"></k-explorer>
       <template v-else>
-        <klab-components-viewer class="kapp-main-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-components-viewer>
+        <klab-app-viewer class="kapp-main-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
       </template>
     </q-page-container>
     <q-resize-observable @resize="updateLayout" />
@@ -66,7 +66,7 @@
 import { mapActions } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
-import KlabComponentsViewer from 'components/KlabComponentsViewer.vue';
+import KlabAppViewer from 'components/KlabAppViewer.vue';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Constants';
 import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
@@ -79,7 +79,7 @@ export default {
   name: 'KlabLayout',
   components: {
     KExplorer,
-    KlabComponentsViewer,
+    KlabAppViewer,
   },
   props: {
     layout: {
@@ -280,25 +280,24 @@ export default {
       margin 0
     .simplebar-scrollbar::before
       background-color var(--app-main-color)
+  // header
   .kapp-header
     background-color var(--app-background-color)
     padding 0
     margin 0
-    .kapp-logo
-      // width 80px
-      height 70px
-      margin 5px 10px
-      float left
-      img
-        max-width 80px
-        max-height 80px
+    img
+      max-width 80px
+      max-height 80px
+      &.kapp-logo
+        margin 5px 10px
+        float left
     .kapp-title-container
       color var(--app-title-color)
       float left
       height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
       min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
       vertical-align middle
-      padding-top 17px // 20px padding - 6px/2 separation
+      padding-top 22px // 25px padding - 6px/2 separation
       padding-left 10px
       .kapp-title
         height var(--app-title-size)
@@ -311,6 +310,7 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+  // close app button
   .klab-close-app
     position absolute
     z-index 100000
@@ -333,10 +333,5 @@ export default {
     &.klab-close-app-on-panel
       background-color var(--app-main-color)
       color var(--app-background-color)
-  /*
-  .kapp-left-inner-container
-  .kapp-main-container
-    padding-top 10px
 
-   */
 </style>
