@@ -73,12 +73,14 @@
             @mouseenter.native="mousePopupEnter('appsList')"
             @mouseleave.native="mousePopupLeave('appsList')"
           >
-            <!--
-            <div class="ks-close-button">
-              <q-btn round size="xs" flat color="app-title-color" @click="appsListVisible = false" icon="mdi-close"></q-btn>
+            <div class="ks-title">
+              <div class="ks-title-text">{{ $t('label.appsList') }}</div>
+              <div class="ks-reload-button">
+                <q-btn round size="sm" flat color="app-title-color" @click="loadSessionReference" icon="mdi-refresh">
+                  <q-tooltip class="klab-setting-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.reloadApplications') }}</q-tooltip>
+                </q-btn>
+              </div>
             </div>
-            -->
-            <div class="ks-title">{{ $t('label.appsList') }}</div>
             <div class="kal-apps disable-select">
               <div class="kal-no-apps" v-if="appsList.length === 0">{{ $t('messages.noAppsAvailable') }}</div>
               <template v-else>
@@ -101,7 +103,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { getBase64Resource } from 'shared/Helpers';
 import { APPS_DEFAULT_VALUES } from 'shared/Constants';
@@ -137,6 +139,36 @@ export default {
     },
   },
   methods: {
+    ...mapActions('data', [
+      'loadSessionReference',
+    ]),
+    loadApplications() {
+      this.appsList.splice(0);
+      if (this.sessionReference && this.sessionReference.publicApps) {
+        const apps = this.sessionReference.publicApps.filter(app => app.platform === 'WEB' || app.platform === 'ANY');
+        apps.forEach((app) => {
+          if (app.logo) {
+            getBase64Resource(app.projectId, app.logo)
+              .then((logo) => {
+                if (logo !== null) {
+                  app.logoSrc = logo;
+                } else {
+                  app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+                }
+                this.appsList.push(app);
+              })
+              .catch((error) => {
+                console.error(error);
+                app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+                this.appsList.push(app);
+              });
+          } else {
+            app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+            this.appsList.push(app);
+          }
+        });
+      }
+    },
     runApp(app) {
       this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
         { applicationId: app },
@@ -198,52 +230,13 @@ export default {
       }, 100);
     },
   },
-  /*
   watch: {
-    modalsAreFocused() {
-      console.warn(`Modal are focused: ${this.modalsAreFocused}`);
-    },
-  /*
-    fabVisible() {
-      console.warn(`FabOpen is ${this.fabVisible}`);
-    },
-    models: {
-      deep: true,
-      handler() {
-        console.warn('Models', JSON.stringify(this.models, null, 4));
-      },
-    },
-    popupsOver: {
-      deep: true,
-      handler() {
-        console.warn('popupsOver', JSON.stringify(this.popupsOver, null, 4));
-      },
+    sessionReference() {
+      this.loadApplications();
     },
   },
-  */
   created() {
-    if (this.sessionReference && this.sessionReference.publicApps) {
-      const apps = this.sessionReference.publicApps.filter(app => app.platform === 'WEB' || app.platform === 'ANY');
-      apps.forEach((app) => {
-        if (app.logo) {
-          getBase64Resource(app.projectId, app.logo)
-            .then((logo) => {
-              if (logo !== null) {
-                app.logoSrc = logo;
-              } else {
-                app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-              }
-            })
-            .catch((error) => {
-              console.error(error);
-              app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            });
-        } else {
-          app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-        }
-      });
-      this.appsList = apps;
-    }
+    this.loadApplications();
   },
 };
 </script>
@@ -290,8 +283,16 @@ export default {
     .ks-title
       font-size 1.3em
       color var(--app-title-color)
-      font-width: 400;
+      font-weight 400
       margin-bottom 10px
+      .ks-title-text
+        display inline-block
+      .ks-reload-button
+        display inline-block
+        padding-left 10px
+        opacity .3
+        &:hover
+          opacity 1
     .kud-owner
       border 1px solid var(--app-main-color)
       border-radius 5px
@@ -341,17 +342,13 @@ export default {
             font-size 80%
 
     // modals are out of container
-    .ks-close-button
-      position absolute
-      width 10px
-      height 10px
-      top 5px
-      right 20px
     .kud-group-id
     .kud-group-detail
       text-align center
     .kud-group-detail
       font-style italic
+  .klab-setting-tooltip
+    background-color var(--app-main-color)
 
 
 </style>
