@@ -206,9 +206,9 @@ export default {
   .md-draw-controls
     position absolute
     top 30px
-    left calc(100vh - 100px)
+    left calc(50vw - 100px)
     background-color rgba(255, 255, 255, 0.8)
-    border-radius 20px
+    border-radius 10px
     .md-title
       color white
       background-color $main-control-main-color
@@ -216,17 +216,17 @@ export default {
       padding 5px
       font-size 16px
       text-align center
-      border-top-left-radius 20px
-      border-top-right-radius 20px
+      border-top-left-radius 10px
+      border-top-right-radius 10px
     .md-controls
       .md-control
         font-size 30px
-        font-width bold
+        font-weight bold
         width calc(33% - 24px)
         padding 5px
         margin 10px 12px
         height 40px;
-        border-radius 20px
+        border-radius 10px
         cursor pointer
       .md-ok
         color $positive
@@ -248,12 +248,12 @@ export default {
             color white
     .md-selector
       .q-btn-group
-        border-bottom-left-radius 20px;
-        border-bottom-right-radius 20px;
+        border-bottom-left-radius 10px;
+        border-bottom-right-radius 10px;
       button
         width 50px
         &:nth-child(1)
-          border-bottom-left-radius 20px;
+          border-bottom-left-radius 10px;
         &:nth-child(4)
-          border-bottom-right-radius 20px;
+          border-bottom-right-radius 10px;
 </style>
