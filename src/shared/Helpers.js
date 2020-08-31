@@ -1,5 +1,6 @@
 /* eslint-disable object-curly-newline,prefer-destructuring,no-multi-spaces */
-import { CONSTANTS, GEOMETRY_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, GEOMETRY_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
+import { URLS } from 'shared/MessagesConstants';
 import store from 'store/index';
 import { MAP_CONSTANTS, MAP_STYLES } from 'shared/MapConstants';
 import { getGradient, interpolateArray, createMarker } from 'shared/Utils';
@@ -14,7 +15,6 @@ import { get as getProjection, getTransform } from 'ol/proj';
 import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
-import { OBSERVATION_CONSTANTS } from './Constants';
 
 const WKTInstance = new WKT();
 
@@ -321,6 +321,26 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
 };
 
 /**
+ * Return a resource from engine
+ * @param projectId the project id
+ * @param resourceName the resource url using
+ */
+export const getBase64Resource = (projectId, resourceName) => new Promise((resolve, reject) => {
+  axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${projectId}/${resourceName.replace('/', ':')}`, {
+    responseType: 'arraybuffer',
+  })
+    .then((response) => {
+      if (response.data) {
+        resolve(`data:image/png;base64,${Buffer.from(response.data, 'binary').toString('base64')}`);
+      }
+      resolve(null);
+    })
+    .catch((error) => {
+      reject(error);
+    });
+});
+
+/**
  * Build a layer object. If needed ask for projection (reason for async function)
  * @param observation the observations: needed for projection ad type of representation
  * @param isContext if is context, a lot of thing are not needed
@@ -373,7 +393,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
       viewport = GEOMETRY_CONSTANTS.PARAM_VIEWPORT_MAX_SIZE;
     }
     const layerExtent = geometry.getExtent();
-    const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observation.id}`;
+    const url = `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${observation.id}`;
     const source = new Static({
       projection: dataProjection,
       imageExtent: layerExtent,
@@ -508,6 +528,41 @@ export const getStateIcon = (state) => {
   }
 };
 
+export const findInLayout = (layout, key = null, comparator) => {
+  const findComponent =  (node, k = null, comp = (n, needle) => {
+    if (n.id === needle) {
+      return n;
+    }
+    return null;
+  }) => {
+    if (node && k !== null) {
+      const { reduce } = [];
+      const find = (result, c) => {
+        if (result || !c) {
+          return result;
+        }
+        if (Array.isArray(c)) {
+          return reduce.call(Object(c), find, result);
+        }
+        const ret = comp(c, k);
+        if (ret === null && c.components && c.components.length > 0) {
+          return find(null, c.components);
+        }
+        return ret;
+      };
+      return find(null, node);
+    }
+    return null;
+  };
+  return findComponent([
+    ...layout.panels,
+    ...layout.leftPanels,
+    ...layout.rightPanels,
+    layout.header,
+    layout.footer,
+  ].filter(e => e !== null), key, comparator);
+};
+
 const Helpers = {
   isRasterObservation,
   pushElementInFixedQueue,
@@ -520,6 +575,7 @@ const Helpers = {
   getLayerObject,
   getStateIcon,
   getError,
+  findInLayout,
 };
 
 export { Helpers };

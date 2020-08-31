@@ -21,6 +21,7 @@ const PARSERS = {
     // dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
+    dispatch('view/setReloadReport', true, { root: true });
   },
   [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch }) => {
     if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
@@ -179,9 +180,17 @@ const PARSERS = {
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Network status received', message);
   },
+  [IN.TYPE_SETUPINTERFACE]: ({ payload: layout }, { dispatch }) => {
+    dispatch('view/setLayout', layout, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `App ${layout.name} loaded`, layout, true);
+  },
   [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {
-    dispatch('view/addViewComponent', component, { root: true });
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Created view compoment received', component);
+    dispatch('view/createViewComponent', component, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New create view component received', component);
+  },
+  [IN.TYPE_VIEWACTION]: ({ payload: action }, { dispatch }) => {
+    dispatch('view/viewAction', action, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view action received', action);
   },
 };
 

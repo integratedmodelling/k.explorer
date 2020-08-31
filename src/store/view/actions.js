@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { URLS } from 'shared/MessagesConstants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import { transform } from 'ol/proj';
 
@@ -282,7 +283,7 @@ export default {
       if (observationId === null) {
         observationId = state.observationInfo.id;
       }
-      const url = `${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}data/${observationId}`;
+      const url = `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${observationId}`;
       const coordinates = transform(pixelSelected, 'EPSG:3857', 'EPSG:4326');
       const time = timestamp !== -1 ? `T1(1){time=${timestamp.toFixed(0)}}` : '';
       getAxiosContent(`pv_${observationId}`, url, {
@@ -356,12 +357,43 @@ export default {
     commit('SET_TIME_RUNNING', timeRunning);
   },
 
-  addViewComponent: ({ commit }, component) => {
-    commit('ADD_VIEW_COMPONENT', component);
+  setLayout: ({ commit }, layout) => {
+    if (layout !== null && (layout.platform === 'DESKTOP' || layout.platform === 'MOBILE')) {
+      console.info(`Received an app for another platform: ${layout.platform}`);
+      return;
+    }
+    commit('SET_LAYOUT', layout === null ? null : {
+      ...layout,
+      // style: 'worst',
+      /*
+      styleSpecs: {
+        ...layout.styleSpecs,
+        // 'main-color': 'red',
+        /*
+        'background-color': 'green',
+        'text-color': 'blue',
+        'title-color': 'yellow',
+        'font-type': 'klab-font',
+        'font-size': '2em',
+        density: 'confortable',
+        'title-size': '4em',
+        'subtitle-size': '4em',
+
+      },
+      */
+    });
   },
 
   setEngineEvent: ({ commit }, event) => {
     commit('SET_ENGINE_EVENT', event);
+  },
+
+  createViewComponent: ({ commit }, component) => {
+    commit('CREATE_VIEW_COMPONENT', component);
+  },
+
+  viewAction: ({ commit }, action) => {
+    commit('VIEW_ACTION', action);
   },
 
 };

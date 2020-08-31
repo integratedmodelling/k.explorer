@@ -4,6 +4,14 @@ import { SCALE_TYPE } from 'shared/Constants';
 
 export default {
   /**
+   * Session reference
+   *
+   * @param state
+   * @returns {null}
+   */
+  sessionReference: state => state.sessionReference,
+
+  /**
    * The observations tree
    */
   tree: state => state.tree,
@@ -102,6 +110,7 @@ export default {
     && (type === null || (type === SCALE_TYPE.ST_SPACE && state.nextScale.spaceChanged)
       || (type === SCALE_TYPE.ST_SPACE && state.nextScale.spaceChanged)),
 
+  capabilities: state => state.capabilities,
 
   /**
    * The search results

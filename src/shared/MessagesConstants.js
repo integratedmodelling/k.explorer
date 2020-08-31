@@ -24,6 +24,7 @@ export const OUT = Object.freeze({
   CLASS_USERCONTEXTDEFINITION: 'UserContextDefinition',
   CLASS_USERINTERFACE: 'UserInterface',
   CLASS_NOTIFICATION: 'Notification',
+  CLASS_RUN: 'Run',
 
   TYPE_REGIONOFINTEREST: 'RegionOfInterest',
   TYPE_FEATUREADDED: 'FeatureAdded',
@@ -41,6 +42,8 @@ export const OUT = Object.freeze({
   TYPE_USERINPUTPROVIDED: 'UserInputProvided',
   TYPE_WATCHOBSERVATION: 'WatchObservation',
   TYPE_ENGINEEVENT: 'EngineEvent',
+  TYPE_VIEWACTION: 'ViewAction',
+  TYPE_RUNAPP: 'RunApp',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -56,6 +59,8 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_USERINPUTRESPONSE: 'UserInputResponse',
   PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
+  PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
+  PAYLOAD_CLASS_LOADAPPLICATIONREQUEST: 'LoadApplicationRequest',
 
 });
 
@@ -91,6 +96,8 @@ export const IN = Object.freeze({
   TYPE_CREATEVIEWCOMPONENT: 'CreateViewComponent',
   TYPE_SCHEDULEADVANCED: 'ScheduleAdvanced',
   TYPE_ENGINEEVENT: 'EngineEvent',
+  TYPE_SETUPINTERFACE: 'SetupInterface',
+  TYPE_VIEWACTION: 'ViewAction',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -112,4 +119,15 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_EMPTY: 'String',
   PAYLOAD_CLASS_VIEWCOMPONENT: 'ViewComponent',
   PAYLOAD_CLASS_ENGINEEVENT: 'EngineEvent',
+  PAYLOAD_CLASS_LAYOUT: 'Layout',
+  PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
+});
+
+export const URLS = Object.freeze({
+  REST_STATUS: `${process.env.ENGINE_URL}/engine/status`,
+  REST_SESSION_INFO: `${process.env.ENGINE_URL}/engine/session/info`,
+  REST_SESSION_VIEW: `${process.env.ENGINE_URL}/engine/session/view/`,
+  REST_SESSION_OBSERVATION: `${process.env.ENGINE_URL}/engine/session/observation/`,
+  REST_UPLOAD: `${process.env.ENGINE_URL}/resource/put`,
+  REST_GET_PROJECT_RESOURCE: `${process.env.ENGINE_URL}/engine/project/resource/get`,
 });

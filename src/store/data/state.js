@@ -4,6 +4,10 @@ import { CONSTANTS } from 'shared/Constants';
  * Data states
  */
 export default {
+  /**
+   * The session reference, we aks for it on start
+   */
+  sessionReference: null,
 
   /**
    * Tree of observation

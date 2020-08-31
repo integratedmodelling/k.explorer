@@ -106,7 +106,7 @@ export default ({ store }) => {
       if (Object.keys(capabilities).length === 0) {
         throw Error('Capabilities are empty, check it');
       }
-      store.state.view.capabilities = capabilities;
+      store.state.data.capabilities = capabilities;
     } else {
       throw Error('Error asking for capabilities: no data');
     }

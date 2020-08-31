@@ -1,6 +1,7 @@
 import { MESSAGE_TYPES, CONNECTION_CONSTANTS } from 'shared/Constants';
 
 export default {
+  connectionDown: state => state.connectionState !== CONNECTION_CONSTANTS.CONNECTION_UP,
   lastError: (state) => {
     const filtered = state.receivedMessages
       .filter(item => item.type === MESSAGE_TYPES.TYPE_ERROR).slice(-1);

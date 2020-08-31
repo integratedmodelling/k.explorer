@@ -515,6 +515,7 @@ export const CUSTOM_EVENTS = {
   NEED_HELP: 'needhelp',
   OBSERVATION_BY_TIME: 'observationbytime',
   NEED_LAYER_BUFFER: 'needlayerbuffer',
+  COMPONENT_ACTION: 'componentaction',
 };
 
 export const SCALE_TYPE = {
@@ -754,6 +755,150 @@ export const ENGINE_EVENTS = {
   RESOURCE_VALIDATION: 'ResourceValidation',
 };
 
+export const APPS_COMPONENTS = {
+  PANEL: 'Panel',
+  ALERT: 'Alert',
+  PUSH_BUTTON: 'PushButton',
+  CHECK_BUTTON: 'CheckButton',
+  RADIO_BUTTON: 'RadioButton',
+  TEXT_INPUT: 'TextInput',
+  COMBO: 'Combo',
+  GROUP: 'Group',
+  MAP: 'Map',
+  TREE: 'Tree',
+  TREE_ITEM: 'TreeItem',
+  CONFIRM: 'Confirm',
+  VIEW: 'View',
+  CONTAINER: 'Container',
+  MULTICONTAINER: 'MultiContainer',
+  LABEL: 'Label',
+  TEXT: 'Text',
+  TABLE: 'Table',
+  NOTIFICATION: 'Notification',
+  INPUT_GROUP: 'InputGroup',
+};
+
+export const APPS_OPERATION = {
+  USER_ACTION: 'UserAction',
+  ENABLE: 'Enable',
+  HIDE: 'Hide',
+  UPDATE: 'Update',
+};
+
+export const APPS_DEFAULT_VALUES = {
+  LABEL_MIN_WIDTH: '150px',
+  DEFAULT_LOGO: 'statics/klab-logo.png',
+};
+
+const VALUE_WITH_UNIT = /^\d+\D{1,2}/;
+
+export const DEFAULT_STYLE_FUNCTION = (component) => {
+  const retStyle = {};
+  Object.keys(component.attributes).forEach((key) => {
+    const value = component.attributes[key];
+    switch (key) {
+      case 'width':
+        // retStyle['min-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        // retStyle['max-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        retStyle.width = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        break;
+      case 'height':
+        // retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        // retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        /*
+        if (component.type !== 'Group' && component.type !== 'Tree') {
+          retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        }
+        */
+        // retStyle['line-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        break;
+      case 'hfill':
+        if (component.attributes.hbox) {
+          retStyle['flex-wrap'] = 'nowrap';
+        }
+        retStyle.width = '100%';
+        break;
+      case 'vfill':
+        // TODO check it
+        retStyle.height = '100%';
+        break;
+      case 'top':
+      case 'bottom':
+      case 'center':
+        if (component.attributes.parentAttributes && component.attributes.parentAttributes.hbox) {
+          retStyle['align-self'] = key === 'top' ? 'flex-start' : key === 'bottom' ? 'flex-end' : 'center';
+        } else {
+          retStyle['vertical-align'] = key;
+        }
+        break;
+      case 'hbox':
+      case 'vbox':
+        retStyle.display = 'flex';
+        retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
+        retStyle['align-items'] = 'center';
+        break;
+      default:
+        retStyle.key = value;
+    }
+    /*
+    if (component.attributes.parentAttributes) {
+      if (component.attributes.parentAttributes.hbox) {
+
+      }
+    }
+    */
+  });
+  return retStyle;
+};
+
+export const DEFAULT_STYLES = {
+  dark: {
+    'main-color': 'white',
+    'background-color': 'black',
+    'text-color': 'white',
+    'title-color': 'white',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+  light: {
+    'main-color': 'black',
+    'background-color': 'white',
+    'text-color': 'black',
+    'title-color': 'black',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+  worst: {
+    'main-color': 'Green',
+    'background-color': 'yellow',
+    'text-color': 'Red',
+    'title-color': 'Indigo',
+    'font-family': 'comics',
+    'font-size': '1.2em',
+    'title-size': '32px',
+    'subtitle-size': '20px',
+    'line-height': '1.2em',
+  },
+  default: {
+    'main-color': 'rgb(0, 92, 129)',
+    'background-color': 'rgb(250, 250, 250)',
+    'text-color': 'rgb(0, 92, 129)',
+    'title-color': 'rgb(0, 92, 129)',
+    'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
+    'font-size': '1em',
+    'title-size': '26px',
+    'subtitle-size': '16px',
+    'line-height': '1em',
+  },
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,
@@ -783,4 +928,6 @@ export default {
   HELP_CONSTANTS,
   OBSERVATION_CONTEXT_ITEMS,
   ENGINE_EVENTS,
+  DEFAULT_STYLE_FUNCTION,
+  DEFAULT_STYLES,
 };

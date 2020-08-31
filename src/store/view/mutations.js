@@ -1,7 +1,6 @@
-import { pushElementInFixedQueue, findNodeById } from 'shared/Helpers';
-import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+import { pushElementInFixedQueue, findInLayout } from 'shared/Helpers';
+import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
-import { ENGINE_EVENTS } from '../../shared/Constants';
 
 export default {
   ADD_TO_KEXPLORER_LOG: (state, log) => {
@@ -342,19 +341,83 @@ export default {
     state.timeRunning = timeRunning;
   },
 
-  ADD_VIEW_COMPONENT: (state, component) => {
-    if (component.id === null || component.parentId === null) {
-      state.viewComponents.push({
-        ...component,
-        children: [],
+  SET_LAYOUT: (state, layout) => {
+    /*
+    const panels = [
+      ...layout.panels,
+      ...layout.leftPanels,
+      ...layout.rightPanels,
+      layout.header,
+      layout.footer,
+    ].filter(p => p !== null);
+    if (panels.length > 0) {
+      const updateTree = (node) => {
+        if (node.type === 'Tree') {
+          node.ticked = [];
+          node.expanded = [];
+          node.selected = null;
+        } else if (node.type === 'CheckButton') {
+          node.selected = false;
+        }
+        if (node.components && node.components.length > 0) {
+          node.components.forEach((c) => {
+            updateTree(c);
+          });
+        }
+      };
+      panels.forEach((p) => {
+        updateTree(p);
       });
+    }
+     */
+    state.layout = layout;
+    /*
+    if (!state.layouts.find(l => l.id === layout.id)) {
+      state.layouts.push(layout);
+    }
+    */
+  },
+
+  CREATE_VIEW_COMPONENT: (state, component) => {
+    if (component.type === APPS_COMPONENTS.ALERT || component.type === APPS_COMPONENTS.CONFIRM) {
+      state.dialogs.push({
+        ...component,
+        dismiss: false,
+      });
+      return;
+    }
+    const findComponent = (layout, key = null) => {
+      if (layout && key !== null) {
+        const { reduce } = [];
+        const find = (result, c) => {
+          if (result || !c) {
+            return result;
+          }
+          if (Array.isArray(c)) {
+            return reduce.call(Object(c), find, result);
+          }
+          if (c.id === key) {
+            return c;
+          }
+          if (c !== null && c.components && c.components.length > 0) {
+            return find(null, c.components);
+          }
+          return null;
+        };
+        return find(null, layout);
+      }
+      return null;
+    };
+    const existingComponent = findInLayout(state.layout, component.id);
+    if (existingComponent) {
+      console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
+      Object.assign(existingComponent, component);
+      console.log('Updated component: ', JSON.stringify(existingComponent, null, 2));
     } else {
-      const parent = findNodeById(state.viewComponents, component.parentId);
-      if (parent != null) {
-        parent.children.push({
-          ...component,
-          children: [],
-        });
+      const parent = findComponent(state.layout, component.parentId);
+      if (parent) {
+        parent.children.push(component);
+        console.warn('Update parent: ', parent);
       }
     }
   },
@@ -383,6 +446,29 @@ export default {
       }
     } else {
       console.debug('Receive an engine event before subscription');
+    }
+  },
+
+  VIEW_ACTION: (state, action) => {
+    if (state.layout) {
+      const component = findInLayout(state.layout, action.componentTag, (n, needle) => {
+        if (n.attributes.tag === needle) {
+          return n;
+        }
+        return null;
+      });
+      if (component) {
+        switch (component.type) {
+          case APPS_COMPONENTS.LABEL:
+          case APPS_COMPONENTS.TEXT:
+          case APPS_COMPONENTS.TEXT_INPUT:
+            component.content = action.stringValue;
+            break;
+          default:
+            component.content = action.stringValue;
+            break;
+        }
+      }
     }
   },
 };

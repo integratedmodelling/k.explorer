@@ -1,14 +1,10 @@
 @import '~variables'
 // App specifics sytles
-body
-  background-color $blue-grey-10
-  background-image url("../assets/dark-dot.png")
 body .ol-zoom
   position absolute
   left unset
   right .5em
   top .5em
-
 
 .text-sem-quality
   color $sem-quality
@@ -123,6 +119,26 @@ body .ol-zoom
 
 .bg-mc-red
   background $main-control-red
+
+.text-app-main-color
+  color var(--app-main-color)
+.bg-app-main-color
+  background var(--app-main-color)
+
+.text-app-text-color
+  color var(--app-text-color)
+.bg-app-text-color
+  background var(--app-text-color)
+
+.text-app-title-color
+  color var(--app-title-color)
+.bg-app-title-color
+  background var(--app-title-color)
+
+.text-app-background-color
+  color var(--app-background-color)
+.bg-app-background-color
+  background var(--app-background-color)
 
 /* States of models */
 
@@ -239,6 +255,11 @@ body .ol-zoom
   &.klab-fuzzy
     background-color $main-control-green !important
 
+// apps
+.klab-app-tooltip
+  background-color var(--app-main-color)
+  color var(--app-background-color)
+
 @font-face
   font-family 'klab-font'
   src url('web-font/klab.eot?49258975')
@@ -247,6 +268,12 @@ body .ol-zoom
     url('web-font/klab.woff?49258975') format('woff'),
     url('web-font/klab.ttf?49258975') format('truetype'),
     url('web-font/klab.svg?49258975#klab') format('svg')
+  font-weight normal
+  font-style normal
+
+@font-face
+  font-family 'comics'
+  src url('web-font/ComicRelief.ttf')
   font-weight normal
   font-style normal
 
@@ -289,3 +316,16 @@ body .ol-zoom
   content 'a'
 .klab-im-logo:before
   content 'k'
+
+// simplebar hack
+.simplebar-scroll-content
+  padding-right 17px !important
+
+// utility
+.disable-select
+  user-select none /* supported by Chrome and Opera */
+  -webkit-user-select none /* Safari */
+  -khtml-user-select none /* Konqueror HTML */
+  -moz-user-select none /* Firefox */
+  -ms-user-select none /* Internet Explorer/Edge */
+

@@ -9,6 +9,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { findNodeById } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { URLS } from 'shared/MessagesConstants';
 import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
@@ -59,7 +60,7 @@ export default {
       }
       */
       console.info('Ask for dataflow');
-      this.$axios.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
+      this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
         .then(({ data }) => {
           if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
             try {
@@ -67,7 +68,7 @@ export default {
               jsonElkLayout.restored = this.context.restored;
               this.addDataflow(jsonElkLayout);
             } catch (e) {
-              console.error(`Error in dataflos layout for the context ${data.taskId}: ${e}`);
+              console.error(`Error in dataflow layout for the context ${data.taskId}: ${e}`);
             }
           } else {
             console.error(`Dataflow in task ${data.taskId} has no layout`);

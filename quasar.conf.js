@@ -42,13 +42,16 @@ module.exports = function (ctx) {
         ...(ctx.dev)
           ? { // so on dev we'll have
             WS_BASE_URL: JSON.stringify('http://localhost:8283'),
+            // WS_BASE_URL: JSON.stringify('http://192.168.0.105:8283'),
             STOMP_CLIENT_DEBUG: true,
             KEXPLORER_DEBUG: true,
+            ROUTER_BASE: JSON.stringify(''),
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
             STOMP_CLIENT_DEBUG: false,
             KEXPLORER_DEBUG: false,
+            ROUTER_BASE: JSON.stringify('/modeler/ui'),
           },
         PACKAGE_VERSION: JSON.stringify(version),
         PACKAGE_BUILD: JSON.stringify(build),
@@ -57,10 +60,6 @@ module.exports = function (ctx) {
         WS_URL: JSON.stringify('/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),
-        REST_STATUS: JSON.stringify('/modeler/engine/status'),
-        REST_SESSION_VIEW: JSON.stringify('/modeler/engine/session/view/'),
-        REST_SESSION_OBSERVATION: JSON.stringify('/modeler/engine/session/observation/'),
-        REST_UPLOAD: JSON.stringify('/modeler/resource/put'),
         REST_UPLOAD_MAX_SIZE: JSON.stringify('1024MB'),
         SEARCH_TIMEOUT_MS: JSON.stringify('4000'),
       },
@@ -74,6 +73,7 @@ module.exports = function (ctx) {
       // analyze: true,
       // extractCSS: false,
       // useNotifier: false,
+      // vueCompiler: true,
       extendWebpack(cfg) {
         extendTypescriptToWebpack(cfg);
         cfg.module.rules.push({
@@ -164,6 +164,8 @@ module.exports = function (ctx) {
         'QCarouselSlide',
         'QCarouselControl',
         'QDatetime',
+        'QFab',
+        'QFabAction',
       ],
       directives: [
         'Ripple',

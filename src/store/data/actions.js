@@ -2,9 +2,18 @@ import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
 import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { IN } from 'shared/MessagesConstants';
+import { IN, URLS } from 'shared/MessagesConstants';
 
 export default {
+
+  loadSessionReference: ({ commit }) => {
+    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_INFO}`, {})
+      .then(({ data }) => {
+        if (data) {
+          commit('SET_SESSION_REFERENCE', data);
+        }
+      });
+  },
   /**
    * Set the context for this session.
    * If context doesn't exists, a map with a default context is shown.
@@ -58,7 +67,7 @@ export default {
 
   loadContext: ({ commit, dispatch }, contextId) => {
     console.info(`Ask for context to restore ${contextId}`);
-    axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${contextId}`, {
+    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}describe/${contextId}`, {
       params: {
         childLevel: 1,
       },
@@ -106,7 +115,7 @@ export default {
       reject(new Error('No session established, no useful engine available, disconnect'));
       return;
     }
-    const url = `${process.env.WS_BASE_URL}${process.env.REST_STATUS}`;
+    const url = `${process.env.WS_BASE_URL}${URLS.REST_STATUS}`;
     getAxiosContent(getters.session, url, {
       transformRequest: [
         (data, headers) => {
@@ -221,7 +230,6 @@ export default {
           dispatch('addStub', node);
         }
       }
-      dispatch('view/setReloadReport', true, { root: true });
       return resolve();
     });
     return null;
@@ -230,7 +238,7 @@ export default {
   updateObservation({ commit, dispatch, state }, { observationId, exportFormats }) {
     const observationIndex = state.observations.findIndex(obs => obs.id === observationId);
     if (observationIndex !== -1) {
-      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}describe/${observationId}`, {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}describe/${observationId}`, {
         params: {
           childLevel: 0,
         },
@@ -371,7 +379,7 @@ export default {
   }) => new Promise((resolve) => {
     console.debug(`Ask for children of node ${parentId}: count:${count} / offset ${offset}`);
     dispatch('view/setSpinner', { ...SPINNER_CONSTANTS.SPINNER_LOADING, owner: parentId }, { root: true }).then(() => {
-      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.REST_SESSION_VIEW}children/${parentId}`, {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}children/${parentId}`, {
         params: {
           count,
           offset,

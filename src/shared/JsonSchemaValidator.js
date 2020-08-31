@@ -47,6 +47,10 @@ export default class {
         // console.debug(`Validation of schema ${schema} ok`);
         return true;
       }
+      // TODO check how to validate this...
+      if (valError.keyword === '$ref') {
+        return true;
+      }
       throw Error(valError);
     }
     throw Error(`Schema not found: ${schema}`);

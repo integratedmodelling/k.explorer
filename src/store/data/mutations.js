@@ -4,6 +4,9 @@ import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
 
 export default {
 
+  SET_SESSION_REFERENCE: (state, sessionReference) => {
+    state.sessionReference = sessionReference;
+  },
   /**
    * Set context object
    * As only a context can be active in a moment,

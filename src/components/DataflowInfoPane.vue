@@ -153,8 +153,8 @@ export default {
 <style lang="stylus">
   @import '~variables'
   .dip-container
-    max-height calc(100% - 30px)
     color white
+    position relative
     .dip-close
       width 100%
       text-align right
@@ -204,9 +204,10 @@ export default {
             margin-bottom .5em
     .dip-comment
       position absolute
-      bottom 0
+      bottom 5px
       height 25px
-      margin-bottom 2px
+      line-height 25px
+      vertical-align middle
       margin-left 8px
       &:hover
         cursor pointer
@@ -215,10 +216,11 @@ export default {
 
     .dip-rating
       position absolute
-      bottom 0
+      bottom 5px
       right 0
       height 25px
-      margin-bottom 5px
+      line-height 25px
+      vertical-align middle
       margin-right 8px
       .q-rating i:not(.active)
         color $grey-8

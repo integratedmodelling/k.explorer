@@ -1,73 +1,38 @@
 <template>
-  <q-layout view="hHh lpR fFf">
-    <q-layout-drawer
-      side="left"
-      :overlay="false"
-      v-model="leftMenuVisible"
-      :breakpoint="0"
-      :width="leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED ? LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE : LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE"
-      :content-class="['klab-left', 'no-scroll', largeMode ? 'klab-large-mode' : '' ]"
-      class="print-hide"
-    >
-      <klab-left-menu></klab-left-menu>
-    </q-layout-drawer>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-  </q-layout>
+  <div class="klab-main-app">
+    <klab-layout :layout="layout"></klab-layout>
+    <app-dialogs></app-dialogs>
+    <connection-status class="print-hide"></connection-status>
+    <klab-settings class="print-hide"></klab-settings>
+    <klab-presentation></klab-presentation>
+  </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { LEFTMENU_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
-import KlabLeftMenu from 'components/KlabLeftMenu.vue';
+import { mapGetters } from 'vuex';
+import ConnectionStatus from 'components/ConnectionStatusModal';
+import KlabSettings from 'components/KlabSettings';
+import AppDialogs from 'components/AppDialogsViewer';
+import KlabLayout from 'components/KlabLayout.vue';
+import KlabPresentation from 'components/KlabPresentation';
+import 'simplebar/dist/simplebar.css';
 
 export default {
   name: 'LayoutDefault',
   components: {
-    KlabLeftMenu,
+    KlabLayout,
+    ConnectionStatus,
+    KlabSettings,
+    AppDialogs,
+    KlabPresentation,
   },
   data() {
     return {};
   },
   computed: {
     ...mapGetters('view', [
-      'mainViewer',
-      'leftMenuState',
-      'largeMode',
+      'layout',
     ]),
-    leftMenuVisible: {
-      get() {
-        return this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN;
-      },
-      set(visibility) {
-        this.setLeftMenuState(visibility);
-      },
-    },
-  },
-  methods: {
-    ...mapActions('view', [
-      'setLeftMenuState',
-    ]),
-  },
-  watch: {
-    leftMenuVisible() {
-      this.$nextTick(() => {
-        this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, {});
-      });
-    },
-  },
-  created() {
-    this.LEFTMENU_CONSTANTS = LEFTMENU_CONSTANTS;
   },
 };
 </script>
-
-<style lang="stylus">
-  @import '~variables'
-  .klab-left
-    background-color rgba(35, 35, 35, 0)
-  .klab-large-mode.no-scroll
-    overflow visible !important
-</style>

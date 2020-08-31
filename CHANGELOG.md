@@ -6,6 +6,20 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.11.0
+### Added
+- First implementation of apps on left or center panel
+- Settings menu
+- User information
+- App launcher
+### Improvements
+- Print using a print button
+- Added a refresh button in report view to avoid missing updates
+### Solved
+- Histogram with discrete values doesn't show min and max (no sense)
+- Draw mode bug
+- Styles bug
+
 ## 0.10.5
 ### Added
 - Time selection for scale
@@ -57,7 +71,7 @@ is not available.
 - Folder lazy loading
 - Now the dock action works better
 - Better visualization of nested folders
- 
+
 
 ## 0.8.0 - 2019-09-04
 ### Improvements
@@ -107,7 +121,7 @@ is not available.
 - Download folder as shape file
 - Upload file
 - Interactive mode
-- Input request management 
+- Input request management
 ### Improvements
 - Info for a point directly clicking on map without need to open observation info
 - Various tree-shakes
@@ -160,7 +174,7 @@ Feature notification on Integrated Modelling Confluence
 ### Added
 - Added a status text that show the current running task
 ### Solved
-- Solved partial sibling load in big screens 
+- Solved partial sibling load in big screens
 
 ## 0.5.2 - 2018-12-19
 ### Changed
@@ -169,15 +183,15 @@ Feature notification on Integrated Modelling Confluence
 - Solved bugs in searchbox:
   - if keyboard is used on results, mouse now not interfere
   - if there are too many results to show in small dimensions, scrollbar now is visualized, so
-  in firefox there aren't big white space. 
-  - mouse click on scrollbar now doesn't close popup 
+  in firefox there aren't big white space.
+  - mouse click on scrollbar now doesn't close popup
 
 ## 0.5.1 - 2018-12-11
 ### Added
 - Dataflow visualizer using elk and sprotty
 - Dataflow respond to engine input about dataflow components processing
 - To use elk/sprotty solution, a new library was created (klab-elk-sprotty-bridge) that is added as
-  bitbucket private repository dependency. Now the way to use it is via ssh-key  
+  bitbucket private repository dependency. Now the way to use it is via ssh-key
 
 ## 0.5.0 - 2018-11-21
 ### Added
