@@ -1,10 +1,20 @@
 import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn, QIcon } from 'quasar';
-import { findNodeById } from './Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from './Constants';
+import KlabLayout from 'components/KlabLayout';
+import { findNodeById } from 'shared/Helpers';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from 'shared/Constants';
 
 
 export const COMPONENTS = {
+  LAYOUT: layout => Vue.component('KAppLayout', {
+    render(h) {
+      return h(KlabLayout, {
+        props: {
+          layout,
+        },
+      });
+    },
+  }),
   ALERT: component => Vue.component('KAppAlert', {
     render(h) {
       return h(QDialog, {
@@ -35,6 +45,19 @@ export const COMPONENTS = {
       }, this.$slots.default);
     },
   }),
+  PANEL: component => Vue.component('KAppPanel', {
+    render(h) {
+      return h('div', {
+        staticClass: 'kcv-panel-container',
+        class: `kcv-dir-${component.direction}`,
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        style: DEFAULT_STYLE_FUNCTION(component),
+        ...(component.name && { ref: component.name }),
+      }, this.$slots.default);
+    },
+  }),
   GROUP: component => Vue.component('KAppGroup', {
     data() {
       return {};
@@ -57,10 +80,20 @@ export const COMPONENTS = {
           h('div', {
             staticClass: 'kcv-group-content',
             style: DEFAULT_STYLE_FUNCTION(component),
+            ...(component.attributes.scroll && {
+              attrs: {
+                'data-simplebar': 'data-simplebar',
+              },
+            }),
           }, this.$slots.default),
         ])] : [h('div', {
           staticClass: 'kcv-group-content',
           style: DEFAULT_STYLE_FUNCTION(component),
+          ...(component.attributes.scroll && {
+            attrs: {
+              'data-simplebar': 'data-simplebar',
+            },
+          }),
         }, this.$slots.default)]);
     },
   }),
@@ -344,13 +377,15 @@ export const COMPONENTS = {
           'kcv-collapse': component.attributes.collapse,
           'kcv-collapsed': this.collapsed,
         },
+        attrs: {
+          'data-simplebar': 'data-simplebar',
+        },
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h('div', {
           staticClass: 'kcv-internal-text',
           attrs: {
             id: `${component.applicationId}-${component.id}`,
-            'data-simplebar': 'data-simplebar',
           },
           domProps: {
             innerHTML: component.content,
@@ -395,15 +430,18 @@ export function createComponent(node, h, options = {}) {
   if (!node) {
     return [];
   }
+
+  if (node.type === APPS_COMPONENTS.VIEW) {
+    return h(COMPONENTS.LAYOUT);
+  }
   let shelf = null;
   if (node.attributes.parentAttributes && node.attributes.parentAttributes.shelf) {
     shelf = COMPONENTS.SHELF(node);
   }
   let component;
-  const skipChildren = false;
   switch (node.type) {
     case null: {
-      const { mainPanelStyle, direction } = options;
+      const { mainPanelStyle = {}, direction = 'vertical' } = options;
       component = COMPONENTS.MAIN({
         ...node,
         mainPanelStyle,
@@ -411,6 +449,9 @@ export function createComponent(node, h, options = {}) {
       });
       break;
     }
+    case APPS_COMPONENTS.PANEL:
+      component = COMPONENTS.PANEL(node);
+      break;
     case APPS_COMPONENTS.LABEL:
       component = COMPONENTS.LABEL(node);
       break;
@@ -445,7 +486,7 @@ export function createComponent(node, h, options = {}) {
       component = COMPONENTS.UNKNOWN(node);
   }
   const components = [];
-  if (!skipChildren && node.components && node.components.length > 0) {
+  if (node.components && node.components.length > 0) {
     node.components.forEach((comp) => {
       components.push(createComponent(comp, h));
     });
