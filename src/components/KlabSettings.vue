@@ -42,14 +42,15 @@
                 <div class="kud-owner-email"><span class="kud-label">{{ $t('label.userEmail') }}</span><span class="kud-value">{{ owner.email }}</span></div>
                 <div class="kud-owner-lastlogin"><span class="kud-label">{{ $t('label.userLastLogin') }}</span><span class="kud-value">{{ owner.lastLogin }}</span></div>
                 <div class="kud-owner-groups"><span class="kud-label kud-group">{{ $t('label.userGroups') }}</span>
-                  <span v-if="owner.groups.length == 0" class="kud-value">{{ $t('message.noGroupsAssigned') }}</span>
-                  <span v-else v-for="group in owner.groups" :key="group.id" class="kud-value kud-group">
-                    <img width="30" :src="group.iconUrl ? group.iconUrl : 'statics/unknown-group-icon.png'" />
+                  <div v-if="owner.groups.length == 0" class="kud-value">{{ $t('message.noGroupsAssigned') }}</div>
+                  <div v-else v-for="group in owner.groups" :key="group.id" class="kud-value kud-group">
+                    <img v-if="group.iconUrl" :src="group.iconUrl" class="kud-img-logo" :alt="group.id" />
+                    <div v-else class="kud-no-group-icon">{{ group.id.charAt(0).toUpperCase() }}</div>
                     <q-tooltip class="klab-app-tooltip" anchor="bottom middle" self="top middle" :offset="[0, 5]">
                       <div class="kud-group-id">{{ group.id }}</div>
                       <div v-if="group.description !== null" class="kud-group-detail">{{ group.description }}</div>
                     </q-tooltip>
-                  </span>
+                  </div>
                 </div>
               </template>
             </div>
@@ -305,6 +306,7 @@ export default {
         color var(--app-title-color)
       .kud-value
         display inline-block
+        line-height 30px
         vertical-align middle
         &.kud-group
           padding-right 10px
@@ -347,6 +349,22 @@ export default {
       text-align center
     .kud-group-detail
       font-style italic
+    .kud-no-group-icon
+      background-color var(--app-title-color)
+      text-align center
+      color var(--app-background-color)
+      padding 2px 0 0 0
+      cursor default
+      width 30px
+      height 30px
+      border-radius 15px
+      line-height 30px
+    .kud-img-logo
+      line-height 30px
+      width 30px
+      height 30px
+      display inline-block
+      vertical-align middle
   .klab-setting-tooltip
     background-color var(--app-main-color)
 
