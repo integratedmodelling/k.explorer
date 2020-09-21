@@ -724,7 +724,7 @@ export const HELP_CONSTANTS = {
   DEFAULT_PROPORTIONS: { width: 4, height: 3 },
   DEFAULT_WIDTH_PERCENTAGE: 90,
   DEFAULT_HEIGHT_PERCENTAGE: 90,
-  DEFAULT_HELP_BASE_URL: 'http://integratedmodelling.org/statics/help',
+  DEFAULT_HELP_BASE_URL: 'https://integratedmodelling.org/statics/help',
 };
 
 export const OBSERVATION_CONTEXT_EMPTY_ITEM = {
