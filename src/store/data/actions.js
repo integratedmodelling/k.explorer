@@ -308,6 +308,10 @@ export default {
     });
   },
 
+  addKnowledgeView: ({ commit }, knowledgeView) => {
+    commit('ADD_KNOWLEDGE_VIEW', knowledgeView);
+  },
+
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
     const node = findNodeById(state.tree, modificationEvent.id);
     if (node) {

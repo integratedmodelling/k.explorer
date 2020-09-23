@@ -5,6 +5,7 @@
     <connection-status class="print-hide"></connection-status>
     <klab-settings class="print-hide"></klab-settings>
     <klab-presentation></klab-presentation>
+    <knowledge-view-viewer></knowledge-view-viewer>
   </div>
 </template>
 
@@ -15,6 +16,7 @@ import KlabSettings from 'components/KlabSettings';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
+import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
 import 'simplebar/dist/simplebar.css';
 
 export default {
@@ -25,6 +27,7 @@ export default {
     KlabSettings,
     AppDialogs,
     KlabPresentation,
+    KnowledgeViewViewer,
   },
   data() {
     return {};

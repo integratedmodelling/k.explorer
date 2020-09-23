@@ -175,6 +175,13 @@ export default {
     }
   },
 
+  ADD_KNOWLEDGE_VIEW: (state, knowledgeView) => {
+    state.knowledgeViews.push({
+      ...knowledgeView,
+      isNew: true,
+    });
+  },
+
   ADD_TIME_EVENT: (state, event) => {
     state.timeEvents.push(event);
   },
