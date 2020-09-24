@@ -45,7 +45,7 @@ export default {
   contextMenuObservationId: state => state.contextMenuObservationId,
 
   knowledgeViews: state => state.knowledgeViews,
-  newKnowledgeViews: state => state.knowledgeViews.filter(kv => kv.isNew),
+  visibleKnowledgeView: state => state.knowledgeViews.find(kv => kv.show),
 
   timeEvents: state => state.timeEvents,
   timeEventsOfObservation: state => id => state.timeEvents.filter(e => e.id === id),

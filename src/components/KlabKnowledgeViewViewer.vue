@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fullscreen" id="modal-show-view" v-show="hasNewKnowledgeViews">
+  <div class="modal fullscreen" id="modal-show-view" v-if="typeof visibleKnowledgeView !== 'undefined'">
     <div class="modal-backdrop absolute-full"></div>
       <div class="klab-modal-container"
            :style="{
@@ -7,16 +7,33 @@
               height: `${modalSize.height}px`,
               transform: `translate(-50%, -50%) !important`}">
         <div class="klab-modal-inner full-height">
-          <div class="klab-modal-content full-height">
-            <div class="kvv-item" v-for="(knowledgeView, index) in newKnowledgeViews" :key="index">
-              <div class="kvv-title">{{ knowledgeView.title }}</div>
-              <div class="kvv-content" v-html="knowledgeView.body"></div>
-            </div>
-          </div>
           <q-btn
-            color="mc-main"
-            class="absolute-bottom-right q-ma-lg kvv-close-button"
-            @click="closeDialog">{{ $t('label.appClose') }}</q-btn>
+            icon="mdi-close"
+            class="kvv-close-button"
+            size="sm"
+            :title="$t('label.appClose')"
+            round
+            flat
+            @click="closeDialog"
+          ></q-btn>
+          <div class="klab-modal-content full-height">
+
+              <div class="kvv-title">{{ visibleKnowledgeView.title }}</div>
+              <div class="kvv-content-wrapper" :class="{ 'kvv-with-exports': visibleKnowledgeView.exportFormats.length !== 0 }" data-simplebar>
+                <div class="kvv-content" v-html="visibleKnowledgeView.body"></div>
+              </div>
+
+          </div>
+          <div class="kvv-actions absolute-bottom" v-if="visibleKnowledgeView.exportFormats.length !== 0">
+            <q-btn
+              class="float-right kvv-button"
+              flat
+              v-for="(format, index) in visibleKnowledgeView.exportFormats" :key="index"
+              :icon="getIcon(format) || 'mdi-arrow-down'"
+              :label="format.label"
+              @click.native="exportKnowledgeView(format)"
+            ></q-btn>
+          </div>
         </div>
       </div>
   </div>
@@ -24,29 +41,37 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { downloadFromEngine } from 'shared/Helpers';
+import { KNOWLEDGE_VIEWS } from 'shared/Constants';
 
 export default {
   name: 'KnowledgeViewViewer',
   data() {
     return {
+      KNOWLEDGE_VIEWS,
     };
   },
   computed: {
     ...mapGetters('data', [
-      'newKnowledgeViews',
+      'visibleKnowledgeView',
     ]),
     ...mapGetters('view', [
       'modalSize',
     ]),
-    hasNewKnowledgeViews() {
-      return this.newKnowledgeViews.length !== 0;
-    },
   },
   methods: {
     closeDialog() {
-      this.newKnowledgeViews.forEach((kv) => {
-        kv.isNew = false;
-      });
+      this.visibleKnowledgeView.show = false;
+    },
+    getIcon(format) {
+      return this.KNOWLEDGE_VIEWS.find(kv => kv.viewClass === this.visibleKnowledgeView.viewClass).exportIcons.find(ei => ei.type === format.adapter).icon;
+    },
+    exportKnowledgeView(selectedFormat) {
+      try {
+        downloadFromEngine(`${this.visibleKnowledgeView.contextId}.${this.visibleKnowledgeView.viewId}`, this.visibleKnowledgeView.viewClass.toUpperCase(), this.visibleKnowledgeView.label, selectedFormat);
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };
@@ -54,18 +79,26 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .kvv-item
-    margin 20px
-    .kvv-title
-      font-size 1.4em
-      font-weight 300
-      color var(--app-title-color)
-      padding 10px 0
-      border-bottom 1px solid var(--app-title-color)
-    caption
-      display none
+  .klab-modal-content
+    padding 20px 20px
+
+  .kvv-title
+    font-size 1.4em
+    font-weight 300
+    color var(--app-title-color)
+    padding 10px 0
+    border-bottom 1px solid var(--app-title-color)
+  caption
+    display none
+  .kvv-content-wrapper
+    height calc(100% - 50px)
+    max-height calc(100% - 50px)
+    &.kvv-with-exports
+      height calc(100% - 90px)
+    .simplebar-scrollbar:before
+      background-color var(--app-title-color)
     .kvv-content
-      padding 25px 10px
+      margin 25px 0 35px
       table
         border-collapse collapse
       th
@@ -78,12 +111,18 @@ export default {
       td
         padding 10px 5px
         text-align center
-
-
-      td
         border 1px solid var(--app-title-color)
+  .kvv-actions
+    height 50px
+    padding 0 20px
+
+  .kvv-button
+    color var(--app-main-color) !important
+    background-color var(--app-background-color) !important
 
   .kvv-close-button
-    background var(--app-main-color) !important
-    color var(--app-background-color) !important
+    position absolute
+    top 20px
+    right 20px
+    z-index 200000
 </style>

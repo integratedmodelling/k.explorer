@@ -136,6 +136,8 @@ export default {
     reloadApplications: 'Reload applications',
     noLayoutLabel: '<em>No title</em>',
     noLayoutDescription: '<em>No description</em>',
+    kwTable: 'Table',
+    kwChart: 'Chart',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -220,6 +222,7 @@ export default {
     clickToEdit: 'Click to edit {type} scale',
     palette: 'No palette',
     unknown: 'To be decided',
+    noKnowkedgeViews: 'No knowledge views',
     // startDate: '{date}</br>Click to reset timestamp',
   },
   errors: {

@@ -33,6 +33,7 @@ export default {
     state.userTree = [];
     state.lasts = [];
     state.observations = [];
+    state.knowledgeViews = [];
     state.dataflow = null;
     state.dataflowStatuses = [];
     state.dataflowInfo = null;
@@ -178,7 +179,15 @@ export default {
   ADD_KNOWLEDGE_VIEW: (state, knowledgeView) => {
     state.knowledgeViews.push({
       ...knowledgeView,
-      isNew: true,
+      show: true,
+    });
+  },
+
+  SHOW_KNOWLEDGE_VIEW: (state, knowledgeViewId) => {
+    state.knowledgeViews.forEach((kv) => {
+      if (kv.viewId === knowledgeViewId) {
+        kv.show = true;
+      }
     });
   },
 

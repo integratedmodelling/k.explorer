@@ -312,6 +312,10 @@ export default {
     commit('ADD_KNOWLEDGE_VIEW', knowledgeView);
   },
 
+  showKnowledgeView: ({ commit }, knowledgeViewId) => {
+    commit('SHOW_KNOWLEDGE_VIEW', knowledgeViewId);
+  },
+
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {
     const node = findNodeById(state.tree, modificationEvent.id);
     if (node) {

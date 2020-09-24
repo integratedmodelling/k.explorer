@@ -256,30 +256,36 @@ export async function getContextGeometry(contextObservation) {
  * @param axiosError an error returned from axios catch
  * @return { status, message, axiosError: original error }
  */
-export function getError(axiosError) {
+export async function getError(axiosError) {
+  let ret;
   if (axiosError.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
-    return {
+    ret = {
       status: axiosError.response.data.status || axiosError.response.status, // if blob we don't have a valid data object
       message: axiosError.response.data.message || axiosError.response.data || (axiosError.response.statusText !== '' ? axiosError.response.statusText : 'Unknown'),
       axiosError,
     };
-  } if (axiosError.request) {
+  } else if (axiosError.request) {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
-    return {
+    ret = {
       status: axiosError.request.status,
       message: axiosError.message,
       axiosError,
     };
+  } else {
+    ret = {
+      status: 'UNKNOWN',
+      message: axiosError.message,
+      axiosError,
+    };
   }
-  return {
-    status: 'UNKNOWN',
-    message: axiosError.message,
-    axiosError,
-  };
+  if (ret instanceof Blob) {
+    ret = await ret.text();
+  }
+  return ret;
 }
 
 /**
@@ -562,6 +568,33 @@ export const findInLayout = (layout, key = null, comparator) => {
     layout.footer,
   ].filter(e => e !== null), key, comparator);
 };
+
+export function downloadFromEngine(id, format, label, formatObj, timestamp = -1) {
+  getAxiosContent(
+    `dw_${id}`,
+    `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${id}`,
+    {
+      params: {
+        format, // TODO change when RAW call work as expected
+        outputFormat: formatObj.value,
+        adapter: formatObj.adapter,
+        ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+      },
+      responseType: 'blob',
+    },
+    (response, callback) => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${label}.${formatObj.extension}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      callback();
+    },
+  );
+}
 
 const Helpers = {
   isRasterObservation,
