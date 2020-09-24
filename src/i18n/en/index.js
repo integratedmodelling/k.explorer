@@ -222,7 +222,8 @@ export default {
     clickToEdit: 'Click to edit {type} scale',
     palette: 'No palette',
     unknown: 'To be decided',
-    noKnowkedgeViews: 'No knowledge views',
+    noKnowledgeViews: 'No knowledge views',
+    knowledgeViews: 'Knowledge views',
     // startDate: '{date}</br>Click to reset timestamp',
   },
   errors: {

@@ -119,15 +119,12 @@
               class="mdi mdi-file-document-box-multiple float-left"
             ></div>
             <q-icon name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
+            <q-tooltip
+              :offset="[8, 0]"
+              self="center left"
+              anchor="center right"
+            >{{ knowledgeViews.length === 0 ? $t('tooltips.noKnowledgeViews') : $t('tooltips.knowledgeViews') }}</q-tooltip>
           </div>
-          <!--
-          <q-tooltip
-            v-show="knowledgeViews.length === 0"
-            :offset="[8, 0]"
-            self="center left"
-            anchor="center right"
-          >{{ $t('tooltips.noKnowkedgeViews') }}</q-tooltip>
-          -->
           <q-popover v-model="kvListOpen" class="mc-kv-popover" :disable="knowledgeViews.length === 0">
             <div class="mc-kv-container">
               <q-list
