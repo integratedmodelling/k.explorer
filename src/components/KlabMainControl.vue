@@ -114,40 +114,7 @@
         </div>
         <observations-timeline class="mc-timeline" v-if="contextHasTime"></observations-timeline>
         <div class="klab-bottom-right-actions">
-          <div class="klab-button klab-action" :class="{ disable: knowledgeViews.length === 0 }">
-            <div
-              class="mdi mdi-file-document-box-multiple float-left"
-            ></div>
-            <q-icon name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
-            <q-tooltip
-              :offset="[8, 0]"
-              self="center left"
-              anchor="center right"
-            >{{ knowledgeViews.length === 0 ? $t('tooltips.noKnowledgeViews') : $t('tooltips.knowledgeViews') }}</q-tooltip>
-          </div>
-          <q-popover v-model="kvListOpen" class="mc-kv-popover" :disable="knowledgeViews.length === 0">
-            <div class="mc-kv-container">
-              <q-list
-                link
-                dark
-                no-border
-
-              >
-                <q-item v-for="knowledgeView in knowledgeViews" :key="knowledgeView.viewId" @click.native="showKnowledgeView(knowledgeView.viewId);kvListOpen = false" >
-                  <q-item-side :icon="KNOWLEDGE_VIEWS.find(kv => kv.viewClass === knowledgeView.viewClass).icon"></q-item-side>
-                  <q-item-main>
-                  <div>{{knowledgeView.label}}
-                    <q-tooltip
-                      :offset="[8, 0]"
-                      self="center left"
-                      anchor="center right"
-                    >{{ knowledgeView.title }}</q-tooltip>
-                  </div>
-                  </q-item-main>
-                </q-item>
-              </q-list>
-            </div>
-          </q-popover>
+          <knowledge-views-selector :docked="false"></knowledge-views-selector>
         </div>
       </q-card-actions>
     </q-card>
@@ -175,6 +142,7 @@ import ObservationsTimeline from 'components/ObservationsTimeline.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
+import KnowledgeViewsSelector from 'components/KnowledgeViewsSelector.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
@@ -193,6 +161,7 @@ export default {
     MainActionsButtons,
     StopActionsButtons,
     ObservationsTimeline,
+    KnowledgeViewsSelector,
   },
   directives: {
     Draggable,
@@ -600,7 +569,6 @@ export default {
         padding 2px 5px 3px !important
         &:hover:not(.disable)
           background-color rgba(135, 135, 135, .2)
-
   .mc-kv-popover
     border-radius 6px
     border none

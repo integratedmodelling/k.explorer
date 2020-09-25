@@ -17,12 +17,10 @@
             @click="closeDialog"
           ></q-btn>
           <div class="klab-modal-content full-height">
-
-              <div class="kvv-title">{{ visibleKnowledgeView.title }}</div>
-              <div class="kvv-content-wrapper" :class="{ 'kvv-with-exports': visibleKnowledgeView.exportFormats.length !== 0 }" data-simplebar>
-                <div class="kvv-content" v-html="visibleKnowledgeView.body"></div>
-              </div>
-
+            <div class="kvv-title">{{ visibleKnowledgeView.title }}</div>
+            <div class="kvv-content-wrapper" :class="{ 'kvv-with-exports': visibleKnowledgeView.exportFormats.length !== 0 }" data-simplebar>
+              <div class="kvv-content" v-html="visibleKnowledgeView.body"></div>
+            </div>
           </div>
           <div class="kvv-actions absolute-bottom" v-if="visibleKnowledgeView.exportFormats.length !== 0">
             <q-btn
@@ -81,7 +79,7 @@ export default {
   @import '~variables'
   .klab-modal-content
     padding 20px 20px
-
+    background-color var(--app-background-color) !important
   .kvv-title
     font-size 1.4em
     font-weight 300
@@ -98,13 +96,19 @@ export default {
     .simplebar-scrollbar:before
       background-color var(--app-title-color)
     .kvv-content
-      margin 25px 0 35px
+      margin 15px 0 15px
+      padding 20px 0
+      background-color var(--app-darken-background-color)
+      color var(--app-text-color)
       table
         border-collapse collapse
       th
         color var(--app-title-color)
         font-weight 300
         padding 10px 5px
+        &[scope='row']
+          text-align right
+          padding-right 15px
       tbody
         tr th
           min-width 250px
@@ -117,12 +121,14 @@ export default {
     padding 0 20px
 
   .kvv-button
-    color var(--app-main-color) !important
-    background-color var(--app-background-color) !important
+    background-color var(--app-main-color) !important
+    color var(--app-background-color) !important
 
   .kvv-close-button
     position absolute
     top 20px
     right 20px
     z-index 200000
+    background-color var(--app-main-color) !important
+    color var(--app-background-color) !important
 </style>

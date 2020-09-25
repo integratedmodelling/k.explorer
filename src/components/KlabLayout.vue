@@ -71,8 +71,9 @@ import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Const
 import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { dom } from 'quasar';
+import { dom, colors } from 'quasar';
 
+const { lighten } = colors;
 const { width, height } = dom;
 
 export default {
@@ -117,7 +118,7 @@ export default {
       },
     },
     leftPanelWidth() {
-      return this.layout && this.layout.leftPanels && this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? this.layout.leftPanels[0].attributes.width : 512;
+      return this.layout && this.layout.leftPanels && this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 512;
     },
     mainPanelStyle() {
       return {
@@ -199,6 +200,8 @@ export default {
               const color = getColorObject(value);
               if (color && color.rgb) {
                 document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
+                document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -5));
+                document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 5));
               }
             } catch (error) {
               console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);

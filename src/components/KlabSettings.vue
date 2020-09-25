@@ -244,6 +244,7 @@ export default {
 
 <style lang="stylus">
   .klab-settings-container
+    background-color var(--app-background-color) !important
     .klab-settings-button
       position fixed
       bottom 28px
@@ -277,7 +278,8 @@ export default {
       padding-bottom 10%
 
   .ks-container
-    background-color rgba(253,253,253,.8)
+    // background-color rgba(253,253,253,.8)
+    background-color var(--app-background-color)
     padding 15px 20px
     border-radius 5px
     width 500px
@@ -308,6 +310,7 @@ export default {
         display inline-block
         line-height 30px
         vertical-align middle
+        color var(--app-text-color)
         &.kud-group
           padding-right 10px
 
