@@ -168,7 +168,6 @@ export default {
     this.loadSessionReference();
   },
   mounted() {
-    this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
     this.$store.$app = this;
     Vue.config.warnHandler = (msg, vm, trace) => {

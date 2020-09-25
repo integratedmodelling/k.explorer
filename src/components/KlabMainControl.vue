@@ -448,12 +448,6 @@ export default {
       .klab-button
         font-size 18px
         padding 4px
-        &.disable
-          cursor default
-        &:hover
-          color $main-control-main-color !important
-          &.disable
-            color $main-control-grey !important
 
     .klab-main-actions
       position relative
@@ -567,7 +561,7 @@ export default {
         border-radius 4px
         margin 3px 0 0 0
         padding 2px 5px 3px !important
-        &:hover:not(.disable)
+        &:hover:not(.disabled)
           background-color rgba(135, 135, 135, .2)
   .mc-kv-popover
     border-radius 6px

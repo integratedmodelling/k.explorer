@@ -96,8 +96,8 @@ export default {
     .simplebar-scrollbar:before
       background-color var(--app-title-color)
     .kvv-content
-      margin 15px 0 15px
-      padding 20px 0
+      margin 15px 0
+      padding 20px 20px
       background-color var(--app-darken-background-color)
       color var(--app-text-color)
       table
@@ -116,6 +116,22 @@ export default {
         padding 10px 5px
         text-align center
         border 1px solid var(--app-title-color)
+      // engine styles
+      .kv-bold
+        font-weight bold !important
+      .kv-italic
+        font-style italic !important
+      .kv-align-right
+        text-align right !important
+      .kv-align-center
+        text-align center !important
+      .kv-align-left
+        text-align left !important
+      .kv-bg-highlight
+        background-color var(--app-highlight-background-color)
+      // TODO check it
+      .kv-fg-highlight
+        color var(--app-highlight-text-color)
   .kvv-actions
     height 50px
     padding 0 20px

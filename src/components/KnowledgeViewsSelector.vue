@@ -1,18 +1,25 @@
 <template>
   <div class="kvs-container">
-    <div class="klab-button klab-action" :class="{ disable: knowledgeViews.length === 0 }">
+    <div class="klab-button klab-action" :class="{ disabled: knowledgeViews.length === 0 }">
       <div
         class="mdi mdi-file-document-box-multiple float-left"
       ></div>
-      <q-icon name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
+      <q-icon v-if="!docked" name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
       <q-tooltip
         :offset="[8, 0]"
-        self="center left"
-        anchor="center right"
+        :self="selfTooltipType"
+        :anchor="anchorTooltipType"
       >{{ knowledgeViews.length === 0 ? $t('tooltips.noKnowledgeViews') : $t('tooltips.knowledgeViews') }}</q-tooltip>
     </div>
-    <q-popover v-model="kvListOpen" class="kvs-popover" :disable="knowledgeViews.length === 0">
-      <div class="kvs-container">
+    <q-popover
+      v-model="kvListOpen"
+      class="kvs-popover"
+      :disable="knowledgeViews.length === 0"
+      :anchor="anchorType"
+      :self="selfType"
+      :offset="offsets"
+    >
+      <div class="kvs-popover-container">
         <q-list
           class="kvs-list"
           link
@@ -20,7 +27,7 @@
           dense
           dark
         >
-          <q-item v-for="knowledgeView in knowledgeViews" :key="knowledgeView.viewId" @click.native="selectKnowledgeView(knowledgeView.viewId)" >
+          <q-item v-for="knowledgeView in knowledgeViews" :key="knowledgeView.viewId" @click.native="selectKnowledgeView(knowledgeView.viewId)">
             <q-item-side :icon="KNOWLEDGE_VIEWS.find(kv => kv.viewClass === knowledgeView.viewClass).icon"></q-item-side>
             <q-item-main>
               <div>{{knowledgeView.label}}</div>
@@ -52,11 +59,14 @@ export default {
     },
     offset: {
       type: Number,
-      default: 8,
+      default: 0,
     },
   },
   data() {
     return {
+      anchorTooltipType: this.docked ? 'bottom left' : 'center right',
+      selfTooltipType: this.docked ? 'top left' : 'center left',
+      offsetTooltip: this.docked ? [0, this.offset] : [this.offset, 0],
       anchorType: this.docked ? 'center right' : 'bottom left',
       selfType: this.docked ? 'center left' : 'top left',
       offsets: this.docked ? [this.offset, 0] : [0, this.offset],
@@ -89,10 +99,10 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  .kvs-popover-container
+    background-color $grey-8
+    border-color $grey-8
   .kvs-popover
-    border-radius 6px
-    border none
-    .kvs-container
-      background-color $grey-8
-      border-radius 2px !important
+    background-color transparent
+
 </style>

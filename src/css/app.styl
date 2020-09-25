@@ -198,6 +198,8 @@ body .ol-zoom
   &.active
     color white !important
     cursor auto
+  &.disable
+    cursor default
 .klab-button-notification
   display block
   position absolute
@@ -207,7 +209,7 @@ body .ol-zoom
   padding 5px 6px 7px 6px
   position relative
   &:not(.disabled):hover
-    color $main-control-main-color
+    color $main-control-main-color !important
   &.active
     color $main-control-main-color !important
 

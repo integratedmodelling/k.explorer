@@ -199,9 +199,11 @@ export default {
             try {
               const color = getColorObject(value);
               if (color && color.rgb) {
+                const multiplier = this.layout && this.layout.style === 'dark' ? -1 : 1;
                 document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
-                document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -5));
-                document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 5));
+                document.documentElement.style.setProperty(`--app-highlight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -10 * multiplier));
+                document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -5 * multiplier));
+                document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 5 * multiplier));
               }
             } catch (error) {
               console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);

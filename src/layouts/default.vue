@@ -18,6 +18,7 @@ import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
 import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
 import 'simplebar/dist/simplebar.css';
+import { MESSAGES_BUILDERS } from '../shared/MessageBuilders';
 
 export default {
   name: 'LayoutDefault',
@@ -36,6 +37,9 @@ export default {
     ...mapGetters('view', [
       'layout',
     ]),
+  },
+  mounted() {
+    this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
   },
 };
 </script>
