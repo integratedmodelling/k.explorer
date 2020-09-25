@@ -33,6 +33,7 @@ export default {
     state.userTree = [];
     state.lasts = [];
     state.observations = [];
+    state.knowledgeViews = [];
     state.dataflow = null;
     state.dataflowStatuses = [];
     state.dataflowInfo = null;
@@ -173,6 +174,21 @@ export default {
         console.warn(`Node theoretically in user tree but not found: ${node.id} - ${node.label}`);
       }
     }
+  },
+
+  ADD_KNOWLEDGE_VIEW: (state, knowledgeView) => {
+    state.knowledgeViews.push({
+      ...knowledgeView,
+      show: true,
+    });
+  },
+
+  SHOW_KNOWLEDGE_VIEW: (state, knowledgeViewId) => {
+    state.knowledgeViews.forEach((kv) => {
+      if (kv.viewId === knowledgeViewId) {
+        kv.show = true;
+      }
+    });
   },
 
   ADD_TIME_EVENT: (state, event) => {

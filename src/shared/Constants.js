@@ -751,6 +751,26 @@ export const OBSERVATION_CONTEXT_ITEMS = {
   },
 };
 
+export const KNOWLEDGE_VIEWS = [
+  {
+    viewClass: 'table',
+    label: getI18N().tc('label.kwTable'),
+    icon: 'mdi-table',
+    exportIcons: [
+      {
+        type: 'xlsx', // adapter
+        icon: 'mdi-file-excel',
+      },
+    ],
+  },
+  {
+    viewClass: 'chart',
+    label: getI18N().tc('label.kwChart'),
+    icon: 'mdi-chart-bar',
+    exportIcons: [],
+  },
+];
+
 export const ENGINE_EVENTS = {
   RESOURCE_VALIDATION: 'ResourceValidation',
 };
@@ -929,5 +949,6 @@ export default {
   OBSERVATION_CONTEXT_ITEMS,
   ENGINE_EVENTS,
   DEFAULT_STYLE_FUNCTION,
+  KNOWLEDGE_VIEWS,
   DEFAULT_STYLES,
 };

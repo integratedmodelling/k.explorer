@@ -38,7 +38,9 @@
         <div class="lm-separator"></div>
         <scale-buttons :docked="true"></scale-buttons>
         <div class="lm-separator"></div>
-        <div id="lm-bottom-buttons">
+        <knowledge-views-selector :docked="true"></knowledge-views-selector>
+        <div class="lm-separator"></div>
+        <div class="lm-bottom-buttons">
           <stop-actions-buttons></stop-actions-buttons>
         </div>
       </div>
@@ -71,6 +73,7 @@ import DockedMainControl from 'components/KlabDockedMainControl.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
+import KnowledgeViewsSelector from 'components/KnowledgeViewsSelector.vue';
 
 export default {
   name: 'KlabLeftMenu',
@@ -82,6 +85,7 @@ export default {
     KlabLogPane,
     DataflowInfo,
     ScaleButtons,
+    KnowledgeViewsSelector,
   },
   mixins: [HandleTouch],
   data() {

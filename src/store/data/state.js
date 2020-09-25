@@ -223,6 +223,12 @@ export default {
    */
   observations: [],
   contextMenuObservationId: null,
+
+  /**
+   * Contains all received knowledgeViews
+   */
+  knowledgeViews: [],
+
   /**
    * Modification Events
    * {

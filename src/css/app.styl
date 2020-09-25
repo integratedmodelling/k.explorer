@@ -198,6 +198,8 @@ body .ol-zoom
   &.active
     color white !important
     cursor auto
+  &.disable
+    cursor default
 .klab-button-notification
   display block
   position absolute
@@ -207,7 +209,7 @@ body .ol-zoom
   padding 5px 6px 7px 6px
   position relative
   &:not(.disabled):hover
-    color $main-control-main-color
+    color $main-control-main-color !important
   &.active
     color $main-control-main-color !important
 
@@ -329,3 +331,32 @@ body .ol-zoom
   -moz-user-select none /* Firefox */
   -ms-user-select none /* Internet Explorer/Edge */
 
+// modals style
+.klab-modal-container
+  position: relative;
+  top 50%
+  left 50%
+  color $grey-8
+  background-color white
+  overflow hidden
+  box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
+  transition: all 0.2s ease-in-out;
+  border-radius: 4px;
+  min-width 320px
+  min-height 240px
+  &:before
+    display block
+    content "";
+    width 100%
+    height 100%
+    padding-top 2 / 3 * 100
+
+  > .klab-modal-inner
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    .klab-modal-content
+      position relative
+      background-color white

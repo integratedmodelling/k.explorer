@@ -5,6 +5,7 @@
     <connection-status class="print-hide"></connection-status>
     <klab-settings class="print-hide"></klab-settings>
     <klab-presentation></klab-presentation>
+    <knowledge-view-viewer></knowledge-view-viewer>
   </div>
 </template>
 
@@ -15,7 +16,9 @@ import KlabSettings from 'components/KlabSettings';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
+import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
 import 'simplebar/dist/simplebar.css';
+import { MESSAGES_BUILDERS } from '../shared/MessageBuilders';
 
 export default {
   name: 'LayoutDefault',
@@ -25,6 +28,7 @@ export default {
     KlabSettings,
     AppDialogs,
     KlabPresentation,
+    KnowledgeViewViewer,
   },
   data() {
     return {};
@@ -33,6 +37,9 @@ export default {
     ...mapGetters('view', [
       'layout',
     ]),
+  },
+  mounted() {
+    this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
   },
 };
 </script>

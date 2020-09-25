@@ -57,7 +57,7 @@ export default {
       console.debug(`Send stop watch context ${oldContext.id}`);
       sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST, { active: false, observationId: oldContext.id, rootContextId: oldContext.rootContextId });
     } else {
-      console.warn('Try to reset null context');
+      console.info('Try to reset null context, is initial reset?');
     }
   },
 
@@ -306,6 +306,14 @@ export default {
       offsetToAdd: 0,
       total: node.childrenCount,
     });
+  },
+
+  addKnowledgeView: ({ commit }, knowledgeView) => {
+    commit('ADD_KNOWLEDGE_VIEW', knowledgeView);
+  },
+
+  showKnowledgeView: ({ commit }, knowledgeViewId) => {
+    commit('SHOW_KNOWLEDGE_VIEW', knowledgeViewId);
   },
 
   addModificationEvent: ({ rootGetters, state, commit, dispatch }, modificationEvent) => {

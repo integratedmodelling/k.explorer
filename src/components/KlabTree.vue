@@ -152,14 +152,13 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { getAxiosContent, findNodeById, getContextGeometry } from 'shared/Helpers';
+import { downloadFromEngine, findNodeById, getContextGeometry } from 'shared/Helpers';
 import { CUSTOM_EVENTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
 import ObservationContextMenu from 'components/ObservationContextMenu';
 import { copyToClipboard } from 'shared/Utils';
-import { URLS } from 'shared/MessagesConstants';
 
 let scrollToTimeout = null;
 
@@ -309,30 +308,7 @@ export default {
       }
 
       const selectedFormat = formats.find(f => f.value === outputFormat);
-      getAxiosContent(
-        `dw_${observationId}`,
-        `${process.env.WS_BASE_URL}${URLS.REST_SESSION_VIEW}data/${observationId}`,
-        {
-          params: {
-            format: 'RAW', // TODO change when RAW call work as expected
-            outputFormat,
-            adapter: selectedFormat.adapter,
-            ...(this.timestamp !== -1 && { locator: `T1(1){time=${this.timestamp}}` }),
-          },
-          responseType: 'blob',
-        },
-        (response, callback) => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', `${label}.${selectedFormat.extension}`);
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          window.URL.revokeObjectURL(url);
-          callback();
-        },
-      );
+      downloadFromEngine(observationId, 'RAW', label, selectedFormat, this.timestamp);
     },
     changeNodeState({ nodeId, state }) {
       if (typeof this.$refs['klab-tree'] !== 'undefined') {

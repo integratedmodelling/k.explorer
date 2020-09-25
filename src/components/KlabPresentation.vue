@@ -2,14 +2,14 @@
   <div class="modal fullscreen" id="modal-show-help" v-show="showHelp">
     <div class="modal-backdrop absolute-full"></div>
     <div
-      class="kp-help-container"
+      class="klab-modal-container"
       ref="kp-help-container"
       :style="{
          width: `${modalSize.width}px`,
          height: `${modalSize.height}px`,
          transform: `translate(-50%, -50%) scale(${scale}, ${scale}) !important`}">
-      <div class="kp-help-inner" ref="kp-help-inner">
-        <div class="kp-help-content full-height">
+      <div class="klab-modal-inner" ref="kp-help-inner">
+        <div class="klab-modal-content full-height">
           <div class="kp-help-titlebar">
             <div
               class="kp-link"
@@ -394,30 +394,8 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
-  .kp-help-container
-    position: relative;
-    top 50%
-    left 50%
-    color $grey-8
-    overflow hidden
-    box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12);
-    transition: all 0.2s ease-in-out;
-    border-radius: 3px;
-    min-width 320px
-    min-height 240px
-    &:before
-      display block
-      content "";
-      width 100%
-      height 100%
-      padding-top 2 / 3 * 100
-
-    > .kp-help-inner
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
+  .klab-modal-container
+    .klab-modal-inner
       .kp-no-presentation
         font-weight bold
         position relative
@@ -425,10 +403,6 @@ export default {
           position relative
         .klab-small
           font-size smaller
-
-    .kp-help-content
-      position relative
-      background-color white
     .kp-help-titlebar
       position absolute
       width 100%
