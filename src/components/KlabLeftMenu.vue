@@ -20,6 +20,8 @@
         <div class="lm-separator"></div>
         <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
         <div class="lm-separator"></div>
+        <knowledge-views-selector :docked="true"></knowledge-views-selector>
+        <div class="lm-separator"></div>
       </template>
       <div class="klab-button klab-action"
            :class="[{ active: logShowed }]"
@@ -27,6 +29,7 @@
       >
         <q-icon name="mdi-console">
           <q-tooltip
+            :delay="600"
             :offset="[0, 8]"
             self="top left"
             anchor="bottom left"
@@ -37,8 +40,6 @@
       <div id="lm-bottom-menu" :style="{ width: `${LEFTMENU_VISIBILITY.LEFTMENU_MINSIZE}px` }">
         <div class="lm-separator"></div>
         <scale-buttons :docked="true"></scale-buttons>
-        <div class="lm-separator"></div>
-        <knowledge-views-selector :docked="true"></knowledge-views-selector>
         <div class="lm-separator"></div>
         <div class="lm-bottom-buttons">
           <stop-actions-buttons></stop-actions-buttons>
@@ -186,6 +187,8 @@ export default {
       font-size 30px
       width 42px
       height 42px
+      line-height 42px
+      vertical-align middle
       padding 0 5px
       margin 15px auto
     .klab-main-actions .klab-button

@@ -91,6 +91,7 @@ export default {
   .kvv-content-wrapper
     height calc(100% - 50px)
     max-height calc(100% - 50px)
+    background-color var(--app-darken-background-color)
     &.kvv-with-exports
       height calc(100% - 90px)
     .simplebar-scrollbar:before
@@ -98,7 +99,6 @@ export default {
     .kvv-content
       margin 15px 0
       padding 20px 20px
-      background-color var(--app-darken-background-color)
       color var(--app-text-color)
       table
         border-collapse collapse

@@ -2,13 +2,14 @@
   <div class="kvs-container">
     <div class="klab-button klab-action" :class="{ disabled: knowledgeViews.length === 0 }">
       <div
-        class="mdi mdi-file-document-box-multiple float-left"
+        class="kvs-button mdi mdi-file-document-box-multiple float-left"
       ></div>
       <q-icon v-if="!docked" name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
       <q-tooltip
         :offset="[8, 0]"
         :self="selfTooltipType"
         :anchor="anchorTooltipType"
+        :delay="600"
       >{{ knowledgeViews.length === 0 ? $t('tooltips.noKnowledgeViews') : $t('tooltips.knowledgeViews') }}</q-tooltip>
     </div>
     <q-popover
@@ -36,7 +37,6 @@
               :offset="[8, 0]"
               self="center left"
               anchor="center right"
-              :delay="600"
               :ref="`kv-tooltip-${knowledgeView.viewId}`"
             >{{ knowledgeView.title }}</q-tooltip>
           </q-item>
@@ -104,5 +104,6 @@ export default {
     border-color $grey-8
   .kvs-popover
     background-color transparent
-
+  .kvs-container .klab-button:not(.disabled) .kvs-button
+    color $main-control-main-color
 </style>

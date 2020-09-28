@@ -8,6 +8,7 @@
            v-if="orientation !== 'horizontal'"
       ><q-icon name="mdi-eye-outline">
         <q-tooltip
+          :delay="600"
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
@@ -20,6 +21,7 @@
       ><q-icon name="mdi-file-document-box-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadReport && hasObservations"></span>
         <q-tooltip
+          :delay="600"
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
@@ -33,6 +35,7 @@
       ><q-icon name="mdi-sitemap">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
         <q-tooltip
+          :delay="600"
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
