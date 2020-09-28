@@ -10,6 +10,7 @@
         @click.native="rescaleContext"
       >
         <q-tooltip
+          :delay="600"
           :anchor="anchorType"
           :self="selfType"
           :offset="offsets"
