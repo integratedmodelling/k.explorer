@@ -1,7 +1,7 @@
 <script>
 import { createComponent } from 'shared/DefaultViewComponents';
 import { CUSTOM_EVENTS } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from '../shared/MessageBuilders';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 const EMPTY_VIEWACTION_MESSAGE = {
   component: null,
@@ -92,13 +92,16 @@ export default {
   .kcv-alert .modal-backdrop
     background-color transparent
   .kcv-collapsible-header
-    background-color var(--app-main-color)
-    color var(--app-background-color)
+    background-color var(--app-background-color)
+    color var(--app-title-color)
     position relative
+    border-bottom 1px solid var(--app-darken-background-color)
     .q-item-label
       font-size var(--app-font-size)
     .q-item-side
-      color var(--app-background-color)
+      color var(--app-title-color)
+    .q-item-icon.rotate-180
+      transform: rotate(90deg)
   .kcv-collapsible
     clear both
     .kcv-tree-container
@@ -131,8 +134,11 @@ export default {
       text-overflow ellipsis
       line-height 1.2em
       vertical-align center
+  /*
   .kcv-group
     margin 10px 0
+
+   */
   .kcv-label
     float left
     padding 5px 10px

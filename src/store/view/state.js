@@ -228,6 +228,8 @@ export default {
    */
   engineEvents: [],
 
+  klabApp: null,
+
   /**
    * Log levels
    * Initialized with the start options

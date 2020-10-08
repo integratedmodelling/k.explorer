@@ -57,6 +57,7 @@
           </q-popover>
         </q-fab-action>
         <q-fab-action
+          v-if="!isApp"
           color="app-background-color"
           text-color="app-main-color"
           icon="mdi-apps"
@@ -129,6 +130,9 @@ export default {
   computed: {
     ...mapGetters('data', [
       'sessionReference',
+    ]),
+    ...mapGetters('view', [
+      'isApp',
     ]),
     modalsAreFocused() {
       return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);

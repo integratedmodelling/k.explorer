@@ -407,6 +407,7 @@ export const WEB_CONSTANTS = {
   PARAMS_LOG_HIDDEN: 'hidden',
   PARAMS_LOG_VISIBLE: 'visible',
   PARAMS_LOCAL_HELP: 'localhelp',
+  PARAMS_APP: 'app',
   /**
    * Cookies name
    */
@@ -882,7 +883,7 @@ export const DEFAULT_STYLES = {
     'font-size': '1em',
     'title-size': '26px',
     'subtitle-size': '16px',
-    'line-height': '1em',
+    'line-height': 'auto',
   },
   light: {
     'main-color': 'black',

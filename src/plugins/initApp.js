@@ -98,6 +98,11 @@ export default ({ store }) => {
     store.state.view.helpBaseUrl = HELP_CONSTANTS.DEFAULT_HELP_BASE_URL;
   }
 
+  const app = urlParams.get(WEB_CONSTANTS.PARAMS_APP);
+  if (app) {
+    store.state.view.klabApp = app;
+  }
+
   /**
    * Capabilities
    */

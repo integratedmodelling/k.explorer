@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" :id="`kapp-${idSuffix}`">
     <q-btn
-      v-if="layout !== null && isRootLayout"
+      v-if="layout !== null && isRootLayout && !isApp"
       color="app-main-color"
       flat
       round
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
@@ -103,6 +103,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('view', [
+      'isApp',
+    ]),
     isRootLayout() {
       return this.layout !== null && this.layout.parentId === null;
     },
@@ -244,16 +247,18 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
-      // setTimeout(() => {
-      this.$nextTick(() => {
-        this.updateLayout();
-        // }, 400);
-      });
-      if (oldLayout !== null) {
-        this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
-          { applicationId: oldLayout.applicationId, stop: true },
-          this.$store.state.data.session,
-        ).body);
+      if (!this.isApp) {
+        // setTimeout(() => {
+        this.$nextTick(() => {
+          this.updateLayout();
+          // }, 400);
+        });
+        if (oldLayout !== null) {
+          this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
+            { applicationId: oldLayout.applicationId, stop: true },
+            this.$store.state.data.session,
+          ).body);
+        }
       }
     },
   },

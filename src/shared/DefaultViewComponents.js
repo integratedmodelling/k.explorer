@@ -103,7 +103,8 @@ export const COMPONENTS = {
         staticClass: 'kcv-collapsible',
         props: {
           headerClass: 'kcv-collapsible-header',
-          separator: true,
+          collapseIcon: 'mdi-dots-vertical',
+          separator: false,
           group: component.attributes.parentId,
           label: component.name,
         },

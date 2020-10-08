@@ -124,6 +124,8 @@ export default {
    * Layout from k.LAB
    */
   layout: state => state.layout,
+  isApp: state => state.klabApp !== null,
+  klabApp: state => state.klabApp,
   activeDialogs: state => state.dialogs.filter(a => !a.dismiss),
 
   engineEvents: state => state.engineEvents,
