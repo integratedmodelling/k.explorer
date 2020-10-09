@@ -89,6 +89,21 @@ export default {
 <style lang="stylus">
   @import '~variables'
   $label-width = 150px
+  .kapp-container
+    .q-input-target
+      color var(--app-text-color)
+      background-color  var(--app-background-color)
+      line-height var(--app-line-height)
+    .q-btn
+      min-height var(--app-line-height)
+      padding 8px 16px
+    .q-no-input-spinner
+      -moz-appearance textfield !important
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button
+        -webkit-appearance auto
+  .q-if:before, .q-if:after
+    border-bottom-style none
   .kcv-alert .modal-backdrop
     background-color transparent
   .kcv-collapsible-header
@@ -112,22 +127,24 @@ export default {
   .kcv-tree-container
   .kcv-group-container
     padding 15px 10px
-    margin 15px 10px
-    border-radius 6px
+    // margin 15px 10px
+    // border-radius 6px
     position relative
-    &:not(.kcv-group-no-label)
-      border 1px solid var(--app-main-color)
-      margin-top 30px
-      padding-top 20px
+    border-bottom 1px solid var(--app-main-color)
+    // &:not(.kcv-group-no-label)
+      // border 1px solid var(--app-main-color)
+      // margin-top 30px
+      // padding-top 20px
     .kcv-tree-legend
     .kcv-group-legend
-      position absolute
-      background-color var(--app-main-color)
-      color var(--app-background-color)
+      // position absolute
+      // background-color var(--app-background-color)
+      color var(--app-title-color)
       padding 5px 10px
-      font-weight 400
+      font-weight 300
+      font-size 1.3em
       top -14px
-      border-radius 6px
+      // border-radius 6px
       max-width 100%
       white-space nowrap
       overflow hidden
@@ -136,7 +153,7 @@ export default {
       vertical-align center
   /*
   .kcv-group
-    margin 10px 0
+    margin 5px 0
 
    */
   .kcv-label
@@ -149,15 +166,29 @@ export default {
     text-overflow ellipsis
     color var(--app-main-color)
     vertical-align middle
-    line-height 1.8em
+    line-height calc(var(--app-line-height) + 4px)
+    &.kcv-title
+      color var(--app-alt-color)
+      font-weight bold
   .kcv-text-input
-    line-height 1em
     vertical-align middle
     border 1px solid var(--app-main-color)
-    padding 5px
+    background-color  var(--app-background-color)
+    padding 2px 10px
+  .kcv-combo
+    margin 10px
+    padding 2px 10px
+    background-color var(--app-background-color)
+    border-radius 6px
+    border 1px solid var(--app-main-color)
+  .kcv-combo-option
+    color var(--app-main-color)
+    min-height unset
+    padding 5px 10px
+
   .kcv-pushbutton
     font-size var(--app-font-size)
-    margin 5px
+    margin 10px 0
   .kcv-checkbutton
     display block
     width 100%

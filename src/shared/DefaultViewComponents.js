@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn, QIcon } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip } from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from 'shared/Constants';
@@ -69,6 +69,7 @@ export const COMPONENTS = {
           id: `${component.applicationId}-${component.id}`,
         },
         style: component.attributes.hfill ? { width: '100%' } : {},
+        class: { 'text-app-alt-color': component.attributes.altfg, 'bg-app-alt-background': component.attributes.altbg },
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kcv-group-container',
@@ -207,11 +208,22 @@ export const COMPONENTS = {
       render(h) {
         return h('div', {
           staticClass: 'kcv-label',
+          class: component.attributes.tag && component.attributes.tag === 'title' ? 'kcv-title' : '',
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
           style: DEFAULT_STYLE_FUNCTION(component),
-        }, component.content);
+        }, [
+          component.content,
+          component.attributes.tooltip
+            ? h(QTooltip, {
+              props: {
+                anchor: 'bottom left',
+                self: 'top left',
+                offset: [-10, 0],
+              },
+            }, component.attributes.tooltip === 'true' ? component.content : component.attributes.tooltip) : null,
+        ]);
       },
     });
   },
@@ -222,6 +234,7 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      // const isNumber = Number.isInteger(component.content);
       return h(QInput, {
         staticClass: ['kcv-text-input'],
         style: DEFAULT_STYLE_FUNCTION(component),
@@ -233,6 +246,7 @@ export const COMPONENTS = {
           color: 'app-main-color',
           hideUnderline: true,
           dense: true,
+          type: 'number',
         },
         on: {
           keydown: (event) => {
@@ -253,7 +267,43 @@ export const COMPONENTS = {
       });
     },
   }),
-
+  COMBO: component => Vue.component('KAppCombo', {
+    data() {
+      return {
+        component,
+        value: component.choices[0].first,
+      };
+    },
+    render(h) {
+      return h(QSelect, {
+        staticClass: ['kcv-combo'],
+        style: DEFAULT_STYLE_FUNCTION(component),
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        props: {
+          value: this.value,
+          options: component.choices.map(c => ({ label: c.first, value: c.second, className: 'kcv-combo-option' })),
+          color: 'app-text-color',
+          popupCover: false,
+          dense: true,
+        },
+        on: {
+          change: (value) => {
+            this.value = value;
+            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              operation: APPS_OPERATION.USER_ACTION,
+              component: {
+                ...component,
+                components: [],
+              },
+              stringValue: value,
+            });
+          },
+        },
+      });
+    },
+  }),
   PUSH_BUTTON: component => Vue.component('KAppPushButton', {
     data() {
       return {};
@@ -482,6 +532,9 @@ export function createComponent(node, h, options = {}) {
       break;
     case APPS_COMPONENTS.TEXT:
       component = COMPONENTS.TEXT(node);
+      break;
+    case APPS_COMPONENTS.COMBO:
+      component = COMPONENTS.COMBO(node);
       break;
     default:
       component = COMPONENTS.UNKNOWN(node);

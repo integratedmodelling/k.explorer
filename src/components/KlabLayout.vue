@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" :id="`kapp-${idSuffix}`">
+  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-container" :id="`kapp-${idSuffix}`">
     <q-btn
       v-if="layout !== null && isRootLayout && !isApp"
       color="app-main-color"
