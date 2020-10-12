@@ -80,7 +80,7 @@ export default {
       if (this.isApp && this.layout === null) {
         this.errorLoading = true;
       }
-    }, 2000);
+    }, 5000);
   },
 };
 </script>

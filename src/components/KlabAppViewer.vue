@@ -89,7 +89,8 @@ export default {
 <style lang="stylus">
   @import '~variables'
   $label-width = 150px
-  .kapp-container
+  .kapp-left-container
+  .kapp-header-container
     .q-input-target
       color var(--app-text-color)
       background-color  var(--app-background-color)
@@ -115,19 +116,30 @@ export default {
       font-size var(--app-font-size)
     .q-item-side
       color var(--app-title-color)
-    .q-item-icon.rotate-180
+    .q-item-icon
       transform: rotate(90deg)
+      &.rotate-180
+        transform: rotate(180deg)
   .kcv-collapsible
     clear both
     .kcv-tree-container
-      margin 15px 10px 15px 10px
-      padding 10px 0 5px
+      margin 5px 10px
+      padding 5px 0 5px
   .q-collapsible-sub-item
     padding 8px 0
   .kcv-tree-container
+    padding 5px
+    position relative
+    .kcv-tree-legend
+      color var(--app-title-color)
+      padding 5px 10px
+      max-width 100%
+      white-space nowrap
+      overflow hidden
+      text-overflow ellipsis
+
   .kcv-group-container
     padding 15px 10px
-    // margin 15px 10px
     // border-radius 6px
     position relative
     border-bottom 1px solid var(--app-main-color)
@@ -135,15 +147,11 @@ export default {
       // border 1px solid var(--app-main-color)
       // margin-top 30px
       // padding-top 20px
-    .kcv-tree-legend
     .kcv-group-legend
       // position absolute
       // background-color var(--app-background-color)
       color var(--app-title-color)
       padding 5px 10px
-      font-weight 300
-      font-size 1.3em
-      top -14px
       // border-radius 6px
       max-width 100%
       white-space nowrap
@@ -151,22 +159,25 @@ export default {
       text-overflow ellipsis
       line-height 1.2em
       vertical-align center
-  /*
+      font-weight 300
+      font-size 1.3em
+    /*
   .kcv-group
     margin 5px 0
 
    */
   .kcv-label
-    float left
+    // float left
     padding 5px 10px
     font-weight 400
-    border-radius 6px
     overflow hidden
     white-space nowrap
     text-overflow ellipsis
     color var(--app-main-color)
     vertical-align middle
     line-height calc(var(--app-line-height) + 4px)
+    align-self center
+
     &.kcv-title
       color var(--app-alt-color)
       font-weight bold

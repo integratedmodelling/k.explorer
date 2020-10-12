@@ -340,7 +340,7 @@ export const COMPONENTS = {
   CHECK_BUTTON: component => Vue.component('KAppCheckButton', {
     data() {
       return {
-        value: component.content !== null,
+        value: (component.attributes.checked && component.attributes.checked === 'true') || false,
         component,
       };
     },
