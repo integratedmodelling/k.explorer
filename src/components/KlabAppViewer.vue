@@ -199,7 +199,7 @@ export default {
 
   .kcv-pushbutton
     font-size var(--app-font-size)
-    margin 10px 0
+    margin 10px 5px
   .kcv-checkbutton
     display block
     width 100%
