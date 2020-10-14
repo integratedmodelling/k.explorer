@@ -135,6 +135,39 @@ export const COMPONENTS = {
             staticClass: 'kcv-separator-title',
           }, component.title)
           : null,
+        component.attributes.info
+          ? h(QIcon, {
+            staticClass: 'kcv-separator-right',
+            props: {
+              name: 'mdi-information-outline',
+              color: 'app-main-color',
+            },
+            nativeOn: {
+              mouseover: () => {
+                console.warn('over');
+                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: true,
+                });
+              },
+              mouseleave: () => {
+                console.warn('leave');
+                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: false,
+                });
+              },
+            },
+          })
+          : null,
       ]);
     },
   }),

@@ -144,16 +144,22 @@ export default {
     position relative
     border-bottom 1px solid var(--app-main-color)
     display flex
-    flex-basis row
+    flex-basis col
     align-content center
     line-height 1.2em
     .kcv-separator-icon
       padding-right 10px
       font-size 1.2em
+      width 1.2em
     .kcv-separator-title
       font-weight 300
       font-size 1.2em
-
+      flex-grow 10
+    .kcv-separator-right
+      font-size 1.3em
+      width 1.2em
+      align-self flex-start
+      cursor pointer
   .kcv-group-container
     padding 16px
     position relative
