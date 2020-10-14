@@ -819,8 +819,6 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
     const value = component.attributes[key];
     switch (key) {
       case 'width':
-        // retStyle['min-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        // retStyle['max-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         if (value.startsWith('col')) {
           retStyle['flex-grow'] = value.substring(3);
         } else {
@@ -828,8 +826,6 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         }
         break;
       case 'height':
-        // retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        // retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         /*
         if (component.type !== 'Group' && component.type !== 'Tree') {
@@ -859,7 +855,6 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         break;
       case 'hbox':
       case 'vbox':
-        retStyle.display = 'flex';
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
         // retStyle['align-items'] = 'center';
         break;

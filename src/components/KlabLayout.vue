@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-container" :id="`kapp-${idSuffix}`">
+  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
     <q-btn
       v-if="layout !== null && isRootLayout && !isApp"
       color="app-main-color"
@@ -17,7 +17,7 @@
     </q-btn>
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
-      class="kapp-header-container print-hide"
+      class="kapp-header-container kapp-container print-hide"
       :id="`kapp-${idSuffix}-header`"
       v-if="hasHeader"
       >
@@ -38,7 +38,7 @@
     <q-layout-drawer
       side="left"
       :class="{ 'kapp-main':  isRootLayout}"
-      class="kapp-left-container print-hide"
+      class="kapp-left-container kapp-container  print-hide"
       content-class="kapp-left-inner-container"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
@@ -55,7 +55,7 @@
     <q-page-container>
       <k-explorer v-if="!layout || layout.panels.length === 0" class="kapp-main-container is-kexplorer" :id="`kapp-${idSuffix}-main`" :mainPanelStyle="mainPanelStyle"></k-explorer>
       <template v-else>
-        <klab-app-viewer class="kapp-main-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
+        <klab-app-viewer class="kapp-main-container kapp-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
       </template>
     </q-page-container>
     <q-resize-observable @resize="updateLayout" />
@@ -281,6 +281,7 @@ export default {
       font-size var(--app-font-size)
       line-height var(--app-line-height)
       background-color var(--app-background-color)
+
   .kapp-left-inner-container
     position absolute !important
   .kapp-main

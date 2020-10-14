@@ -82,6 +82,13 @@ export default {
       }
     }, 5000);
   },
+  watch: {
+    layout(newValue) {
+      if (this.errorLoading && newValue) {
+        this.errorLoading = false;
+      }
+    },
+  },
 };
 </script>
 <style lang="stylus">

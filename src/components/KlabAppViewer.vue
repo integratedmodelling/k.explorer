@@ -89,8 +89,7 @@ export default {
 <style lang="stylus">
   @import '~variables'
   $label-width = 150px
-  .kapp-left-container
-  .kapp-header-container
+  .kapp-container
     .q-input-target
       color var(--app-text-color)
       background-color  var(--app-background-color)
@@ -103,8 +102,8 @@ export default {
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button
         -webkit-appearance auto
-  .q-if:before, .q-if:after
-    border-bottom-style none
+    .q-if:before, .q-if:after
+      border-bottom-style none
   .kcv-alert .modal-backdrop
     background-color transparent
   .kcv-collapsible-header
@@ -126,33 +125,41 @@ export default {
       margin 5px 10px
       padding 5px 0 5px
   .q-collapsible-sub-item
-    padding 8px 0
+    padding   0
   .kcv-tree-container
     padding 5px
     position relative
     .kcv-tree-legend
       color var(--app-title-color)
-      padding 5px 10px
+      // border-bottom 1px solid var(--app-title-color)
+      //border-radius 10px
+      padding 5px
+      margin 0 5px
       max-width 100%
       white-space nowrap
       overflow hidden
       text-overflow ellipsis
 
   .kcv-group-container
-    padding 15px 10px
-    // border-radius 6px
+    padding 16px
     position relative
     border-bottom 1px solid var(--app-main-color)
     // &:not(.kcv-group-no-label)
       // border 1px solid var(--app-main-color)
       // margin-top 30px
       // padding-top 20px
+    .kcv-group-content
+      display flex
+      /**
+      could be override by custom style
+       */
+      // align-items center
+      align-content center
+      // justify-content center
+      flex-direction column
     .kcv-group-legend
-      // position absolute
-      // background-color var(--app-background-color)
       color var(--app-title-color)
-      padding 5px 10px
-      // border-radius 6px
+      // padding 5px 10px
       max-width 100%
       white-space nowrap
       overflow hidden
@@ -160,14 +167,9 @@ export default {
       line-height 1.2em
       vertical-align center
       font-weight 300
-      font-size 1.3em
-    /*
-  .kcv-group
-    margin 5px 0
+      font-size 1.2em
 
-   */
   .kcv-label
-    // float left
     padding 5px 10px
     font-weight 400
     overflow hidden
