@@ -797,6 +797,7 @@ export const APPS_COMPONENTS = {
   TABLE: 'Table',
   NOTIFICATION: 'Notification',
   INPUT_GROUP: 'InputGroup',
+  SEPARATOR: 'Separator',
 };
 
 export const APPS_OPERATION = {

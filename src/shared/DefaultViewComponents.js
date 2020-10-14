@@ -112,6 +112,32 @@ export const COMPONENTS = {
       }, this.$slots.default);
     },
   }),
+  SEPARATOR: component => Vue.component('KAppSeparator', {
+    render(h) {
+      return h('div', {
+        staticClass: 'kcv-separator',
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        style: DEFAULT_STYLE_FUNCTION(component),
+      }, [
+        component.attributes.iconname
+          ? h(QIcon, {
+            staticClass: 'kcv-separator-icon',
+            props: {
+              name: `mdi-${component.attributes.iconname}`,
+              color: 'app-main-color',
+            },
+          })
+          : null,
+        component.title
+          ? h('div', {
+            staticClass: 'kcv-separator-title',
+          }, component.title)
+          : null,
+      ]);
+    },
+  }),
   TREE: (component) => {
     const tree = [];
     if (component.tree) {
@@ -214,6 +240,15 @@ export const COMPONENTS = {
           },
           style: DEFAULT_STYLE_FUNCTION(component),
         }, [
+          component.attributes.iconname
+            ? h(QIcon, {
+              staticClass: 'kcv-label-icon',
+              props: {
+                name: `mdi-${component.attributes.iconname}`,
+                color: 'app-main-color',
+              },
+            })
+            : null,
           component.content,
           component.attributes.tooltip
             ? h(QTooltip, {
@@ -320,7 +355,7 @@ export const COMPONENTS = {
           color: 'app-main-color',
           textColor: 'app-background-color',
           noCaps: true,
-
+          ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
         },
         on: {
           click: () => {
@@ -502,6 +537,9 @@ export function createComponent(node, h, options = {}) {
     }
     case APPS_COMPONENTS.PANEL:
       component = COMPONENTS.PANEL(node);
+      break;
+    case APPS_COMPONENTS.SEPARATOR:
+      component = COMPONENTS.SEPARATOR(node);
       break;
     case APPS_COMPONENTS.LABEL:
       component = COMPONENTS.LABEL(node);

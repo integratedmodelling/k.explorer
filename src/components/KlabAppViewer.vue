@@ -139,6 +139,20 @@ export default {
       white-space nowrap
       overflow hidden
       text-overflow ellipsis
+  .kcv-separator
+    padding 16px
+    position relative
+    border-bottom 1px solid var(--app-main-color)
+    display flex
+    flex-basis row
+    align-content center
+    line-height 1.2em
+    .kcv-separator-icon
+      padding-right 10px
+      font-size 1.2em
+    .kcv-separator-title
+      font-weight 300
+      font-size 1.2em
 
   .kcv-group-container
     padding 16px
@@ -168,7 +182,6 @@ export default {
       vertical-align center
       font-weight 300
       font-size 1.2em
-
   .kcv-label
     padding 5px 10px
     font-weight 400
@@ -179,7 +192,8 @@ export default {
     vertical-align middle
     line-height calc(var(--app-line-height) + 4px)
     align-self center
-
+    .kcv-label-icon
+      padding-right 5px
     &.kcv-title
       color var(--app-alt-color)
       font-weight bold

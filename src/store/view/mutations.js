@@ -408,7 +408,7 @@ export default {
       }
       return null;
     };
-    const existingComponent = findInLayout(state.layout, component.id);
+    const existingComponent = state.layout && findInLayout(state.layout, component.id);
     if (existingComponent) {
       console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
       Object.assign(existingComponent, component);
