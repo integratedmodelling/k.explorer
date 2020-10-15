@@ -90,37 +90,39 @@ export default {
   @import '~variables'
   $label-width = 150px
   .kapp-container
+    .kcv-alert .modal-backdrop
+      background-color transparent
+
+    // override quasar styles
     .q-input-target
       color var(--app-text-color)
       background-color  var(--app-background-color)
       line-height var(--app-line-height)
     .q-btn
       min-height var(--app-line-height)
-      padding 8px 16px
+      // padding 8px 16px
     .q-no-input-spinner
       -moz-appearance textfield !important
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button
         -webkit-appearance auto
+     // problem when using combo for double line
     .q-if:before, .q-if:after
       border-bottom-style none
-  .kcv-alert .modal-backdrop
-    background-color transparent
-  .kcv-collapsible-header
-    background-color var(--app-background-color)
-    color var(--app-title-color)
-    position relative
-    border-bottom 1px solid var(--app-darken-background-color)
-    .q-item-label
-      font-size var(--app-font-size)
-    .q-item-side
-      color var(--app-title-color)
-    .q-item-icon
-      transform: rotate(90deg)
-      &.rotate-180
-        transform: rotate(180deg)
+
   .kcv-collapsible
-    clear both
+    .kcv-collapsible-header
+      background-color var(--app-background-color)
+      color var(--app-title-color)
+      border-bottom 1px solid var(--app-darken-background-color)
+      .q-item-label
+        font-size var(--app-font-size)
+      .q-item-side
+        color var(--app-title-color)
+      .q-item-icon
+        transform: rotate(90deg)
+        &.rotate-180
+          transform: rotate(180deg)
     .kcv-tree-container
       margin 5px 10px
       padding 5px 0 5px
@@ -140,7 +142,7 @@ export default {
       overflow hidden
       text-overflow ellipsis
   .kcv-separator
-    padding 16px
+    padding 8px 16px
     position relative
     border-bottom 1px solid var(--app-main-color)
     display flex
@@ -161,7 +163,7 @@ export default {
       align-self flex-start
       cursor pointer
   .kcv-group-container
-    padding 16px
+    padding 8px 16px
     position relative
     border-bottom 1px solid var(--app-main-color)
     // &:not(.kcv-group-no-label)
@@ -177,6 +179,11 @@ export default {
       align-content center
       // justify-content center
       flex-direction column
+      /*
+      .kcv-group
+        margin 10px 0
+
+       */
     .kcv-group-legend
       color var(--app-title-color)
       // padding 5px 10px
@@ -189,7 +196,7 @@ export default {
       font-weight 300
       font-size 1.2em
   .kcv-label
-    padding 5px 10px
+    padding 5px
     font-weight 400
     overflow hidden
     white-space nowrap
@@ -204,12 +211,13 @@ export default {
       color var(--app-alt-color)
       font-weight bold
   .kcv-text-input
+    margin 0 5px 10px
     vertical-align middle
     border 1px solid var(--app-main-color)
     background-color  var(--app-background-color)
     padding 2px 10px
   .kcv-combo
-    margin 10px
+    margin 0 10px 10px
     padding 2px 10px
     background-color var(--app-background-color)
     border-radius 6px
@@ -221,11 +229,11 @@ export default {
 
   .kcv-pushbutton
     font-size var(--app-font-size)
-    margin 10px 5px
+    margin 0 5px 10px
   .kcv-checkbutton
     display block
     width 100%
-    padding 10px
+    padding 5px 16px
   .kcv-text
     margin 15px 10px
     text-align justify

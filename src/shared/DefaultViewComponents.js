@@ -32,8 +32,7 @@ export const COMPONENTS = {
   MAIN: component => Vue.component('KAppMain', {
     render(h) {
       return h('div', {
-        staticClass: 'kcv-main-container',
-        class: `kcv-dir-${component.direction}`,
+        class: ['kcv-main-container', `kcv-dir-${component.direction}`],
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -48,8 +47,7 @@ export const COMPONENTS = {
   PANEL: component => Vue.component('KAppPanel', {
     render(h) {
       return h('div', {
-        staticClass: 'kcv-panel-container',
-        class: `kcv-dir-${component.direction}`,
+        class: ['kcv-panel-container', `kcv-dir-${component.direction}`],
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -65,21 +63,21 @@ export const COMPONENTS = {
     render(h) {
       return h('div', {
         staticClass: 'kcv-group',
+        class: { 'text-app-alt-color': component.attributes.altfg, 'bg-app-alt-background': component.attributes.altbg },
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
         style: component.attributes.hfill ? { width: '100%' } : {},
-        class: { 'text-app-alt-color': component.attributes.altfg, 'bg-app-alt-background': component.attributes.altbg },
       }, !component.attributes.shelf && !component.attributes.parentId
         ? [h('div', {
           staticClass: 'kcv-group-container',
           class: { 'kcv-group-no-label': !component.name },
         }, [
           component.name ? h('div', {
-            staticClass: 'kcv-group-legend',
+            class: 'kcv-group-legend',
           }, component.name) : null,
           h('div', {
-            staticClass: 'kcv-group-content',
+            class: 'kcv-group-content',
             style: DEFAULT_STYLE_FUNCTION(component),
             ...(component.attributes.scroll && {
               attrs: {
@@ -88,7 +86,7 @@ export const COMPONENTS = {
             }),
           }, this.$slots.default),
         ])] : [h('div', {
-          staticClass: 'kcv-group-content',
+          class: 'kcv-group-content',
           style: DEFAULT_STYLE_FUNCTION(component),
           ...(component.attributes.scroll && {
             attrs: {
@@ -101,7 +99,7 @@ export const COMPONENTS = {
   SHELF: component => Vue.component('KAppShelf', {
     render(h) {
       return h(QCollapsible, {
-        staticClass: 'kcv-collapsible',
+        class: 'kcv-collapsible',
         props: {
           headerClass: 'kcv-collapsible-header',
           collapseIcon: 'mdi-dots-vertical',
@@ -115,7 +113,7 @@ export const COMPONENTS = {
   SEPARATOR: component => Vue.component('KAppSeparator', {
     render(h) {
       return h('div', {
-        staticClass: 'kcv-separator',
+        class: 'kcv-separator',
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -123,7 +121,7 @@ export const COMPONENTS = {
       }, [
         component.attributes.iconname
           ? h(QIcon, {
-            staticClass: 'kcv-separator-icon',
+            class: 'kcv-separator-icon',
             props: {
               name: `mdi-${component.attributes.iconname}`,
               color: 'app-main-color',
@@ -132,19 +130,18 @@ export const COMPONENTS = {
           : null,
         component.title
           ? h('div', {
-            staticClass: 'kcv-separator-title',
+            class: 'kcv-separator-title',
           }, component.title)
           : null,
         component.attributes.info
           ? h(QIcon, {
-            staticClass: 'kcv-separator-right',
+            class: 'kcv-separator-right',
             props: {
               name: 'mdi-information-outline',
               color: 'app-main-color',
             },
             nativeOn: {
               mouseover: () => {
-                console.warn('over');
                 this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
@@ -155,7 +152,6 @@ export const COMPONENTS = {
                 });
               },
               mouseleave: () => {
-                console.warn('leave');
                 this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
@@ -210,15 +206,17 @@ export const COMPONENTS = {
       },
       render(h) {
         return h('div', {
-          staticClass: 'kcv-tree-container',
+          class: 'kcv-tree-container',
           style: DEFAULT_STYLE_FUNCTION(component),
         },
         [
-          h('div', {
-            staticClass: 'kcv-tree-legend',
-          }, component.name),
+          component.name
+            ? h('div', {
+              class: 'kcv-tree-legend',
+            }, component.name)
+            : null,
           h(QTree, {
-            staticClass: 'kcv-tree',
+            class: 'kcv-tree',
             attrs: {
               id: `${component.applicationId}-${component.id}`,
             },
@@ -267,7 +265,7 @@ export const COMPONENTS = {
       render(h) {
         return h('div', {
           staticClass: 'kcv-label',
-          class: component.attributes.tag && component.attributes.tag === 'title' ? 'kcv-title' : '',
+          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title' },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
@@ -275,7 +273,7 @@ export const COMPONENTS = {
         }, [
           component.attributes.iconname
             ? h(QIcon, {
-              staticClass: 'kcv-label-icon',
+              class: 'kcv-label-icon',
               props: {
                 name: `mdi-${component.attributes.iconname}`,
                 color: 'app-main-color',
@@ -304,7 +302,7 @@ export const COMPONENTS = {
     render(h) {
       // const isNumber = Number.isInteger(component.content);
       return h(QInput, {
-        staticClass: ['kcv-text-input'],
+        class: ['kcv-text-input', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
@@ -344,7 +342,7 @@ export const COMPONENTS = {
     },
     render(h) {
       return h(QSelect, {
-        staticClass: ['kcv-combo'],
+        class: ['kcv-combo', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
@@ -378,7 +376,7 @@ export const COMPONENTS = {
     },
     render(h) {
       return h(QBtn, {
-        staticClass: 'kcv-pushbutton',
+        class: ['kcv-pushbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
@@ -414,7 +412,7 @@ export const COMPONENTS = {
     },
     render(h) {
       return h('div', {
-        staticClass: 'kcv-checkbutton',
+        class: ['kcv-checkbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QCheckbox, {
@@ -453,7 +451,7 @@ export const COMPONENTS = {
     },
     render(h) {
       return h('div', {
-        staticClass: 'kcv-checkbutton',
+        class: ['kcv-checkbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QRadio, {
@@ -534,7 +532,8 @@ export const COMPONENTS = {
 
   UNKNOWN: component => Vue.component('KAppUnknown', {
     render(h) {
-      return h('p', {
+      return h('div', {
+        class: 'kcv-unknown',
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },

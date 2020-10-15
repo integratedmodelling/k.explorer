@@ -1,4 +1,4 @@
-import { colors } from 'quasar';
+import * as colors from 'shared/colors';
 import { geom as jstsGeom, operation as jstsOperation, io as jstsIo } from 'jsts';
 import { transform } from 'ol/proj';
 import { fromCircle } from 'ol/geom/Polygon';

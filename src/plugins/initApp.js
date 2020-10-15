@@ -1,7 +1,8 @@
 import { WEB_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
 import { MAP_CONSTANTS, DEFAULT_OPTIONS } from 'shared/MapConstants';
+import * as colors from 'shared/colors';
 import { axiosInstance } from 'plugins/axios';
-import { Cookies, colors } from 'quasar';
+import { Cookies } from 'quasar';
 import Vue from 'vue';
 
 const eventBus = new Vue();

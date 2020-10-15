@@ -68,10 +68,11 @@ import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Constants';
+import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { dom, colors } from 'quasar';
+import { dom } from 'quasar';
 
 const { lighten } = colors;
 const { width, height } = dom;
