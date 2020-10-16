@@ -230,6 +230,7 @@ export const COMPONENTS = {
               color: 'app-main-color',
               controlColor: 'app-main-color',
               textColor: 'app-main-color',
+              dense: true,
             },
             on: {
               'update:ticked': (values) => {
@@ -265,7 +266,7 @@ export const COMPONENTS = {
       render(h) {
         return h('div', {
           staticClass: 'kcv-label',
-          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title' },
+          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title', 'kcv-ellipsis': component.attributes.ellipsis },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
