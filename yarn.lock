@@ -853,9 +853,9 @@
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
 "@types/node@^12.0.3":
-  version "12.12.62"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.62.tgz#733923d73669188d35950253dd18a21570085d2b"
-  integrity sha512-qAfo81CsD7yQIM9mVyh6B/U47li5g7cfpVQEDMfQeF8pSZVwzbhwU3crc0qG4DmpsebpJPR49AKOExQyJ05Cpg==
+  version "12.12.67"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.67.tgz#4f86badb292e822e3b13730a1f9713ed2377f789"
+  integrity sha512-R48tgL2izApf+9rYNH+3RBMbRpPeW3N8f0I9HMhggeq4UXwBDqumJ14SDs4ctTMhG11pIOduZ4z3QWGOiMc9Vg==
 
 "@types/q@^1.5.1":
   version "1.5.2"
@@ -5186,9 +5186,9 @@ moment-timezone@^0.5.31:
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
 
 moment@^2.22.1:
-  version "2.29.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.0.tgz#fcbef955844d91deb55438613ddcec56e86a3425"
-  integrity sha512-z6IJ5HXYiuxvFTI6eiQ9dm77uE0gyy1yXNApVHqTcnIKfY9tIwEjlzsZ6u1LQXvVgKeTnv9Xm7NDvJ7lso3MtA==
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -5486,9 +5486,9 @@ obuf@^1.0.0, obuf@^1.1.2:
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
 ol-ext@^3.1.7:
-  version "3.1.15"
-  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.1.15.tgz#d04f4e495d3e3104039be028609014591557479f"
-  integrity sha512-jFuUq2MyiPA9cd70axMrJsplP5yOJrHNhTnkjmlqfBDfDIfGR+1Y8FxEwAgdeUZffacF/syUwNPJlbdMO8AOew==
+  version "3.1.16"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-3.1.16.tgz#7b1d9d23835167c4a4f34169101b939bb0ff6808"
+  integrity sha512-RKMx1wtfLJfg/BGOg6GxJYCT46UsbnbAmZ71c+C30DpfIVFi3vm8nBvcLWNYYWsVqZaRl2hG1UhUgqhD22FHeA==
 
 ol-layerswitcher@^3.0.0:
   version "3.7.0"
@@ -8066,9 +8066,9 @@ vue-hot-reload-api@^2.3.0:
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
 vue-i18n@^8.1.0:
-  version "8.21.1"
-  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.21.1.tgz#afa8e6390a5de3b65bd17533c4269181f86f1d61"
-  integrity sha512-KEakJLI7R6+UCmhJOMZ0K7C+Zf5FcMh7QDkBRaEq39V7d9JgSrTDBf/9HuHU3TaxQYXx4fUi5PTIPdwLXq+iow==
+  version "8.22.0"
+  resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.22.0.tgz#6403381a6eab1d229e515a62addb29b2ff3abfed"
+  integrity sha512-2tYS0bYDPJHKAWPy01aDe5h3wcXDGjhJmboHKOfi2OEYR+6gyXaIzdua1smZCQwOeWdlGsLntwdIgkXWrnLjxg==
 
 vue-loader@15.4.2:
   version "15.4.2"
