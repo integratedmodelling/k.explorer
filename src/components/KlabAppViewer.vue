@@ -166,8 +166,9 @@ export default {
         border-bottom 1px solid var(--app-main-color)
 
   .kcv-tree-container
-    padding var(--app-small-mp)
+    padding var(--app-small-mp) 0
     position relative
+    flex-grow 1
     .kcv-tree-legend
       color var(--app-title-color)
       // border-bottom 1px solid var(--app-title-color)
@@ -178,7 +179,10 @@ export default {
       white-space nowrap
       overflow hidden
       text-overflow ellipsis
-
+    /* override the default tree header, but needed if tree has children and the arrow is display
+    .q-tree > .q-tree-node-child > .q-tree-node-header
+      padding-left var(--app-smaller-mp)
+    */
   // separator
   .kcv-separator
     padding var(--app-large-mp) var(--app-small-mp)
