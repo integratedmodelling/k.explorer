@@ -119,7 +119,7 @@ export default {
   .kcv-main-container>.kcv-group
     // background-color #00ff00
     border-bottom 1px solid var(--app-main-color)
-    padding var(--app-smaller-mp) 0
+    margin 0 //var(--app-smaller-mp) 0
     .kcv-group-content
       display flex
       align-content center
@@ -130,6 +130,8 @@ export default {
         // background-color #ff0000 !important
         // border 1px solid #000
         padding var(--app-smaller-mp) var(--app-small-mp)
+        .kcv-pushbutton
+          margin var(--app-large-mp) 0
         // margin var(--app-small-mp) 0
       .kcv-group-legend
         color var(--app-title-color)
