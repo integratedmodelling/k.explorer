@@ -40,18 +40,19 @@
     <q-layout-drawer
       side="left"
       :class="{ 'kapp-main':  isRootLayout}"
-      class="kapp-left-container kapp-container  print-hide"
+      class="kapp-left-container kapp-container print-hide"
       content-class="kapp-left-inner-container"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
       :width="leftPanelWidth"
     >
       <template v-if="leftPanel">
-        <div class="klab-app-wrapper">
+        <div class="klab-left-wrapper" :style="`height: ${leftPanel.height}px`">
           <klab-app-viewer
             :id="`kapp-${idSuffix}-left-0`"
             :component="layout.leftPanels[0]"
-            direction="vertical">
+            direction="vertical"
+          >
           </klab-app-viewer>
         </div>
       </template>
@@ -237,13 +238,13 @@ export default {
         this.header.height = 0;
       }
       this.header.width = window.innerWidth;
+      this.leftPanel.height = window.innerHeight - this.header.height;
       const leftPanels = document.querySelector('.kapp-main.kapp-left-container aside');
       if (leftPanels) {
         this.leftPanel.width = width(leftPanels);
       } else {
         this.leftPanel.width = 0;
       }
-      this.leftPanel.height = window.innerHeight - this.header.height;
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
@@ -277,6 +278,8 @@ export default {
 <style lang="stylus">
   @import '~variables'
   body
+    .klab-main-app
+      position relative
     .kapp-header-container
     .kapp-footer-container
     .kapp-left-inner-container
@@ -286,8 +289,8 @@ export default {
       font-size var(--app-font-size)
       line-height var(--app-line-height)
       background-color var(--app-background-color)
-  .klab-app-wrapper
-    overflow hidden
+  .klab-left-wrapper
+    overflow-x hidden
   .kapp-left-inner-container
     position absolute !important
   .kapp-main
@@ -329,6 +332,10 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+  .kcv-dir-vertical
+    display flex
+    flex-direction column
+    height 100% !important
   // close app button
   .klab-close-app
     position absolute

@@ -63,7 +63,13 @@ export const COMPONENTS = {
     render(h) {
       return h('div', {
         staticClass: 'kcv-group',
-        class: { 'text-app-alt-color': component.attributes.altfg, 'bg-app-alt-background': component.attributes.altbg, 'kcv-wrapper': component.components.length === 1 },
+        class: {
+          'text-app-alt-color': component.attributes.altfg,
+          'bg-app-alt-background': component.attributes.altbg,
+          'kcv-wrapper': component.components.length === 1,
+          'kcv-group-bottom': component.attributes.bottom,
+
+        },
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },

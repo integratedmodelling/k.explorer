@@ -118,33 +118,39 @@ export default {
    // first level group
   .kcv-main-container>.kcv-group
     // background-color #00ff00
+    height 100% !important
     border-bottom 1px solid var(--app-main-color)
     // margin 0 //var(--app-smaller-mp) 0
-    .kcv-group-content
-      display flex
-      align-content center
-      flex-direction column
-      justify-content space-around
-      // next level group
-      .kcv-group:not(.kcv-wrapper)>.kcv-group-content
-        // background-color #ff0000 !important
-        // border 1px solid #000
-        padding var(--app-smaller-mp) 0 //var(--app-small-mp)
-        .kcv-pushbutton
-          margin var(--app-large-mp) 0
-        // margin var(--app-small-mp) 0
-      .kcv-group-legend
-        color var(--app-title-color)
-        // padding 5px 10px
-        max-width 100%
-        white-space nowrap
-        overflow hidden
-        text-overflow ellipsis
-        line-height 1.2em
-        vertical-align center
-        font-weight 300
-        font-size 1.2em
-
+    .kcv-group-container
+      height 100% !important
+      .kcv-group-content
+        display flex
+        align-content center
+        flex-direction column
+        height 100% !important
+        // next level group
+        .kcv-group:not(.kcv-wrapper)>.kcv-group-content
+          // background-color #ff0000 !important
+          // border 1px solid #000
+          padding var(--app-smaller-mp) 0 //var(--app-small-mp)
+          justify-content space-around
+          .kcv-pushbutton
+            margin var(--app-large-mp) 0
+          // margin var(--app-small-mp) 0
+        .kcv-group-legend
+          color var(--app-title-color)
+          // padding 5px 10px
+          max-width 100%
+          white-space nowrap
+          overflow hidden
+          text-overflow ellipsis
+          line-height 1.2em
+          vertical-align center
+          font-weight 300
+          font-size: 1.2em
+    .kcv-group-bottom
+      margin-top auto
+      border-top 1px solid var(--app-main-color)
   .kcv-collapsible
     .kcv-collapsible-header
       background-color var(--app-background-color)
