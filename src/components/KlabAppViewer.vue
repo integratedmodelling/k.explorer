@@ -119,17 +119,17 @@ export default {
   .kcv-main-container>.kcv-group
     // background-color #00ff00
     border-bottom 1px solid var(--app-main-color)
-    margin 0 //var(--app-smaller-mp) 0
+    // margin 0 //var(--app-smaller-mp) 0
     .kcv-group-content
       display flex
       align-content center
       flex-direction column
       justify-content space-around
       // next level group
-      .kcv-group>.kcv-group-content
+      .kcv-group:not(.kcv-wrapper)>.kcv-group-content
         // background-color #ff0000 !important
         // border 1px solid #000
-        padding var(--app-smaller-mp) var(--app-small-mp)
+        padding var(--app-smaller-mp) 0 //var(--app-small-mp)
         .kcv-pushbutton
           margin var(--app-large-mp) 0
         // margin var(--app-small-mp) 0
@@ -213,12 +213,15 @@ export default {
     vertical-align middle
     line-height calc(var(--app-line-height) + 4px)
     align-self center
+    padding var(--app-smaller-mp) var(--app-small-mp)
     &.kcv-ellipsis
       overflow hidden
       white-space nowrap
       text-overflow ellipsis
+    &.kcv-with-icon
+      min-width calc(1rem + calc(var(--app-small-mp) * 2))
     .kcv-label-icon
-      padding-right var(--app-small-mp)
+      margin-right var(--app-small-mp)
     &.kcv-title
       color var(--app-alt-color)
       font-weight bold
@@ -267,7 +270,7 @@ export default {
 
   // form elements
   .kcv-form-element
-    margin 0 var(--app-small-mp) 0 0
+    margin 0 var(--app-small-mp)
     border-radius 6px
   .kcv-text-input
     min-height var(--app-line-height)

@@ -28,7 +28,9 @@
         direction="horizontal"
       ></klab-app-viewer>
       <div class="kapp-header" v-else>
-        <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
+        <div class="kapp-logo-container">
+          <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
+        </div>
         <div class="kapp-title-container">
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
@@ -45,11 +47,13 @@
       :width="leftPanelWidth"
     >
       <template v-if="leftPanel">
-        <klab-app-viewer
-          :id="`kapp-${idSuffix}-left-0`"
-          :component="layout.leftPanels[0]"
-          direction="vertical">
-        </klab-app-viewer>
+        <div class="klab-app-wrapper">
+          <klab-app-viewer
+            :id="`kapp-${idSuffix}-left-0`"
+            :component="layout.leftPanels[0]"
+            direction="vertical">
+          </klab-app-viewer>
+        </div>
       </template>
     </q-layout-drawer>
     <q-page-container>
@@ -282,7 +286,8 @@ export default {
       font-size var(--app-font-size)
       line-height var(--app-line-height)
       background-color var(--app-background-color)
-
+  .klab-app-wrapper
+    overflow hidden
   .kapp-left-inner-container
     position absolute !important
   .kapp-main
@@ -297,19 +302,21 @@ export default {
     background-color var(--app-background-color)
     padding 0
     margin 0
-    img
-      max-width 80px
-      max-height 80px
-      &.kapp-logo
-        margin 5px 10px
-        float left
+    display flex
+    flex-direction row
+    height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+    min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+    .kapp-logo-container
+      align-self center
+      margin 0 10px
+      img
+        max-width 80px
+        max-height 80px
     .kapp-title-container
       color var(--app-title-color)
-      float left
-      height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
-      min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
-      vertical-align middle
-      padding-top 22px // 25px padding - 6px/2 separation
+      flex-grow 1
+      align-self center
+      // padding-top 22px // 25px padding - 6px/2 separation
       padding-left 10px
       .kapp-title
         height var(--app-title-size)

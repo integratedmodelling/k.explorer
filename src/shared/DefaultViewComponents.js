@@ -63,7 +63,7 @@ export const COMPONENTS = {
     render(h) {
       return h('div', {
         staticClass: 'kcv-group',
-        class: { 'text-app-alt-color': component.attributes.altfg, 'bg-app-alt-background': component.attributes.altbg },
+        class: { 'text-app-alt-color': component.attributes.altfg, 'bg-app-alt-background': component.attributes.altbg, 'kcv-wrapper': component.components.length === 1 },
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -266,7 +266,7 @@ export const COMPONENTS = {
       render(h) {
         return h('div', {
           staticClass: 'kcv-label',
-          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title', 'kcv-ellipsis': component.attributes.ellipsis },
+          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title', 'kcv-ellipsis': component.attributes.ellipsis, 'kcv-with-icon': component.attributes.iconname },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
