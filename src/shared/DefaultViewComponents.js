@@ -35,6 +35,7 @@ export const COMPONENTS = {
         class: ['kcv-main-container', `kcv-dir-${component.direction}`],
         attrs: {
           id: `${component.applicationId}-${component.id}`,
+          ref: 'main-container',
         },
         style: {
           ...component.style,
@@ -110,7 +111,7 @@ export const COMPONENTS = {
           headerClass: 'kcv-collapsible-header',
           collapseIcon: 'mdi-dots-vertical',
           separator: false,
-          group: component.attributes.parentId,
+          ...(!component.attributes.parentAttributes.multiple && { group: component.attributes.parentId }),
           label: component.name,
         },
       }, this.$slots.default);

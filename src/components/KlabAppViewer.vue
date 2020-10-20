@@ -2,6 +2,9 @@
 import { createComponent } from 'shared/DefaultViewComponents';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { dom } from 'quasar';
+
+const { height } = dom;
 
 const EMPTY_VIEWACTION_MESSAGE = {
   component: null,
@@ -39,7 +42,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      mainContainerHeight: undefined,
+    };
   },
   computed: {
     /*
@@ -65,12 +70,25 @@ export default {
         ...event,
       }, this.$store.state.data.session).body);
     },
+    calculateMinHeight() {
+      this.$nextTick(() => {
+        const bottomPanels = document.querySelector('.kcv-group-bottom');
+        const mainContainer = document.querySelector('.kcv-main-container');
+        console.warn(height(mainContainer), height(bottomPanels), mainContainer.style['min-height']);
+        if (mainContainer.style['margin-bottom'] === '') {
+          mainContainer.style['margin-bottom'] = `${(bottomPanels ? height(bottomPanels) : 0)}px`;
+        }
+      });
+    },
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
+    this.calculateMinHeight();
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
   },
   render(h) {
     const ret = createComponent(this.component, h, { mainPanelStyle: this.mainPanelStyle, direction: this.direction });
@@ -116,11 +134,13 @@ export default {
     .q-if-baseline
       line-height var(--app-line-height)
    // first level group
-  .kcv-main-container>.kcv-group
+  .kcv-main-container > .kcv-group
     // background-color #00ff00
     height 100% !important
     border-bottom 1px solid var(--app-main-color)
     // margin 0 //var(--app-smaller-mp) 0
+    &> .kcv-group-container > .kcv-group-content > .kcv-group > .kcv-group-content
+      padding-bottom 0 !important
     .kcv-group-container
       height 100% !important
       .kcv-group-content
@@ -132,7 +152,7 @@ export default {
         .kcv-group:not(.kcv-wrapper)>.kcv-group-content
           // background-color #ff0000 !important
           // border 1px solid #000
-          padding var(--app-smaller-mp) 0 //var(--app-small-mp)
+          padding var(--app-smaller-mp) 0
           justify-content space-around
           .kcv-pushbutton
             margin var(--app-large-mp) 0
@@ -149,7 +169,10 @@ export default {
           font-weight 300
           font-size: 1.2em
     .kcv-group-bottom
-      margin-top auto
+      // margin-top auto
+      position fixed
+      bottom 0
+      background-color var(--app-background-color)
       border-top 1px solid var(--app-main-color)
   .kcv-collapsible
     .kcv-collapsible-header

@@ -47,14 +47,14 @@
       :width="leftPanelWidth"
     >
       <template v-if="leftPanel">
-        <div class="klab-left-wrapper" :style="`height: ${leftPanel.height}px`">
           <klab-app-viewer
             :id="`kapp-${idSuffix}-left-0`"
             :component="layout.leftPanels[0]"
             direction="vertical"
+            class="kapp-left-wrapper"
           >
           </klab-app-viewer>
-        </div>
+
       </template>
     </q-layout-drawer>
     <q-page-container>
@@ -253,6 +253,7 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
+      this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
       if (!this.isApp) {
         // setTimeout(() => {
         this.$nextTick(() => {
@@ -289,10 +290,12 @@ export default {
       font-size var(--app-font-size)
       line-height var(--app-line-height)
       background-color var(--app-background-color)
-  .klab-left-wrapper
-    overflow-x hidden
-  .kapp-left-inner-container
-    position absolute !important
+      padding 0
+      margin 0
+    .kapp-left-inner-container
+      position absolute !important
+      .kapp-left-wrapper
+        overflow-x hidden
   .kapp-main
     &.q-layout
       border 0
@@ -300,6 +303,7 @@ export default {
       margin 0
     .simplebar-scrollbar::before
       background-color var(--app-main-color)
+
   // header
   .kapp-header
     background-color var(--app-background-color)
