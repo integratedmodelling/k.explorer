@@ -842,8 +842,7 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle.width = '100%';
         break;
       case 'vfill':
-        // TODO check it
-        retStyle.height = '100%';
+        retStyle['flex-grow'] = 1;
         break;
       case 'top':
       case 'bottom':

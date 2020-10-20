@@ -100,9 +100,6 @@ export default {
       margin 15px 0
       padding 20px 20px
       color var(--app-text-color)
-      display flex
-      flex-direction column
-      align-items center
       table
         border-collapse collapse
       th
