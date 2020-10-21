@@ -305,10 +305,12 @@ export const COMPONENTS = {
     data() {
       return {
         component,
+        value: component.content,
       };
     },
     render(h) {
       // const isNumber = Number.isInteger(component.content);
+      // const self = this;
       return h(QInput, {
         class: ['kcv-text-input', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
@@ -316,7 +318,7 @@ export const COMPONENTS = {
           id: `${component.applicationId}-${component.id}`,
         },
         props: {
-          value: component.content,
+          value: this.value,
           color: 'app-main-color',
           hideUnderline: true,
           dense: true,
