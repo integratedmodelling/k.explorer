@@ -183,6 +183,10 @@ export default {
             console.error('Error parsing style specs', error);
           }
         }
+        const bodyMinWidth = this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 0;
+        if (bodyMinWidth !== 0) {
+          document.documentElement.style.setProperty('--body-min-width', `calc(640px + ${bodyMinWidth}px)`);
+        }
       }
       if (style !== null) {
         Object.keys(style).forEach((key) => {

@@ -334,4 +334,7 @@ export default {
       .q-icon:before
         font-size calc(1em + 1px)
         animation q-spin 2s infinite linear
+
+  .kcv-error-tooltip
+    background-color var(--app-negative-color)
 </style>

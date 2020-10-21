@@ -1,10 +1,13 @@
 @import '~variables'
 // App specifics sytles
-body .ol-zoom
-  position absolute
-  left unset
-  right .5em
-  top .5em
+body
+  min-width var(--body-min-width)
+  min-height var(--body-min-height)
+  .ol-zoom
+    position absolute
+    left unset
+    right .5em
+    top .5em
 
 .text-sem-quality
   color $sem-quality

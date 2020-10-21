@@ -462,6 +462,16 @@ export const COMPONENTS = {
             },
           },
         }),
+        component.attributes.error && component.attributes.error !== 'true'
+          ? h(QTooltip, {
+            class: 'kcv-error-tooltip',
+            props: {
+              anchor: 'bottom left',
+              self: 'top left',
+              offset: [-10, 0],
+            },
+          }, component.attributes.error)
+          : null,
       ]);
     },
   }),
