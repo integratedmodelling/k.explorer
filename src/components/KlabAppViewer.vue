@@ -74,7 +74,6 @@ export default {
       this.$nextTick(() => {
         const bottomPanels = document.querySelector('.kcv-group-bottom');
         const mainContainer = document.querySelector('.kcv-main-container');
-        console.warn(height(mainContainer), height(bottomPanels), mainContainer.style['min-height']);
         if (mainContainer.style['margin-bottom'] === '') {
           mainContainer.style['margin-bottom'] = `${(bottomPanels ? height(bottomPanels) : 0)}px`;
         }
@@ -172,8 +171,10 @@ export default {
       // margin-top auto
       position fixed
       bottom 0
+      z-index 1000
       background-color var(--app-background-color)
       border-top 1px solid var(--app-main-color)
+
   .kcv-collapsible
     .kcv-collapsible-header
       background-color var(--app-background-color)
