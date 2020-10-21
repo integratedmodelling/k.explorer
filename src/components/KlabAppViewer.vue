@@ -327,5 +327,11 @@ export default {
     display block
     width 100%
     padding var(--app-smaller-mp) var(--app-small-mp)
-
+    &.kcv-check-waiting
+    &.kcv-check-computing
+      span
+        font-style italic
+      .q-icon:before
+        font-size calc(1em + 1px)
+        animation q-spin 2s infinite linear
 </style>

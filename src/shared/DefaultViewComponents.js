@@ -421,16 +421,29 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const state = component.attributes.waiting ? 'waiting' : component.attributes.computing ? 'computing'
+        : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
+      const color = component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-main-color';
       return h('div', {
-        class: ['kcv-checkbutton', 'kcv-form-element'],
+        class: ['kcv-checkbutton', 'kcv-form-element', `text-${color}`, `kcv-check-${state}`],
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QCheckbox, {
           props: {
             value: this.value,
-            color: 'app-main-color',
+            color,
             keepColor: true,
             label: component.name,
+            ...(component.attributes.waiting && {
+              'checked-icon': 'mdi-loading',
+              'unchecked-icon': 'mdi-loading',
+              readonly: true,
+            }),
+            ...(component.attributes.computing && {
+              'checked-icon': 'mdi-settings-outline',
+              'unchecked-icon': 'mdi-settings-outline',
+              readonly: true,
+            }),
           },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
