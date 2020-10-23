@@ -214,9 +214,9 @@ export default {
               if (color && color.rgb) {
                 const multiplier = this.layout && this.layout.style === 'dark' ? -1 : 1;
                 document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
-                document.documentElement.style.setProperty(`--app-highlight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -10 * multiplier));
-                document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -5 * multiplier));
-                document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 5 * multiplier));
+                document.documentElement.style.setProperty(`--app-highlight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -15 * multiplier));
+                document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -10 * multiplier));
+                document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 10 * multiplier));
               }
             } catch (error) {
               console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);
@@ -264,7 +264,11 @@ export default {
           this.updateLayout();
           // }, 400);
         });
-        if (oldLayout !== null) {
+        // TODO only for development, need to be removed
+        if (oldLayout.applicationId === null) {
+          console.warn(oldLayout);
+        }
+        if (oldLayout !== null && oldLayout.applicationId !== null) {
           this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
             { applicationId: oldLayout.applicationId, stop: true },
             this.$store.state.data.session,
