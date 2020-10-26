@@ -264,10 +264,6 @@ export default {
           this.updateLayout();
           // }, 400);
         });
-        // TODO only for development, need to be removed
-        if (oldLayout.applicationId === null) {
-          console.warn(oldLayout);
-        }
         if (oldLayout !== null && oldLayout.applicationId !== null) {
           this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
             { applicationId: oldLayout.applicationId, stop: true },

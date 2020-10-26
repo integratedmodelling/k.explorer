@@ -451,23 +451,14 @@ export default {
 
   VIEW_ACTION: (state, action) => {
     if (state.layout) {
-      const component = findInLayout(state.layout, action.componentTag, (n, needle) => {
-        if (n.attributes.tag === needle) {
+      const component = findInLayout(state.layout, action.component.id, (n, needle) => {
+        if (n.id === needle) {
           return n;
         }
         return null;
       });
       if (component) {
-        switch (component.type) {
-          case APPS_COMPONENTS.LABEL:
-          case APPS_COMPONENTS.TEXT:
-          case APPS_COMPONENTS.TEXT_INPUT:
-            component.content = action.stringValue;
-            break;
-          default:
-            component.content = action.stringValue;
-            break;
-        }
+        Object.assign(component, action.component);
       }
     }
   },
