@@ -446,7 +446,7 @@ export const COMPONENTS = {
         : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
       const color = component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-main-color';
       return h('div', {
-        class: ['kcv-checkbutton', 'kcv-form-element', `text-${color}`, `kcv-check-${state}`],
+        class: ['kcv-checkbutton', 'kcv-form-element', `text-${color}`, `kcv-check-${state}`, component.name === '' ? 'kcv-check-only' : 'kcv-check-with-label'],
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QCheckbox, {

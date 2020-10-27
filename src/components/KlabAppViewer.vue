@@ -325,8 +325,9 @@ export default {
 
   .kcv-checkbutton
     display block
-    width 100%
     padding var(--app-smaller-mp) var(--app-small-mp)
+    &:not(.kcv-check-only)
+      width 100%
     &.kcv-check-waiting
     &.kcv-check-computing
       span

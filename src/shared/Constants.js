@@ -821,10 +821,13 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
     const value = component.attributes[key];
     switch (key) {
       case 'width':
-        if (value.startsWith('col')) {
+        if (value === 'content') {
+          retStyle['flex-basis'] = '0';
+        } else if (value.startsWith('col')) {
           retStyle['flex-grow'] = value.substring(3);
         } else {
           retStyle.width = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+          // retStyle['flex-basis'] = 'auto';
         }
         break;
       case 'height':
@@ -864,7 +867,8 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle['text-align'] = key;
         break;
       default:
-        retStyle.key = value;
+        // retStyle.key = value;
+        break;
     }
     /*
     if (component.attributes.parentAttributes) {
