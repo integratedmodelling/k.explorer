@@ -74,7 +74,7 @@ export default {
       this.$nextTick(() => {
         const bottomPanels = document.querySelector('.kcv-group-bottom');
         const mainContainer = document.querySelector('.kcv-main-container');
-        if (mainContainer.style['margin-bottom'] === '') {
+        if (mainContainer && mainContainer.style['margin-bottom'] === '') {
           mainContainer.style['margin-bottom'] = `${(bottomPanels ? height(bottomPanels) : 0)}px`;
         }
       });
@@ -334,7 +334,9 @@ export default {
       .q-icon:before
         font-size calc(1em + 1px)
         animation q-spin 2s infinite linear
-
+  .kcv-label-toggle
+    color var(--app-darken-background-color)
+    text-shadow: 0px 1px 0px var(--app-darken-main-color); /* 50% black coming from the bottom */
   .kcv-error-tooltip
     background-color var(--app-negative-color)
 </style>

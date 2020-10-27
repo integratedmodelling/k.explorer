@@ -104,15 +104,36 @@ export const COMPONENTS = {
     },
   }),
   SHELF: component => Vue.component('KAppShelf', {
+    data() {
+      return {
+        opened: this.$store.state.view.openedCollapsibles.findIndex(c => c === component.id) !== -1,
+      };
+    },
     render(h) {
+      const self = this;
       return h(QCollapsible, {
         class: 'kcv-collapsible',
         props: {
+          opened: self.opened,
           headerClass: 'kcv-collapsible-header',
           collapseIcon: 'mdi-dots-vertical',
           separator: false,
           ...(!component.attributes.parentAttributes.multiple && { group: component.attributes.parentId }),
           label: component.name,
+        },
+        on: {
+          hide() {
+            const idx = self.$store.state.view.openedCollapsibles.findIndex(c => c === component.id);
+            if (idx !== -1) {
+              self.$store.state.view.openedCollapsibles.splice(idx, 1);
+            }
+          },
+          show() {
+            const idx = self.$store.state.view.openedCollapsibles.findIndex(c => c === component.id);
+            if (idx === -1) {
+              self.$store.state.view.openedCollapsibles.push(component.id);
+            }
+          },
         },
       }, this.$slots.default);
     },
@@ -281,7 +302,7 @@ export const COMPONENTS = {
         }, [
           component.attributes.iconname
             ? h(QIcon, {
-              class: 'kcv-label-icon',
+              class: ['kcv-label-icon', component.attributes.toggle ? 'kcv-label-toggle' : ''],
               props: {
                 name: `mdi-${component.attributes.iconname}`,
                 color: 'app-main-color',

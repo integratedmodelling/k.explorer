@@ -229,6 +229,7 @@ export default {
   engineEvents: [],
 
   klabApp: null,
+  openedCollapsibles: [],
 
   /**
    * Log levels
