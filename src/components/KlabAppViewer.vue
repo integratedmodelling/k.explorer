@@ -131,6 +131,9 @@ export default {
       min-height unset
     .q-if-baseline
       line-height var(--app-line-height)
+    // removed the transition for changes in dimensions of fields
+    .q-if, .q-if:before, .q-if-label, .q-if-addon, .q-field-icon, .q-field-label, .q-if-control, .q-field-bottom
+      transition none
    // first level group
   .kcv-main-container > .kcv-group
     // background-color #00ff00

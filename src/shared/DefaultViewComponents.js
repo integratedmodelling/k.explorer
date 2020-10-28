@@ -344,6 +344,7 @@ export const COMPONENTS = {
           hideUnderline: true,
           dense: true,
           type: 'number',
+          disable: !!component.attributes.disabled,
         },
         on: {
           keydown: (event) => {
@@ -384,6 +385,7 @@ export const COMPONENTS = {
           color: 'app-text-color',
           popupCover: false,
           dense: true,
+          disable: !!component.attributes.disabled,
         },
         on: {
           change: (value) => {
@@ -417,6 +419,7 @@ export const COMPONENTS = {
           color: 'app-main-color',
           textColor: 'app-background-color',
           noCaps: true,
+          disable: !!component.attributes.disabled,
           ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
         },
         on: {
@@ -437,7 +440,7 @@ export const COMPONENTS = {
   CHECK_BUTTON: component => Vue.component('KAppCheckButton', {
     data() {
       return {
-        value: (component.attributes.checked && component.attributes.checked === 'true') || false,
+        value: !!component.attributes.checked,
         component,
       };
     },
@@ -455,6 +458,7 @@ export const COMPONENTS = {
             color,
             keepColor: true,
             label: component.name,
+            disable: !!component.attributes.disabled,
             ...(component.attributes.waiting && {
               'checked-icon': 'mdi-loading',
               'unchecked-icon': 'mdi-loading',
@@ -472,6 +476,7 @@ export const COMPONENTS = {
           on: {
             input: (value) => {
               this.value = value;
+              component.attributes.checked = value;
               this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
