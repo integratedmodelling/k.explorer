@@ -6,6 +6,18 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.12.0
+### Added
+Views implemented, starting with tables
+Custom styles
+Implemented separator
+Show/hide observations, views and k.Explorer components
+### Improvements
+Better box implementation in app
+Inputs feedback from engine
+More options of k.App language implemented
+### Solved
+Change the time scale selector to respect UTC
 ## 0.11.0
 ### Added
 - First implementation of apps on left or center panel
