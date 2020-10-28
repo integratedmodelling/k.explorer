@@ -58,6 +58,10 @@ export default {
     state.mainViewer = viewer;
   },
 
+  SET_TREE_VISIBLE: (state, visible) => {
+    state.treeVisible = visible;
+  },
+
   /**
    * set the left menu content
    * @param state

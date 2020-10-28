@@ -33,6 +33,7 @@ export default {
    */
   mainViewer: state => state.mainViewer,
   mainViewerName: state => (state.mainViewer ? state.mainViewer.name : null),
+  isTreeVisible: state => state.treeVisible,
   leftMenuContent: state => state.leftMenuContent,
   leftMenuState: state => state.leftMenuState,
   isDocked: state => state.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN,

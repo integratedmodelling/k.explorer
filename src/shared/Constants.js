@@ -507,6 +507,7 @@ export const CUSTOM_EVENTS = {
   ASK_FOR_SUGGESTIONS: 'askforsuggestions',
   // If something need fit the map
   NEED_FIT_MAP: 'needfitmap',
+  TREE_VISIBLE: 'treevisible',
   // send a map click to inform. For now used by mainControlMenu to close itself
   VIEWER_CLICK: 'viewerclick',
   VIEWER_SELECTED: 'viewerselected', // fired when a minimize viewer is maximize
@@ -518,6 +519,7 @@ export const CUSTOM_EVENTS = {
   NEED_LAYER_BUFFER: 'needlayerbuffer',
   COMPONENT_ACTION: 'componentaction',
   LAYOUT_CHANGED: 'layoutchanged',
+  SELECT_ELEMENT: 'selectelement',
 };
 
 export const SCALE_TYPE = {
@@ -772,6 +774,16 @@ export const KNOWLEDGE_VIEWS = [
     exportIcons: [],
   },
 ];
+
+export const VIEW_SETTING = {
+  OBSERVATION: 'Observation',
+  VIEW: 'View',
+  TREE: 'Tree',
+  REPORT: 'Report',
+  DATAFLOW: 'Dataflow',
+  SHOW: 'Show',
+  HIDE: 'Hide',
+};
 
 export const ENGINE_EVENTS = {
   RESOURCE_VALIDATION: 'ResourceValidation',
