@@ -16,7 +16,6 @@ const EMPTY_VIEWACTION_MESSAGE = {
   stringValue: null,
   dateValue: null,
   data: null,
-  operation: null,
   listValue: [],
 };
 
@@ -337,7 +336,7 @@ export default {
         animation q-spin 2s infinite linear
   .kcv-label-toggle
     color var(--app-darken-background-color)
-    text-shadow: 0px 1px 0px var(--app-darken-main-color); /* 50% black coming from the bottom */
+    text-shadow: -1px -1px 0px var(--app-main-color); /* 50% black coming from the bottom */
   .kcv-error-tooltip
     background-color var(--app-negative-color)
 </style>
