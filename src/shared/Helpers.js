@@ -16,7 +16,7 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
 
-const WKTInstance = new WKT();
+export const WKTInstance = new WKT();
 
 /**
  * Helpers functions shared between components.
@@ -597,6 +597,7 @@ export function downloadFromEngine(id, format, label, formatObj, timestamp = -1)
 }
 
 const Helpers = {
+  WKTInstance,
   isRasterObservation,
   pushElementInFixedQueue,
   lastFilteredLogElement,

@@ -126,6 +126,7 @@ export default {
       popupContent: '',
       popupOverlay: undefined,
       contextLayer: null,
+      proposedContextLayer: null,
       uploadConfig: {
         refId: null,
         onUploadProgress: (uploadProgress) => {
@@ -168,6 +169,7 @@ export default {
       return this.lockedObservations.map(lo => lo.id);
     },
     ...mapGetters('data', [
+      'proposedContext',
       'hasContext',
       'contextId',
       'contextLabel',
@@ -377,7 +379,29 @@ export default {
         loadImage(0);
       }
     },
-
+    drawProposedContext() {
+      if (this.proposedContextLayer !== null) {
+        this.map.removeLayer(this.proposedContextLayer);
+      }
+      if (this.proposedContext !== null && !this.hasContext) {
+        if (!(this.proposedContext instanceof Point)) {
+          // this.view.setCenter(this.proposedContext);
+        // } else {
+          this.proposedContextLayer = new VectorLayer({
+            id: 'ProposedContext',
+            source: new SourceVector({
+              features: [new Feature({
+                geometry: this.proposedContext,
+                name: 'Proposed context',
+                id: 'Proposed context',
+              })],
+            }),
+            style: MAP_STYLES.POLYGON_PROPOSED_CONTEXT,
+          });
+          this.map.addLayer(this.proposedContextLayer);
+        }
+      }
+    },
     drawContext(newContext, oldContext = null) {
       if (oldContext !== null) {
         // if context is changed, everything disappear
@@ -762,6 +786,9 @@ export default {
         this.sendRegionOfInterest();
         this.popupOverlay.setPosition(undefined);
       }
+    },
+    proposedContext() {
+      this.drawProposedContext();
     },
     topLayer(newValue) {
       if (newValue === null || !this.mapSelection.locked) {

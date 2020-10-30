@@ -369,7 +369,9 @@ export const COMPONENTS = {
     data() {
       return {
         component,
-        value: component.choices[0].first,
+        value: component.attributes.selected
+          ? component.choices.find(c => c.first === component.attributes.selected).first
+          : component.choices[0].first,
       };
     },
     render(h) {
@@ -390,6 +392,7 @@ export const COMPONENTS = {
         on: {
           change: (value) => {
             this.value = value;
+            component.attributes.selected = this.value;
             this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {

@@ -51,13 +51,13 @@ Change the time scale selector to respect UTC
 ### Added
 - Time selector
 ## Improvements
-- Download of "layer" is linked to timestamp selected in this moment
+- Download of "layer" is linked to timestamp selected at this moment
 
 ## 0.10.1 - 2020-01-31
 ## Solved
 - Problem with context mask due to a mistake in declaring dependencies with ol library
 - Solve a bug with second level children: if the parent was checked before open, the second level is not loaded
-- Solve a bug with observation visualization: if an element has children and it is in main tree, checking parent broke the showing part
+- Solve a bug with observation visualization: if an element has children, and it is in main tree, checking parent broke the showing part
 
 ## 0.10.0 - 2020-01-15
 ### Added

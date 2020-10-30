@@ -85,6 +85,16 @@ export const MAP_STYLES = {
       color: 'rgba(38, 166, 154, 0.2)',
     }),
   }),
+  POLYGON_PROPOSED_CONTEXT: new Style({
+    // default OL style
+    fill: new Fill({
+      color: 'rgba(255,255,255,0.4)',
+    }),
+    stroke: new Stroke({
+      color: '#3399CC',
+      width: 1.25,
+    }),
+  }),
   POLYGON_OBSERVATION_STYLE: new Style({
     stroke: new Stroke({
       // color: colors.getBrand('secondary'),

@@ -149,6 +149,7 @@ export default {
     }
    */
   scaleReference: null,
+  proposedContext: null,
   scaleLocked: {
     space: false,
     time: false,
