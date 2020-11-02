@@ -287,7 +287,6 @@ export const MESSAGES_BUILDERS = {
     listValue = [],
     dateValue = null,
     data = null,
-    operation,
   }, session) => buildMessage(
     OUT.CLASS_USERINTERFACE,
     OUT.TYPE_VIEWACTION,
@@ -303,7 +302,6 @@ export const MESSAGES_BUILDERS = {
       listValue,
       dateValue,
       data,
-      operation,
     },
     session,
   ),

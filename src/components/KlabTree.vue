@@ -353,6 +353,22 @@ export default {
         }
       }
     },
+    selectElementListener({ id, selected }) {
+      this.$nextTick(() => {
+        const selectedNode = findNodeById(this.tree, id);
+        if (selectedNode) {
+          this.setVisibility({
+            node: selectedNode,
+            visible: selected,
+          });
+          if (selected) {
+            this.ticked.push(id);
+          } else {
+            this.ticked.splice(this.ticked.findIndex(n => n === id), 1);
+          }
+        }
+      });
+    },
     treeSizeChangeListener() {
       if (!this.isUser) {
         if (scrollToTimeout != null) {
@@ -589,6 +605,7 @@ export default {
       });
     });
     this.$eventBus.$on(CUSTOM_EVENTS.UPDATE_FOLDER, this.updateFolderListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.SELECT_ELEMENT, this.selectElementListener);
     this.selected = this.treeSelected;
     this.ticked = this.treeTicked;
     this.expanded = this.treeExpanded;
@@ -596,6 +613,7 @@ export default {
 
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.UPDATE_FOLDER, this.updateFolderListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.SELECT_ELEMENT, this.selectElementListener);
     if (this.watchedObservation.length > 0) {
       this.watchedObservation.forEach((wo) => {
         this.sendStompMessage(MESSAGES_BUILDERS.WATCH_REQUEST(

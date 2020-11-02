@@ -71,7 +71,7 @@ export default {
   contextsCount: state => state.contexts.size(),
   previousContext: state => state.contexts.previous(),
   contextById: state => id => state.contexts.find(ctxt => ctxt.id === id),
-
+  proposedContext: state => state.proposedContext,
   /**
    * If no context, return null
    */

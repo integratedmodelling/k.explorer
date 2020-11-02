@@ -1,7 +1,10 @@
 <script>
 import { createComponent } from 'shared/DefaultViewComponents';
 import { CUSTOM_EVENTS } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from '../shared/MessageBuilders';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { dom } from 'quasar';
+
+const { height } = dom;
 
 const EMPTY_VIEWACTION_MESSAGE = {
   component: null,
@@ -13,7 +16,6 @@ const EMPTY_VIEWACTION_MESSAGE = {
   stringValue: null,
   dateValue: null,
   data: null,
-  operation: null,
   listValue: [],
 };
 
@@ -39,7 +41,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      mainContainerHeight: undefined,
+    };
   },
   computed: {
     /*
@@ -65,12 +69,24 @@ export default {
         ...event,
       }, this.$store.state.data.session).body);
     },
+    calculateMinHeight() {
+      this.$nextTick(() => {
+        const bottomPanels = document.querySelector('.kcv-group-bottom');
+        const mainContainer = document.querySelector('.kcv-main-container');
+        if (mainContainer && mainContainer.style['margin-bottom'] === '') {
+          mainContainer.style['margin-bottom'] = `${(bottomPanels ? height(bottomPanels) : 0)}px`;
+        }
+      });
+    },
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
+    this.calculateMinHeight();
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
   },
   render(h) {
     const ret = createComponent(this.component, h, { mainPanelStyle: this.mainPanelStyle, direction: this.direction });
@@ -89,75 +105,160 @@ export default {
 <style lang="stylus">
   @import '~variables'
   $label-width = 150px
-  .kcv-alert .modal-backdrop
-    background-color transparent
-  .kcv-collapsible-header
-    background-color var(--app-main-color)
-    color var(--app-background-color)
-    position relative
-    .q-item-label
-      font-size var(--app-font-size)
-    .q-item-side
-      color var(--app-background-color)
+  .kapp-container
+    .kcv-alert .modal-backdrop
+      background-color transparent
+
+    // override quasar styles
+    .q-input-target
+      color var(--app-text-color)
+      background-color  var(--app-background-color)
+      line-height var(--app-line-height)
+      height auto
+    .q-btn
+      min-height var(--app-line-height)
+      // padding 8px 16px
+     //show spinner
+    .q-no-input-spinner
+      -moz-appearance textfield !important
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button
+        -webkit-appearance auto
+     // problem when using combo for double line
+    .q-if:before, .q-if:after
+      border-bottom-style none
+    .q-if .q-if-inner
+      min-height unset
+    .q-if-baseline
+      line-height var(--app-line-height)
+    // removed the transition for changes in dimensions of fields
+    .q-if, .q-if:before, .q-if-label, .q-if-addon, .q-field-icon, .q-field-label, .q-if-control, .q-field-bottom
+      transition none
+   // first level group
+  .kcv-main-container > .kcv-group
+    // background-color #00ff00
+    height 100% !important
+    border-bottom 1px solid var(--app-main-color)
+    // margin 0 //var(--app-smaller-mp) 0
+    &> .kcv-group-container > .kcv-group-content > .kcv-group > .kcv-group-content
+      padding-bottom 0 !important
+    .kcv-group-container
+      height 100% !important
+      .kcv-group-content
+        display flex
+        align-content center
+        flex-direction column
+        height 100% !important
+        // next level group
+        .kcv-group:not(.kcv-wrapper)>.kcv-group-content
+          // background-color #ff0000 !important
+          // border 1px solid #000
+          padding var(--app-smaller-mp) 0
+          justify-content space-around
+          .kcv-pushbutton
+            margin var(--app-large-mp) 0
+          // margin var(--app-small-mp) 0
+        .kcv-group-legend
+          color var(--app-title-color)
+          // padding 5px 10px
+          max-width 100%
+          white-space nowrap
+          overflow hidden
+          text-overflow ellipsis
+          line-height 1.2em
+          vertical-align center
+          font-weight 300
+          font-size: 1.2em
+    .kcv-group-bottom
+      // margin-top auto
+      position fixed
+      bottom 0
+      z-index 1000
+      background-color var(--app-background-color)
+      border-top 1px solid var(--app-main-color)
+
   .kcv-collapsible
-    clear both
-    .kcv-tree-container
-      margin 15px 10px 15px 10px
-      padding 10px 0 5px
-  .q-collapsible-sub-item
-    padding 8px 0
+    .kcv-collapsible-header
+      background-color var(--app-background-color)
+      color var(--app-title-color)
+      border-bottom 1px solid var(--app-darken-background-color)
+      .q-item-label
+        font-size var(--app-font-size)
+      .q-item-side
+        color var(--app-title-color)
+      .q-item-icon
+        transform: rotate(90deg)
+        &.rotate-180
+          transform: rotate(180deg)
+    .q-item
+      min-height unset
+      padding var(--app-small-mp)
+    .q-collapsible-sub-item
+      padding 0
+      &>.kcv-group
+        border-top 1px solid var(--app-main-color)
+        border-bottom 1px solid var(--app-main-color)
+
   .kcv-tree-container
-  .kcv-group-container
-    padding 15px 10px
-    margin 15px 10px
-    border-radius 6px
+    padding var(--app-small-mp) 0
     position relative
-    &:not(.kcv-group-no-label)
-      border 1px solid var(--app-main-color)
-      margin-top 30px
-      padding-top 20px
+    flex-grow 1
     .kcv-tree-legend
-    .kcv-group-legend
-      position absolute
-      background-color var(--app-main-color)
-      color var(--app-background-color)
-      padding 5px 10px
-      font-weight 400
-      top -14px
-      border-radius 6px
+      color var(--app-title-color)
+      // border-bottom 1px solid var(--app-title-color)
+      //border-radius 10px
+      padding var(--app-small-mp)
+      margin 0 var(--app-small-mp)
       max-width 100%
       white-space nowrap
       overflow hidden
       text-overflow ellipsis
-      line-height 1.2em
-      vertical-align center
-  .kcv-group
-    margin 10px 0
+    /* override the default tree header, but needed if tree has children and the arrow is display
+    .q-tree > .q-tree-node-child > .q-tree-node-header
+      padding-left var(--app-smaller-mp)
+    */
+  // separator
+  .kcv-separator
+    padding var(--app-large-mp) var(--app-small-mp)
+    position relative
+    border-bottom 1px solid var(--app-main-color)
+    display flex
+    align-items center
+    line-height 1.2em
+    .kcv-separator-icon
+      margin-right var(--app-small-mp)
+      font-size 1.2em
+      width 1.2em
+    .kcv-separator-title
+      font-weight 300
+      font-size 1.2em
+      flex-grow 10
+    .kcv-separator-right
+      font-size 1.3em
+      width 1.2em
+      align-self flex-start
+      cursor pointer
+  // texts
   .kcv-label
-    float left
-    padding 5px 10px
     font-weight 400
-    border-radius 6px
-    overflow hidden
-    white-space nowrap
-    text-overflow ellipsis
     color var(--app-main-color)
     vertical-align middle
-    line-height 1.8em
-  .kcv-text-input
-    line-height 1em
-    vertical-align middle
-    border 1px solid var(--app-main-color)
-    padding 5px
-  .kcv-pushbutton
-    font-size var(--app-font-size)
-    margin 5px
-  .kcv-checkbutton
-    display block
-    width 100%
-    padding 10px
+    line-height calc(var(--app-line-height) + 4px)
+    align-self center
+    padding var(--app-smaller-mp) var(--app-small-mp)
+    &.kcv-ellipsis
+      overflow hidden
+      white-space nowrap
+      text-overflow ellipsis
+    &.kcv-with-icon
+      min-width calc(1rem + calc(var(--app-small-mp) * 2))
+    .kcv-label-icon
+      margin-right var(--app-small-mp)
+    &.kcv-title
+      color var(--app-alt-color)
+      font-weight bold
   .kcv-text
-    margin 15px 10px
+    margin var(--app-large-mp) var(--app-small-mp)
     text-align justify
     position relative
     color var(--app-text-color)
@@ -165,8 +266,8 @@ export default {
       // display block
       overflow hidden
       p
-        padding 0 5px
-        margin-bottom 15px
+        padding 0 var(--app-small-mp)
+        margin-bottom var(--app-large-mp)
       strong
         color var(--app-title-color)
     .kcv-collapse-button
@@ -199,4 +300,46 @@ export default {
         opacity 1
         border-radius 4px
 
+  // form elements
+  .kcv-form-element
+    margin 0 var(--app-small-mp)
+    border-radius 6px
+  .kcv-text-input
+    min-height var(--app-line-height)
+    vertical-align middle
+    border 1px solid var(--app-main-color)
+    background-color  var(--app-background-color)
+    padding var(--app-smaller-mp) var(--app-small-mp)
+
+  .kcv-combo
+    padding 2px 10px
+    background-color var(--app-background-color)
+    border-radius 6px
+    border 1px solid var(--app-main-color)
+  .kcv-combo-option
+    color var(--app-main-color)
+    min-height unset
+    padding var(--app-small-mp) var(--app-large-mp)
+
+  .kcv-pushbutton
+    font-size var(--app-font-size)
+    margin 0 var(--app-small-mp)
+
+  .kcv-checkbutton
+    display block
+    padding var(--app-smaller-mp) var(--app-small-mp)
+    &:not(.kcv-check-only)
+      width 100%
+    &.kcv-check-waiting
+    &.kcv-check-computing
+      span
+        font-style italic
+      .q-icon:before
+        font-size calc(1em + 1px)
+        animation q-spin 2s infinite linear
+  .kcv-label-toggle
+    color var(--app-darken-background-color)
+    text-shadow: -1px -1px 0px var(--app-main-color); /* 50% black coming from the bottom */
+  .kcv-error-tooltip
+    background-color var(--app-negative-color)
 </style>

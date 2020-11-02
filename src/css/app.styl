@@ -1,10 +1,13 @@
 @import '~variables'
 // App specifics sytles
-body .ol-zoom
-  position absolute
-  left unset
-  right .5em
-  top .5em
+body
+  min-width var(--body-min-width)
+  min-height var(--body-min-height)
+  .ol-zoom
+    position absolute
+    left unset
+    right .5em
+    top .5em
 
 .text-sem-quality
   color $sem-quality
@@ -125,6 +128,21 @@ body .ol-zoom
 .bg-app-main-color
   background var(--app-main-color)
 
+.text-app-waiting-color
+  color var(--app-waiting-color)
+.bg-app-waiting-color
+  background var(--app-waiting-color)
+
+.text-app-negative-color
+  color var(--app-negative-color)
+.bg-app-negative-color
+  background var(--app-negative-color)
+
+.text-app-positive-color
+  color var(--app-positive-color)
+.bg-app-positive-color
+  background var(--app-positive-color)
+
 .text-app-text-color
   color var(--app-text-color)
 .bg-app-text-color
@@ -139,6 +157,16 @@ body .ol-zoom
   color var(--app-background-color)
 .bg-app-background-color
   background var(--app-background-color)
+
+.text-app-alt-color
+  color var(--app-alt-color) !important
+.bg-app-alt-color
+  background var(--app-alt-color)
+
+.text-app-alt-background
+  color var(--app-alt-background)
+.bg-app-alt-background
+  background var(--app-alt-background)
 
 /* States of models */
 

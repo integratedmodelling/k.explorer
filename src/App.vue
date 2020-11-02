@@ -26,6 +26,7 @@ export default {
     ...mapGetters('view', [
       'lastKexplorerLog',
       'kexplorerLog',
+      'isApp',
     ]),
   },
   methods: {

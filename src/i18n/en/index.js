@@ -190,7 +190,8 @@ export default {
     presentationBlocked: '<p>Can\'t access online help resources: check your network connection</p><p class="klab-small">A browser extension may also be interfering</p>',
     noAppsAvailable: 'No available apps',
     noGroupsAssigned: 'No groups assigned',
-    appLoading: 'Loading app {app}',
+    appLoading: 'Loading app <strong>{app}</strong>',
+    errorLoadingApp: 'Error loading app <strong>{app}</strong>',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

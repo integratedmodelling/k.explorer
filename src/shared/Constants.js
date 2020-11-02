@@ -407,6 +407,7 @@ export const WEB_CONSTANTS = {
   PARAMS_LOG_HIDDEN: 'hidden',
   PARAMS_LOG_VISIBLE: 'visible',
   PARAMS_LOCAL_HELP: 'localhelp',
+  PARAMS_APP: 'app',
   /**
    * Cookies name
    */
@@ -506,6 +507,7 @@ export const CUSTOM_EVENTS = {
   ASK_FOR_SUGGESTIONS: 'askforsuggestions',
   // If something need fit the map
   NEED_FIT_MAP: 'needfitmap',
+  TREE_VISIBLE: 'treevisible',
   // send a map click to inform. For now used by mainControlMenu to close itself
   VIEWER_CLICK: 'viewerclick',
   VIEWER_SELECTED: 'viewerselected', // fired when a minimize viewer is maximize
@@ -516,6 +518,8 @@ export const CUSTOM_EVENTS = {
   OBSERVATION_BY_TIME: 'observationbytime',
   NEED_LAYER_BUFFER: 'needlayerbuffer',
   COMPONENT_ACTION: 'componentaction',
+  LAYOUT_CHANGED: 'layoutchanged',
+  SELECT_ELEMENT: 'selectelement',
 };
 
 export const SCALE_TYPE = {
@@ -771,6 +775,16 @@ export const KNOWLEDGE_VIEWS = [
   },
 ];
 
+export const VIEW_SETTING = {
+  OBSERVATION: 'Observation',
+  VIEW: 'View',
+  TREE: 'Tree',
+  REPORT: 'Report',
+  DATAFLOW: 'Dataflow',
+  SHOW: 'Show',
+  HIDE: 'Hide',
+};
+
 export const ENGINE_EVENTS = {
   RESOURCE_VALIDATION: 'ResourceValidation',
 };
@@ -796,6 +810,7 @@ export const APPS_COMPONENTS = {
   TABLE: 'Table',
   NOTIFICATION: 'Notification',
   INPUT_GROUP: 'InputGroup',
+  SEPARATOR: 'Separator',
 };
 
 export const APPS_OPERATION = {
@@ -818,13 +833,16 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
     const value = component.attributes[key];
     switch (key) {
       case 'width':
-        // retStyle['min-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        // retStyle['max-width'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        retStyle.width = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+        if (value === 'content') {
+          retStyle['flex-basis'] = '0';
+        } else if (value.startsWith('col')) {
+          retStyle['flex-grow'] = value.substring(3);
+        } else {
+          retStyle.width = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
+          // retStyle['flex-basis'] = 'auto';
+        }
         break;
       case 'height':
-        // retStyle['min-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
-        // retStyle['max-height'] = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         retStyle.height = `${value}${VALUE_WITH_UNIT.test(value) ? '' : 'px'}`;
         /*
         if (component.type !== 'Group' && component.type !== 'Tree') {
@@ -840,8 +858,7 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         retStyle.width = '100%';
         break;
       case 'vfill':
-        // TODO check it
-        retStyle.height = '100%';
+        retStyle['flex-grow'] = 1;
         break;
       case 'top':
       case 'bottom':
@@ -854,12 +871,16 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         break;
       case 'hbox':
       case 'vbox':
-        retStyle.display = 'flex';
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
-        retStyle['align-items'] = 'center';
+        // retStyle['align-items'] = 'center';
+        break;
+      case 'left':
+      case 'right':
+        retStyle['text-align'] = key;
         break;
       default:
-        retStyle.key = value;
+        // retStyle.key = value;
+        break;
     }
     /*
     if (component.attributes.parentAttributes) {
@@ -882,7 +903,7 @@ export const DEFAULT_STYLES = {
     'font-size': '1em',
     'title-size': '26px',
     'subtitle-size': '16px',
-    'line-height': '1em',
+    'line-height': 'auto',
   },
   light: {
     'main-color': 'black',
@@ -911,6 +932,7 @@ export const DEFAULT_STYLES = {
     'background-color': 'rgb(250, 250, 250)',
     'text-color': 'rgb(0, 92, 129)',
     'title-color': 'rgb(0, 92, 129)',
+    'alt-color': 'rgb(0, 164, 161)',
     'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
     'font-size': '1em',
     'title-size': '26px',

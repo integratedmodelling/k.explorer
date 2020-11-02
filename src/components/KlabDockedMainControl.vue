@@ -10,6 +10,7 @@
       v-draggable="dragMCConfig"
     ></klab-search-bar>
     <div
+      v-if="isTreeVisible"
       id="dmc-tree"
       class="q-card-main full-height"
       :class="{'dmc-dragging': dragging, 'dmc-loading': taskOfContextIsAlive}"
@@ -65,6 +66,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'largeMode',
+      'isTreeVisible',
     ]),
     ...mapGetters('stomp', [
       'taskOfContextIsAlive',

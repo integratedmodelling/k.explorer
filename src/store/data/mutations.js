@@ -1,5 +1,6 @@
-import { /* getNodeFromObservation, */findNodeById } from 'shared/Helpers';
+import { /* getNodeFromObservation, */findNodeById, WKTInstance } from 'shared/Helpers';
 import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
+import { MAP_CONSTANTS } from 'shared/MapConstants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -44,6 +45,7 @@ export default {
     state.timeEvents = [];
     state.timestamp = -1;
     state.engineTimestamp = -1;
+    state.proposedContext = null;
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {
@@ -449,6 +451,12 @@ export default {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
     state.scaleReference = scaleReference;
+    if (!state.context && state.scaleReference.shape) {
+      state.proposedContext = WKTInstance.readGeometry(state.scaleReference.shape, {
+        dataProjection: MAP_CONSTANTS.PROJ_EPSG_4326,
+        featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
+      });
+    }
     console.info(`Scale reference set: ${JSON.stringify(scaleReference, null, 2)}`);
   },
 
