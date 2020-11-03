@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { eventBus } from 'plugins/initApp';
 import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS,
-  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING } from 'shared/Constants';
+  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import { transform } from 'ol/proj';
@@ -388,6 +388,14 @@ export default {
       },
       */
     });
+    if (layout !== null) {
+      localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID, layout.name);
+    } else {
+      const storedApp = localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+      if (storedApp) {
+        localStorage.removeItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+      }
+    }
   },
 
   setEngineEvent: ({ commit }, event) => {
@@ -410,6 +418,9 @@ export default {
             id: viewSetting.targetId,
             selected: viewSetting.operation === VIEW_SETTING.SHOW,
           });
+          break;
+        case VIEW_SETTING.VIEW:
+          dispatch('data/showKnowledgeView', viewSetting.targetId, { root: true });
           break;
         case VIEW_SETTING.TREE:
           // check if we need to change the attribute

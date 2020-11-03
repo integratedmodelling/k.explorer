@@ -72,7 +72,7 @@ import { mapGetters, mapActions } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
-import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Constants';
+import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
 import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
@@ -264,11 +264,15 @@ export default {
           this.updateLayout();
           // }, 400);
         });
-        if (oldLayout !== null && oldLayout.applicationId !== null) {
+        if (oldLayout !== null && oldLayout.name !== null) {
           this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
-            { applicationId: oldLayout.applicationId, stop: true },
+            { applicationId: oldLayout.name, stop: true },
             this.$store.state.data.session,
           ).body);
+          const storedApp = localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+          if (storedApp && storedApp === oldLayout.name) {
+            localStorage.removeItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+          }
         }
       }
     },

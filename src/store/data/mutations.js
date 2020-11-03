@@ -181,7 +181,7 @@ export default {
   ADD_KNOWLEDGE_VIEW: (state, knowledgeView) => {
     state.knowledgeViews.push({
       ...knowledgeView,
-      show: true,
+      show: false,
     });
   },
 
