@@ -439,4 +439,7 @@ export default {
     }
   },
 
+  setShowSettings: ({ commit }, show) => {
+    commit('SHOW_SETTINGS', show);
+  },
 };

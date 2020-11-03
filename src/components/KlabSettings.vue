@@ -1,5 +1,5 @@
 <template>
-  <div class="klab-settings-container">
+  <div class="klab-settings-container" v-show="hasShowSettings">
     <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible }">
       <q-fab
         ref="klab-settings"
@@ -133,6 +133,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'isApp',
+      'hasShowSettings',
     ]),
     modalsAreFocused() {
       return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);

@@ -467,4 +467,8 @@ export default {
       }
     }
   },
+
+  SHOW_SETTINGS: (state, show) => {
+    state.showSettings = show;
+  },
 };

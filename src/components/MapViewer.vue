@@ -1,5 +1,5 @@
 <template>
-  <div class="fit no-padding map-viewer"  v-upload-files="uploadConfig">
+  <div class="fit no-padding map-viewer" v-upload-files="uploadConfig">
     <div :ref="`map${idx}`" :id="`map${idx}`" class="fit" :class="{ 'mv-exploring' : exploreMode || topLayer !== null}"></div>
     <q-icon :name="mapSelection.locked ? 'mdi-image-filter-center-focus' : 'mdi-crop-free'" class="map-selection-marker" :id="`msm-${idx}`" />
     <q-resize-observable @resize="handleResize" />
@@ -58,6 +58,7 @@
       <div id="mv-popup-content" class="ol-popup-content" v-html="popupContent"></div>
     </div>
     <observation-context-menu @hide="contextMenuObservationId = null" :observation-id="contextMenuObservationId"></observation-context-menu>
+    <div id="mv-extent-map" class="mv-extent-map" :class="{ 'mv-extent-map-hide': !hasExtentMap }"></div>
   </div>
 </template>
 
@@ -66,7 +67,7 @@
 /* eslint-disable no-underscore-dangle,object-shorthand,space-before-function-paren,no-unused-vars */
 
 import { mapGetters, mapActions, mapState } from 'vuex';
-import { DEFAULT_OPTIONS, MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
+import { MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
 import { createMarker, findDifference } from 'shared/Utils';
@@ -88,8 +89,7 @@ import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
-import { click } from 'ol/events/condition';
-import Select from 'ol/interaction/Select';
+import { getArea } from 'ol/extent';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -112,6 +112,8 @@ export default {
       center: this.$mapDefaults.center,
       zoom: this.$mapDefaults.zoom,
       map: null,
+      extentMap: null,
+      hasExtentMap: false,
       view: null,
       movedWithContext: false,
       layers: new Collection(),
@@ -217,6 +219,7 @@ export default {
       'setMapSelection',
       'setDrawMode',
       'setTopLayer',
+      'setShowSettings',
     ]),
     handleResize() {
       if (this.map !== null) {
@@ -380,26 +383,37 @@ export default {
       }
     },
     drawProposedContext() {
+      this.hasExtentMap = false;
       if (this.proposedContextLayer !== null) {
         this.map.removeLayer(this.proposedContextLayer);
+        this.extentMap.removeLayer(this.proposedContextLayer);
       }
       if (this.proposedContext !== null && !this.hasContext) {
         if (!(this.proposedContext instanceof Point)) {
           // this.view.setCenter(this.proposedContext);
         // } else {
           this.proposedContextLayer = new VectorLayer({
-            id: 'ProposedContext',
             source: new SourceVector({
               features: [new Feature({
                 geometry: this.proposedContext,
-                name: 'Proposed context',
-                id: 'Proposed context',
               })],
             }),
             style: MAP_STYLES.POLYGON_PROPOSED_CONTEXT,
           });
           this.map.addLayer(this.proposedContextLayer);
+          if (getArea(this.proposedContext.getExtent()) * 100 / getArea(this.map.getView().calculateExtent(this.map.getSize())) > 125) {
+            // proposed context is more than 25% bigger than map, so show viewer
+            this.hasExtentMap = true;
+            this.$nextTick(() => {
+              this.extentMap.addLayer(this.proposedContextLayer);
+              this.extentMap.getView().fit(this.proposedContext, {
+                padding: [10, 10, 10, 10],
+                constrainResolution: false,
+              });
+            });
+          }
         }
+        // console.warn(pcExtent.containsExtent(mapExtent));
       }
     },
     drawContext(newContext, oldContext = null) {
@@ -797,6 +811,9 @@ export default {
         this.setMapInfoPoint();
       }
     },
+    hasExtentMap() {
+      this.setShowSettings(!this.hasExtentMap);
+    },
   },
   created() {
     this.waitingGeolocation = 'geolocation' in navigator && !Cookies.has(WEB_CONSTANTS.COOKIE_MAPDEFAULT);
@@ -936,20 +953,6 @@ export default {
         event.preventDefault();
       }
     });
-    /*
-    const select = new Select({
-      condition: click,
-    });
-    this.map.addInteraction(select);
-    select.on('select', (e) => {
-      console.group();
-      console.warn(`${e.target.getFeatures().getLength()}
-        selected features (last operation selected ${e.selected.length}
-        and deselected ${e.deselected.length} features)`);
-      console.dir(e);
-      console.groupEnd();
-    });
-    */
     // ...and set some attribute for rapid access
     this.view = this.map.getView();
     this.proj = this.view.getProjection();
@@ -971,11 +974,24 @@ export default {
       },
     });
     this.map.addOverlay(this.popupOverlay);
+    // extent map to show bigger proposed context
+    this.extentMap = new Map({
+      view: new View({
+        center: [0, 0],
+        zoom: 12,
+      }),
+      target: 'mv-extent-map',
+      layers: [Layers.OSM_LAYER],
+      controls: [],
+
+    });
     this.drawContext();
     this.drawObservations();
+    this.drawProposedContext();
     if (this.waitingGeolocation) {
       this.doGeolocation();
     }
+    this.setShowSettings(!this.hasExtentMap);
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, this.needFitMapListener);
     this.$eventBus.$on(CUSTOM_EVENTS.OBSERVATION_INFO_CLOSED, this.observationInfoClosedListener);
     this.$eventBus.$on(CUSTOM_EVENTS.SEND_REGION_OF_INTEREST, this.sendRegionOfInterestListener);
@@ -1080,5 +1096,13 @@ export default {
         height 1px
         border-top 1px solid rgba(124,124,124,0.3)
         margin 0 auto
-
+  #mv-extent-map
+    width 200px
+    height 200px
+    position absolute
+    bottom 0px
+    right 0px
+    border 1px solid var(--app-main-color)
+    &.mv-extent-map-hide
+      opacity 0
 </style>
