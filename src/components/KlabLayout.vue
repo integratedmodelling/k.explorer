@@ -257,7 +257,7 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
-      this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
+      // this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
       if (!this.isApp) {
         // setTimeout(() => {
         this.$nextTick(() => {
