@@ -15,7 +15,7 @@
           v-if="layout !== null"
           color="app-background-color"
           text-color="app-main-color"
-          @click="setLayout(null)"
+          @click="exitApp"
           icon="mdi-exit-to-app"
           >
           <q-tooltip
@@ -206,6 +206,18 @@ export default {
         this.models.appsList = false;
         this.fabVisible = false;
       });
+    },
+    exitApp() {
+      if (this.layout) {
+        if (this.isApp) {
+          this.setLayout(null);
+          this.$nextTick(() => {
+            window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
+          });
+        } else {
+          this.setLayout(null);
+        }
+      }
     },
     mouseActionEnter(actionName) {
       // console.warn(`Enter in action ${actionName}`);
