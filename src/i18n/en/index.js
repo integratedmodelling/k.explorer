@@ -133,6 +133,7 @@ export default {
     userGroups: 'Groups:',
     appsList: 'Available apps',
     appsClose: 'Close app',
+    appsLogout: 'Logout',
     reloadApplications: 'Reload applications',
     noLayoutLabel: '<em>No title</em>',
     noLayoutDescription: '<em>No description</em>',

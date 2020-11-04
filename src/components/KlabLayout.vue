@@ -1,20 +1,5 @@
 <template>
   <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
-    <q-btn
-      v-if="layout !== null && isRootLayout && !isApp"
-      color="app-main-color"
-      flat
-      round
-      @click="setLayout(null)"
-      icon="mdi-exit-to-app"
-      class="klab-close-app"
-      :class="[ header.height > 0 ? 'klab-close-app-on-header' : leftPanel.width > 0 ? 'klab-close-app-on-left' : 'klab-close-app-on-panel']"
-      :style="{
-        ...((header.height > 0 && { top: `${(header.height - 40) / 2}px`, right: '16px' }) || (leftPanel.width > 0) && { left: `${(leftPanel.width - 34)}px`, top: '4px' } || { top: '16px', left: '16px' }),
-      }"
-    >
-      <q-tooltip class="klab-app-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.appsClose') }}</q-tooltip>
-    </q-btn>
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
       class="kapp-header-container kapp-container print-hide"
@@ -68,7 +53,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
@@ -143,9 +128,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('view', [
-      'setLayout',
-    ]),
     setLogoImage() {
       if (this.layout && this.layout.logo) {
         getBase64Resource(this.layout.projectId, this.layout.logo)
