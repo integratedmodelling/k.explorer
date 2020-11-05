@@ -534,40 +534,40 @@ export const getStateIcon = (state) => {
   }
 };
 
-export const findInLayout = (layout, key = null, comparator) => {
-  const findComponent =  (node, k = null, comp = (n, needle) => {
-    if (n.id === needle) {
-      return n;
-    }
-    return null;
-  }) => {
-    if (node && k !== null) {
-      const { reduce } = [];
-      const find = (result, c) => {
-        if (result || !c) {
-          return result;
-        }
-        if (Array.isArray(c)) {
-          return reduce.call(Object(c), find, result);
-        }
-        const ret = comp(c, k);
-        if (ret === null && c.components && c.components.length > 0) {
-          return find(null, c.components);
-        }
-        return ret;
-      };
-      return find(null, node);
-    }
-    return null;
-  };
-  return findComponent([
-    ...layout.panels,
-    ...layout.leftPanels,
-    ...layout.rightPanels,
-    layout.header,
-    layout.footer,
-  ].filter(e => e !== null), key, comparator);
+export const findComponent =  (node, k = null, comp = (n, needle) => {
+  if (n.id === needle) {
+    return n;
+  }
+  return null;
+}) => {
+  if (node && k !== null) {
+    const { reduce } = [];
+    const find = (result, c) => {
+      if (result || !c) {
+        return result;
+      }
+      if (Array.isArray(c)) {
+        return reduce.call(Object(c), find, result);
+      }
+      const ret = comp(c, k);
+      if (ret === null && c.components && c.components.length > 0) {
+        return find(null, c.components);
+      }
+      return ret;
+    };
+    return find(null, node);
+  }
+  return null;
 };
+
+export const findInLayout = (layout, key = null, comparator) => findComponent([
+  ...layout.panels,
+  ...layout.leftPanels,
+  ...layout.rightPanels,
+  layout.header,
+  layout.footer,
+].filter(e => e !== null), key, comparator);
+
 
 export function downloadFromEngine(id, format, label, formatObj, timestamp = -1) {
   getAxiosContent(
