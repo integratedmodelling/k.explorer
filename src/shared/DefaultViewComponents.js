@@ -162,6 +162,27 @@ export const COMPONENTS = {
             class: 'kcv-separator-title',
           }, component.title)
           : null,
+        component.attributes.iconbutton
+          ? h(QIcon, {
+            class: 'kcv-separator-right',
+            props: {
+              name: `mdi-${component.attributes.iconbutton}`,
+              color: 'app-main-color',
+            },
+            nativeOn: {
+              click: () => {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: true,
+                });
+              },
+            },
+          })
+          : null,
         component.attributes.info
           ? h(QIcon, {
             class: 'kcv-separator-right',
