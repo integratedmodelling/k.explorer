@@ -16,6 +16,7 @@ Show/hide observations, views and k.Explorer components
 Better box implementation in app
 Inputs feedback from engine
 More options of k.App language implemented
+Preview context active
 ### Solved
 Change the time scale selector to respect UTC
 ## 0.11.0
