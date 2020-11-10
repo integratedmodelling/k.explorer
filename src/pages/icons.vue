@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <div>
     <!--
     <img src="statics/klab-logo.png"/>
     <input type="text" v-model="color" name="color"/><br/>
@@ -8,6 +8,7 @@
     <klab-spinner :animated="animated" :color="color" :size="size" class="q-ma-md full-width"/>
     -->
     <!-- MDI Icons -->
+    <!--
     <h4><a href="https://materialdesignicons.com/" target="_blank">MDI Icons</a></h4>
     <div class="q-ma-md">
       <q-icon size="30px" name="mdi-access-point"></q-icon>
@@ -13484,7 +13485,7 @@
       <span class="q-ml-md">mdi-zodiac-virgo</span>
     </div>
 
-    <!-- IOS ICON -->
+    // IOS ICON
     <h4><a href="https://ionicframework.com/docs/ionicons/" target="_blank">IOS Icons</a></h4>
     <div class="q-ma-md">
       <q-icon size="30px" name="ion-ios-add"></q-icon>
@@ -16270,7 +16271,277 @@
       <q-icon size="30px" name="ion-md-woman"></q-icon>
       <span class="q-ml-md">ion-md-wine</span>
     </div>
-  </q-page>
+    -->
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-play"></q-icon>
+      <span class="q-ml-md">mdi-play</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-pause"></q-icon>
+      <span class="q-ml-md">mdi-pause</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-circle-medium"></q-icon>
+      <span class="q-ml-md">mdi-circle-medium</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-alert-circle"></q-icon>
+      <span class="q-ml-md">mdi-alert-circle</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-alert"></q-icon>
+      <span class="q-ml-md">mdi-alert</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-information"></q-icon>
+      <span class="q-ml-md">mdi-information</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-up"></q-icon>
+      <span class="q-ml-md">mdi-chevron-up</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close"></q-icon>
+      <span class="q-ml-md">mdi-close</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-comment"></q-icon>
+      <span class="q-ml-md">mdi-comment</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-information"></q-icon>
+      <span class="q-ml-md">mdi-information</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-console"></q-icon>
+      <span class="q-ml-md">mdi-console</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-eye-outline"></q-icon>
+      <span class="q-ml-md">mdi-eye-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-terrain"></q-icon>
+      <span class="q-ml-md">mdi-terrain</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-human-male-female"></q-icon>
+      <span class="q-ml-md">mdi-human-male-female</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-refresh"></q-icon>
+      <span class="q-ml-md">mdi-refresh</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close-circle-outline"></q-icon>
+      <span class="q-ml-md">mdi-close-circle-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-refresh"></q-icon>
+      <span class="q-ml-md">mdi-refresh</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-arrow-left"></q-icon>
+      <span class="q-ml-md">mdi-arrow-left</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-format-align-middle"></q-icon>
+      <span class="q-ml-md">mdi-format-align-middle</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-arrow-right"></q-icon>
+      <span class="q-ml-md">mdi-arrow-right</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close"></q-icon>
+      <span class="q-ml-md">mdi-close</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-buddhism"></q-icon>
+      <span class="q-ml-md">mdi-buddhism</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-checkbox-blank-circle"></q-icon>
+      <span class="q-ml-md">mdi-checkbox-blank-circle</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-clock-outline"></q-icon>
+      <span class="q-ml-md">mdi-clock-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-loading"></q-icon>
+      <span class="q-ml-md">mdi-loading</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-arrow-down"></q-icon>
+      <span class="q-ml-md">mdi-arrow-down</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-checkbox-blank-circle"></q-icon>
+      <span class="q-ml-md">mdi-checkbox-blank-circle</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-alert"></q-icon>
+      <span class="q-ml-md">mdi-alert</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-dots-horizontal"></q-icon>
+      <span class="q-ml-md">mdi-dots-horizontal</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-text-box-multiple"></q-icon>
+      <span class="q-ml-md">mdi-text-box-multiple</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-down"></q-icon>
+      <span class="q-ml-md">mdi-chevron-down</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-eye-outline"></q-icon>
+      <span class="q-ml-md">mdi-eye-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-text-box-outline"></q-icon>
+      <span class="q-ml-md">mdi-text-box-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-sitemap"></q-icon>
+      <span class="q-ml-md">mdi-sitemap</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-play"></q-icon>
+      <span class="q-ml-md">mdi-play</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-right"></q-icon>
+      <span class="q-ml-md">mdi-chevron-right</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close"></q-icon>
+      <span class="q-ml-md">mdi-close</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-content-copy"></q-icon>
+      <span class="q-ml-md">mdi-content-copy</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-star-four-points-outline"></q-icon>
+      <span class="q-ml-md">mdi-star-four-points-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-history"></q-icon>
+      <span class="q-ml-md">mdi-history</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-right"></q-icon>
+      <span class="q-ml-md">mdi-chevron-right</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-printer"></q-icon>
+      <span class="q-ml-md">mdi-printer</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-refresh"></q-icon>
+      <span class="q-ml-md">mdi-refresh</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close"></q-icon>
+      <span class="q-ml-md">mdi-close</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-information"></q-icon>
+      <span class="q-ml-md">mdi-information</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-lock-outline"></q-icon>
+      <span class="q-ml-md">mdi-lock-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-lock-open-outline"></q-icon>
+      <span class="q-ml-md">mdi-lock-open-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-grid"></q-icon>
+      <span class="q-ml-md">mdi-grid</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-clock-outline"></q-icon>
+      <span class="q-ml-md">mdi-clock-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-close-circle-outline"></q-icon>
+      <span class="q-ml-md">mdi-close-circle-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-stop-circle-outline"></q-icon>
+      <span class="q-ml-md">mdi-stop-circle-outline</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-left"></q-icon>
+      <span class="q-ml-md">mdi-chevron-left</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-play"></q-icon>
+      <span class="q-ml-md">mdi-play</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-pause"></q-icon>
+      <span class="q-ml-md">mdi-pause</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-reload"></q-icon>
+      <span class="q-ml-md">mdi-reload</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chevron-right"></q-icon>
+      <span class="q-ml-md">mdi-chevron-right</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-table"></q-icon>
+      <span class="q-ml-md">mdi-table</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-file-excel"></q-icon>
+      <span class="q-ml-md">mdi-file-excel</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-chart-bar"></q-icon>
+      <span class="q-ml-md">mdi-chart-bar</span>
+    </div>
+    <h2>k.App</h2>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-table"></q-icon>
+      <span class="q-ml-md">"mdi-table"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-earth"></q-icon>
+      <span class="q-ml-md">"mdi-earth"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-cog"></q-icon>
+      <span class="q-ml-md">"mdi-cog"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-cloud-download"></q-icon>
+      <span class="q-ml-md">"mdi-cloud-download"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-download"></q-icon>
+      <span class="q-ml-md">"mdi-download"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-map"></q-icon>
+      <span class="q-ml-md">"mdi-map"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-comment"></q-icon>
+      <span class="q-ml-md">"mdi-comment"</span>
+    </div>
+    <div class="q-ma-md">
+      <q-icon size="30px" name="mdi-abugida-thai"></q-icon>
+      <span class="q-ml-md">"abugida-thai"</span>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -16292,7 +16563,7 @@ export default {
 
 <style scoped>
   .q-ma-md {
-    display: inline-block;
+    display: block;
   }
   .q-ma-md .q-icon {
     text-align: right;

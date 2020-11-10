@@ -18,7 +18,7 @@
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.REPORT_VIEWER.name, disabled: mainViewerName !== VIEWERS.REPORT_VIEWER.name && !hasObservations }]"
-      ><q-icon name="mdi-file-document-box-outline">
+      ><q-icon name="mdi-text-box-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadReport && hasObservations"></span>
         <q-tooltip
           :delay="600"

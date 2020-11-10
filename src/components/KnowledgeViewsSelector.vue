@@ -2,7 +2,7 @@
   <div class="kvs-container">
     <div class="klab-button klab-action" :class="{ disabled: knowledgeViews.length === 0 }">
       <div
-        class="kvs-button mdi mdi-file-document-box-multiple float-left"
+        class="kvs-button mdi mdi-text-box-multiple float-left"
       ></div>
       <q-icon v-if="!docked" name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px">
         <span class="klab-button-notification" v-if="hasNew"></span>

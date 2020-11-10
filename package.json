@@ -1,6 +1,6 @@
 {
   "name": "klab.explorer",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Web based explorer for k.LAB engine",
   "productName": "k.Explorer",
   "license": "AGPL-3.0-only",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@korzio/djv-draft-04": "^2.0.0",
+    "@mdi/font": "^5.8.55",
     "axios": "^0.18.0",
     "djv": "^2.0.0",
     "draggable-vue-directive": "^2.0.2",

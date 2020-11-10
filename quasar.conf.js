@@ -33,7 +33,7 @@ module.exports = function (ctx) {
     extras: [
       ctx.theme.mat ? 'roboto-font' : null,
       'material-icons',
-      'mdi',
+      // 'mdi', NOW IS USED FROM LIB
       // 'fontawesome',
     ],
     supportIE: true,
