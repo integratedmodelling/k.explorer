@@ -222,9 +222,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('data', [
-      'showKnowledgeView',
-    ]),
     ...mapActions('view', [
       'setMainViewer',
       'setLargeMode',

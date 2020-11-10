@@ -237,4 +237,6 @@ export default {
    * Initialized with the start options
    */
   levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
+
+  showSettings: true,
 };

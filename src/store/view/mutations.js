@@ -1,4 +1,4 @@
-import { pushElementInFixedQueue, findInLayout } from 'shared/Helpers';
+import { pushElementInFixedQueue, findInLayout, findComponent } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 
@@ -391,28 +391,6 @@ export default {
       });
       return;
     }
-    const findComponent = (layout, key = null) => {
-      if (layout && key !== null) {
-        const { reduce } = [];
-        const find = (result, c) => {
-          if (result || !c) {
-            return result;
-          }
-          if (Array.isArray(c)) {
-            return reduce.call(Object(c), find, result);
-          }
-          if (c.id === key) {
-            return c;
-          }
-          if (c !== null && c.components && c.components.length > 0) {
-            return find(null, c.components);
-          }
-          return null;
-        };
-        return find(null, layout);
-      }
-      return null;
-    };
     const existingComponent = state.layout && findInLayout(state.layout, component.id);
     if (existingComponent) {
       console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
@@ -466,5 +444,9 @@ export default {
         Object.assign(component, action.component);
       }
     }
+  },
+
+  SHOW_SETTINGS: (state, show) => {
+    state.showSettings = show;
   },
 };

@@ -33,7 +33,8 @@
           </div>
         </div>
       </div>
-      <component :is="viewer.type.component" :idx="viewer.idx" :viewer="viewer"></component>
+      <component :is="viewer.type.component" :idx="viewer.idx"></component>
+      <!-- //TODO check if viewer attr is needed <component :is="viewer.type.component" :idx="viewer.idx" :viewer="viewer"></component> -->
     </div>
   </div>
 </template>

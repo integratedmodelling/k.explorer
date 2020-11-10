@@ -230,7 +230,7 @@ export default {
         &::-webkit-details-marker
           color transparent
       #ktp-main-tree-arrow
-        position: absolute
+        position absolute
         width 22px
         height 22px
         right 9px

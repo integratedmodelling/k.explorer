@@ -71,22 +71,28 @@ export default {
     },
     calculateMinHeight() {
       this.$nextTick(() => {
-        const bottomPanels = document.querySelector('.kcv-group-bottom');
+        const bottomPanels = document.querySelectorAll('.kcv-group-bottom');
+        let totalBottomHeight = 0;
+        for (let i = 0; i < bottomPanels.length; ++i) {
+          totalBottomHeight += Math.floor(height(bottomPanels[i]));
+        }
         const mainContainer = document.querySelector('.kcv-main-container');
-        if (mainContainer && mainContainer.style['margin-bottom'] === '') {
-          mainContainer.style['margin-bottom'] = `${(bottomPanels ? height(bottomPanels) : 0)}px`;
+        if (mainContainer && mainContainer.style.marginBottom === '') {
+          mainContainer.setAttribute('style', `margin-bottom: ${totalBottomHeight}px`);
         }
       });
     },
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
-    this.$eventBus.$on(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
-    this.calculateMinHeight();
+    // this.$eventBus.$on(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
-    this.$eventBus.$off(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
+    // this.$eventBus.$off(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
+  },
+  updated() {
+    this.calculateMinHeight();
   },
   render(h) {
     const ret = createComponent(this.component, h, { mainPanelStyle: this.mainPanelStyle, direction: this.direction });
@@ -135,6 +141,8 @@ export default {
     .q-if, .q-if:before, .q-if-label, .q-if-addon, .q-field-icon, .q-field-label, .q-if-control, .q-field-bottom
       transition none
    // first level group
+  .kcv-main-container + .kcv-group
+    padding-bottom 1px
   .kcv-main-container > .kcv-group
     // background-color #00ff00
     height 100% !important

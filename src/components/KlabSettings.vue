@@ -1,5 +1,5 @@
 <template>
-  <div class="klab-settings-container">
+  <div class="klab-settings-container" v-show="hasShowSettings">
     <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible }">
       <q-fab
         ref="klab-settings"
@@ -11,6 +11,20 @@
         @mouseenter.native="mouseFabEnter"
         @mouseleave.native="mouseFabLeave"
       >
+        <q-fab-action
+          v-if="layout !== null"
+          color="app-background-color"
+          text-color="app-main-color"
+          @click="exitApp"
+          icon="mdi-exit-to-app"
+          >
+          <q-tooltip
+            class="klab-app-tooltip"
+            anchor="center right"
+            self="center left"
+            :offset="[8, 0]"
+            :delay="600">{{ isApp ? $t('label.appsLogout') : $t('label.appsClose') }}</q-tooltip>
+        </q-fab-action>
         <q-fab-action
           color="app-background-color"
           text-color="app-main-color"
@@ -86,7 +100,7 @@
             <div class="kal-apps disable-select">
               <div class="kal-no-apps" v-if="appsList.length === 0">{{ $t('messages.noAppsAvailable') }}</div>
               <template v-else>
-                <div  v-for="(app, index) in appsList" :key="index" class="kal-app">
+                <div  v-for="(app, index) in appsList" :key="index" class="kal-app" :class="{ 'kal-active':layout && layout.name === app.name }">
                   <div class="kal-logo">
                     <img valign="middle" :src="app.logoSrc"/>
                   </div>
@@ -133,6 +147,8 @@ export default {
     ]),
     ...mapGetters('view', [
       'isApp',
+      'hasShowSettings',
+      'layout',
     ]),
     modalsAreFocused() {
       return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);
@@ -146,6 +162,9 @@ export default {
   methods: {
     ...mapActions('data', [
       'loadSessionReference',
+    ]),
+    ...mapActions('view', [
+      'setLayout',
     ]),
     loadApplications() {
       this.appsList.splice(0);
@@ -175,6 +194,10 @@ export default {
       }
     },
     runApp(app) {
+      if (this.layout && this.layout.name === app.name) {
+        // the same app is loaded
+        return;
+      }
       this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
         { applicationId: app },
         this.$store.state.data.session,
@@ -183,6 +206,18 @@ export default {
         this.models.appsList = false;
         this.fabVisible = false;
       });
+    },
+    exitApp() {
+      if (this.layout) {
+        if (this.isApp) {
+          this.setLayout(null);
+          this.$nextTick(() => {
+            window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
+          });
+        } else {
+          this.setLayout(null);
+        }
+      }
     },
     mouseActionEnter(actionName) {
       // console.warn(`Enter in action ${actionName}`);
@@ -320,11 +355,14 @@ export default {
 
     .kal-apps
       .kal-app
-        display: flex;
-        padding: 8px 16px;
+        display flex
+        padding 8px 16px
         border 1px solid transparent
         border-radius 6px
-        cursor pointer
+        &:not(.kal-active)
+          cursor pointer
+        &.kal-active
+          border-color var(--app-darken-main-color)
         &:hover
           border-color var(--app-main-color)
         .kal-logo

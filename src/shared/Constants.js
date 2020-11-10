@@ -421,6 +421,8 @@ export const WEB_CONSTANTS = {
   COOKIE_SAVELOCATION: 'klab_saveLocation',
   COOKIE_HELP_ON_START: 'klab_helponstart',
   COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not set
+
+  LOCAL_STORAGE_APP_ID: 'klab:appId',
 };
 
 export const COLORS = {

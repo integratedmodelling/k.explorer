@@ -29,6 +29,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import { WEB_CONSTANTS } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ConnectionStatus from 'components/ConnectionStatusModal';
 import KlabSettings from 'components/KlabSettings';
 import AppDialogs from 'components/AppDialogsViewer';
@@ -36,7 +38,6 @@ import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
 import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
 import 'simplebar/dist/simplebar.css';
-import { MESSAGES_BUILDERS } from '../shared/MessageBuilders';
 
 export default {
   name: 'LayoutDefault',
@@ -70,11 +71,21 @@ export default {
   },
   mounted() {
     this.sendStompMessage(MESSAGES_BUILDERS.RESET_CONTEXT(this.$store.state.data.session).body);
+    // clean previous apps if necessary
+    const loadedApp = localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+    if (loadedApp) {
+      this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
+        { applicationId: loadedApp, stop: true },
+        this.$store.state.data.session,
+      ).body);
+      localStorage.removeItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+    }
     if (this.isApp) {
       this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
         { applicationId: this.$store.state.view.klabApp },
         this.$store.state.data.session,
       ).body);
+      // localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID, this.$store.state.view.klabApp);
     }
     setTimeout(() => {
       if (this.isApp && this.layout === null) {

@@ -140,6 +140,7 @@ export const COMPONENTS = {
   }),
   SEPARATOR: component => Vue.component('KAppSeparator', {
     render(h) {
+      const self = this;
       return h('div', {
         class: 'kcv-separator',
         attrs: {
@@ -161,6 +162,27 @@ export const COMPONENTS = {
             class: 'kcv-separator-title',
           }, component.title)
           : null,
+        component.attributes.iconbutton
+          ? h(QIcon, {
+            class: 'kcv-separator-right',
+            props: {
+              name: `mdi-${component.attributes.iconbutton}`,
+              color: 'app-main-color',
+            },
+            nativeOn: {
+              click: () => {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: true,
+                });
+              },
+            },
+          })
+          : null,
         component.attributes.info
           ? h(QIcon, {
             class: 'kcv-separator-right',
@@ -170,7 +192,7 @@ export const COMPONENTS = {
             },
             nativeOn: {
               mouseover: () => {
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
@@ -180,7 +202,7 @@ export const COMPONENTS = {
                 });
               },
               mouseleave: () => {
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
@@ -233,6 +255,7 @@ export const COMPONENTS = {
         };
       },
       render(h) {
+        const self = this;
         return h('div', {
           class: 'kcv-tree-container',
           style: DEFAULT_STYLE_FUNCTION(component),
@@ -262,8 +285,8 @@ export const COMPONENTS = {
             },
             on: {
               'update:ticked': (values) => {
-                this.ticked = values;
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                self.ticked = values;
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
@@ -273,11 +296,11 @@ export const COMPONENTS = {
                 });
               },
               'update:selected': (value) => {
-                this.selected = value;
+                self.selected = value;
                 // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:selected', id: component.id, value });
               },
               'update:expanded': (value) => {
-                this.expanded = value;
+                self.expanded = value;
                 // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:expanded', id: component.id, value });
               },
             },
@@ -327,11 +350,12 @@ export const COMPONENTS = {
       return {
         component,
         value: component.content,
+        type: 'number',
       };
     },
     render(h) {
       // const isNumber = Number.isInteger(component.content);
-      // const self = this;
+      const self = this;
       return h(QInput, {
         class: ['kcv-text-input', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
@@ -339,11 +363,11 @@ export const COMPONENTS = {
           id: `${component.applicationId}-${component.id}`,
         },
         props: {
-          value: this.value,
+          value: self.value,
           color: 'app-main-color',
           hideUnderline: true,
           dense: true,
-          type: 'number',
+          type: self.type,
           disable: !!component.attributes.disabled,
         },
         on: {
@@ -351,13 +375,15 @@ export const COMPONENTS = {
             event.stopPropagation();
           },
           input: (value) => {
-            this.value = value;
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+            self.value = value;
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
                 components: [],
               },
+              // ...(self.type === 'text' && { stringValue: value }),
+              // ...(self.type === 'number' && { intValue: value }),
               stringValue: value,
             });
           },
@@ -375,6 +401,7 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const self = this;
       return h(QSelect, {
         class: ['kcv-combo', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
@@ -382,7 +409,7 @@ export const COMPONENTS = {
           id: `${component.applicationId}-${component.id}`,
         },
         props: {
-          value: this.value,
+          value: self.value,
           options: component.choices.map(c => ({ label: c.first, value: c.second, className: 'kcv-combo-option' })),
           color: 'app-text-color',
           popupCover: false,
@@ -391,9 +418,9 @@ export const COMPONENTS = {
         },
         on: {
           change: (value) => {
-            this.value = value;
-            component.attributes.selected = this.value;
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+            self.value = value;
+            component.attributes.selected = self.value;
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
@@ -411,6 +438,7 @@ export const COMPONENTS = {
       return {};
     },
     render(h) {
+      const self = this;
       return h(QBtn, {
         class: ['kcv-pushbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
@@ -427,7 +455,7 @@ export const COMPONENTS = {
         },
         on: {
           click: () => {
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
@@ -448,6 +476,7 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const self = this;
       const state = component.attributes.waiting ? 'waiting' : component.attributes.computing ? 'computing'
         : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
       const color = component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-main-color';
@@ -457,7 +486,7 @@ export const COMPONENTS = {
       }, [
         h(QCheckbox, {
           props: {
-            value: this.value,
+            value: self.value,
             color,
             keepColor: true,
             label: component.name,
@@ -478,9 +507,9 @@ export const COMPONENTS = {
           },
           on: {
             input: (value) => {
-              this.value = value;
-              component.attributes.checked = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              self.value = value;
+              // component.attributes.checked = value;
+              self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
                   ...component,
@@ -512,6 +541,7 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const self = this;
       return h('div', {
         class: ['kcv-checkbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
@@ -528,8 +558,8 @@ export const COMPONENTS = {
           },
           on: {
             input: (value) => {
-              this.value = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              self.value = value;
+              self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
                   ...component,
@@ -550,11 +580,12 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const self = this;
       return h('div', {
         staticClass: 'kcv-text',
         class: {
           'kcv-collapse': component.attributes.collapse,
-          'kcv-collapsed': this.collapsed,
+          'kcv-collapsed': self.collapsed,
         },
         attrs: {
           'data-simplebar': 'data-simplebar',
@@ -575,14 +606,14 @@ export const COMPONENTS = {
             staticClass: 'kcv-collapse-button',
             on: {
               click: () => {
-                this.collapsed = !this.collapsed;
+                self.collapsed = !self.collapsed;
               },
             },
           }, [
             h(QIcon, {
               staticClass: 'kcv-collapse-icon',
               props: {
-                name: this.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
+                name: self.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
                 color: 'app-main-color',
                 size: 'sm',
               },
@@ -606,6 +637,8 @@ export const COMPONENTS = {
 };
 
 export function createComponent(node, h, options = {}) {
+  // console.info(`Call create component // node.id: ${node.id} node.name: ${node.name}; node.type: ${node.type}; node.content: ${node.content}; node.components.length: ${node.components.length}
+  // node.attributes:\n${JSON.stringify(node.attributes, null, 2)};`);
   // Handle empty elements and return empty array in case the dNode passed in is empty
   if (!node) {
     return [];

@@ -4,7 +4,9 @@
       <div
         class="kvs-button mdi mdi-file-document-box-multiple float-left"
       ></div>
-      <q-icon v-if="!docked" name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
+      <q-icon v-if="!docked" name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px">
+        <span class="klab-button-notification" v-if="hasNew"></span>
+      </q-icon>
       <q-tooltip
         :offset="[8, 0]"
         :self="selfTooltipType"
@@ -71,6 +73,7 @@ export default {
       selfType: this.docked ? 'center left' : 'top left',
       offsets: this.docked ? [this.offset, 0] : [0, this.offset],
       kvListOpen: false,
+      hasNew: false,
       KNOWLEDGE_VIEWS,
     };
   },
@@ -78,6 +81,9 @@ export default {
     ...mapGetters('data', [
       'knowledgeViews',
     ]),
+    knowledgeViewsLength() {
+      return this.knowledgeViews.length;
+    },
   },
   methods: {
     ...mapActions('data', [
@@ -94,6 +100,18 @@ export default {
       });
     },
   },
+  watch: {
+    knowledgeViewsLength(newValue, oldValue) {
+      if (newValue > oldValue) {
+        this.hasNew = true;
+      }
+    },
+    kvListOpen() {
+      if (this.kvListOpen && this.hasNew) {
+        this.hasNew = false;
+      }
+    },
+  },
 };
 </script>
 
@@ -104,6 +122,10 @@ export default {
     border-color $grey-8
   .kvs-popover
     background-color transparent
-  .kvs-container .klab-button:not(.disabled) .kvs-button
-    color $main-control-main-color
+  .kvs-container
+    .klab-button.klab-action .klab-button-notification
+      right 26px
+      top 0
+    .klab-button:not(.disabled) .kvs-button
+      color $main-control-main-color
 </style>
