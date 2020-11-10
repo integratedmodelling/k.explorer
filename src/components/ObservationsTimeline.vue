@@ -51,6 +51,7 @@
               v-if="timestamp === -1"
               class="ot-time-origin"
               color="mc-main"
+              :class="{ 'ot-time-origin-loaded': timeEvents.length }"
             ></q-icon>
             <q-tooltip
               v-if="timeEvents.length !== 0"
@@ -118,7 +119,7 @@
           <div
             class="ot-date ot-date-end col"
             @click.self="changeTimestamp(scaleReference.end)"
-            :class="{ 'ot-date-loaded': engineTimestamp === scaleReference.end }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0, 'ot-date-loaded': engineTimestamp === scaleReference.end }"
           ><q-tooltip
             v-if="timeEvents.length !== 0"
             :offset="[0, 8]"
@@ -410,7 +411,9 @@ export default {
   $timeline-viewer-size = 10px
   $timeline-player-width = 20px
   $timeline-empty-color = #555
-  $timeline-loaded-color = #777
+  $timeline-empty-color-with-event = #888
+  $timeline-loaded-color = $main-control-main-color
+  $timeline-time-origin-color = $main-control-cyan
   $timeline-fill-color = #888
   $timeline-viewer-color = #666
   .ot-wrapper
@@ -447,8 +450,10 @@ export default {
         border-radius ($timeline-balls-size / 2)
         position relative
         cursor default
+        transition background-color .5s ease
         &.ot-with-modifications
           cursor pointer
+          background-color $timeline-empty-color-with-event
         &.ot-date-loaded
           background-color $timeline-loaded-color
         &.ot-date-fill
@@ -459,6 +464,9 @@ export default {
             right $timeline-balls-size
         .ot-time-origin
           vertical-align baseline
+          transition background-color .5s ease
+          &.ot-time-origin-loaded
+            color $timeline-time-origin-color
       .ot-date-text
         white-space nowrap
         font-size 8px
@@ -482,8 +490,10 @@ export default {
           top ($timeline-balls-size / 2) - ($timeline-small-size / 2)
           margin 0 -2px
           padding 0 2px
+          transition background-color .5s ease
           &.ot-with-modifications
             cursor pointer
+            background-color $timeline-empty-color-with-event
           .ot-modification-container
             z-index 10000
             width $timeline-balls-size * 2
