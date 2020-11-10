@@ -238,7 +238,7 @@ export default {
         color #fff
         background-color #555
         border-radius 12px
-        transition transform .2s ease-in-out;
+        transition transform .2s ease-in-out
       &>div
         margin 5px 0 0 -10px
   .ktp-no-tree
