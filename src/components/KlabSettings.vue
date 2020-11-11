@@ -5,7 +5,7 @@
         ref="klab-settings"
         color="app-main-color"
         text-color="app-background-color"
-        icon="mdi-settings"
+        icon="mdi-cog"
         direction="up"
         v-model="fabVisible"
         @mouseenter.native="mouseFabEnter"

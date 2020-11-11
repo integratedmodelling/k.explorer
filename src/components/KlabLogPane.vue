@@ -71,7 +71,7 @@ const LOG_ICONS = {
   [IN.TYPE_WARNING]: { i18nlabel: 'label.levelWarning', icon: 'mdi-alert', color: 'warning' },
   [IN.TYPE_INFO]: { i18nlabel: 'label.levelInfo', icon: 'mdi-information', color: 'info' },
   [IN.TYPE_DEBUG]: { i18nlabel: 'label.levelDebug', icon: 'mdi-console-line', color: 'grey-6' },
-  [IN.TYPE_ENGINEEVENT]: { i18nlabel: 'label.levelEngineEvent', icon: 'mdi-settings-outline', color: 'secondary' },
+  [IN.TYPE_ENGINEEVENT]: { i18nlabel: 'label.levelEngineEvent', icon: 'mdi-cog-outline', color: 'secondary' },
 };
 
 export default {

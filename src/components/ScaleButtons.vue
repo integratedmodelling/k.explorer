@@ -1,7 +1,7 @@
 <template>
   <div class="sb-scales">
     <div
-      class="klab-button klab-action mdi-next-scale"
+      class="klab-button klab-action klab-mdi-next-scale"
       v-if="hasNextScale()"
     >
       <q-icon
@@ -24,7 +24,7 @@
       @mouseleave="toggleScalePopup('space', false)"
       @click="scaleEditing = { active: true, type: SCALE_TYPE.ST_SPACE }"
     >
-      <q-icon name="mdi-earth" :class="{ 'mdi-next-scale': hasNextScale(SCALE_TYPE.ST_SPACE) }">
+      <q-icon name="mdi-earth" :class="{ 'klab-mdi-next-scale': hasNextScale(SCALE_TYPE.ST_SPACE) }">
         <q-popover
           v-model="showSpaceScalePopup"
           :anchor-click="false"
@@ -61,7 +61,7 @@
       @mouseleave="toggleScalePopup('time', false)"
       @click="scaleEditing = { active: true, type: SCALE_TYPE.ST_TIME }"
     >
-      <q-icon name="mdi-clock" :class="{ 'mdi-next-scale': hasNextScale(SCALE_TYPE.ST_TIME) }">
+      <q-icon name="mdi-clock" :class="{ 'klab-mdi-next-scale': hasNextScale(SCALE_TYPE.ST_TIME) }">
         <q-popover
           v-model="showTimeScalePopup"
           :anchor-click="false"
@@ -207,7 +207,7 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables'
-  .mdi-next-scale
+  .klab-mdi-next-scale
     color $main-control-yellow
     opacity .6
     &:hover

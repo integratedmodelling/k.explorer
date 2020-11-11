@@ -497,8 +497,8 @@ export const COMPONENTS = {
               readonly: true,
             }),
             ...(component.attributes.computing && {
-              'checked-icon': 'mdi-settings-outline',
-              'unchecked-icon': 'mdi-settings-outline',
+              'checked-icon': 'mdi-cog-outline',
+              'unchecked-icon': 'mdi-cog-outline',
               readonly: true,
             }),
           },
