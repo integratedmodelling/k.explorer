@@ -1,5 +1,5 @@
 import { pushElementInFixedQueue, findInLayout, findComponent } from 'shared/Helpers';
-import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS, WORKSPACES_TYPES } from 'shared/Constants';
 import { Cookies } from 'quasar';
 
 export default {
@@ -346,41 +346,49 @@ export default {
   },
 
   SET_LAYOUT: (state, layout) => {
-    /*
-    const panels = [
-      ...layout.panels,
-      ...layout.leftPanels,
-      ...layout.rightPanels,
-      layout.header,
-      layout.footer,
-    ].filter(p => p !== null);
-    if (panels.length > 0) {
-      const updateTree = (node) => {
-        if (node.type === 'Tree') {
-          node.ticked = [];
-          node.expanded = [];
-          node.selected = null;
-        } else if (node.type === 'CheckButton') {
-          node.selected = false;
-        }
-        if (node.components && node.components.length > 0) {
-          node.components.forEach((c) => {
-            updateTree(c);
-          });
-        }
-      };
-      panels.forEach((p) => {
-        updateTree(p);
-      });
+    if (layout === null || layout.workspace === WORKSPACES_TYPES.MAIN) {
+      state.layout = layout;
+      state.openedCollapsibles.splice(0, state.openedCollapsibles.length);
+    } else {
+      switch (layout.workspace) {
+        case WORKSPACES_TYPES.MODAL:
+          state.modals.push(layout);
+          break;
+        case WORKSPACES_TYPES.WINDOW:
+          state.windows.push(layout);
+          break;
+        case WORKSPACES_TYPES.STACK:
+          state.stack.push(layout);
+          break;
+        default:
+          console.warn(`What do you send me as layout? ${layout.workspace}`);
+      }
     }
-     */
-    state.layout = layout;
-    state.openedCollapsibles.splice(0, state.openedCollapsibles.length);
-    /*
-    if (!state.layouts.find(l => l.id === layout.id)) {
-      state.layouts.push(layout);
+  },
+
+  REMOVE_LAYOUT: (state, layout) => {
+    if (layout !== null) {
+      let array = [];
+      switch (layout.workspace) {
+        case WORKSPACES_TYPES.MODAL:
+          array = state.modals;
+          break;
+        case WORKSPACES_TYPES.WINDOW:
+          array = state.window;
+          break;
+        case WORKSPACES_TYPES.STACK:
+          array = state.stack;
+          break;
+        default:
+          // Nothing to do
+      }
+      if (array.length > 0) {
+        const index = array.findIndex(a => a.id === layout.id);
+        if (index !== -1) {
+          array.splice(index, 1);
+        }
+      }
     }
-    */
   },
 
   CREATE_VIEW_COMPONENT: (state, component) => {

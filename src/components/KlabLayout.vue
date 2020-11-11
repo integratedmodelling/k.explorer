@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
+  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" :container="container" :style="{ containerStyle }" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
       class="kapp-header-container kapp-container print-hide"
@@ -43,7 +43,7 @@
       </template>
     </q-layout-drawer>
     <q-page-container>
-      <k-explorer v-if="!layout || layout.panels.length === 0" class="kapp-main-container is-kexplorer" :id="`kapp-${idSuffix}-main`" :mainPanelStyle="mainPanelStyle"></k-explorer>
+      <k-explorer v-if="!layout || layout.panels.length === 0 || container" class="kapp-main-container is-kexplorer" :id="`kapp-${idSuffix}-main`" :mainPanelStyle="mainPanelStyle"></k-explorer>
       <template v-else>
         <klab-app-viewer class="kapp-main-container kapp-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
       </template>
@@ -63,6 +63,7 @@ import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
+import { WORKSPACES_TYPES } from '../shared/Constants';
 
 const { lighten } = colors;
 const { width, height } = dom;
@@ -77,6 +78,14 @@ export default {
     layout: {
       type: Object,
       default: null,
+    },
+    container: {
+      type: Boolean,
+      default: false,
+    },
+    containerStyle: {
+      type: String,
+      default: '',
     },
   },
   data() {
@@ -100,6 +109,9 @@ export default {
     isRootLayout() {
       return this.layout !== null && this.layout.parentId === null;
     },
+    isMainWorkspace() {
+      return this.isRootLayout && this.layout.workspace === WORKSPACES_TYPES.MAIN;
+    },
     hasHeader() {
       return this.layout && (this.layout.header || this.layout.logo || this.layout.label || this.layout.description);
     },
@@ -122,7 +134,10 @@ export default {
     },
     idSuffix() {
       if (this.layout !== null) {
-        return this.layout.applicationId;
+        if (this.layout.workspace === WORKSPACES_TYPES.MAIN) {
+          return this.layout.projectId;
+        }
+        return `${this.layout.projectId}-${this.layout.id}`;
       }
       return 'default';
     },

@@ -8,10 +8,22 @@
       <klab-presentation></klab-presentation>
       <knowledge-view-viewer></knowledge-view-viewer>
     </template>
+    <template v-if="showModals">
+      <q-modal
+        content-classes="klab-app-modals"
+        :content-css="dimension"
+        v-model="showModals"
+        no-route-dismiss
+        no-esc-dismiss
+        no-backdrop-dismiss
+      >
+        <klab-layout :container="true" :layout="modals[0]" :containerStyle="dimension"></klab-layout>
+      </q-modal>
+    </template>
     <template v-if="errorLoading">
       <q-modal
         content-classes="klab-wait-app"
-        v-model="modal"
+        v-model="errorModal"
         no-route-dismiss
         no-esc-dismiss
         no-backdrop-dismiss
@@ -59,12 +71,23 @@ export default {
       'layout',
       'isApp',
       'klabApp',
+      'modals',
     ]),
-    modal: {
+    errorModal: {
       set() {},
       get() {
         return true;
       },
+    },
+    showModals: {
+      set() {},
+      get() {
+        console.warn(`this.modals.length: ${this.modals.length}`);
+        return this.modals.length > 0;
+      },
+    },
+    dimension() {
+      return `min-height: ${this.modals[0].attributes.height ? this.modals[0].attributes.height : '80vh'};min-width: ${this.modals[0].attributes.width ? this.modals[0].attributes.width : '80vh'};`;
     },
   },
   created() {

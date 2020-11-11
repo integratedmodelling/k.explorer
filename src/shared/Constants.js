@@ -943,6 +943,13 @@ export const DEFAULT_STYLES = {
   },
 };
 
+export const WORKSPACES_TYPES = {
+  MAIN: 'Main',
+  WINDOW: 'Window',
+  STACK: 'Stack',
+  MODAL: 'Modal',
+};
+
 export default {
   CONSTANTS,
   LEFTMENU_CONSTANTS,
@@ -975,4 +982,5 @@ export default {
   DEFAULT_STYLE_FUNCTION,
   KNOWLEDGE_VIEWS,
   DEFAULT_STYLES,
+  WORKSPACES_TYPES,
 };

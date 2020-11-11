@@ -128,6 +128,10 @@ export default {
   isApp: state => state.klabApp !== null,
   klabApp: state => state.klabApp,
   activeDialogs: state => state.dialogs.filter(a => !a.dismiss),
+  modals: state => state.modals,
+  hasModals: state => state.modals.length > 0,
+  stacks: state => state.stacks,
+  windows: state => state.windows,
 
   engineEvents: state => state.engineEvents,
   engineEventsCount: state => state.engineEvents.length,

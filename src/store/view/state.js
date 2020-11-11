@@ -223,6 +223,9 @@ export default {
    */
   layout: null,
   dialogs: [],
+  modals: [],
+  stacks: [],
+  windows: [],
 
   /**
    * Engine events
