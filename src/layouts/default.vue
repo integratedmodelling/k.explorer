@@ -82,7 +82,6 @@ export default {
     showModals: {
       set() {},
       get() {
-        console.warn(`this.modals.length: ${this.modals.length}`);
         return this.modals.length > 0;
       },
     },
