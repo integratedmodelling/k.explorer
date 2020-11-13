@@ -450,7 +450,7 @@ export default {
       overflow: hidden;
       white-space: nowrap;
     .kp-nav-tooltip
-      background-color white
+      // background-color white
       transition opacity .3s
       opacity 0
       &.visible
@@ -462,7 +462,7 @@ export default {
       vertical-align middle
       // width 100%
       // border-top 1px solid $grey-4
-      background-color white
+      // background-color white
       .kp-navnumber-container
         padding-left 3px
         position relative
@@ -506,7 +506,7 @@ export default {
       .q-focus-helper
         opacity 0
       &:hover .mdi-close-circle-outline:before
-        content '\F159'
+        content '\F0159'
     .kp-icon-refresh-size
       right 24px
       &:hover
