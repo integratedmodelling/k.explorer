@@ -451,11 +451,15 @@ export default {
       scaleReference.timeUnit = SCALE_VALUES.YEAR;
     }
     state.scaleReference = scaleReference;
-    if (!state.context && state.scaleReference.shape) {
-      state.proposedContext = WKTInstance.readGeometry(state.scaleReference.shape, {
-        dataProjection: MAP_CONSTANTS.PROJ_EPSG_4326,
-        featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
-      });
+    if (!state.context) {
+      if (state.scaleReference.shape) {
+        state.proposedContext = WKTInstance.readGeometry(state.scaleReference.shape, {
+          dataProjection: MAP_CONSTANTS.PROJ_EPSG_4326,
+          featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,
+        });
+      } else {
+        state.proposedContext = null;
+      }
     }
     console.info(`Scale reference set: ${JSON.stringify(scaleReference, null, 2)}`);
   },
