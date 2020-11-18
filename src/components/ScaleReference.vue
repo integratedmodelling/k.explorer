@@ -193,12 +193,13 @@ export default {
         font-size 12px
         width "calc(100% - %s)" % ($sr-scaletype-width + $sr-scalescale-width)
       .sr-spacescale
-        font-size 9px
+        font-size 10px
         height 20px
+        line-height 20px
         width 20px
         border-radius 10px
         text-align center
-        padding 3px 0 0 0
+        padding 0
         display inline-block
         margin 0 5px
       &.sr-full

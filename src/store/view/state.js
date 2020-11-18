@@ -68,6 +68,7 @@ export default {
    * }
    */
   mainViewer: undefined,
+  treeVisible: true,
 
   /**
    * The content of left menu. Is decided using the mainViewer leftMenuContent or punctual action (like open log)
@@ -228,9 +229,14 @@ export default {
    */
   engineEvents: [],
 
+  klabApp: null,
+  openedCollapsibles: [],
+
   /**
    * Log levels
    * Initialized with the start options
    */
   levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
+
+  showSettings: true,
 };

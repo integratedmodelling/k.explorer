@@ -20,6 +20,8 @@
         <div class="lm-separator"></div>
         <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
         <div class="lm-separator"></div>
+        <knowledge-views-selector :docked="true"></knowledge-views-selector>
+        <div class="lm-separator"></div>
       </template>
       <div class="klab-button klab-action"
            :class="[{ active: logShowed }]"
@@ -27,6 +29,7 @@
       >
         <q-icon name="mdi-console">
           <q-tooltip
+            :delay="600"
             :offset="[0, 8]"
             self="top left"
             anchor="bottom left"
@@ -38,7 +41,7 @@
         <div class="lm-separator"></div>
         <scale-buttons :docked="true"></scale-buttons>
         <div class="lm-separator"></div>
-        <div id="lm-bottom-buttons">
+        <div class="lm-bottom-buttons">
           <stop-actions-buttons></stop-actions-buttons>
         </div>
       </div>
@@ -71,6 +74,7 @@ import DockedMainControl from 'components/KlabDockedMainControl.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
+import KnowledgeViewsSelector from 'components/KnowledgeViewsSelector.vue';
 
 export default {
   name: 'KlabLeftMenu',
@@ -82,6 +86,7 @@ export default {
     KlabLogPane,
     DataflowInfo,
     ScaleButtons,
+    KnowledgeViewsSelector,
   },
   mixins: [HandleTouch],
   data() {
@@ -182,6 +187,8 @@ export default {
       font-size 30px
       width 42px
       height 42px
+      line-height 42px
+      vertical-align middle
       padding 0 5px
       margin 15px auto
     .klab-main-actions .klab-button

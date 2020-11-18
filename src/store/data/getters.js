@@ -44,6 +44,9 @@ export default {
 
   contextMenuObservationId: state => state.contextMenuObservationId,
 
+  knowledgeViews: state => state.knowledgeViews,
+  visibleKnowledgeView: state => state.knowledgeViews.find(kv => kv.show),
+
   timeEvents: state => state.timeEvents,
   timeEventsOfObservation: state => id => state.timeEvents.filter(e => e.id === id),
   timeEventsUntil: state => timestamp => state.timeEventsEvents.filter(e => e.timestamp <= timestamp),
@@ -68,7 +71,7 @@ export default {
   contextsCount: state => state.contexts.size(),
   previousContext: state => state.contexts.previous(),
   contextById: state => id => state.contexts.find(ctxt => ctxt.id === id),
-
+  proposedContext: state => state.proposedContext,
   /**
    * If no context, return null
    */

@@ -33,7 +33,7 @@ module.exports = function (ctx) {
     extras: [
       ctx.theme.mat ? 'roboto-font' : null,
       'material-icons',
-      'mdi',
+      // 'mdi', NOW IS USED FROM LIB
       // 'fontawesome',
     ],
     supportIE: true,
@@ -57,6 +57,7 @@ module.exports = function (ctx) {
         PACKAGE_BUILD: JSON.stringify(build),
         ENGINE_URL: JSON.stringify('/modeler'),
         ENGINE_SHARED: JSON.stringify('/modeler/shared/'),
+        ENGINE_LOGIN: JSON.stringify('/modeler/login.html'),
         WS_URL: JSON.stringify('/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),

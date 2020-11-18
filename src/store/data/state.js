@@ -149,6 +149,7 @@ export default {
     }
    */
   scaleReference: null,
+  proposedContext: null,
   scaleLocked: {
     space: false,
     time: false,
@@ -223,6 +224,12 @@ export default {
    */
   observations: [],
   contextMenuObservationId: null,
+
+  /**
+   * Contains all received knowledgeViews
+   */
+  knowledgeViews: [],
+
   /**
    * Modification Events
    * {

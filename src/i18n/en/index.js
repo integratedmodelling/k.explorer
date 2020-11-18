@@ -133,9 +133,12 @@ export default {
     userGroups: 'Groups:',
     appsList: 'Available apps',
     appsClose: 'Close app',
+    appsLogout: 'Logout',
     reloadApplications: 'Reload applications',
     noLayoutLabel: '<em>No title</em>',
     noLayoutDescription: '<em>No description</em>',
+    kwTable: 'Table',
+    kwChart: 'Chart',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -188,7 +191,8 @@ export default {
     presentationBlocked: '<p>Can\'t access online help resources: check your network connection</p><p class="klab-small">A browser extension may also be interfering</p>',
     noAppsAvailable: 'No available apps',
     noGroupsAssigned: 'No groups assigned',
-    appLoading: 'Loading app {app}',
+    appLoading: 'Loading app <strong>{app}</strong>',
+    errorLoadingApp: 'Error loading app <strong>{app}</strong>',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
@@ -220,6 +224,8 @@ export default {
     clickToEdit: 'Click to edit {type} scale',
     palette: 'No palette',
     unknown: 'To be decided',
+    noKnowledgeViews: 'No knowledge views',
+    knowledgeViews: 'Knowledge views',
     // startDate: '{date}</br>Click to reset timestamp',
   },
   errors: {

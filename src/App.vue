@@ -10,6 +10,7 @@ import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
 import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS } from 'shared/Constants';
+import '@mdi/font/css/materialdesignicons.css';
 
 export default {
   name: 'App',
@@ -26,6 +27,7 @@ export default {
     ...mapGetters('view', [
       'lastKexplorerLog',
       'kexplorerLog',
+      'isApp',
     ]),
   },
   methods: {
@@ -127,7 +129,7 @@ export default {
         this.$q.notify({
           message: lastKexplorerLog.payload.message,
           type: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'negative' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'warning' : 'info'),
-          icon: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'mdi-alert-circel' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'mdi-alert' : 'mdi-information'),
+          icon: lastKexplorerLog.type === MESSAGE_TYPES.TYPE_ERROR ? 'mdi-alert-circle' : (lastKexplorerLog.type === MESSAGE_TYPES.TYPE_WARNING ? 'mdi-alert' : 'mdi-information'),
           timeout: 1500,
         });
         let message = `${lastKexplorerLog.payload.message}`;

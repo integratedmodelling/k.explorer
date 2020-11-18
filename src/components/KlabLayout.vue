@@ -1,23 +1,8 @@
 <template>
-  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" :id="`kapp-${idSuffix}`">
-    <q-btn
-      v-if="layout !== null && isRootLayout"
-      color="app-main-color"
-      flat
-      round
-      @click="setLayout(null)"
-      icon="mdi-exit-to-app"
-      class="klab-close-app"
-      :class="[ header.height > 0 ? 'klab-close-app-on-header' : leftPanel.width > 0 ? 'klab-close-app-on-left' : 'klab-close-app-on-panel']"
-      :style="{
-        ...((header.height > 0 && { top: `${(header.height - 40) / 2}px`, right: '16px' }) || (leftPanel.width > 0) && { left: `${(leftPanel.width - 34)}px`, top: '4px' } || { top: '16px', left: '16px' }),
-      }"
-    >
-      <q-tooltip class="klab-app-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.appsClose') }}</q-tooltip>
-    </q-btn>
+  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout}"
-      class="kapp-header-container print-hide"
+      class="kapp-header-container kapp-container print-hide"
       :id="`kapp-${idSuffix}-header`"
       v-if="hasHeader"
       >
@@ -28,7 +13,9 @@
         direction="horizontal"
       ></klab-app-viewer>
       <div class="kapp-header" v-else>
-        <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
+        <div class="kapp-logo-container">
+          <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
+        </div>
         <div class="kapp-title-container">
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
@@ -38,24 +25,27 @@
     <q-layout-drawer
       side="left"
       :class="{ 'kapp-main':  isRootLayout}"
-      class="kapp-left-container print-hide"
+      class="kapp-left-container kapp-container print-hide"
       content-class="kapp-left-inner-container"
       v-if="showLeftPanel"
       v-model="showLeftPanel"
       :width="leftPanelWidth"
     >
       <template v-if="leftPanel">
-        <klab-app-viewer
-          :id="`kapp-${idSuffix}-left-0`"
-          :component="layout.leftPanels[0]"
-          direction="vertical">
-        </klab-app-viewer>
+          <klab-app-viewer
+            :id="`kapp-${idSuffix}-left-0`"
+            :component="layout.leftPanels[0]"
+            direction="vertical"
+            class="kapp-left-wrapper"
+          >
+          </klab-app-viewer>
+
       </template>
     </q-layout-drawer>
     <q-page-container>
       <k-explorer v-if="!layout || layout.panels.length === 0" class="kapp-main-container is-kexplorer" :id="`kapp-${idSuffix}-main`" :mainPanelStyle="mainPanelStyle"></k-explorer>
       <template v-else>
-        <klab-app-viewer class="kapp-main-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
+        <klab-app-viewer class="kapp-main-container kapp-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
       </template>
     </q-page-container>
     <q-resize-observable @resize="updateLayout" />
@@ -63,16 +53,18 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
-import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES } from 'shared/Constants';
+import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
+import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
 import { getBase64Resource } from 'shared/Helpers';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 
+const { lighten } = colors;
 const { width, height } = dom;
 
 export default {
@@ -102,6 +94,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('view', [
+      'isApp',
+    ]),
     isRootLayout() {
       return this.layout !== null && this.layout.parentId === null;
     },
@@ -117,7 +112,7 @@ export default {
       },
     },
     leftPanelWidth() {
-      return this.layout && this.layout.leftPanels && this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? this.layout.leftPanels[0].attributes.width : 512;
+      return this.layout && this.layout.leftPanels && this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 512;
     },
     mainPanelStyle() {
       return {
@@ -133,9 +128,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('view', [
-      'setLayout',
-    ]),
     setLogoImage() {
       if (this.layout && this.layout.logo) {
         getBase64Resource(this.layout.projectId, this.layout.logo)
@@ -173,6 +165,10 @@ export default {
             console.error('Error parsing style specs', error);
           }
         }
+        const bodyMinWidth = this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 0;
+        if (bodyMinWidth !== 0) {
+          document.documentElement.style.setProperty('--body-min-width', `calc(640px + ${bodyMinWidth}px)`);
+        }
       }
       if (style !== null) {
         Object.keys(style).forEach((key) => {
@@ -198,7 +194,11 @@ export default {
             try {
               const color = getColorObject(value);
               if (color && color.rgb) {
+                const multiplier = this.layout && this.layout.style === 'dark' ? -1 : 1;
                 document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
+                document.documentElement.style.setProperty(`--app-highlight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -15 * multiplier));
+                document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -20 * multiplier));
+                document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 20 * multiplier));
               }
             } catch (error) {
               console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);
@@ -224,13 +224,13 @@ export default {
         this.header.height = 0;
       }
       this.header.width = window.innerWidth;
+      this.leftPanel.height = window.innerHeight - this.header.height;
       const leftPanels = document.querySelector('.kapp-main.kapp-left-container aside');
       if (leftPanels) {
         this.leftPanel.width = width(leftPanels);
       } else {
         this.leftPanel.width = 0;
       }
-      this.leftPanel.height = window.innerHeight - this.header.height;
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
@@ -239,16 +239,23 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
-      // setTimeout(() => {
-      this.$nextTick(() => {
-        this.updateLayout();
-        // }, 400);
-      });
-      if (oldLayout !== null) {
-        this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
-          { applicationId: oldLayout.applicationId, stop: true },
-          this.$store.state.data.session,
-        ).body);
+      // this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
+      if (!this.isApp) {
+        // setTimeout(() => {
+        this.$nextTick(() => {
+          this.updateLayout();
+          // }, 400);
+        });
+        if (oldLayout !== null && oldLayout.name !== null) {
+          this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
+            { applicationId: oldLayout.name, stop: true },
+            this.$store.state.data.session,
+          ).body);
+          const storedApp = localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+          if (storedApp && storedApp === oldLayout.name) {
+            localStorage.removeItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+          }
+        }
       }
     },
   },
@@ -262,6 +269,8 @@ export default {
 <style lang="stylus">
   @import '~variables'
   body
+    .klab-main-app
+      position relative
     .kapp-header-container
     .kapp-footer-container
     .kapp-left-inner-container
@@ -271,8 +280,12 @@ export default {
       font-size var(--app-font-size)
       line-height var(--app-line-height)
       background-color var(--app-background-color)
-  .kapp-left-inner-container
-    position absolute !important
+      padding 0
+      margin 0
+    .kapp-left-inner-container
+      position absolute !important
+      .kapp-left-wrapper
+        overflow-x hidden
   .kapp-main
     &.q-layout
       border 0
@@ -280,24 +293,27 @@ export default {
       margin 0
     .simplebar-scrollbar::before
       background-color var(--app-main-color)
+
   // header
   .kapp-header
     background-color var(--app-background-color)
     padding 0
     margin 0
-    img
-      max-width 80px
-      max-height 80px
-      &.kapp-logo
-        margin 5px 10px
-        float left
+    display flex
+    flex-direction row
+    height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+    min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
+    .kapp-logo-container
+      align-self center
+      margin 0 10px
+      img
+        max-width 80px
+        max-height 80px
     .kapp-title-container
       color var(--app-title-color)
-      float left
-      height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
-      min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
-      vertical-align middle
-      padding-top 22px // 25px padding - 6px/2 separation
+      flex-grow 1
+      align-self center
+      // padding-top 22px // 25px padding - 6px/2 separation
       padding-left 10px
       .kapp-title
         height var(--app-title-size)
@@ -310,6 +326,10 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+  .kcv-dir-vertical
+    display flex
+    flex-direction column
+    height 100% !important
   // close app button
   .klab-close-app
     position absolute

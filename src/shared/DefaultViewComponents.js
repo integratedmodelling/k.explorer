@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QBtn, QIcon } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip } from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from 'shared/Constants';
@@ -32,10 +32,10 @@ export const COMPONENTS = {
   MAIN: component => Vue.component('KAppMain', {
     render(h) {
       return h('div', {
-        staticClass: 'kcv-main-container',
-        class: `kcv-dir-${component.direction}`,
+        class: ['kcv-main-container', `kcv-dir-${component.direction}`],
         attrs: {
           id: `${component.applicationId}-${component.id}`,
+          ref: 'main-container',
         },
         style: {
           ...component.style,
@@ -48,8 +48,7 @@ export const COMPONENTS = {
   PANEL: component => Vue.component('KAppPanel', {
     render(h) {
       return h('div', {
-        staticClass: 'kcv-panel-container',
-        class: `kcv-dir-${component.direction}`,
+        class: ['kcv-panel-container', `kcv-dir-${component.direction}`],
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -65,6 +64,13 @@ export const COMPONENTS = {
     render(h) {
       return h('div', {
         staticClass: 'kcv-group',
+        class: {
+          'text-app-alt-color': component.attributes.altfg,
+          'bg-app-alt-background': component.attributes.altbg,
+          'kcv-wrapper': component.components.length === 1,
+          'kcv-group-bottom': component.attributes.bottom,
+
+        },
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -75,10 +81,10 @@ export const COMPONENTS = {
           class: { 'kcv-group-no-label': !component.name },
         }, [
           component.name ? h('div', {
-            staticClass: 'kcv-group-legend',
+            class: 'kcv-group-legend',
           }, component.name) : null,
           h('div', {
-            staticClass: 'kcv-group-content',
+            class: 'kcv-group-content',
             style: DEFAULT_STYLE_FUNCTION(component),
             ...(component.attributes.scroll && {
               attrs: {
@@ -87,7 +93,7 @@ export const COMPONENTS = {
             }),
           }, this.$slots.default),
         ])] : [h('div', {
-          staticClass: 'kcv-group-content',
+          class: 'kcv-group-content',
           style: DEFAULT_STYLE_FUNCTION(component),
           ...(component.attributes.scroll && {
             attrs: {
@@ -98,16 +104,117 @@ export const COMPONENTS = {
     },
   }),
   SHELF: component => Vue.component('KAppShelf', {
+    data() {
+      return {
+        opened: this.$store.state.view.openedCollapsibles.findIndex(c => c === component.id) !== -1,
+      };
+    },
     render(h) {
+      const self = this;
       return h(QCollapsible, {
-        staticClass: 'kcv-collapsible',
+        class: 'kcv-collapsible',
         props: {
+          opened: self.opened,
           headerClass: 'kcv-collapsible-header',
-          separator: true,
-          group: component.attributes.parentId,
+          collapseIcon: 'mdi-dots-vertical',
+          separator: false,
+          ...(!component.attributes.parentAttributes.multiple && { group: component.attributes.parentId }),
           label: component.name,
         },
+        on: {
+          hide() {
+            const idx = self.$store.state.view.openedCollapsibles.findIndex(c => c === component.id);
+            if (idx !== -1) {
+              self.$store.state.view.openedCollapsibles.splice(idx, 1);
+            }
+          },
+          show() {
+            const idx = self.$store.state.view.openedCollapsibles.findIndex(c => c === component.id);
+            if (idx === -1) {
+              self.$store.state.view.openedCollapsibles.push(component.id);
+            }
+          },
+        },
       }, this.$slots.default);
+    },
+  }),
+  SEPARATOR: component => Vue.component('KAppSeparator', {
+    render(h) {
+      const self = this;
+      return h('div', {
+        class: 'kcv-separator',
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        style: DEFAULT_STYLE_FUNCTION(component),
+      }, [
+        component.attributes.iconname
+          ? h(QIcon, {
+            class: 'kcv-separator-icon',
+            props: {
+              name: `mdi-${component.attributes.iconname}`,
+              color: 'app-main-color',
+            },
+          })
+          : null,
+        component.title
+          ? h('div', {
+            class: 'kcv-separator-title',
+          }, component.title)
+          : null,
+        component.attributes.iconbutton
+          ? h(QIcon, {
+            class: 'kcv-separator-right',
+            props: {
+              name: `mdi-${component.attributes.iconbutton}`,
+              color: 'app-main-color',
+            },
+            nativeOn: {
+              click: () => {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: true,
+                });
+              },
+            },
+          })
+          : null,
+        component.attributes.info
+          ? h(QIcon, {
+            class: 'kcv-separator-right',
+            props: {
+              name: 'mdi-information-outline',
+              color: 'app-main-color',
+            },
+            nativeOn: {
+              mouseover: () => {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: true,
+                });
+              },
+              mouseleave: () => {
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                  operation: APPS_OPERATION.USER_ACTION,
+                  component: {
+                    ...component,
+                    components: [],
+                  },
+                  booleanValue: false,
+                });
+              },
+            },
+          })
+          : null,
+      ]);
     },
   }),
   TREE: (component) => {
@@ -148,16 +255,19 @@ export const COMPONENTS = {
         };
       },
       render(h) {
+        const self = this;
         return h('div', {
-          staticClass: 'kcv-tree-container',
+          class: 'kcv-tree-container',
           style: DEFAULT_STYLE_FUNCTION(component),
         },
         [
-          h('div', {
-            staticClass: 'kcv-tree-legend',
-          }, component.name),
+          component.name
+            ? h('div', {
+              class: 'kcv-tree-legend',
+            }, component.name)
+            : null,
           h(QTree, {
-            staticClass: 'kcv-tree',
+            class: 'kcv-tree',
             attrs: {
               id: `${component.applicationId}-${component.id}`,
             },
@@ -171,11 +281,12 @@ export const COMPONENTS = {
               color: 'app-main-color',
               controlColor: 'app-main-color',
               textColor: 'app-main-color',
+              dense: true,
             },
             on: {
               'update:ticked': (values) => {
-                this.ticked = values;
-                this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                self.ticked = values;
+                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
@@ -185,11 +296,11 @@ export const COMPONENTS = {
                 });
               },
               'update:selected': (value) => {
-                this.selected = value;
+                self.selected = value;
                 // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:selected', id: component.id, value });
               },
               'update:expanded': (value) => {
-                this.expanded = value;
+                self.expanded = value;
                 // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:expanded', id: component.id, value });
               },
             },
@@ -206,11 +317,31 @@ export const COMPONENTS = {
       render(h) {
         return h('div', {
           staticClass: 'kcv-label',
+          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title', 'kcv-ellipsis': component.attributes.ellipsis, 'kcv-with-icon': component.attributes.iconname },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
           style: DEFAULT_STYLE_FUNCTION(component),
-        }, component.content);
+        }, [
+          component.attributes.iconname
+            ? h(QIcon, {
+              class: ['kcv-label-icon', component.attributes.toggle ? 'kcv-label-toggle' : ''],
+              props: {
+                name: `mdi-${component.attributes.iconname}`,
+                color: 'app-main-color',
+              },
+            })
+            : null,
+          component.content,
+          component.attributes.tooltip
+            ? h(QTooltip, {
+              props: {
+                anchor: 'bottom left',
+                self: 'top left',
+                offset: [-10, 0],
+              },
+            }, component.attributes.tooltip === 'true' ? component.content : component.attributes.tooltip) : null,
+        ]);
       },
     });
   },
@@ -218,28 +349,78 @@ export const COMPONENTS = {
     data() {
       return {
         component,
+        value: component.content,
+        type: 'number',
       };
     },
     render(h) {
+      // const isNumber = Number.isInteger(component.content);
+      const self = this;
       return h(QInput, {
-        staticClass: ['kcv-text-input'],
+        class: ['kcv-text-input', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
         props: {
-          value: component.content,
+          value: self.value,
           color: 'app-main-color',
           hideUnderline: true,
           dense: true,
+          type: self.type,
+          disable: !!component.attributes.disabled,
         },
         on: {
           keydown: (event) => {
             event.stopPropagation();
           },
           input: (value) => {
-            this.value = value;
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+            self.value = value;
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              operation: APPS_OPERATION.USER_ACTION,
+              component: {
+                ...component,
+                components: [],
+              },
+              // ...(self.type === 'text' && { stringValue: value }),
+              // ...(self.type === 'number' && { intValue: value }),
+              stringValue: value,
+            });
+          },
+        },
+      });
+    },
+  }),
+  COMBO: component => Vue.component('KAppCombo', {
+    data() {
+      return {
+        component,
+        value: component.attributes.selected
+          ? component.choices.find(c => c.first === component.attributes.selected).first
+          : component.choices[0].first,
+      };
+    },
+    render(h) {
+      const self = this;
+      return h(QSelect, {
+        class: ['kcv-combo', 'kcv-form-element'],
+        style: DEFAULT_STYLE_FUNCTION(component),
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        props: {
+          value: self.value,
+          options: component.choices.map(c => ({ label: c.first, value: c.second, className: 'kcv-combo-option' })),
+          color: 'app-text-color',
+          popupCover: false,
+          dense: true,
+          disable: !!component.attributes.disabled,
+        },
+        on: {
+          change: (value) => {
+            self.value = value;
+            component.attributes.selected = self.value;
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
@@ -252,14 +433,14 @@ export const COMPONENTS = {
       });
     },
   }),
-
   PUSH_BUTTON: component => Vue.component('KAppPushButton', {
     data() {
       return {};
     },
     render(h) {
+      const self = this;
       return h(QBtn, {
-        staticClass: 'kcv-pushbutton',
+        class: ['kcv-pushbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
@@ -269,11 +450,12 @@ export const COMPONENTS = {
           color: 'app-main-color',
           textColor: 'app-background-color',
           noCaps: true,
-
+          disable: !!component.attributes.disabled,
+          ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
         },
         on: {
           click: () => {
-            this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
                 ...component,
@@ -289,29 +471,45 @@ export const COMPONENTS = {
   CHECK_BUTTON: component => Vue.component('KAppCheckButton', {
     data() {
       return {
-        value: component.content !== null,
+        value: !!component.attributes.checked,
         component,
       };
     },
     render(h) {
+      const self = this;
+      const state = component.attributes.waiting ? 'waiting' : component.attributes.computing ? 'computing'
+        : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
+      const color = component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-main-color';
       return h('div', {
-        staticClass: 'kcv-checkbutton',
+        class: ['kcv-checkbutton', 'kcv-form-element', `text-${color}`, `kcv-check-${state}`, component.name === '' ? 'kcv-check-only' : 'kcv-check-with-label'],
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QCheckbox, {
           props: {
-            value: this.value,
-            color: 'app-main-color',
+            value: self.value,
+            color,
             keepColor: true,
             label: component.name,
+            disable: !!component.attributes.disabled,
+            ...(component.attributes.waiting && {
+              'checked-icon': 'mdi-loading',
+              'unchecked-icon': 'mdi-loading',
+              readonly: true,
+            }),
+            ...(component.attributes.computing && {
+              'checked-icon': 'mdi-cog-outline',
+              'unchecked-icon': 'mdi-cog-outline',
+              readonly: true,
+            }),
           },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
           on: {
             input: (value) => {
-              this.value = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              self.value = value;
+              // component.attributes.checked = value;
+              self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
                   ...component,
@@ -322,6 +520,16 @@ export const COMPONENTS = {
             },
           },
         }),
+        component.attributes.error && component.attributes.error !== 'true'
+          ? h(QTooltip, {
+            class: 'kcv-error-tooltip',
+            props: {
+              anchor: 'bottom left',
+              self: 'top left',
+              offset: [-10, 0],
+            },
+          }, component.attributes.error)
+          : null,
       ]);
     },
   }),
@@ -333,8 +541,9 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const self = this;
       return h('div', {
-        staticClass: 'kcv-checkbutton',
+        class: ['kcv-checkbutton', 'kcv-form-element'],
         style: DEFAULT_STYLE_FUNCTION(component),
       }, [
         h(QRadio, {
@@ -349,8 +558,8 @@ export const COMPONENTS = {
           },
           on: {
             input: (value) => {
-              this.value = value;
-              this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              self.value = value;
+              self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
                   ...component,
@@ -371,11 +580,12 @@ export const COMPONENTS = {
       };
     },
     render(h) {
+      const self = this;
       return h('div', {
         staticClass: 'kcv-text',
         class: {
           'kcv-collapse': component.attributes.collapse,
-          'kcv-collapsed': this.collapsed,
+          'kcv-collapsed': self.collapsed,
         },
         attrs: {
           'data-simplebar': 'data-simplebar',
@@ -396,14 +606,14 @@ export const COMPONENTS = {
             staticClass: 'kcv-collapse-button',
             on: {
               click: () => {
-                this.collapsed = !this.collapsed;
+                self.collapsed = !self.collapsed;
               },
             },
           }, [
             h(QIcon, {
               staticClass: 'kcv-collapse-icon',
               props: {
-                name: this.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
+                name: self.collapsed ? 'mdi-arrow-down' : 'mdi-arrow-up',
                 color: 'app-main-color',
                 size: 'sm',
               },
@@ -415,7 +625,8 @@ export const COMPONENTS = {
 
   UNKNOWN: component => Vue.component('KAppUnknown', {
     render(h) {
-      return h('p', {
+      return h('div', {
+        class: 'kcv-unknown',
         attrs: {
           id: `${component.applicationId}-${component.id}`,
         },
@@ -426,6 +637,8 @@ export const COMPONENTS = {
 };
 
 export function createComponent(node, h, options = {}) {
+  // console.info(`Call create component // node.id: ${node.id} node.name: ${node.name}; node.type: ${node.type}; node.content: ${node.content}; node.components.length: ${node.components.length}
+  // node.attributes:\n${JSON.stringify(node.attributes, null, 2)};`);
   // Handle empty elements and return empty array in case the dNode passed in is empty
   if (!node) {
     return [];
@@ -451,6 +664,9 @@ export function createComponent(node, h, options = {}) {
     }
     case APPS_COMPONENTS.PANEL:
       component = COMPONENTS.PANEL(node);
+      break;
+    case APPS_COMPONENTS.SEPARATOR:
+      component = COMPONENTS.SEPARATOR(node);
       break;
     case APPS_COMPONENTS.LABEL:
       component = COMPONENTS.LABEL(node);
@@ -481,6 +697,9 @@ export function createComponent(node, h, options = {}) {
       break;
     case APPS_COMPONENTS.TEXT:
       component = COMPONENTS.TEXT(node);
+      break;
+    case APPS_COMPONENTS.COMBO:
+      component = COMPONENTS.COMBO(node);
       break;
     default:
       component = COMPONENTS.UNKNOWN(node);

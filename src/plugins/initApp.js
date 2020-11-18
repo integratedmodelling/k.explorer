@@ -1,7 +1,8 @@
 import { WEB_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
 import { MAP_CONSTANTS, DEFAULT_OPTIONS } from 'shared/MapConstants';
+import * as colors from 'shared/colors';
 import { axiosInstance } from 'plugins/axios';
-import { Cookies, colors } from 'quasar';
+import { Cookies } from 'quasar';
 import Vue from 'vue';
 
 const eventBus = new Vue();
@@ -96,6 +97,11 @@ export default ({ store }) => {
     store.state.view.helpBaseUrl = `http://${localHelp}`;
   } else {
     store.state.view.helpBaseUrl = HELP_CONSTANTS.DEFAULT_HELP_BASE_URL;
+  }
+
+  const app = urlParams.get(WEB_CONSTANTS.PARAMS_APP);
+  if (app) {
+    store.state.view.klabApp = app;
   }
 
   /**

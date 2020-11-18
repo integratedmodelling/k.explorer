@@ -98,6 +98,8 @@ export const IN = Object.freeze({
   TYPE_ENGINEEVENT: 'EngineEvent',
   TYPE_SETUPINTERFACE: 'SetupInterface',
   TYPE_VIEWACTION: 'ViewAction',
+  TYPE_VIEWAVAILABLE: 'ViewAvailable',
+  TYPE_VIEWSETTING: 'ViewSetting',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -121,6 +123,8 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_ENGINEEVENT: 'EngineEvent',
   PAYLOAD_CLASS_LAYOUT: 'Layout',
   PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
+  PAYLOAD_CLASS_VIEWSETTING: 'ViewSetting',
+  PAYLOAD_CLASS_KNOWLEDGEVIEWREFERENCE: 'KnowledgeViewReference',
 });
 
 export const URLS = Object.freeze({

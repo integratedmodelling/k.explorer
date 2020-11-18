@@ -7,6 +7,7 @@ import Fill from 'ol/style/Fill';
 import Stroke from 'ol/style/Stroke';
 import Text from 'ol/style/Text';
 import Icon from 'ol/style/Icon';
+import StrokePattern from 'ol-ext/style/StrokePattern';
 import Feature from 'ol/Feature';
 import Mask from 'ol-ext/filter/Mask';
 import * as control from 'ol/control';
@@ -84,6 +85,30 @@ export const MAP_STYLES = {
     fill: new Fill({
       color: 'rgba(38, 166, 154, 0.2)',
     }),
+  }),
+  POLYGON_PROPOSED_CONTEXT: new Style({
+    // default OL style
+    fill: new Fill({
+      color: 'rgba(255,255,255,0.5)',
+    }),
+    stroke: new StrokePattern({
+      width: 8,
+      pattern: 'hatch',
+      color: '#3187ca',
+      offset: 0,
+      scale: 0.75,
+      fill: new Fill({ color: '#FFFFFF' }),
+      size: 2,
+      spacing: 5,
+      angle: 45,
+    }),
+    /*
+    stroke: new Stroke({
+      color: '#3399CC',
+      width: 2,
+      lineDash: [8, 5, 2, 5],
+    }),
+     */
   }),
   POLYGON_OBSERVATION_STYLE: new Style({
     stroke: new Stroke({

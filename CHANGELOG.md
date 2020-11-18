@@ -6,6 +6,20 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.12.0
+### Added
+- Views implemented, starting with tables
+- Custom styles
+- Implemented separator
+- Show/hide observations, views and k.Explorer components
+### Improvements
+- Better box implementation in app
+- Inputs feedback from engine
+- More options of k.App language implemented
+- Preview context active
+- Update MDI Icons
+### Solved
+- Change the time scale selector to respect UTC
 ## 0.11.0
 ### Added
 - First implementation of apps on left or center panel
@@ -39,13 +53,13 @@ is not available.
 ### Added
 - Time selector
 ## Improvements
-- Download of "layer" is linked to timestamp selected in this moment
+- Download of "layer" is linked to timestamp selected at this moment
 
 ## 0.10.1 - 2020-01-31
 ## Solved
 - Problem with context mask due to a mistake in declaring dependencies with ol library
 - Solve a bug with second level children: if the parent was checked before open, the second level is not loaded
-- Solve a bug with observation visualization: if an element has children and it is in main tree, checking parent broke the showing part
+- Solve a bug with observation visualization: if an element has children, and it is in main tree, checking parent broke the showing part
 
 ## 0.10.0 - 2020-01-15
 ### Added

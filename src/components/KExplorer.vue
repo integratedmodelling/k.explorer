@@ -25,7 +25,7 @@
           <klab-log v-if="logVisible"></klab-log>
         </div>
         <transition name="component-fade" mode="out-in">
-          <klab-main-control v-if="mainViewer.mainControl"></klab-main-control>
+          <klab-main-control v-if="mainViewer.mainControl" v-show="isTreeVisible"></klab-main-control>
         </transition>
         <transition appear
                     enter-active-class="animated zoomIn"
@@ -91,6 +91,7 @@ export default {
       'searchIsFocused',
       'mainViewerName',
       'mainViewer',
+      'isTreeVisible',
       'isInModalMode',
       'spinnerErrorMessage',
       'isMainControlDocked',

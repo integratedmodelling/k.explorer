@@ -5,6 +5,7 @@
          v-if="hasContext && !hasTasks(contextId)"
     ><q-icon name="mdi-close-circle-outline">
       <q-tooltip
+        :delay="600"
         :offset="[0, 8]"
         :self="tooltipAnchor('top')"
         :anchor="tooltipAnchor('bottom')"
@@ -15,6 +16,7 @@
          v-if="hasContext && hasTasks(contextId)"
     ><q-icon name="mdi-stop-circle-outline">
       <q-tooltip
+        :delay="600"
         :offset="[0, 8]"
         :self="tooltipAnchor('top')"
         :anchor="tooltipAnchor('bottom')"

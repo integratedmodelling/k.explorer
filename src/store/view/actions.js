@@ -1,5 +1,7 @@
 import moment from 'moment';
-import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
+import { eventBus } from 'plugins/initApp';
+import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS,
+  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import { transform } from 'ol/proj';
@@ -95,6 +97,10 @@ export default {
       dispatch('setLeftMenuState', viewer.leftMenuState);
       dispatch('setLeftMenuContent', viewer.leftMenuContent);
     }
+  },
+
+  setTreeVisible({ commit }, visible) {
+    commit('SET_TREE_VISIBLE', visible);
   },
 
   setLeftMenuContent: ({ commit }, component) => {
@@ -382,6 +388,14 @@ export default {
       },
       */
     });
+    if (layout !== null) {
+      localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID, layout.name);
+    } else {
+      const storedApp = localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+      if (storedApp) {
+        localStorage.removeItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
+      }
+    }
   },
 
   setEngineEvent: ({ commit }, event) => {
@@ -396,4 +410,47 @@ export default {
     commit('VIEW_ACTION', action);
   },
 
+  viewSetting: ({ getters, rootGetters, dispatch }, viewSetting) => {
+    if (viewSetting) {
+      switch (viewSetting.target) {
+        case VIEW_SETTING.OBSERVATION:
+          eventBus.$emit(CUSTOM_EVENTS.SELECT_ELEMENT, {
+            id: viewSetting.targetId,
+            selected: viewSetting.operation === VIEW_SETTING.SHOW,
+          });
+          break;
+        case VIEW_SETTING.VIEW:
+          dispatch('data/showKnowledgeView', viewSetting.targetId, { root: true });
+          break;
+        case VIEW_SETTING.TREE:
+          // check if we need to change the attribute
+          if (getters.mainViewerName === VIEWERS.DATA_VIEWER.name && rootGetters['data/hasContext']) {
+            dispatch('setTreeVisible', viewSetting.operation === VIEW_SETTING.SHOW);
+          }
+          break;
+        case VIEW_SETTING.REPORT:
+          if (getters.mainViewerName === VIEWERS.REPORT_VIEWER.name && viewSetting.operation === VIEW_SETTING.HIDE) {
+            dispatch('setMainViewer', getters.isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER);
+          } else if (getters.mainViewerName !== VIEWERS.REPORT_VIEWER.name && rootGetters['data/hasObservations']
+            && viewSetting.operation === VIEW_SETTING.SHOW) {
+            dispatch('setMainViewer', VIEWERS.REPORT_VIEWER);
+          }
+          break;
+        case VIEW_SETTING.DATAFLOW:
+          if (getters.mainViewerName === VIEWERS.DATAFLOW_VIEWER.name && viewSetting.operation === VIEW_SETTING.HIDE) {
+            dispatch('setMainViewer', getters.isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER);
+          } else if (getters.mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && rootGetters['data/hasContext']
+            && viewSetting.operation === VIEW_SETTING.SHOW) {
+            dispatch('setMainViewer', VIEWERS.DATAFLOW_VIEWER);
+          }
+          break;
+        default:
+          break;
+      }
+    }
+  },
+
+  setShowSettings: ({ commit }, show) => {
+    commit('SHOW_SETTINGS', show);
+  },
 };

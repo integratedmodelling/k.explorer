@@ -163,7 +163,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { SCALE_TYPE, SCALE_VALUES, SCALE_UNITS } from 'shared/Constants';
 
@@ -251,6 +251,12 @@ export default {
                 && this.timeEnd === this.nextScale.end))))) {
           return;
         }
+        const timeStart = new Date(this.timeStart.getTime());
+        const timeEnd = new Date(this.timeEnd.getTime());
+        if ([SCALE_VALUES.MILLENNIUM, SCALE_VALUES.CENTURY, SCALE_VALUES.DECADE, SCALE_VALUES.YEAR, SCALE_VALUES.MONTH, SCALE_VALUES.WEEK, SCALE_VALUES.DAY].includes(this.unit)) {
+          timeStart.setUTCHours(0, 0, 0, 0);
+          timeEnd.setUTCHours(0, 0, 0, 0);
+        }
         if (!this.hasContext) {
           this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
             scaleReference: this.scaleReference,
@@ -261,8 +267,8 @@ export default {
             ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
               timeResolutionMultiplier: this.timeResolutionMultiplier,
               timeUnit: this.unit,
-              start: this.timeStart.getTime(),
-              end: this.timeEnd.getTime(),
+              start: timeStart.getTime(),
+              end: timeEnd.getTime(),
             }),
           }, this.$store.state.data.session).body);
         }
@@ -274,8 +280,8 @@ export default {
           }),
           ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
             timeResolutionMultiplier: this.timeResolutionMultiplier,
-            start: this.timeStart.getTime(),
-            end: this.timeEnd.getTime(),
+            start: timeStart.getTime(),
+            end: timeEnd.getTime(),
           }),
           next: this.hasContext,
         });
@@ -291,34 +297,40 @@ export default {
       // As ISO 8601-1 say:
       // century: time scale unit (3.1.1.7) of 100 calendar years (3.1.2.21)duration (3.1.1.8), beginning with a year whose year number is divisible without remainder by 100
       // decade: time scale unit (3.1.1.7) of 10 calendar years (3.1.2.21), beginning with a year whose year number is divisible without remainder by ten
+      const date = new Date();
       switch (this.unit) {
         case SCALE_VALUES.CENTURY:
-          this.timeStart = new Date(0, 0, 1);
-          this.timeStart.setFullYear((this.unitInputs.century - 1) * 100);
+          date.setUTCDate(1);
+          date.setUTCMonth(0);
+          date.setUTCFullYear((this.unitInputs.century - 1) * 100);
           break;
         case SCALE_VALUES.DECADE:
-          this.timeStart = new Date(0, 0, 1);
-          this.timeStart.setFullYear(((this.unitInputs.century - 1) * 100) + this.unitInputs.decade);
+          this.unitInputs.decade = this.unitInputs.decade - (this.unitInputs.decade % 10);
+          date.setUTCDate(1);
+          date.setUTCMonth(0);
+          date.setUTCFullYear(((this.unitInputs.century - 1) * 100) + this.unitInputs.decade);
           break;
         case SCALE_VALUES.YEAR:
-          this.timeStart = new Date(0, 0, 1);
-          this.timeStart.setFullYear(this.unitInputs.year);
+          date.setUTCFullYear(this.unitInputs.year, 0, 1);
           break;
         case SCALE_VALUES.MONTH:
-          this.timeStart = new Date(0, this.unitInputs.month, 1);
-          this.timeStart.setFullYear(this.unitInputs.year);
+          date.setUTCDate(1);
+          date.setUTCMonth(this.unitInputs.month);
+          date.setUTCFullYear(this.unitInputs.year);
           break;
         case SCALE_VALUES.WEEK:
           if (event > 53) {
             this.unitInputs.week = moment(this.timeStart).week();
-          } else {
-            this.timeStart = new Date(0, 0, (1 + (this.unitInputs.week - 1) * 7));
-            this.timeStart.setFullYear(this.unitInputs.year);
+            return;
           }
+          date.setUTCMonth(0);
+          date.setUTCDate(1 + (this.unitInputs.week - 1) * 7);
+          date.setUTCFullYear(this.unitInputs.year);
           break;
         default:
-          break;
+          return;
       }
+      this.timeStart = date;
       this.initUnitInputs();
       this.calculateEnd();
     },
@@ -341,13 +353,14 @@ export default {
     },
     getFormat() {
       switch (this.unit) {
+        case SCALE_VALUES.MILLENNIUM:
         case SCALE_VALUES.CENTURY:
         case SCALE_VALUES.DECADE:
         case SCALE_VALUES.YEAR:
         case SCALE_VALUES.MONTH:
         case SCALE_VALUES.WEEK:
-          return 'DD/MM/YYYY';
         case SCALE_VALUES.DAY:
+          return 'DD/MM/YYYY';
         case SCALE_VALUES.HOUR:
           return 'DD/MM/YYYY HH:mm';
         case SCALE_VALUES.MINUTE:

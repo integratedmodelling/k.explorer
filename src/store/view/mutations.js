@@ -1,4 +1,4 @@
-import { pushElementInFixedQueue, findInLayout } from 'shared/Helpers';
+import { pushElementInFixedQueue, findInLayout, findComponent } from 'shared/Helpers';
 import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 
@@ -56,6 +56,10 @@ export default {
    */
   SET_MAIN_VIEWER: (state, viewer) => {
     state.mainViewer = viewer;
+  },
+
+  SET_TREE_VISIBLE: (state, visible) => {
+    state.treeVisible = visible;
   },
 
   /**
@@ -371,6 +375,7 @@ export default {
     }
      */
     state.layout = layout;
+    state.openedCollapsibles.splice(0, state.openedCollapsibles.length);
     /*
     if (!state.layouts.find(l => l.id === layout.id)) {
       state.layouts.push(layout);
@@ -386,29 +391,7 @@ export default {
       });
       return;
     }
-    const findComponent = (layout, key = null) => {
-      if (layout && key !== null) {
-        const { reduce } = [];
-        const find = (result, c) => {
-          if (result || !c) {
-            return result;
-          }
-          if (Array.isArray(c)) {
-            return reduce.call(Object(c), find, result);
-          }
-          if (c.id === key) {
-            return c;
-          }
-          if (c !== null && c.components && c.components.length > 0) {
-            return find(null, c.components);
-          }
-          return null;
-        };
-        return find(null, layout);
-      }
-      return null;
-    };
-    const existingComponent = findInLayout(state.layout, component.id);
+    const existingComponent = state.layout && findInLayout(state.layout, component.id);
     if (existingComponent) {
       console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
       Object.assign(existingComponent, component);
@@ -451,24 +434,19 @@ export default {
 
   VIEW_ACTION: (state, action) => {
     if (state.layout) {
-      const component = findInLayout(state.layout, action.componentTag, (n, needle) => {
-        if (n.attributes.tag === needle) {
+      const component = findInLayout(state.layout, action.component.id, (n, needle) => {
+        if (n.id === needle) {
           return n;
         }
         return null;
       });
       if (component) {
-        switch (component.type) {
-          case APPS_COMPONENTS.LABEL:
-          case APPS_COMPONENTS.TEXT:
-          case APPS_COMPONENTS.TEXT_INPUT:
-            component.content = action.stringValue;
-            break;
-          default:
-            component.content = action.stringValue;
-            break;
-        }
+        Object.assign(component, action.component);
       }
     }
+  },
+
+  SHOW_SETTINGS: (state, show) => {
+    state.showSettings = show;
   },
 };

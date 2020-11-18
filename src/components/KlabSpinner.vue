@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { colors } from 'quasar';
+import * as colors from 'shared/colors';
 import { mapGetters } from 'vuex';
 
 export default {

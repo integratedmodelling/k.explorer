@@ -192,6 +192,14 @@ const PARSERS = {
     dispatch('view/viewAction', action, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view action received', action);
   },
+  [IN.TYPE_VIEWSETTING]: ({ payload: viewSetting }, { dispatch }) => {
+    dispatch('view/viewSetting', viewSetting, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view setting received', viewSetting);
+  },
+  [IN.TYPE_VIEWAVAILABLE]: ({ payload: knowledgeView }, { dispatch }) => {
+    dispatch('data/addKnowledgeView', knowledgeView, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view available', knowledgeView);
+  },
 };
 
 /**

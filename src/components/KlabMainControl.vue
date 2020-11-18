@@ -114,43 +114,7 @@
         </div>
         <observations-timeline class="mc-timeline" v-if="contextHasTime"></observations-timeline>
         <div class="klab-bottom-right-actions">
-          <div class="klab-button klab-action">
-            <div class="klab-font klab-im-logo float-left" @click.prevent="paletteOpen = !paletteOpen"></div>
-            <q-icon name="mdi-chevron-down" class="float-left klab-item" style="padding: 3px 0 0 8px"></q-icon>
-          </div>
-          <q-tooltip
-            :offset="[0, 8]"
-            self="top middle"
-            anchor="bottom middle"
-          >{{ $t('tooltips.palette') }}</q-tooltip>
-          <!--
-          <q-btn-dropdown
-            color="grey-6"
-            dense
-            size="sm"
-            v-model="paletteOpen"
-            flat
-          >
-            <q-list>
-              <q-item>
-                <q-item-main>
-                  <q-item-tile label>{{ $t('messages.availableInFuture') }}</q-item-tile>
-                </q-item-main>
-              </q-item>
-            </q-list>
-
-          </q-btn-dropdown>
-
-
-          <div class="klab-button klab-action">
-            <div class="klab-item klab-font klab-aries-logo klab-icon"></div>
-            <q-tooltip
-              :offset="[0, 8]"
-              self="top middle"
-              anchor="bottom middle"
-            >{{ $t('tooltips.unknown') }}</q-tooltip>
-          </div>
-          -->
+          <knowledge-views-selector :docked="false"></knowledge-views-selector>
         </div>
       </q-card-actions>
     </q-card>
@@ -166,7 +130,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
-import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS, CONSTANTS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS, CONSTANTS, KNOWLEDGE_VIEWS } from 'shared/Constants';
 import { dom, debounce } from 'quasar';
 import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
@@ -178,6 +142,7 @@ import ObservationsTimeline from 'components/ObservationsTimeline.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
+import KnowledgeViewsSelector from 'components/KnowledgeViewsSelector.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
 
 const { width, height } = dom;
@@ -196,6 +161,7 @@ export default {
     MainActionsButtons,
     StopActionsButtons,
     ObservationsTimeline,
+    KnowledgeViewsSelector,
   },
   directives: {
     Draggable,
@@ -225,14 +191,16 @@ export default {
       selectedTab: 'klab-tree-pane',
       draggableElement: undefined,
       draggableElementWidth: 0,
-      paletteOpen: false,
+      kvListOpen: false,
       windowSide: 'left',
+      KNOWLEDGE_VIEWS,
     };
   },
   computed: {
     ...mapGetters('data', [
       'hasContext',
       'contextHasTime',
+      'knowledgeViews',
     ]),
     ...mapGetters('stomp', [
       'hasTasks',
@@ -477,8 +445,6 @@ export default {
       .klab-button
         font-size 18px
         padding 4px
-        &:hover
-          color $main-control-main-color !important
 
     .klab-main-actions
       position relative
@@ -592,6 +558,13 @@ export default {
         border-radius 4px
         margin 3px 0 0 0
         padding 2px 5px 3px !important
-        &:hover
+        &:hover:not(.disabled)
           background-color rgba(135, 135, 135, .2)
+  .mc-kv-popover
+    border-radius 6px
+    border none
+    .mc-kv-container
+      background-color $grey-8
+      border-radius 2px !important
+
 </style>
