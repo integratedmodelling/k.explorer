@@ -452,7 +452,7 @@ export default {
     }
     state.scaleReference = scaleReference;
     if (!state.context) {
-      if (state.scaleReference.shape) {
+      if (state.scaleReference.shape !== null) {
         state.proposedContext = WKTInstance.readGeometry(state.scaleReference.shape, {
           dataProjection: MAP_CONSTANTS.PROJ_EPSG_4326,
           featureProjection: MAP_CONSTANTS.PROJ_EPSG_3857,

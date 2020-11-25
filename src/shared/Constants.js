@@ -408,6 +408,7 @@ export const WEB_CONSTANTS = {
   PARAMS_LOG_VISIBLE: 'visible',
   PARAMS_LOCAL_HELP: 'localhelp',
   PARAMS_APP: 'app',
+  PARAMS_STOMP_DEBUG: 'stomp-debug',
   /**
    * Cookies name
    */
