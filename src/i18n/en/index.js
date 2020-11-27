@@ -193,6 +193,7 @@ export default {
     noGroupsAssigned: 'No groups assigned',
     appLoading: 'Loading app <strong>{app}</strong>',
     errorLoadingApp: 'Error loading app <strong>{app}</strong>',
+    errorLoggingOut: 'Error logging out, contact with support',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

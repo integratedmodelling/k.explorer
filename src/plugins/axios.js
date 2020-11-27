@@ -9,6 +9,9 @@ export default ({ Vue, store }) => {
   } else {
     console.warn('No session established en axios header, check it');
   }
+  if (store.state.data.token) {
+    axiosInstance.defaults.headers.common.Authentication = store.state.data.token;
+  }
   Vue.prototype.$axios = axiosInstance;
 };
 

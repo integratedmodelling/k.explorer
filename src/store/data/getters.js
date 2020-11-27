@@ -129,4 +129,9 @@ export default {
    * Is crossing IDL
    */
   isCrossingIDL: state => state.crossingIDL,
+
+  /**
+   * Is local or hosted in remote engine
+   */
+  isLocal: state => state.local,
 };
