@@ -525,6 +525,7 @@ export const CUSTOM_EVENTS = {
   COMPONENT_ACTION: 'componentaction',
   LAYOUT_CHANGED: 'layoutchanged',
   SELECT_ELEMENT: 'selectelement',
+  PROPOSED_CONTEXT_CHANGE: 'proposedcontextchange',
 };
 
 export const SCALE_TYPE = {

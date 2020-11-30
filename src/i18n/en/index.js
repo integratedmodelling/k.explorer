@@ -120,6 +120,7 @@ export default {
       m10: 'November',
       m11: 'December',
     },
+    removeProposedContext: 'Remove context',
     levelDebug: 'Debug',
     levelInfo: 'Info',
     levelWarning: 'Warning',

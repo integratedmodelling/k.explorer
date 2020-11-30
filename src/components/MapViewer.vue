@@ -59,6 +59,24 @@
     </div>
     <observation-context-menu @hide="contextMenuObservationId = null" :observation-id="contextMenuObservationId"></observation-context-menu>
     <div id="mv-extent-map" class="mv-extent-map" :class="{ 'mv-extent-map-hide': !hasExtentMap }"></div>
+    <q-btn
+      class="mv-remove-proposed-context"
+      :style="proposedContextCenter !== null ? proposedContextCenter : {}"
+      icon="mdi-close"
+      size="lg"
+      round
+      v-if="!hasContext && proposedContext !== null"
+      @click.native="sendSpatialLocation(null)"
+    >
+      <!--
+      <q-tooltip
+        :offset="[0, 8]"
+        self="bottom middle"
+        anchor="top middle"
+        :delay="1000"
+      >{{ $t('label.removeProposedContext') }}</q-tooltip>
+      -->
+    </q-btn>
   </div>
 </template>
 
@@ -71,7 +89,7 @@ import { MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConsta
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
 import { createMarker, findDifference } from 'shared/Utils';
-import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, OBSERVATION_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
 import { transform, transformExtent } from 'ol/proj';
@@ -89,7 +107,7 @@ import Feature from 'ol/Feature';
 import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
-import { getArea } from 'ol/extent';
+import { getArea, getCenter, intersects, containsCoordinate } from 'ol/extent';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -116,6 +134,7 @@ export default {
       hasExtentMap: false,
       view: null,
       movedWithContext: false,
+      noNewRegion: false,
       layers: new Collection(),
       zIndexCounter: 0,
       baseLayers: null,
@@ -129,6 +148,7 @@ export default {
       popupOverlay: undefined,
       contextLayer: null,
       proposedContextLayer: null,
+      proposedContextCenter: null,
       uploadConfig: {
         refId: null,
         onUploadProgress: (uploadProgress) => {
@@ -233,7 +253,8 @@ export default {
         this.movedWithContext = true;
         return;
       }
-      if (this.isDrawMode) {
+      if (this.isDrawMode || this.noNewRegion) {
+        this.noNewRegion = false;
         return;
       }
       // const { map } = event;
@@ -387,6 +408,7 @@ export default {
       if (this.proposedContextLayer !== null) {
         this.map.removeLayer(this.proposedContextLayer);
         this.extentMap.removeLayer(this.proposedContextLayer);
+        this.proposedContextCenter = null;
       }
       if (this.proposedContext !== null && !this.hasContext) {
         if (!(this.proposedContext instanceof Point)) {
@@ -401,7 +423,33 @@ export default {
             style: MAP_STYLES.POLYGON_PROPOSED_CONTEXT,
           });
           this.map.addLayer(this.proposedContextLayer);
-          if (getArea(this.proposedContext.getExtent()) * 100 / getArea(this.map.getView().calculateExtent(this.map.getSize())) > 125) {
+          // check where we are
+          const getClosePosition = () => {
+            const center = getCenter(this.proposedContext.getExtent());
+            let proposedContextCenter;
+            if (containsCoordinate(this.map.getView().calculateExtent(this.map.getSize()), center)) {
+              const pixels = this.map.getPixelFromCoordinate(center);
+              return { top: `${pixels[1]}px`, left: `${pixels[0]}px` };
+            }
+            return { bottom: '24px', left: '24px', opacity: 1 };
+          };
+          const mapExtent = this.map.getView().calculateExtent(this.map.getSize());
+          if (!intersects(this.proposedContext.getExtent(), mapExtent)) {
+            this.$nextTick(() => {
+              this.noNewRegion = true;
+              this.view.fit(this.proposedContext, {
+                padding: [10, 10, 10, 10],
+                constrainResolution: false,
+                callback: () => {
+                  this.proposedContextCenter = getClosePosition();
+                },
+              });
+            });
+          } else {
+            this.proposedContextCenter = getClosePosition();
+          }
+          // than check how large we are
+          if (getArea(this.proposedContext.getExtent()) * 100 / getArea(mapExtent) > 125) {
             // proposed context is more than 25% bigger than map, so show viewer
             this.hasExtentMap = true;
             this.$nextTick(() => {
@@ -545,6 +593,8 @@ export default {
           timeout: 500,
         });
         */
+      } else {
+        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION({ wktShape: null }, this.session).body);
       }
     },
     doGeolocation() {
@@ -801,8 +851,11 @@ export default {
         this.popupOverlay.setPosition(undefined);
       }
     },
-    proposedContext() {
+    proposedContext(newValue) {
       this.drawProposedContext();
+      this.$nextTick(() => {
+        this.setSpinner({ ...SPINNER_CONSTANTS.SPINNER_STOPPED, owner: 'KlabSearch' });
+      });
     },
     topLayer(newValue) {
       if (newValue === null || !this.mapSelection.locked) {
@@ -1105,4 +1158,14 @@ export default {
     border 1px solid var(--app-main-color)
     &.mv-extent-map-hide
       opacity 0
+  .mv-remove-proposed-context
+    position absolute
+    bottom 10px
+    left 10px
+    opacity .3
+    background-color #3187ca
+    color white !important
+    &:hover
+      opacity 1
+
 </style>
