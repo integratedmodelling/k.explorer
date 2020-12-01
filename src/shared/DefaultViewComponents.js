@@ -376,6 +376,7 @@ export const COMPONENTS = {
           },
           input: (value) => {
             self.value = value;
+            component.content = value;
             self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
               operation: APPS_OPERATION.USER_ACTION,
               component: {
@@ -508,7 +509,7 @@ export const COMPONENTS = {
           on: {
             input: (value) => {
               self.value = value;
-              // component.attributes.checked = value;
+              component.attributes.checked = value;
               self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                 operation: APPS_OPERATION.USER_ACTION,
                 component: {
