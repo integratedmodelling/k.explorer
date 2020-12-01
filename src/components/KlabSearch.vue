@@ -402,11 +402,7 @@ export default {
           added: true,
         }, this.$store.state.data.session).body);
         if (this.fuzzyMode) {
-          this.setContextCustomLabel(this.$t('messages.waitingLocation', { location: item.label }));
-          this.setSpinner({
-            ...SPINNER_CONSTANTS.SPINNER_LOADING,
-            owner: this.$options.name,
-          });
+          // this.setContextCustomLabel(this.$t('messages.waitingLocation', { location: item.label }));
           this.$nextTick(() => {
             this.searchEnd({});
           });

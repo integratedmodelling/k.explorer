@@ -12,7 +12,7 @@
         @mouseleave.native="mouseFabLeave"
       >
         <q-fab-action
-          v-if="layout !== null"
+          v-if="layout !== null || !isLocal"
           color="app-background-color"
           text-color="app-main-color"
           @click="exitApp"
@@ -23,7 +23,7 @@
             anchor="center right"
             self="center left"
             :offset="[8, 0]"
-            :delay="600">{{ isApp ? $t('label.appsLogout') : $t('label.appsClose') }}</q-tooltip>
+            :delay="600">{{ isApp || !isLocal ? $t('label.appsLogout') : $t('label.appsClose') }}</q-tooltip>
         </q-fab-action>
         <q-fab-action
           color="app-background-color"
@@ -119,6 +119,7 @@
 </template>
 
 <script>
+import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { getBase64Resource } from 'shared/Helpers';
@@ -144,6 +145,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'sessionReference',
+      'isLocal',
     ]),
     ...mapGetters('view', [
       'isApp',
@@ -208,15 +210,47 @@ export default {
       });
     },
     exitApp() {
-      if (this.layout) {
-        if (this.isApp) {
-          this.setLayout(null);
-          this.$nextTick(() => {
+      if (!this.local) {
+        this.$nextTick(() => {
+          if (this.isApp && this.sessionReference.publicApps.length > 1) {
             window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
+          } else {
+            this.logout();
+          }
+        });
+      } else if (this.layout) {
+        this.setLayout(null);
+      }
+    },
+    logout() {
+      if (this.token !== null) {
+        axiosInstance.post(`${process.env.WS_BASE_URL}${process.env.API_LOGOUT}`, {})
+          .then(({ status }) => {
+            if (status === 205 /* Reset Content */) {
+              window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
+            } else {
+              this.$q.notify({
+                message: this.$t('messages.errorLoggingOut'),
+                type: 'negative',
+                icon: 'mdi-alert-circle',
+                timeout: 2000,
+              });
+              console.error(`Strange status: ${status}`);
+            }
+          }).catch((error) => {
+            this.$q.notify({
+              message: this.$t('messages.errorLoggingOut'),
+              type: 'negative',
+              icon: 'mdi-alert-circle',
+              timeout: 2000,
+            });
+            if (error.response && error.response.status === 403) {
+              console.error('Probably bad token');
+            }
+            console.error(`Error logging out: ${error}`);
           });
-        } else {
-          this.setLayout(null);
-        }
+      } else {
+        window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
       }
     },
     mouseActionEnter(actionName) {

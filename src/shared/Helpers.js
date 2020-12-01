@@ -307,8 +307,8 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
         });
       }
     })
-    .catch((error) => {
-      const errorObject = getError(error);
+    .catch(async (error) => {
+      const errorObject = await getError(error);
       let errorMessage = null;
       if (errorObject != null) {
         errorMessage = errorObject.message;

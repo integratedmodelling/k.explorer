@@ -334,6 +334,16 @@ export default {
   capabilities: {},
 
   /**
+   * Indicate if k.Explorer is hosted in local or remote engine
+   */
+  local: false,
+
+  /**
+   * Token for logout
+   */
+  token: null,
+
+  /**
    * Version
    */
   packageVersion: process.env.PACKAGE_VERSION || '0',

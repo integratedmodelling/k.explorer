@@ -23,6 +23,9 @@ export default ({ store }) => {
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
   const saveDockedStatus = Cookies.has(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
 
+  const local = urlParams.get(WEB_CONSTANTS.PARAMS_LOCAL);
+  const token = urlParams.get(WEB_CONSTANTS.PARAMS_TOKEN);
+
   Vue.mixin({
     methods: {
       /**
@@ -75,6 +78,9 @@ export default ({ store }) => {
   if (saveDockedStatus) {
     store.state.view.mainControlDocked = Cookies.get(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
   }
+  // TODO CHANGE THIS!!!
+  store.state.data.local = !local || local === 'true';
+  store.state.data.token = token;
   console.info(`Session: ${session} / mode: ${mode}`);
   /*
   Use color.getBrand(xxx)

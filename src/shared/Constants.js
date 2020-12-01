@@ -408,6 +408,9 @@ export const WEB_CONSTANTS = {
   PARAMS_LOG_VISIBLE: 'visible',
   PARAMS_LOCAL_HELP: 'localhelp',
   PARAMS_APP: 'app',
+  PARAMS_LOCAL: 'local',
+  PARAMS_STOMP_DEBUG: 'stomp-debug',
+  PARAMS_TOKEN: 'token',
   /**
    * Cookies name
    */
@@ -522,6 +525,7 @@ export const CUSTOM_EVENTS = {
   COMPONENT_ACTION: 'componentaction',
   LAYOUT_CHANGED: 'layoutchanged',
   SELECT_ELEMENT: 'selectelement',
+  PROPOSED_CONTEXT_CHANGE: 'proposedcontextchange',
 };
 
 export const SCALE_TYPE = {
