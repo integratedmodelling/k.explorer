@@ -594,7 +594,8 @@ export default {
         });
         */
       } else {
-        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION({ wktShape: null }, this.session).body);
+        // TODO check better way
+        this.sendStompMessage(MESSAGES_BUILDERS.SPATIAL_LOCATION({ wktShape: '' }, this.session).body);
       }
     },
     doGeolocation() {
