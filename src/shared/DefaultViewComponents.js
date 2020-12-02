@@ -103,41 +103,40 @@ export const COMPONENTS = {
         }, this.$slots.default)]);
     },
   }),
-  SHELF: component => Vue.component('KAppShelf', {
-    data() {
-      return {
-        opened: this.$store.state.view.openedCollapsibles.findIndex(c => c === component.id) !== -1,
-      };
-    },
-    render(h) {
-      const self = this;
-      return h(QCollapsible, {
-        class: 'kcv-collapsible',
-        props: {
-          opened: self.opened,
-          headerClass: 'kcv-collapsible-header',
-          collapseIcon: 'mdi-dots-vertical',
-          separator: false,
-          ...(!component.attributes.parentAttributes.multiple && { group: component.attributes.parentId }),
-          label: component.name,
-        },
-        on: {
-          hide() {
-            const idx = self.$store.state.view.openedCollapsibles.findIndex(c => c === component.id);
-            if (idx !== -1) {
-              self.$store.state.view.openedCollapsibles.splice(idx, 1);
-            }
+  SHELF: (component) => {
+    if (!component.attributes.opened) {
+      component.attributes.opened = false;
+    }
+    return Vue.component('KAppShelf', {
+      data() {
+        return {
+          opened: component.attributes.opened,
+        };
+      },
+      render(h) {
+        const self = this;
+        return h(QCollapsible, {
+          class: 'kcv-collapsible',
+          props: {
+            opened: self.opened,
+            headerClass: 'kcv-collapsible-header',
+            collapseIcon: 'mdi-dots-vertical',
+            separator: false,
+            ...(!component.attributes.parentAttributes.multiple && { group: component.attributes.parentId }),
+            label: component.name,
           },
-          show() {
-            const idx = self.$store.state.view.openedCollapsibles.findIndex(c => c === component.id);
-            if (idx === -1) {
-              self.$store.state.view.openedCollapsibles.push(component.id);
-            }
+          on: {
+            hide() {
+              component.attributes.opened = false;
+            },
+            show() {
+              component.attributes.opened = true;
+            },
           },
-        },
-      }, this.$slots.default);
-    },
-  }),
+        }, this.$slots.default);
+      },
+    });
+  },
   SEPARATOR: component => Vue.component('KAppSeparator', {
     render(h) {
       const self = this;
@@ -221,6 +220,13 @@ export const COMPONENTS = {
     const tree = [];
     if (component.tree) {
       const cTree = component.tree;
+      if (!component.tree.status) {
+        component.tree.status = {
+          ticked: [],
+          expanded: [],
+          selected: {},
+        };
+      }
       const findAndCreateNode = (index) => {
         const element = cTree.values[index];
         let node = findNodeById(tree, `${component.id}-${element.id}-${index}`);
@@ -249,9 +255,9 @@ export const COMPONENTS = {
     return Vue.component('KAppTree', {
       data() {
         return {
-          ticked: [],
-          expanded: [],
-          selected: {},
+          ticked: component.tree.status.ticked,
+          expanded: component.tree.status.expanded,
+          selected: component.tree.status.selected,
         };
       },
       render(h) {
@@ -275,9 +281,9 @@ export const COMPONENTS = {
               nodes: tree,
               nodeKey: 'id',
               tickStrategy: component.attributes.check ? 'leaf' : 'none',
-              ticked: this.ticked,
-              selected: this.selected,
-              expanded: this.expanded,
+              ticked: self.ticked,
+              selected: self.selected,
+              expanded: self.expanded,
               color: 'app-main-color',
               controlColor: 'app-main-color',
               textColor: 'app-main-color',
@@ -286,6 +292,7 @@ export const COMPONENTS = {
             on: {
               'update:ticked': (values) => {
                 self.ticked = values;
+                component.tree.status.ticked = values;
                 self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
@@ -295,13 +302,13 @@ export const COMPONENTS = {
                   listValue: values,
                 });
               },
-              'update:selected': (value) => {
-                self.selected = value;
-                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:selected', id: component.id, value });
+              'update:selected': (values) => {
+                self.selected = values;
+                component.tree.status.selected = values;
               },
-              'update:expanded': (value) => {
-                self.expanded = value;
-                // this.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, { type: 'update:expanded', id: component.id, value });
+              'update:expanded': (values) => {
+                self.expanded = values;
+                component.tree.status.expanded = values;
               },
             },
           }),

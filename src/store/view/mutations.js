@@ -375,7 +375,6 @@ export default {
     }
      */
     state.layout = layout;
-    state.openedCollapsibles.splice(0, state.openedCollapsibles.length);
     /*
     if (!state.layouts.find(l => l.id === layout.id)) {
       state.layouts.push(layout);
