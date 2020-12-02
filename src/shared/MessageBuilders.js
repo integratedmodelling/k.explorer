@@ -167,6 +167,10 @@ export const MESSAGES_BUILDERS = {
     end,
     timeResolutionDescription = '',
     contextId = '',
+    shape = '',
+    timeType = '',
+    timeGeometry = '',
+    spaceGeometry = '',
   }, session) => buildMessage(
     OUT.CLASS_USERCONTEXTDEFINITION,
     OUT.TYPE_SCALEDEFINED,
@@ -174,6 +178,10 @@ export const MESSAGES_BUILDERS = {
     {
       ...scaleReference,
       contextId,
+      shape,
+      timeType,
+      timeGeometry,
+      spaceGeometry,
       timeResolutionDescription: timeResolutionDescription === null ? '' : timeResolutionDescription,
       ...(typeof spaceResolutionConverted !== 'undefined' && { spaceResolutionConverted }),
       ...(typeof spaceUnit !== 'undefined' && { spaceUnit }),
