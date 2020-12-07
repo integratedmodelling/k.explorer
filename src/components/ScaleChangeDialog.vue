@@ -261,7 +261,7 @@ export default {
           this.sendStompMessage(MESSAGES_BUILDERS.SCALE_REFERENCE({
             scaleReference: this.scaleReference,
             ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && {
-              spaceResolutionConverted: this.resolution,
+              spaceResolution: this.resolution,
               spaceUnit: this.unit,
             }),
             ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
@@ -276,7 +276,8 @@ export default {
           type: this.scaleEditingType,
           unit: this.unit,
           ...(this.scaleEditingType === SCALE_TYPE.ST_SPACE && {
-            resolution: this.resolution,
+            spaceResolution: this.resolution,
+            spaceResolutionConverted: this.resolution,
           }),
           ...(this.scaleEditingType === SCALE_TYPE.ST_TIME && {
             timeResolutionMultiplier: this.timeResolutionMultiplier,

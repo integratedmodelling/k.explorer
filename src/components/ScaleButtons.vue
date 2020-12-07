@@ -176,7 +176,7 @@ export default {
           scaleReference: this.scaleReference,
           contextId: this.contextId,
           ...(this.hasNextScale(SCALE_TYPE.ST_SPACE) && {
-            spaceResolutionConverted: this.nextScale.spaceResolutionConverted,
+            spaceResolution: this.nextScale.spaceResolutionConverted,
             spaceUnit: this.nextScale.spaceUnit,
           }),
           ...(this.hasNextScale(SCALE_TYPE.ST_TIME) && {

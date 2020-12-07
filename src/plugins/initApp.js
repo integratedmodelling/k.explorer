@@ -23,7 +23,9 @@ export default ({ store }) => {
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
   const saveDockedStatus = Cookies.has(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
 
-  const local = urlParams.get(WEB_CONSTANTS.PARAMS_LOCAL);
+  // const local = urlParams.get(WEB_CONSTANTS.PARAMS_LOCAL);
+  // TODO temporary check if we are in integratedmodelling.org
+  const local = window.location.hostname.toLowerCase().indexOf('integratedmodelling.org') === -1;
   const token = urlParams.get(WEB_CONSTANTS.PARAMS_TOKEN);
 
   Vue.mixin({
