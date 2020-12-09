@@ -80,8 +80,9 @@ export default ({ store }) => {
   if (saveDockedStatus) {
     store.state.view.mainControlDocked = Cookies.get(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
   }
-  // TODO CHANGE THIS!!!
-  store.state.data.local = !local || local === 'true';
+
+  store.state.data.local = local;
+  console.warn(local);
   store.state.data.token = token;
   console.info(`Session: ${session} / mode: ${mode}`);
   /*

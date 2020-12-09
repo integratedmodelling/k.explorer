@@ -210,7 +210,7 @@ export default {
       });
     },
     exitApp() {
-      if (!this.local) {
+      if (!this.isLocal) {
         this.$nextTick(() => {
           if (this.isApp && this.sessionReference.publicApps.length > 1) {
             window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
