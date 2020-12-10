@@ -12,7 +12,21 @@
         @mouseleave.native="mouseFabLeave"
       >
         <q-fab-action
-          v-if="layout !== null || !isLocal"
+          v-if="!isLocal"
+          color="app-background-color"
+          text-color="app-main-color"
+          @click="logout"
+          icon="mdi-power-standby"
+        >
+          <q-tooltip
+            class="klab-app-tooltip"
+            anchor="center right"
+            self="center left"
+            :offset="[8, 0]"
+            :delay="600">{{ $t('label.appsLogout') }}</q-tooltip>
+        </q-fab-action>
+        <q-fab-action
+          v-if="!isApp && layout !== null"
           color="app-background-color"
           text-color="app-main-color"
           @click="exitApp"
@@ -23,7 +37,7 @@
             anchor="center right"
             self="center left"
             :offset="[8, 0]"
-            :delay="600">{{ isApp || !isLocal ? $t('label.appsLogout') : $t('label.appsClose') }}</q-tooltip>
+            :delay="600">{{ $t('label.appsClose') }}</q-tooltip>
         </q-fab-action>
         <q-fab-action
           color="app-background-color"
@@ -210,6 +224,7 @@ export default {
       });
     },
     exitApp() {
+      /*
       if (!this.isLocal) {
         this.$nextTick(() => {
           if (this.isApp && this.sessionReference.publicApps.length > 1) {
@@ -218,7 +233,9 @@ export default {
             this.logout();
           }
         });
-      } else if (this.layout) {
+      } else
+      */
+      if (this.layout) {
         this.setLayout(null);
       }
     },
