@@ -167,7 +167,21 @@ export default {
       observation: OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
-    this.loadSessionReference();
+    this.loadSessionReference()
+      .then(() => {
+        console.info('Session reference loaded');
+      })
+      .catch((error) => {
+        if (error.message === 'Invalid session') {
+          if (this.isLocal) {
+            window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
+          } else {
+            console.error(error);
+          }
+        } else {
+          console.error(error);
+        }
+      });
   },
   mounted() {
     // Only in dev (see https://vuejs.org/v2/api/#warnHandler): stop the annoying warning of letter
