@@ -3,8 +3,8 @@
     <div class="modal-backdrop absolute-full"></div>
       <div class="klab-modal-container"
            :style="{
-              width: `${modalSize.width}px`,
-              height: `${modalSize.height}px`,
+              width: '90vw',
+              height: '90vh',
               transform: `translate(-50%, -50%) !important`}">
         <div class="klab-modal-inner full-height">
           <q-btn
