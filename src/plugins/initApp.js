@@ -82,7 +82,6 @@ export default ({ store }) => {
   }
 
   store.state.data.local = local;
-  console.warn(local);
   store.state.data.token = token;
   console.info(`Session: ${session} / mode: ${mode}`);
   /*

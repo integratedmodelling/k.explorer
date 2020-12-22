@@ -6,14 +6,23 @@ import { IN, URLS } from 'shared/MessagesConstants';
 
 export default {
 
-  loadSessionReference: ({ commit }) => {
-    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_INFO}`, {})
+  loadSessionReference: ({ commit }) => new Promise((resolve, reject) => {
+    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_INFO}`, { maxRedirects: 0 })
       .then(({ data }) => {
         if (data) {
           commit('SET_SESSION_REFERENCE', data);
+          resolve();
+        }
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          // invalid session, stop all
+          reject(new Error('Invalid session'));
+        } else {
+          reject(new Error(`Error retrieving session: ${error}`));
         }
       });
-  },
+  }),
   /**
    * Set the context for this session.
    * If context doesn't exists, a map with a default context is shown.
