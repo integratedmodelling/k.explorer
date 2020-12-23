@@ -208,9 +208,9 @@ export default {
   [v-cloak]::before {
     content: " ";
     display: block;
-    width: 170px;
-    height: 181px;
-    background-image: url('statics/klab-spinner-opt.gif');
+    width: 128px;
+    height: 128px;
+    background-image: url('statics/klab-logo.png');
   }
   .q-notify {
     padding: 5px;
