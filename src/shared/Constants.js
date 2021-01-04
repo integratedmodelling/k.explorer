@@ -526,6 +526,7 @@ export const CUSTOM_EVENTS = {
   LAYOUT_CHANGED: 'layoutchanged',
   SELECT_ELEMENT: 'selectelement',
   PROPOSED_CONTEXT_CHANGE: 'proposedcontextchange',
+  NEW_SCHEDULING: 'newscheduling',
 };
 
 export const SCALE_TYPE = {

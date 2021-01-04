@@ -1,5 +1,6 @@
 import { /* getNodeFromObservation, */findNodeById, WKTInstance } from 'shared/Helpers';
-import { SCALE_TYPE, SCALE_VALUES } from 'shared/Constants';
+import { eventBus } from 'plugins/initApp';
+import { SCALE_TYPE, SCALE_VALUES, CUSTOM_EVENTS } from 'shared/Constants';
 import { MAP_CONSTANTS } from 'shared/MapConstants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
@@ -231,6 +232,7 @@ export default {
         case 'STARTED':
           state.engineTimestamp = scheduling.currentTime;
           state.scaleReference.schedulingResolution = scheduling.resolution;
+          eventBus.$emit(CUSTOM_EVENTS.NEW_SCHEDULING);
           break;
         case 'FINISHED':
           // if (scheduling.currentTime !== 0) {

@@ -357,6 +357,7 @@ export default {
   },
   watch: {
     timeEvents() {
+      /*
       if (!this.interval) {
         this.calculateInterval();
       }
@@ -392,10 +393,10 @@ export default {
     this.timelineDate = this.startTime;
     this.visibleTimestamp = this.timestamp;
     moment.locale(window.navigator.userLanguage || window.navigator.language);
-    this.$eventBus.$on(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.calculateInterval);
+    this.$eventBus.$on(CUSTOM_EVENTS.NEW_SCHEDULING, this.calculateInterval);
   },
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.MAP_SIZE_CHANGED, this.calculateInterval);
+    this.$eventBus.$off(CUSTOM_EVENTS.NEW_SCHEDULING, this.calculateInterval);
   },
   destroyed() {
     this.stop();

@@ -558,16 +558,18 @@ export default {
                       f.setVisible(false);
                     });
                   } else if (timestamp === -1 || observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
-                    let toHide = -1;
+                    const toHide = [];
                     founds.forEach((f, idx) => {
                       if (f.get('id') === `${observation.id}T${timestamp}`) {
                         f.setVisible(true);
                       } else if (f.getVisible()) {
-                        toHide = idx;
+                        toHide.push(idx);
                       }
                     });
-                    if (toHide !== -1) {
-                      this.$nextTick(() => { founds[toHide].setVisible(false) });
+                    if (toHide.length > 0) {
+                      toHide.forEach((th) => {
+                        this.$nextTick(() => { founds[th].setVisible(false); });
+                      });
                     }
                   }
                 } else {
