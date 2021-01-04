@@ -194,7 +194,19 @@ export default {
   },
 
   ADD_TIME_EVENT: (state, event) => {
-    state.timeEvents.push(event);
+    const exists = state.timeEvents.findIndex(te => te.id === event.id
+      && te.timestamp === event.timestamp
+      && te.newAttributes === event.newAttributes
+      && te.newScale === event.newScale
+      && te.newName === event.newName
+      && te.newSemantics === event.newSemantics
+      && te.newSize === event.newSize) !== -1;
+    if (!exists) {
+      state.timeEvents.push(event);
+    } else {
+      console.warn(`Duplicated time event:
+      ${JSON.stringify(event, null, 2)}`);
+    }
   },
 
   SET_MODIFICATIONS_TASK: (state, task) => {

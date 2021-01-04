@@ -472,7 +472,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
               owner: src,
               errorMessage: error,
             }, { root: true });
-            store.dispatch('data/setLoadingLayers', { loading: false, observationId: observation.id });
+            store.dispatch('data/setLoadingLayers', { loading: false, observation });
             throw error;
           });
       },
