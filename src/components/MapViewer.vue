@@ -88,7 +88,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
-import { createMarker, findDifference } from 'shared/Utils';
+import { createMarker } from 'shared/Utils';
 import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -426,7 +426,6 @@ export default {
           // check where we are
           const getClosePosition = () => {
             const center = getCenter(this.proposedContext.getExtent());
-            let proposedContextCenter;
             if (containsCoordinate(this.map.getView().calculateExtent(this.map.getSize()), center)) {
               const pixels = this.map.getPixelFromCoordinate(center);
               return { top: `${pixels[1]}px`, left: `${pixels[0]}px` };
@@ -526,7 +525,7 @@ export default {
             this.previousTopLayer = topObservation;
           }
         }
-        const waitForLayerLoading = typeof this.observations.find(o => o.visible && !o.loaded) !== 'undefined';
+        const waitForLayerLoading = typeof this.observations.find(o => o.visible && o.loading) !== 'undefined';
         this.observations.forEach((observation) => {
           if (!observation.isContainer) {
             const timestamp = this.findModificationTimestamp(observation.id, this.timestamp);
@@ -554,19 +553,22 @@ export default {
                   }
                 }
                 if (founds.length > 0) {
-                  if (observation.visible) {
+                  if (!observation.visible) {
                     founds.forEach((f) => {
+                      f.setVisible(false);
+                    });
+                  } else if (timestamp === -1 || observation.tsImages.indexOf(`T${timestamp}`) !== -1) {
+                    let toHide = -1;
+                    founds.forEach((f, idx) => {
                       if (f.get('id') === `${observation.id}T${timestamp}`) {
-                        if (!waitForLayerLoading) {
-                          f.setZIndex(zIndex + 1);
-                        }
                         f.setVisible(true);
-                      } else if (observation.tsImages.indexOf(`T${timestamp}`) !== -1 && !waitForLayerLoading) {
-                        f.setZIndex(zIndex);
+                      } else if (f.getVisible()) {
+                        toHide = idx;
                       }
                     });
-                  } else { // no visibility
-                    founds.forEach((f) => { f.setVisible(false); });
+                    if (toHide !== -1) {
+                      this.$nextTick(() => { founds[toHide].setVisible(false) });
+                    }
                   }
                 } else {
                   console.debug(`No multiple layer for observation ${observation.id}, refreshing`);
@@ -763,9 +765,14 @@ export default {
       this.movedWithContext = false;
     },
     observations: {
-      handler(/* newValue, oldValue */) {
+      handler() {
         /*
+        if (this.previousObservations !== null) {
+          console.warn(`>>>${JSON.stringify(newValue)}\n>>>${JSON.stringify(this.previousObservations[0])}`);
+        }
+
         let redraw = false;
+        const prev = JSON.parse(this.previousObservations);
         if (newValue.length !== 0 && newValue.length === oldValue.length) {
           const check = function(objectA, objectB) {
             // Create arrays of property names
