@@ -171,6 +171,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'isLocal',
+    ]),
     ...mapGetters('stomp', [
       'connectionUp',
     ]),
@@ -192,7 +195,7 @@ export default {
     },
     showHelp: {
       get() {
-        return this.connectionUp && !this.waitingGeolocation && this.needHelp && !this.isInModalMode;
+        return this.connectionUp && !this.waitingGeolocation && this.isLocal && this.needHelp && !this.isInModalMode;
       },
       set(needHelp) {
         this.needHelp = needHelp;
