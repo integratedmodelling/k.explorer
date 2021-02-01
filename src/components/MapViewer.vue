@@ -875,6 +875,11 @@ export default {
       }
     },
     hasExtentMap() {
+      if (this.hasExtentMap) {
+        this.$nextTick(() => {
+          this.extentMap.updateSize();
+        });
+      }
       this.setShowSettings(!this.hasExtentMap);
     },
   },
@@ -1167,7 +1172,7 @@ export default {
     right 0px
     border 1px solid var(--app-main-color)
     &.mv-extent-map-hide
-      opacity 0
+      display none
   .mv-remove-proposed-context
     position absolute
     bottom 10px
