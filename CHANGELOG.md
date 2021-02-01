@@ -9,8 +9,11 @@ is not available.
 ## ?
 ### Features
 - Rebrand
-### Features
 - Logout and exit app management for remote engine
+### Improvements
+- Help is not shown in remote engine
+### Solved
+- Layers with transparency in temporal series are correctly shown
 
 ## 0.12.1
 ### Added
