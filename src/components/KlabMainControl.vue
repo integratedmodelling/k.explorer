@@ -44,6 +44,9 @@
           'background-color': getBGColor(hasContext ? '1.0' : searchIsFocused ? '.8' : '.2'),
         }"
         ondragstart="return false;"
+        @mousedown.native="moved = false"
+        @mousemove.native="moved = true"
+        @mouseup.native="focusSearch()"
       >
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
@@ -176,7 +179,9 @@ export default {
         onPositionChange: debounce((positionDiff, absolutePosition, event) => {
           this.onDebouncedPositionChanged(event);
         }, 100),
-        onDragStart: () => { this.dragging = true; },
+        onDragStart: () => {
+          this.dragging = true;
+        },
         onDragEnd: this.checkWhereWasDragged,
         fingers: 2,
       },
@@ -185,6 +190,7 @@ export default {
       defaultTop: DEFAULT_POSITION.top,
       centeredLeft: DEFAULT_POSITION.left,
       dragging: false,
+      wasMoved: false,
       askForDocking: false,
       leftMenuMaximized: `${LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE}px`,
       boundingElement: undefined,
@@ -208,6 +214,7 @@ export default {
     ...mapGetters('view', [
       'spinnerColor',
       'searchIsFocused',
+      'searchIsActive',
       'isDrawMode',
       'fuzzyMode',
       'largeMode',
@@ -225,6 +232,8 @@ export default {
     ...mapActions('view', [
       'setMainViewer',
       'setLargeMode',
+      'searchStart',
+      'searchFocus',
     ]),
     callStartType(event) {
       if (!this.searchIsFocused) {
@@ -342,6 +351,16 @@ export default {
       this.boundingElement = document.querySelector('.kexplorer-container');
       this.centeredLeft = this.getCenteredLeft();
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
+    },
+    focusSearch() {
+      if (this.moved) {
+        return;
+      }
+      if (!this.searchIsActive) {
+        this.searchStart('');
+      } else if (!this.searchIsFocused) {
+        this.searchFocus({ focused: true });
+      }
     },
   },
   watch: {
