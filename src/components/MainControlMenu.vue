@@ -105,7 +105,7 @@
             </div>
           </div>
         </q-item>
-        <template v-if="!(searchIsActive || hasContext)">
+        <template v-if="!(hasContext)">
           <q-item>
             <q-item-main>
               <div class="mcm-container">

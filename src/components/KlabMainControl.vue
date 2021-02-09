@@ -46,7 +46,7 @@
         ondragstart="return false;"
         @mousedown.native="moved = false"
         @mousemove.native="moved = true"
-        @mouseup.native="focusSearch()"
+        @mouseup.native="focusSearch"
       >
         <klab-search-bar ref="klab-search-bar"></klab-search-bar>
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
@@ -352,8 +352,11 @@ export default {
       this.centeredLeft = this.getCenteredLeft();
       this.dragMCConfig.initialPosition = { left: this.centeredLeft, top: this.defaultTop };
     },
-    focusSearch() {
+    focusSearch(event) {
       if (this.moved) {
+        return;
+      }
+      if (event && (event.target.className.indexOf('q-icon') !== -1 || event.target.className.indexOf('mdi-chevron') !== -1)) {
         return;
       }
       if (!this.searchIsActive) {
