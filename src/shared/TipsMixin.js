@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /**
  * Mixin to show tips based on component name
  * To use it just import where you want
@@ -28,12 +29,18 @@ export default {
       const Tip = Vue.extend(QTooltip);
       const instance = new Tip({
         propsData: {
-          : 'My Heading'
+          value: true,
+        },
+        nativeOn: {
+          click: () => {
+            this.value = false;
+          },
         },
       });
       const tip = instance.$createElement('div', [this.localTips[index].message]);
       instance.$slots.default = [tip];
-      document.getElementById('mc-report').appendChild(instance.$el);
+      instance.$mount();
+      document.getElementById('ksb-spinner').appendChild(instance.$el);
       /*
       this.$q.notify({
         message: this.localTips[index],
@@ -67,9 +74,10 @@ export default {
     },
   },
   mounted() {
-    console.warn(this.localTips);
-    if (this.localTips.length > 0) {
-      this.showTip(0);
-    }
+    setTimeout(() => {
+      if (this.localTips.length > 0) {
+        this.showTip(0);
+      }
+    }, 1000);
   },
 };

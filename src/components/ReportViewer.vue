@@ -1,7 +1,7 @@
 <template>
   <div class="mc-report">
     <div class="mc-report-wrapper full-width">
-      <div class="mc-report-content" v-html="report" id="mc-report"></div>
+      <div class="mc-report-content" v-html="report"></div>
       <q-btn icon="mdi-printer" round class="mc-report-print" color="mc-main" @click="print = true">
         <q-tooltip
           :offset="[0, 8]"
@@ -31,7 +31,6 @@
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { URLS } from 'shared/MessagesConstants';
-import TipsMixin from 'shared/TipsMixin';
 // import SimpleBar from 'simplebar';
 
 export default {
@@ -53,9 +52,6 @@ export default {
       'reloadReport',
     ]),
   },
-  mixins: [
-    TipsMixin,
-  ],
   methods: {
     ...mapActions('view', [
       'setReloadReport',

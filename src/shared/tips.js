@@ -1,6 +1,6 @@
 export const TIPS = [
   {
-    component: 'ReportViewer',
+    component: 'KlabSearchBar',
     tips: [{
       message: 'Lalalal',
     }, {

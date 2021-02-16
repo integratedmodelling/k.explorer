@@ -63,6 +63,7 @@ import KlabSearch from 'components/KlabSearch.vue';
 import ScrollingText from 'components/ScrollingText.vue';
 import MainControlMenu from 'components/MainControlMenu.vue';
 import HandleTouch from 'shared/HandleTouchMixin';
+import TipsMixin from 'shared/TipsMixin';
 
 export default {
   name: 'KlabSearchBar',
@@ -72,7 +73,7 @@ export default {
     ScrollingText,
     MainControlMenu,
   },
-  mixins: [HandleTouch],
+  mixins: [TipsMixin, HandleTouch],
   data() {
     return {
       searchAsked: false,
