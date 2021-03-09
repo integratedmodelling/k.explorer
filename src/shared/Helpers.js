@@ -16,6 +16,20 @@ import { register } from 'ol/proj/proj4';
 import proj4 from 'proj4';
 import { axiosInstance } from 'plugins/axios';
 
+// Rewrite the HTMLCanvasElement Object to avoid image smoothing
+HTMLCanvasElement.prototype.oldGetContext = HTMLCanvasElement.prototype.getContext;
+function getContextWithoutSmoothing(type, options) {
+  const context = this.oldGetContext(type, options);
+  if (type === '2d') {
+    context.imageSmoothingEnabled = false;
+    context.webkitImageSmoothingEnabled = false;
+    // context.mozImageSmoothingEnabled = false; //DEPRECATED
+    context.msImageSmoothingEnabled = false;
+  }
+  return context;
+}
+HTMLCanvasElement.prototype.getContext = getContextWithoutSmoothing;
+
 export const WKTInstance = new WKT();
 
 /**
