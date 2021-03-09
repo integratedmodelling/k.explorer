@@ -527,6 +527,7 @@ export const CUSTOM_EVENTS = {
   SELECT_ELEMENT: 'selectelement',
   PROPOSED_CONTEXT_CHANGE: 'proposedcontextchange',
   NEW_SCHEDULING: 'newscheduling',
+  TIPS_PAGE_CHANGE: 'tipspagechange',
 };
 
 export const SCALE_TYPE = {

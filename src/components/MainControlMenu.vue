@@ -12,7 +12,8 @@
       anchor="top right"
       self="top left"
       ref="mcm-main-popover"
-      :persistent="false"
+      :persistent="true"
+      v-model="showing"
     >
       <q-btn
         icon="mdi-close"
@@ -203,6 +204,7 @@ import { CUSTOM_EVENTS, SETTING_NAMES, WEB_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ScaleReference from 'components/ScaleReference.vue';
 import TooltipIt from 'shared/TooltipItMixin';
+import TipsMixin from 'shared/TipsMixin';
 import LoadContext from 'shared/LoadContextMixin';
 import { Cookies } from 'quasar';
 import { copyToClipboard, capitalizeFirstLetter } from 'shared/Utils';
@@ -214,12 +216,15 @@ export default {
   mixins: [
     TooltipIt,
     LoadContext,
+    TipsMixin,
   ],
   components: {
     ScaleReference,
   },
   data() {
-    return {};
+    return {
+      showing: false,
+    };
   },
   computed: {
     ...mapGetters('data', [

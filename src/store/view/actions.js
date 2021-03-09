@@ -453,4 +453,14 @@ export default {
   setShowSettings: ({ commit }, show) => {
     commit('SHOW_SETTINGS', show);
   },
+
+  showTipsPage: ({ commit }, page) => {
+    commit('TIPS_PAGES', { page, show: true });
+  },
+  hideTipsPage: ({ commit }, page) => {
+    commit('TIPS_PAGES', { page, show: false });
+  },
+  hideAllTipsPages: ({ commit }) => {
+    commit('TIPS_PAGES', { page: null, show: false });
+  },
 };

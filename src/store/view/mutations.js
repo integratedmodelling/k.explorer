@@ -448,4 +448,21 @@ export default {
   SHOW_SETTINGS: (state, show) => {
     state.showSettings = show;
   },
+
+  TIPS_PAGES: (state, { show, page, resumeFrom = 0 }) => {
+    if (page === null) {
+      state.tipsPages.splice(0);
+    }
+    const index = state.tipsPages.findIndex(tp => tp.page === page);
+    if (show) {
+      if (index === -1) { // new, push it
+        state.tipsPages.push({ page, resumeFrom });
+      } else if (index < state.tipsPages.length - 1) { // exists, remove all the pages over it
+        state.tipsPages.splice(index + 1);
+      }
+    } else if (index === state.tipsPages.length - 1) { // if is last, remove it
+      state.tipsPages.splice(index, 1);
+    }
+    console.warn(`Page : ${page} / show: ${show} / resumeFrom: ${resumeFrom}`, state.tipsPages);
+  },
 };

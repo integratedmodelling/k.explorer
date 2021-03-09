@@ -238,4 +238,14 @@ export default {
   levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
 
   showSettings: true,
+  /**
+   * Pages that are showing tips
+   * The object must be
+   * {
+   *   page: $option.name
+   *   resumeFrom: last shown tip index (if we want resume, else -1)
+   *   show: boolean
+   * }
+   */
+  tipsPages: [],
 };

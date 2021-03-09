@@ -16,6 +16,7 @@ export default {
     appPause: 'Pause',
     appReload: 'Reload',
     appPrint: 'Print',
+    appDismiss: 'Dismiss',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
     klabNoDate: 'No date',
