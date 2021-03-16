@@ -367,7 +367,9 @@ export const COMPONENTS = {
               icon: 'mdi-alert',
               timeout: 2000,
             });
-            this.doneFunc([]);
+            if (this.doneFunc) {
+              this.doneFunc([]);
+            }
           }, process.env.SEARCH_TIMEOUT_MS);
         },
         autocompleteSelected(item) {
@@ -408,8 +410,8 @@ export const COMPONENTS = {
           if (this.searchContextId === null) {
             this.searchContextId = contextId;
           } else if (contextId !== this.searchContextId) {
-            console.warn(`Something strange was happened: differents search context ids:\n
-                actual: ${this.searchContextId} / received: ${contextId}`);
+            // console.warn(`Something strange was happened: differents search context ids:\n
+            //    actual: ${this.searchContextId} / received: ${contextId}`);
             return;
           }
           // is the same request
@@ -485,7 +487,6 @@ export const COMPONENTS = {
       render(h) {
         const self = this;
         if (this.isSearch) {
-          console.error('Draw a search');
           return h(QInput, {
             class: ['kcv-text-input', 'kcv-form-element'],
             style: DEFAULT_STYLE_FUNCTION(component),
@@ -503,17 +504,18 @@ export const COMPONENTS = {
             on: {
               keydown: (event) => {
                 if (event.keyCode === 27) {
-                  this.editable = !this.editable;
+                  this.editable = false;
                   if (this.doneFunc) {
                     this.doneFunc();
                     this.doneFunc = null;
                   }
                   this.$store.dispatch('view/searchInApp', false);
                   event.stopPropagation();
+                  self.init();
                 }
                 if (event.keyCode === 13 && this.selected) {
                   this.$store.dispatch('view/searchInApp', false);
-                  this.editable = !this.editable;
+                  this.editable = false;
                   self.sendSelected();
                   self.init();
                 }
@@ -523,7 +525,7 @@ export const COMPONENTS = {
               },
               blur: () => {
                 this.$store.dispatch('view/searchInApp', false);
-                this.editable = !this.editable;
+                this.editable = false;
               },
               focus: () => {
                 this.$store.dispatch('view/searchInApp', true);
@@ -546,7 +548,6 @@ export const COMPONENTS = {
             }, 'Cacca'),
           ]);
         }
-        console.error('Draw a label');
         return h('div', {
           staticClass: 'kcv-label',
           class: { 'kcv-title': component.attributes.tag && (component.attributes.tag === 'title' || component.attributes.tag === 'search'), 'kcv-ellipsis': component.attributes.ellipsis, 'kcv-with-icon': component.attributes.iconname },
@@ -557,7 +558,7 @@ export const COMPONENTS = {
           ...(component.attributes.tag === 'search' && {
             on: {
               click: () => {
-                this.editable = !this.editable;
+                this.editable = true;
                 this.$store.dispatch('view/searchInApp', true);
               },
             },
