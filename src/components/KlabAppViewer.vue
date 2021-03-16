@@ -74,7 +74,7 @@ export default {
         const bottomPanels = document.querySelectorAll('.kcv-group-bottom');
         let totalBottomHeight = 0;
         for (let i = 0; i < bottomPanels.length; ++i) {
-          totalBottomHeight += Math.floor(height(bottomPanels[i]));
+          totalBottomHeight += Math.ceil(height(bottomPanels[i]));
         }
         const mainContainer = document.querySelector('.kcv-main-container');
         if (mainContainer && mainContainer.style.marginBottom === '') {
@@ -311,7 +311,8 @@ export default {
   // form elements
   .kcv-form-element
     margin 0 var(--app-small-mp)
-    border-radius 6px
+    &:not(.kcv-roundbutton)
+      border-radius 6px
   .kcv-text-input
     min-height var(--app-line-height)
     vertical-align middle

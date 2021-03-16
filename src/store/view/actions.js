@@ -276,6 +276,10 @@ export default {
     commit('STORE_SEARCH', searchArray);
   },
 
+  searchInApp: ({ commit }, inApp) => {
+    commit('SEARCH_INAPP', inApp);
+  },
+
   setReloadReport: ({ commit }, reload) => {
     commit('SET_RELOAD_REPORT', reload);
   },

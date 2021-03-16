@@ -82,6 +82,7 @@ export default {
   searchIsFocused: state => state.searchFocus,
   searchLostChar: state => state.searchLostChar,
   searchHistory: state => state.searchHistory,
+  searchInApp: state => state.searchInApp,
 
   observationInfo: state => state.observationInfo,
   mapSelection: state => state.mapSelection,

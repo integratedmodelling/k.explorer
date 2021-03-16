@@ -1,8 +1,10 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip } from 'quasar';
+import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip, QAutocomplete } from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
 import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from './MessageBuilders';
+import { MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from './Constants';
 
 
 export const COMPONENTS = {
@@ -321,14 +323,245 @@ export const COMPONENTS = {
       component.attributes.width = APPS_DEFAULT_VALUES.LABEL_MIN_WIDTH;
     }
     return Vue.component('KAppText', {
+      data() {
+        return {
+          editable: false,
+          doneFunc: null,
+          result: null,
+          value: null,
+          searchRequestId: 0,
+          searchContextId: null,
+          searchTimeout: null,
+          selected: null,
+        };
+      },
+      computed: {
+        searchResult() {
+          return this.$store.getters['data/searchResult'];
+        },
+        isSearch() {
+          return component.attributes.tag === 'search' && this.editable;
+        },
+      },
+      methods: {
+        search(terms, done) {
+          this.searchRequestId += 1;
+          this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_REQUEST({
+            requestId: this.searchRequestId,
+            contextId: this.searchContextId,
+            maxResults: -1, // all
+            cancelSearch: false,
+            defaultResults: terms === '',
+            searchMode: SEARCH_MODES.FREETEXT,
+            queryString: terms, // terms split space
+          }, this.$store.state.data.session).body);
+          this.doneFunc = done;
+          // we clear timeout of previous searches
+          if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+          }
+          this.searchTimeout = setTimeout(() => {
+            this.$q.notify({
+              message: this.$t('errors.searchTimeout'),
+              type: 'warning',
+              icon: 'mdi-alert',
+              timeout: 2000,
+            });
+            this.doneFunc([]);
+          }, process.env.SEARCH_TIMEOUT_MS);
+        },
+        autocompleteSelected(item) {
+          if (item) {
+            this.selected = item;
+          }
+        },
+        sendSelected() {
+          this.sendStompMessage(MESSAGES_BUILDERS.SEARCH_MATCH({
+            contextId: this.searchContextId,
+            matchIndex: this.selected.matchIndex,
+            matchId: this.selected.id,
+            added: true,
+          }, this.$store.state.data.session).body);
+        },
+        init() {
+          this.doneFunc = null;
+          this.result = null;
+          this.value = null;
+          this.searchRequestId = 0;
+          this.searchContextId = null;
+          this.searchTimeout = null;
+          this.selected = null;
+        },
+      },
+      watch: {
+        searchResult(newResult) {
+          if (!this.isSearch) {
+            return;
+          }
+          // if we are waiting for a results, we can stop waiting
+          if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = null;
+          }
+          // check if the new result is good
+          const { requestId, contextId } = newResult;
+          if (this.searchContextId === null) {
+            this.searchContextId = contextId;
+          } else if (contextId !== this.searchContextId) {
+            console.warn(`Something strange was happened: differents search context ids:\n
+                actual: ${this.searchContextId} / received: ${contextId}`);
+            return;
+          }
+          // is the same request
+          if (this.searchRequestId === requestId) {
+            // there is a result and the new result has same id: is a increment of previous
+            if (this.result !== null
+              && this.result.requestId === requestId) {
+              // add old results to new results to maintain new attribute values (like end)
+              newResult.matches.push(...this.result.matches);
+            }
+            this.result = newResult;
+          } else {
+            console.warn(`Result discarded for bad request id: actual: ${this.searchRequestId} / received: ${requestId}\n`);
+            // Is not necessary to inform user
+            return;
+          }
+          const { matches, error, errorMessage } = this.result;
+          if (error) {
+            this.$q.notify({
+              message: errorMessage,
+              type: 'error',
+              icon: 'mdi-alert',
+              timeout: 2000,
+            });
+            return;
+          }
+          const results = [];
+          // const totMatches = matches.length;
+          matches.forEach((match/* ,index */) => {
+            const matchType = MATCH_TYPES[match.matchType];
+            if (typeof matchType === 'undefined') {
+              console.warn(`Unknown type: ${match.matchType}`);
+              return;
+            }
+            let desc = matchType;
+            if (match.mainSemanticType !== null) {
+              const mainSemanticType = SEMANTIC_TYPES[match.mainSemanticType];
+              if (typeof mainSemanticType !== 'undefined') {
+                desc = mainSemanticType;
+              }
+            }
+            results.push({
+              value: match.name,
+              label: match.name,
+              labelLines: 1,
+              sublabel: match.description,
+              sublabelLines: 4,
+              letter: desc.symbol,
+              leftInverted: true,
+              leftColor: desc.color,
+              rgb: desc.rgb,
+              id: match.id,
+              matchIndex: match.index,
+              selected: false,
+              disable: match.state && match.state === 'FORTHCOMING',
+              separator: false,
+              // stamp: `${index + 1}/${totMatches}`, TODO is useless?
+            });
+          });
+          if (results.length === 0) {
+            this.$q.notify({
+              message: this.$t('messages.noSearchResults'),
+              type: 'info',
+              icon: 'mdi-information',
+              timeout: 1000,
+            });
+          }
+          Vue.nextTick(() => {
+            this.doneFunc(results);
+          });
+        },
+      },
       render(h) {
+        const self = this;
+        if (this.isSearch) {
+          console.error('Draw a search');
+          return h(QInput, {
+            class: ['kcv-text-input', 'kcv-form-element'],
+            style: DEFAULT_STYLE_FUNCTION(component),
+            attrs: {
+              id: `${component.applicationId}-${component.id}`,
+            },
+            props: {
+              value: self.value,
+              color: 'app-main-color',
+              hideUnderline: true,
+              dense: true,
+              type: self.type,
+              autofocus: true,
+            },
+            on: {
+              keydown: (event) => {
+                if (event.keyCode === 27) {
+                  this.editable = !this.editable;
+                  if (this.doneFunc) {
+                    this.doneFunc();
+                    this.doneFunc = null;
+                  }
+                  this.$store.dispatch('view/searchInApp', false);
+                  event.stopPropagation();
+                }
+                if (event.keyCode === 13 && this.selected) {
+                  this.$store.dispatch('view/searchInApp', false);
+                  this.editable = !this.editable;
+                  self.sendSelected();
+                  self.init();
+                }
+              },
+              input: (value) => {
+                self.value = value;
+              },
+              blur: () => {
+                this.$store.dispatch('view/searchInApp', false);
+                this.editable = !this.editable;
+              },
+              focus: () => {
+                this.$store.dispatch('view/searchInApp', true);
+              },
+            },
+          }, [
+            h(QAutocomplete, {
+              props: {
+                debounce: 400,
+                'min-characters': 4,
+              },
+              on: {
+                search: (terms, done) => {
+                  self.search(terms, done);
+                },
+                selected: (item, keyboard) => {
+                  self.autocompleteSelected(item, keyboard);
+                },
+              },
+            }, 'Cacca'),
+          ]);
+        }
+        console.error('Draw a label');
         return h('div', {
           staticClass: 'kcv-label',
-          class: { 'kcv-title': component.attributes.tag && component.attributes.tag === 'title', 'kcv-ellipsis': component.attributes.ellipsis, 'kcv-with-icon': component.attributes.iconname },
+          class: { 'kcv-title': component.attributes.tag && (component.attributes.tag === 'title' || component.attributes.tag === 'search'), 'kcv-ellipsis': component.attributes.ellipsis, 'kcv-with-icon': component.attributes.iconname },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
           style: DEFAULT_STYLE_FUNCTION(component),
+          ...(component.attributes.tag === 'search' && {
+            on: {
+              click: () => {
+                this.editable = !this.editable;
+                this.$store.dispatch('view/searchInApp', true);
+              },
+            },
+          }),
         }, [
           component.attributes.iconname
             ? h(QIcon, {
@@ -447,32 +680,43 @@ export const COMPONENTS = {
     },
     render(h) {
       const self = this;
-      return h(QBtn, {
-        class: ['kcv-pushbutton', 'kcv-form-element'],
-        style: DEFAULT_STYLE_FUNCTION(component),
-        attrs: {
-          id: `${component.applicationId}-${component.id}`,
-        },
-        props: {
-          label: component.name,
-          color: 'app-main-color',
-          textColor: 'app-background-color',
-          noCaps: true,
-          disable: !!component.attributes.disabled,
-          ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
-        },
-        on: {
-          click: () => {
-            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
-              operation: APPS_OPERATION.USER_ACTION,
-              component: {
-                ...component,
-                components: [],
-              },
-            });
+      const round = component.attributes.iconname && !component.name;
+      return h('div', {}, [
+        h(QBtn, {
+          class: [round ? 'kcv-roundbutton' : 'kcv-pushbutton', 'kcv-form-element'],
+          style: DEFAULT_STYLE_FUNCTION(component),
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
           },
-        },
-      });
+          props: {
+            ...(component.name && { label: component.name }),
+            color: component.attributes.color ? component.attributes.color : 'app-main-color',
+            ...(round && { round: true, dense: true, flat: true }),
+            noCaps: true,
+            disable: !!component.attributes.disabled,
+            ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
+          },
+          on: {
+            click: () => {
+              self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                operation: APPS_OPERATION.USER_ACTION,
+                component: {
+                  ...component,
+                  components: [],
+                },
+              });
+            },
+          },
+        }), component.attributes.tooltip
+          ? h(QTooltip, {
+            props: {
+              anchor: 'bottom left',
+              self: 'top left',
+              offset: [-10, 0],
+              delay: 600,
+            },
+          }, component.attributes.tooltip === 'true' ? component.content : component.attributes.tooltip) : null,
+      ]);
     },
   }),
 
