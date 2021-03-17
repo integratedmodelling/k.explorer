@@ -72,6 +72,15 @@
             round
             flat
             size="sm"
+            icon="mdi-arrow-up"
+            class="kt-upload"
+            v-if="!prop.node.empty && !prop.node.noTick"
+          >
+          </q-btn>
+          <q-btn
+            round
+            flat
+            size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
             v-if="!prop.node.empty && !prop.node.noTick"
@@ -108,11 +117,17 @@
             round
             flat
             size="sm"
+            icon="mdi-arrow-up"
+            class="kt-upload"
+          ></q-btn>
+          <q-btn
+            round
+            flat
+            size="sm"
             icon="mdi-arrow-down"
             class="kt-download"
             @click.native="askForOutputFormat($event, prop.node.id, prop.node.exportFormats, true)"
-          >
-          </q-btn>
+          ></q-btn>
           <template v-if="typeof prop.node.idx !== 'undefined'">
             <q-chip
               class="node-chip transparent"
@@ -659,6 +674,7 @@ export default {
           .node-substituible
             display none
           .kt-download
+          .kt-upload
             display block
             &:hover
               background-color #fff
@@ -677,17 +693,20 @@ export default {
           padding-right 2px
 
       .kt-download
+      .kt-upload
         position absolute
         top 4px
-        right 10px
         display none
         z-index 9999
         color #eee
         border 2px solid #eee
         width 20px
         height 20px
-        padding-left 1px
-
+        // padding-left 1px
+      .kt-download
+        right 10px
+      .kt-upload
+        right 34px
       .node-emphasized
         color #fff
         font-weight 700

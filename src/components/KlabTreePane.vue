@@ -219,8 +219,11 @@ export default {
       &[open]
         #ktp-main-tree-arrow
           transform rotate(90deg)
-        .kt-download
-          transform translateX(-2px)
+        // .kt-download
+        //   transform translateX(-2px)
+      // TOC
+      .mdi-dots-horizontal::before
+        padding-top 2px
       summary
         height 0
         outline none
