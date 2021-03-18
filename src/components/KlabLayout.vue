@@ -285,7 +285,7 @@ export default {
     .kapp-left-inner-container
       position absolute !important
       .kapp-left-wrapper
-        overflow-x hidden
+        overflow hidden
   .kapp-main
     &.q-layout
       border 0

@@ -129,6 +129,7 @@ export default {
       'spinner',
       'searchIsFocused',
       'searchLostChar',
+      'searchInApp',
       'searchHistory',
       'fuzzyMode',
       'largeMode',
@@ -671,6 +672,10 @@ export default {
     },
     // obtained some results
     searchResult(newResult) {
+      // check if app has focus
+      if (this.searchInApp) {
+        return;
+      }
       // if we are waiting for a results, we can stop waiting
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);

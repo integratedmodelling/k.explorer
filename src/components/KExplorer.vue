@@ -89,6 +89,7 @@ export default {
     ...mapGetters('view', [
       'searchIsActive',
       'searchIsFocused',
+      'searchInApp',
       'mainViewerName',
       'mainViewer',
       'isTreeVisible',
@@ -142,7 +143,7 @@ export default {
       this.askForUndocking = ask;
     },
     keydownListener(event) {
-      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown) {
+      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown || this.searchInApp) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {

@@ -202,6 +202,10 @@ export default {
     }
   },
 
+  SEARCH_INAPP: (state, inApp) => {
+    state.searchInApp = inApp;
+  },
+
   RESET_SEARCH_LOST_CHAR: (state) => {
     state.searchLostChar = '';
   },
@@ -432,6 +436,10 @@ export default {
   },
 
   VIEW_ACTION: (state, action) => {
+    if (action.component === null) {
+      console.warn('Action component is null');
+      return;
+    }
     if (state.layout) {
       const component = findInLayout(state.layout, action.component.id, (n, needle) => {
         if (n.id === needle) {

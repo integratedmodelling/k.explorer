@@ -117,6 +117,10 @@ export default {
    * Previous searches are stored here
    */
   searchHistory: [],
+  /**
+   * Search is focused in app
+   */
+  searchInApp: false,
 
   /**
    * If true, when report button is clicked, we ask for report
