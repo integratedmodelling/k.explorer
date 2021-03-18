@@ -9,6 +9,8 @@ is not available.
 ## Next
 ### Changes
 - Click on search bar give the focus
+- First implementation of search in app
+- Added upload icon
 
 ## 0.12.2
 ### Features
