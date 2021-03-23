@@ -609,7 +609,7 @@ export const COMPONENTS = {
           hideUnderline: true,
           dense: true,
           type: self.type,
-          disable: !!component.attributes.disabled,
+          disable: component.attributes.disabled === 'true',
         },
         on: {
           keydown: (event) => {
@@ -656,7 +656,7 @@ export const COMPONENTS = {
           color: 'app-text-color',
           popupCover: false,
           dense: true,
-          disable: !!component.attributes.disabled,
+          disable: component.attributes.disabled === 'true',
         },
         on: {
           change: (value) => {
@@ -694,7 +694,7 @@ export const COMPONENTS = {
             color: component.attributes.color ? component.attributes.color : 'app-main-color',
             ...(round && { round: true, dense: true, flat: true }),
             noCaps: true,
-            disable: !!component.attributes.disabled,
+            disable: component.attributes.disabled === 'true',
             ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
           },
           on: {
@@ -743,7 +743,7 @@ export const COMPONENTS = {
             color,
             keepColor: true,
             label: component.name,
-            disable: !!component.attributes.disabled,
+            disable: component.attributes.disabled === 'true',
             ...(component.attributes.waiting && {
               'checked-icon': 'mdi-loading',
               'unchecked-icon': 'mdi-loading',
