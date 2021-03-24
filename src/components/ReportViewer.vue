@@ -58,6 +58,7 @@ export default {
     ]),
     loadReport() {
       if (this.reloadReport && this.hasContext && this.hasObservations) {
+        // `${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}documentation/${this.view}/${this.contextId}`;
         this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}report/${this.contextId}`, {})
           .then(({ data }) => {
             if (data === '') {
