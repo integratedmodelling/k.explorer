@@ -1,6 +1,6 @@
 {
   "name": "klab.explorer",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "Web based explorer for k.LAB engine",
   "productName": "k.Explorer",
   "license": "AGPL-3.0-only",

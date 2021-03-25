@@ -228,6 +228,7 @@ export default {
     unknown: 'To be decided',
     noKnowledgeViews: 'No knowledge views',
     knowledgeViews: 'Knowledge views',
+    uploadData: 'Upload data (forthcoming)',
     // startDate: '{date}</br>Click to reset timestamp',
   },
   errors: {

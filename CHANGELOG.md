@@ -6,11 +6,11 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
-## Next
+## 0.12.3
 ### Changes
 - Click on search bar give the focus
 - First implementation of search in app
-- Added upload icon
+- Added upload icon (forthcoming)
 
 ## 0.12.2
 ### Features
