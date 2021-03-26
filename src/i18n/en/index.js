@@ -4,6 +4,7 @@ export default {
     appRunning: 'Running on Quasar v{version}',
     appClose: 'Close',
     appOK: 'Ok',
+    appAccept: 'Accept',
     appYES: 'Yes',
     appNO: 'No',
     appCancel: 'Cancel',
