@@ -457,4 +457,8 @@ export default {
   setShowSettings: ({ commit }, show) => {
     commit('SHOW_SETTINGS', show);
   },
+
+  setNotificationsParams: ({ commit }, params) => {
+    commit('SET_NOTIFICATIONS_PARAMS', params);
+  },
 };

@@ -242,4 +242,15 @@ export default {
   levels: [IN.TYPE_INFO, IN.TYPE_WARNING, IN.TYPE_ERROR],
 
   showSettings: true,
+
+  /**
+   * The notifications params:
+   * {
+   *   valid-from: date (empty: no from)
+   *   valid-to: date (empty: not to)
+   *   groups: array of groups (empty: all groups)
+   *   apps: array of apps (empty: open in k.Explorer)
+   * }
+   */
+  notificationsParams: null,
 };

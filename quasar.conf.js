@@ -46,12 +46,14 @@ module.exports = function (ctx) {
             STOMP_CLIENT_DEBUG: true,
             KEXPLORER_DEBUG: true,
             ROUTER_BASE: JSON.stringify(''),
+            WEB_BASE_URL: JSON.stringify('http://localhost:90'),
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
             STOMP_CLIENT_DEBUG: false,
             KEXPLORER_DEBUG: false,
             ROUTER_BASE: JSON.stringify('/modeler/ui'),
+            WEB_BASE_URL: JSON.stringify('https://integratedmodelling.org'),
           },
         PACKAGE_VERSION: JSON.stringify(version),
         PACKAGE_BUILD: JSON.stringify(build),

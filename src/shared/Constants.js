@@ -424,8 +424,12 @@ export const WEB_CONSTANTS = {
   COOKIE_SAVELOCATION: 'klab_saveLocation',
   COOKIE_HELP_ON_START: 'klab_helponstart',
   COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not set
-
+  COOKIE_NOTIFICATIONS: 'klab_notifications',
   LOCAL_STORAGE_APP_ID: 'klab:appId',
+};
+
+export const APP_URLS = {
+  NOTIFICATIONS_URL: `${process.env.WEB_BASE_URL}/statics/notifications/index.php`,
 };
 
 export const COLORS = {
@@ -527,6 +531,7 @@ export const CUSTOM_EVENTS = {
   SELECT_ELEMENT: 'selectelement',
   PROPOSED_CONTEXT_CHANGE: 'proposedcontextchange',
   NEW_SCHEDULING: 'newscheduling',
+  SHOW_NOTIFICATIONS: 'shownotifications',
 };
 
 export const SCALE_TYPE = {

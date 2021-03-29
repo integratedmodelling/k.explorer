@@ -48,7 +48,7 @@
         <klab-app-viewer class="kapp-main-container kapp-container print-hide" :id="`kapp-${idSuffix}-main-0`" :mainPanelStyle="mainPanelStyle" :component="layout.panels[0]"></klab-app-viewer>
       </template>
     </q-page-container>
-    <q-resize-observable @resize="updateLayout" />
+    <q-resize-observable @resize="updateLayout()" />
   </q-layout>
 </template>
 
@@ -94,6 +94,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'sessionReference',
+    ]),
     ...mapGetters('view', [
       'isApp',
     ]),
@@ -215,7 +218,7 @@ export default {
         }
       });
     },
-    updateLayout() {
+    updateLayout(layoutChanged = false) {
       this.setLogoImage();
       const header = document.querySelector('.kapp-main.kapp-header-container');
       if (header) {
@@ -235,6 +238,14 @@ export default {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
       });
       this.setStyle();
+      if (layoutChanged) {
+        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_NOTIFICATIONS, {
+          apps: this.layout !== null ? [this.layout.name] : [],
+          groups: this.sessionReference && this.sessionReference.owner && this.sessionReference.owner.groups
+            ? this.sessionReference.owner.groups.map(g => g.id)
+            : [],
+        });
+      }
     },
   },
   watch: {
@@ -243,7 +254,7 @@ export default {
       if (!this.isApp) {
         // setTimeout(() => {
         this.$nextTick(() => {
-          this.updateLayout();
+          this.updateLayout(true);
           // }, 400);
         });
         if (oldLayout !== null && oldLayout.name !== null) {
@@ -261,7 +272,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.updateLayout();
+    this.updateLayout(true);
   },
 };
 </script>

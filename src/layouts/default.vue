@@ -1,6 +1,7 @@
 <template>
   <div class="klab-main-app">
     <template  v-if="!isApp || layout !== null">
+      <klab-notifications></klab-notifications>
       <klab-layout :layout="layout"></klab-layout>
       <app-dialogs></app-dialogs>
       <connection-status class="print-hide"></connection-status>
@@ -36,6 +37,7 @@ import KlabSettings from 'components/KlabSettings';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
+import KlabNotifications from 'components/KlabNotifications';
 import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
 import 'simplebar/dist/simplebar.css';
 
@@ -47,6 +49,7 @@ export default {
     KlabSettings,
     AppDialogs,
     KlabPresentation,
+    KlabNotifications,
     KnowledgeViewViewer,
   },
   data() {
