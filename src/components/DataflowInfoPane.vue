@@ -10,11 +10,11 @@
         @click.native="closePanel"
       ></q-btn>
     </div>
-    <div v-if="dataflowInfo !== null" id="dip-scroll-container">
+    <div v-if="dataflowInfo !== null" class="dip-scroll-container">
       <div class="dip-content" v-html="dataflowInfo.html"></div>
     </div>
     <div v-else>{{ $t('messages.noDataflowInfo') }}</div>
-    <div v-if="dataflowInfo !== null && dataflowInfo.rateable">
+    <div class="dip-bottom" v-if="dataflowInfo !== null && dataflowInfo.rateable">
       <div class="dip-comment">
         <q-icon
           size="1.2em"
@@ -142,8 +142,9 @@ export default {
     },
   },
   mounted() {
-    if (document.getElementById('dip-scroll-container')) {
-      this.scrollBar = new SimpleBar(document.getElementById('dip-scroll-container'));
+    const container = document.querySelector('.dip-container');
+    if (container) {
+      this.scrollBar = new SimpleBar(container);
     }
   },
 };
@@ -155,9 +156,15 @@ export default {
   .dip-container
     color white
     position relative
+    padding-top 30px
+    .dip-content
+      margin-bottom 40px
     .dip-close
       width 100%
       text-align right
+      position absolute
+      left 0
+      top 0
     .simplebar-scrollbar:before
       background #888
     article
@@ -202,6 +209,12 @@ export default {
           background-color rgba(152, 152, 152, .4)
           p
             margin-bottom .5em
+    .dip-bottom
+      background-color rgb(57, 57, 57)
+      height 36px
+      width 100%
+      position absolute
+      bottom 0
     .dip-comment
       position absolute
       bottom 5px
