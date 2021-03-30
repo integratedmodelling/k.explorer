@@ -129,6 +129,7 @@ export default {
     return {
       center: this.$mapDefaults.center,
       zoom: this.$mapDefaults.zoom,
+      actualZoom: undefined,
       map: null,
       extentMap: null,
       hasExtentMap: false,
@@ -140,6 +141,7 @@ export default {
       baseLayers: null,
       layerSwitcher: null,
       visibleBaseLayer: null,
+      substitutedBaseLayer: null,
       mapSelectionMarker: undefined,
       wktInstance: new WKT(),
       geolocationId: null,
@@ -249,6 +251,30 @@ export default {
       }
     },
     onMoveEnd() {
+      // zoom check
+      // if (this.actualZoom !== this.view.getZoom()) {
+      this.actualZoom = this.view.getZoom();
+      const minZoom = this.visibleBaseLayer.get('klabMinZoom');
+      if (minZoom) {
+        if (this.actualZoom > minZoom && this.substitutedBaseLayer === null) {
+          const layerIndex = this.visibleBaseLayer.get('altLayer')
+            ? this.baseLayers.layers.findIndex(l => l.get('name') === this.visibleBaseLayer.get('altLayer'))
+            : this.baseLayers.layers.findIndex(l => l.get('name') === 'osm_layer');
+          if (layerIndex !== -1) {
+            const layer = this.baseLayers.layers[layerIndex];
+            this.substitutedBaseLayer = this.visibleBaseLayer;
+            this.visibleBaseLayer = layer;
+            this.visibleBaseLayer.setVisible(true);
+          }
+        }
+      } else if (this.substitutedBaseLayer !== null && this.substitutedBaseLayer.get('klabMinZoom') >= this.view.getZoom()) {
+        const layer = this.visibleBaseLayer;
+        this.visibleBaseLayer = this.substitutedBaseLayer;
+        this.visibleBaseLayer.setVisible(true);
+        layer.setVisible(false);
+        this.substitutedBaseLayer = null;
+      }
+      // }
       if (this.hasContext) {
         this.movedWithContext = true;
         return;
@@ -899,8 +925,8 @@ export default {
       }
       const layer = l;
       layer.on('propertychange', (event) => {
-        this.visibleBaseLayer = layer;
-        if (event.type === 'propertychange' && event.key === 'visible' && event.target.get(event.key)) {
+        if (event.type === 'propertychange' && event.key === 'visible' && event.target.get(event.key) && this.substitutedBaseLayer === null) {
+          this.visibleBaseLayer = layer;
           Cookies.set(WEB_CONSTANTS.COOKIE_BASELAYER, layer.get('name'), {
             expires: 30,
             path: '/',
@@ -925,6 +951,7 @@ export default {
       loadTilesWhileAnimating: true,
       loadTilesWhileInteracting: true,
     });
+    this.actualZoom = this.zoom;
     // Main map listeners...
     this.map.on('moveend', this.onMoveEnd);
 

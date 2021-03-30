@@ -171,6 +171,8 @@ export const Layers = {
       url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebTopo/MapServer/export',
     }),
     visible: false,
+    klabMinZoom: 8,
+    klabAltLayer: 'osm_layer',
   }),
   /*
   // Not professional
