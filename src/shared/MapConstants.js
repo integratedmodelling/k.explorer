@@ -154,7 +154,7 @@ export const MAP_STYLES = {
 export const Layers = {
   OSM_LAYER: new Tile({
     name: 'osm_layer',
-    title: 'Open Street Map',
+    title: 'OpenStreetMap',
     type: 'base',
     source: new OSM({
       attributions: `Map credits &#169;
@@ -165,7 +165,7 @@ export const Layers = {
   }),
   ARCGIS_LAYER: new Tile({
     name: 'arcgis_layer',
-    title: 'OpenLayer Clear Map',
+    title: 'UN Clear Map',
     type: 'base',
     source: new ArcGISRest({
       url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebTopo/MapServer/export',
@@ -235,7 +235,7 @@ export const Layers = {
 
   MAPBOX_CALI_TERRAIN: new Tile({
     name: 'mapbox_cali_terrain',
-    title: 'k.LAB Mapbox Terrain',
+    title: 'Mapbox Terrain',
     type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
@@ -247,7 +247,7 @@ export const Layers = {
 
   MAPBOX_MINIMO: new Tile({
     name: 'mapbox_minimo',
-    title: 'k.LAB Mapbox Minimo',
+    title: 'Mapbox Minimo',
     type: 'base',
     source: new XYZ({
       crossOrigin: 'anonymous',
@@ -327,15 +327,15 @@ export const BASE_LAYERS = {
   layers: [
     Layers.EMPTY_LAYER,
     // Layers.STAMEN_WATER_COLOR_LAYER,
-    Layers.OSM_LAYER,
-    Layers.ARCGIS_LAYER,
     // Layers.OPEN_TOPO_MAT,
     // Layers.BING_IMAGINERY,
-    Layers.GOOGLE_STREET,
-    Layers.GOOGLE_HYBRID,
-    Layers.GOOGLE_TERRAIN,
+    // Layers.GOOGLE_STREET,
+    // Layers.GOOGLE_HYBRID,
+    // Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_MINIMO,
-    Layers.MAPBOX_CALI_TERRAIN,
+    Layers.ARCGIS_LAYER,
+    Layers.OSM_LAYER,
+    // Layers.MAPBOX_CALI_TERRAIN,
     // Layers.MAPBOX_GOT, // Game of throne joke
   ],
   mask: null,
