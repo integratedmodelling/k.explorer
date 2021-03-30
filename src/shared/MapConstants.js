@@ -1,5 +1,6 @@
 import { COLORS } from 'shared/Constants';
 import Tile from 'ol/layer/Tile';
+import ArcGISRest from 'ol/source/TileArcGISRest';
 import OSM from 'ol/source/OSM';
 import XYZ from 'ol/source/XYZ';
 import Style from 'ol/style/Style';
@@ -162,7 +163,15 @@ export const Layers = {
     }),
     visible: false,
   }),
-
+  ARCGIS_LAYER: new Tile({
+    name: 'arcgis_layer',
+    title: 'OpenLayer Clear Map',
+    type: 'base',
+    source: new ArcGISRest({
+      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebTopo/MapServer/export',
+    }),
+    visible: false,
+  }),
   /*
   // Not professional
   STAMEN_WATER_COLOR_LAYER: new Tile({
@@ -319,6 +328,7 @@ export const BASE_LAYERS = {
     Layers.EMPTY_LAYER,
     // Layers.STAMEN_WATER_COLOR_LAYER,
     Layers.OSM_LAYER,
+    Layers.ARCGIS_LAYER,
     // Layers.OPEN_TOPO_MAT,
     // Layers.BING_IMAGINERY,
     Layers.GOOGLE_STREET,
