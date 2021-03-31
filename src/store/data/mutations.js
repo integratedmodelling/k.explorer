@@ -528,4 +528,17 @@ export default {
   SET_CROSSING_IDL: (state, value) => {
     state.crossingIDL = value;
   },
+
+  ADD_TERMINAL: (state, terminal) => {
+    state.terminals.push(terminal);
+  },
+
+  REMOVE_TERMINAL: (state, terminalId) => {
+    const idx = state.terminals.findIndex(t => t.id === terminalId);
+    if (idx !== -1) {
+      state.terminals.splice(idx, 1);
+    } else {
+      console.warn(`Trying to remove unknown terminal ${terminalId}`);
+    }
+  },
 };

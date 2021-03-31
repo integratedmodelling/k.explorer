@@ -6,6 +6,7 @@
       <app-dialogs></app-dialogs>
       <connection-status class="print-hide"></connection-status>
       <klab-settings class="print-hide"></klab-settings>
+      <klab-terminal v-for="terminal in terminals" :terminal="terminal" :key="terminal.id"></klab-terminal>
       <klab-presentation></klab-presentation>
       <knowledge-view-viewer></knowledge-view-viewer>
     </template>
@@ -34,6 +35,7 @@ import { WEB_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ConnectionStatus from 'components/ConnectionStatusModal';
 import KlabSettings from 'components/KlabSettings';
+import KlabTerminal from 'components/KlabTerminal';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
@@ -47,6 +49,7 @@ export default {
     KlabLayout,
     ConnectionStatus,
     KlabSettings,
+    KlabTerminal,
     AppDialogs,
     KlabPresentation,
     KlabNotifications,
@@ -58,6 +61,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('data', [
+      'terminals',
+    ]),
     ...mapGetters('view', [
       'layout',
       'isApp',

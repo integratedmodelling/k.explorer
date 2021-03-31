@@ -141,6 +141,7 @@ export default {
     noLayoutDescription: '<em>No description</em>',
     kwTable: 'Table',
     kwChart: 'Chart',
+    openTerminal: 'Open terminal',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -196,6 +197,7 @@ export default {
     appLoading: 'Loading app <strong>{app}</strong>',
     errorLoadingApp: 'Error loading app <strong>{app}</strong>',
     errorLoggingOut: 'Error logging out, contact support',
+    terminalHello: 'Welcome to k.LAB {type}',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

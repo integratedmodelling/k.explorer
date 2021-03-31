@@ -63,6 +63,9 @@
             </div>
             -->
             <div class="ks-title">{{ $t('label.userDetails') }}</div>
+            <q-btn class="ks-term" icon="mdi-console" dense flat round color="app-main-color" v-if="isDeveloper" @click.native="openTerminal">
+              <q-tooltip class="klab-setting-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.openTerminal') }}</q-tooltip>
+            </q-btn>
             <div class="kud-owner">
               <div class="kud-owner-unknown" v-if="owner.unknown">{{ owner.unknown }}</div>
               <template v-else>
@@ -175,13 +178,18 @@ export default {
         unknown: this.$t('label.unknownUser'),
       };
     },
+    isDeveloper() {
+      return this.owner.groups.findIndex(g => g.id === 'DEVELOPERS');
+    },
   },
   methods: {
     ...mapActions('data', [
       'loadSessionReference',
+      'addTerminal',
     ]),
     ...mapActions('view', [
       'setLayout',
+      'setShowSettings',
     ]),
     loadApplications() {
       this.appsList.splice(0);
@@ -322,6 +330,13 @@ export default {
         }
       }, 100);
     },
+    openTerminal() {
+      this.mousePopupLeave('userDetails');
+      this.mouseFabLeave();
+      setTimeout(() => {
+        this.addTerminal();
+      }, 200);
+    },
   },
   watch: {
     sessionReference() {
@@ -388,6 +403,10 @@ export default {
         opacity .3
         &:hover
           opacity 1
+    .ks-term
+      position absolute
+      top 8px
+      right 16px
     .kud-owner
       border 1px solid var(--app-main-color)
       border-radius 5px

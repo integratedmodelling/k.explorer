@@ -348,4 +348,18 @@ export default {
    */
   packageVersion: process.env.PACKAGE_VERSION || '0',
   packageBuild: process.env.PACKAGE_BUILD || '0',
+
+  /**
+   * terminalCounter
+   */
+  terminalsCounter: 0,
+  /**
+   * Terminals as object
+   * {
+   *   id: String
+   *   active: Boolean
+   *   type: ['console'|'debugger']
+   * }
+   */
+  terminals: [],
 };

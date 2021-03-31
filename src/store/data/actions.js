@@ -617,4 +617,22 @@ export default {
   setCrossingIDL: ({ commit }, value) => {
     commit('SET_CROSSING_IDL', value);
   },
+
+  addTerminal: ({ state, commit }, terminal = null) => {
+    if (terminal === null) {
+      terminal = {
+        id: `${state.session}-${++state.terminalsCounter}`,
+        active: true,
+        type: 'console',
+      };
+    } else if (state.terminals.findIndex(t => t.id === terminal.id)) {
+      console.warn('Terminal already exists');
+      return;
+    }
+    commit('ADD_TERMINAL', terminal);
+  },
+
+  removeTerminal: ({ commit }, terminalId) => {
+    commit('REMOVE_TERMINAL', terminalId);
+  },
 };

@@ -36,7 +36,8 @@
     "sprotty": "^0.4.2",
     "vue-d3-network": "^0.1.28",
     "vue-i18n": "^8.1.0",
-    "webstomp-client": "^1.2.0"
+    "webstomp-client": "^1.2.0",
+    "xterm": "^4.11.0"
   },
   "devDependencies": {
     "@types/node": "^12.0.3",

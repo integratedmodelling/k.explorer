@@ -134,4 +134,6 @@ export default {
    * Is local or hosted in remote engine
    */
   isLocal: state => state.local,
+  terminals: state => state.terminals,
+  hasActiveTerminal: state => state.terminals.findIndex(t => t.active) !== -1,
 };
