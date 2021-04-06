@@ -59,8 +59,9 @@ export default {
     this.instance.onData((e) => {
       switch (e) {
         case '\r': // Enter
-        case '\u0003': // Ctrl+C
+        // case '\u0003': // Ctrl+C
           console.warn('ENTER');
+          this.instance.prompt();
           break;
         case '\u007F': // Backspace (DEL)
           // Do not delete the prompt
