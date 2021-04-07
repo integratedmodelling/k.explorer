@@ -63,7 +63,10 @@
             </div>
             -->
             <div class="ks-title">{{ $t('label.userDetails') }}</div>
-            <q-btn class="ks-term" icon="mdi-console" dense flat round color="app-main-color" v-if="isDeveloper" @click.native="openTerminal">
+            <q-btn class="ks-debug" icon="mdi-bug" dense flat round color="app-main-color" v-if="isDeveloper" @click.native="openTerminal('debugger')">
+              <q-tooltip class="klab-setting-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.openDebugger') }}</q-tooltip>
+            </q-btn>
+            <q-btn class="ks-term" icon="mdi-console" dense flat round color="app-main-color" v-if="isDeveloper" @click.native="openTerminal('console')">
               <q-tooltip class="klab-setting-tooltip" anchor="center right" self="center left" :offset="[8, 0]" :delay="1000">{{ $t('label.openTerminal') }}</q-tooltip>
             </q-btn>
             <div class="kud-owner">
@@ -330,11 +333,11 @@ export default {
         }
       }, 100);
     },
-    openTerminal() {
+    openTerminal(type = null) {
       this.mousePopupLeave('userDetails');
       this.mouseFabLeave();
       setTimeout(() => {
-        this.addTerminal();
+        this.addTerminal({ ...(type && { type }) });
       }, 200);
     },
   },
@@ -403,9 +406,13 @@ export default {
         opacity .3
         &:hover
           opacity 1
+    .ks-debug
     .ks-term
       position absolute
       top 8px
+    .ks-debug
+      right 46px
+    .ks-term
       right 16px
     .kud-owner
       border 1px solid var(--app-main-color)

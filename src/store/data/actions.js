@@ -618,18 +618,22 @@ export default {
     commit('SET_CROSSING_IDL', value);
   },
 
-  addTerminal: ({ state, commit }, terminal = null) => {
-    if (terminal === null) {
-      terminal = {
+  addTerminal: ({ state, commit }, { id, active, type }) => {
+    if (!id) {
+      id = `${state.session}-${++state.terminalsCounter}`;
+      commit('ADD_TERMINAL', {
         id: `${state.session}-${++state.terminalsCounter}`,
-        active: true,
-        type: 'console',
-      };
-    } else if (state.terminals.findIndex(t => t.id === terminal.id)) {
-      console.warn('Terminal already exists');
-      return;
+        active: typeof active === 'undefined' ? true : active,
+        type: type || 'console',
+      });
+    } else {
+      const idx = state.terminals.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        console.warn('Terminal already exists');
+      } else {
+        state.terminals[idx].active = true;
+      }
     }
-    commit('ADD_TERMINAL', terminal);
   },
 
   removeTerminal: ({ commit }, terminalId) => {

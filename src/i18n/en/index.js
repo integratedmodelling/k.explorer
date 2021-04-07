@@ -142,6 +142,7 @@ export default {
     kwTable: 'Table',
     kwChart: 'Chart',
     openTerminal: 'Open terminal',
+    openDebugger: 'Open debugger',
   },
   messages: {
     connectionClosed: 'Connection closed',
