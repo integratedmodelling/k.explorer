@@ -2,6 +2,7 @@ import { /* getNodeFromObservation, */findNodeById, WKTInstance } from 'shared/H
 import { eventBus } from 'plugins/initApp';
 import { SCALE_TYPE, SCALE_VALUES, CUSTOM_EVENTS } from 'shared/Constants';
 import { MAP_CONSTANTS } from 'shared/MapConstants';
+import { WEB_CONSTANTS } from '../../shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -540,5 +541,15 @@ export default {
     } else {
       console.warn(`Trying to remove unknown terminal ${terminalId}`);
     }
+  },
+
+  ADD_TERMINAL_COMMAND: (state, command) => {
+    state.terminalCommands.push(command);
+    localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS, JSON.stringify(state.terminalCommands));
+  },
+
+  CLEAR_TERMINAL_COMMANDS: (state) => {
+    state.terminalCommands.splice(0, state.terminalCommands.length);
+    localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS, JSON.stringify(state.terminalCommands));
   },
 };

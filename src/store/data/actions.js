@@ -639,4 +639,12 @@ export default {
   removeTerminal: ({ commit }, terminalId) => {
     commit('REMOVE_TERMINAL', terminalId);
   },
+
+  addTerminalCommand: ({ commit }, command) => {
+    commit('ADD_TERMINAL_COMMAND', command);
+  },
+
+  clearTerminalCommands: ({ commit }) => {
+    commit('CLEAR_TERMINAL_COMMANDS');
+  },
 };

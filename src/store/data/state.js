@@ -1,5 +1,6 @@
 import Stack from 'classes/Stack';
-import { CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+
 /**
  * Data states
  */
@@ -362,4 +363,5 @@ export default {
    * }
    */
   terminals: [],
+  terminalCommands: localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS) !== null ? JSON.parse(localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS)) : [],
 };

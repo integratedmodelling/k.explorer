@@ -145,6 +145,11 @@ export default {
     openTerminal: 'Open terminal',
     openDebugger: 'Open debugger',
     titleSelectTerminalSize: 'Select terminal size',
+    terminalDeleteHistory: 'Delete history',
+    terminalResizeWindow: 'Resize terminal window',
+    terminalMinimize: 'Minimize terminal',
+    terminalMaximize: 'Maximize terminal',
+    terminalClose: 'Close terminal',
   },
   messages: {
     connectionClosed: 'Connection closed',

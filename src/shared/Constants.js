@@ -427,6 +427,7 @@ export const WEB_CONSTANTS = {
   COOKIE_NOTIFICATIONS: 'klab_notifications',
   COOKIE_TERMINAL_SIZE: 'klab_terminalsize',
   LOCAL_STORAGE_APP_ID: 'klab:appId',
+  LOCAL_STORAGE_TERMINAL_COMMANDS: 'klab:terminalCommands',
 };
 
 export const APP_URLS = {

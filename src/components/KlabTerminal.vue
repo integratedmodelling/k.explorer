@@ -6,15 +6,26 @@
     :class="{'kterm-minimized': !terminal.active, 'kterm-focused': hasFocus}"
   >
     <div class="kterm-header" :style="{ 'background-color': background }" :id="`kterm-handle-${terminal.id}`" @mousedown="instance.focus()">
-      <q-btn icon="mdi-resize" flat color="white" dense class="kterm-button kterm-drag" @click="selectSize = true"></q-btn>
-      <q-btn icon="mdi-window-minimize" v-if="terminal.active" flat color="white" dense class="kterm-button kterm-minimize" @click="minimize"></q-btn>
-      <q-btn icon="mdi-window-maximize" v-else flat color="white" dense class="kterm-button kterm-minimize" @click="maximize"></q-btn>
-      <q-btn icon="mdi-close-circle" flat @click="closeTerminal" color="white" dense class="kterm-button kterm-close"></q-btn>
+      <q-btn icon="mdi-delete-clock-outline" :disable="terminalCommands.length === 0" flat color="white" dense class="kterm-button kterm-delete-history" @click="deleteHistory">
+        <q-tooltip class="kterm-tooltip" anchor="top middle" self="bottom middle" :offset="[0, 8]" :delay="1000">{{ $t('label.terminalDeleteHistory') }}</q-tooltip>
+      </q-btn>
+      <q-btn icon="mdi-resize" flat color="white" dense class="kterm-button kterm-drag" @click="selectSize = true">
+        <q-tooltip class="kterm-tooltip" anchor="top middle" self="bottom middle" :offset="[0, 8]" :delay="1000">{{ $t('label.terminalResizeWindow') }}</q-tooltip>
+      </q-btn>
+      <q-btn icon="mdi-window-minimize" v-if="terminal.active" flat color="white" dense class="kterm-button kterm-minimize" @click="minimize">
+        <q-tooltip class="kterm-tooltip" anchor="top middle" self="bottom middle" :offset="[0, 8]" :delay="1000">{{ $t('label.terminalMinimize') }}</q-tooltip>
+      </q-btn>
+      <q-btn icon="mdi-window-maximize" v-else flat color="white" dense class="kterm-button kterm-minimize" @click="maximize">
+        <q-tooltip class="kterm-tooltip" anchor="top middle" self="bottom middle" :offset="[0, 8]" :delay="1000">{{ $t('label.terminalMaxmize') }}</q-tooltip>
+      </q-btn>
+      <q-btn icon="mdi-close-circle" flat @click="closeTerminal" color="white" dense class="kterm-button kterm-close">
+        <q-tooltip class="kterm-tooltip" anchor="top middle" self="bottom middle" :offset="[0, 8]" :delay="1000">{{ $t('label.terminalClose') }}</q-tooltip>
+      </q-btn>
     </div>
     <div v-show="terminal.active" :id="`kterm-${terminal.id}`" class="kterm-terminal"></div>
     <q-dialog
       v-model="selectSize"
-      @ok="sizeSelected"
+      @ok="onOk"
       color="mc-main"
     >
       <span slot="title">{{ $t('label.titleSelectTerminalSize') }}</span>
@@ -39,9 +50,10 @@
 </template>
 
 <script>
+/* eslint-disable no-underscore-dangle */
 import { Terminal } from 'xterm';
 // import { FitAddon } from 'xterm-addon-fit';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
 import { Cookies, dom } from 'quasar';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
@@ -86,6 +98,7 @@ export default {
       hasFocus: false,
       selectedSize: null,
       selectSize: false,
+      commandsIndex: -1,
       TERMINAL_SIZE_OPTIONS,
     };
   },
@@ -93,10 +106,15 @@ export default {
     background() {
       return this.bgcolor !== '' ? this.bgcolor : this.terminal.type === TERMINAL_TYPES.DEBUGGER ? '#002f74' : '#2e0047';
     },
+    ...mapGetters('data', [
+      'terminalCommands',
+    ]),
   },
   methods: {
     ...mapActions('data', [
       'removeTerminal',
+      'addTerminalCommand',
+      'clearTerminalCommands',
     ]),
     minimize() {
       this.terminal.active = false;
@@ -142,6 +160,12 @@ export default {
         });
       }
     },
+    onOk() {
+      // nothing to do
+    },
+    deleteHistory() {
+      this.clearTerminalCommands();
+    },
   },
   created() {
     this.sendStompMessage(MESSAGES_BUILDERS.CONSOLE_CREATED({ consoleId: this.terminal.id, consoleType: this.terminal.type }, this.$store.state.data.session).body);
@@ -161,6 +185,7 @@ export default {
       cols: sizeItem.cols,
       rows: sizeItem.rows,
       cursorBlink: true,
+      bellStyle: 'both',
       theme: {
         background: this.background,
       },
@@ -171,32 +196,70 @@ export default {
       this.instance.write('\r\n$ ');
     };
     this.instance.open(document.getElementById(`kterm-${this.terminal.id}`));
-    this.instance.writeln(`\n${this.$t('messages.terminalHello', { type: this.terminal.type })} / ${this.terminal.id}`);
+    this.instance.writeln(`${this.$t('messages.terminalHello', { type: this.terminal.type })} / ${this.terminal.id}`);
     this.instance.prompt();
 
     this.instance.onData((e) => {
+      const eraseAndWrite = (text = '') => {
+        for (let i = 0; i < this.command.length; i++) {
+          this.instance.write('\b \b');
+        }
+        this.instance.write(text);
+        this.command.splice(0, this.command.length);
+        this.command.push(...text);
+      };
+      const xPos = this.instance._core.buffer.x;
       switch (e) {
-        case '\r': // Enter
-        // case '\u0003': // Ctrl+C
-          this.sendStompMessage(MESSAGES_BUILDERS.COMMAND_REQUEST({
-            consoleId: this.terminal.id,
-            consoleType: this.terminal.type,
-            commandId: `${this.terminal.id}-${++this.commandCounter}`,
-            payload: this.command.join(),
-          }, this.$store.state.data.session).body);
+        case '\r': { // Enter
+          if (this.command.length > 0) {
+            const c = this.command.join('');
+            this.sendStompMessage(MESSAGES_BUILDERS.COMMAND_REQUEST({
+              consoleId: this.terminal.id,
+              consoleType: this.terminal.type,
+              commandId: `${this.terminal.id}-${++this.commandCounter}`,
+              payload: c,
+            }, this.$store.state.data.session).body);
+            this.addTerminalCommand(c);
+          }
           this.command.splice(0, this.command.length);
+          this.commandsIndex = -1;
           this.instance.prompt();
           break;
+        }
         case '\u007F': // Backspace (DEL)
           // Do not delete the prompt
-          // eslint-disable-next-line no-underscore-dangle
-          if (this.instance._core.buffer.x > 2) {
+          if (xPos > 2) {
             this.instance.write('\b \b');
           }
           if (this.command.length > 0) {
             this.command.pop();
           }
           break;
+
+        case '\x1b[A':
+          if (this.terminalCommands.length > 0 && this.commandsIndex < this.terminalCommands.length - 1) {
+            eraseAndWrite(this.terminalCommands[++this.commandsIndex]);
+          }
+          break;
+        case '\x1b[B':
+          if (this.terminalCommands.length > 0 && this.commandsIndex > 0) {
+            eraseAndWrite(this.terminalCommands[--this.commandsIndex]);
+          } else {
+            eraseAndWrite();
+            this.commandsIndex = -1;
+          }
+          break;
+        case '\x1b[C':
+          if (xPos < this.command.length + 2) {
+            this.instance.write(e);
+          }
+          break;
+        case '\x1b[D':
+          if (xPos > 2) {
+            this.instance.write(e);
+          }
+          break;
+
         default: // Print all other characters for demo
           this.command.push(e);
           this.instance.write(e);
@@ -245,8 +308,11 @@ $kterm-$border-color = rgba(255, 255, 255, .5)
       top 0px
       right 30px
     .kterm-drag
-      top 0px
+      top 0
       right 60px
+    .kterm-delete-history
+      top 0
+      right 90px
   &.kterm-minimized
     width 90px
     position absolute
@@ -261,4 +327,6 @@ $kterm-$border-color = rgba(255, 255, 255, .5)
     z-index 5000
   .kterm-terminal
     border 1px solid $kterm-$border-color
+.kterm-tooltip
+    background-color var(--app-main-color) !important
 </style>
