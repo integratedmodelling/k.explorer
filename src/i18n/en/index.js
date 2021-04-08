@@ -17,6 +17,7 @@ export default {
     appPause: 'Pause',
     appReload: 'Reload',
     appPrint: 'Print',
+    appSetDefault: 'Set as default',
     klabNoMessage: 'No message',
     klabUnknownError: 'Unknown error',
     klabNoDate: 'No date',
@@ -143,6 +144,7 @@ export default {
     kwChart: 'Chart',
     openTerminal: 'Open terminal',
     openDebugger: 'Open debugger',
+    titleSelectTerminalSize: 'Select terminal size',
   },
   messages: {
     connectionClosed: 'Connection closed',

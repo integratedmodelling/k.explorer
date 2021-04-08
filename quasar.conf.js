@@ -128,6 +128,8 @@ module.exports = function (ctx) {
         'QInput',
         'QSelect',
         'QSlider',
+        'QRadio',
+        'QOptionGroup',
         'QTree',
         'QList',
         'QListHeader',

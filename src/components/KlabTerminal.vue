@@ -3,16 +3,38 @@
     class="kterm-container"
     :id="`kterm-container-${terminal.id}`"
     v-draggable="draggableConfig"
-    :class="{'kterm-minimized': !terminal.active}"
-    :style="{'z-index': zIndex}"
+    :class="{'kterm-minimized': !terminal.active, 'kterm-focused': hasFocus}"
   >
-    <div class="kterm-header" :style="{ 'background-color': background }" :id="`kterm-handle-${terminal.id}`">
+    <div class="kterm-header" :style="{ 'background-color': background }" :id="`kterm-handle-${terminal.id}`" @mousedown="instance.focus()">
+      <q-btn icon="mdi-resize" flat color="white" dense class="kterm-button kterm-drag" @click="selectSize = true"></q-btn>
       <q-btn icon="mdi-window-minimize" v-if="terminal.active" flat color="white" dense class="kterm-button kterm-minimize" @click="minimize"></q-btn>
       <q-btn icon="mdi-window-maximize" v-else flat color="white" dense class="kterm-button kterm-minimize" @click="maximize"></q-btn>
-      <!-- <q-btn icon="mdi-resize" flat color="white" dense class="kterm-button kterm-drag"></q-btn> -->
-      <q-btn icon="mdi-close-circle" flat @click.native="removeTerminal(terminal.id)" color="white" dense class="kterm-button kterm-close"></q-btn>
+      <q-btn icon="mdi-close-circle" flat @click="closeTerminal" color="white" dense class="kterm-button kterm-close"></q-btn>
     </div>
     <div v-show="terminal.active" :id="`kterm-${terminal.id}`" class="kterm-terminal"></div>
+    <q-dialog
+      v-model="selectSize"
+      @ok="sizeSelected"
+      color="mc-main"
+    >
+      <span slot="title">{{ $t('label.titleSelectTerminalSize') }}</span>
+      <div slot="body">
+        <q-option-group
+          type="radio"
+          color="mc-main"
+          v-model="selectedSize"
+          :options="TERMINAL_SIZE_OPTIONS.map(tso => ({
+            label: tso.label,
+            value: tso.value,
+          }))"
+        />
+      </div>
+      <template slot="buttons" slot-scope="props">
+        <q-btn color="mc-main" outline :label="$t('label.appCancel')" @click="props.cancel"></q-btn>
+        <q-btn color="mc-main" :label="$t('label.appOK')" @click="sizeSelected(props.ok, false)"></q-btn>
+        <q-btn color="mc-main" outline :label="$t('label.appSetDefault')" @click="sizeSelected(props.ok, true)"></q-btn>
+      </template>
+    </q-dialog>
   </div>
 </template>
 
@@ -21,7 +43,9 @@ import { Terminal } from 'xterm';
 // import { FitAddon } from 'xterm-addon-fit';
 import { mapActions } from 'vuex';
 import { Draggable } from 'shared/VueDraggableTouchDirective';
-import { dom } from 'quasar';
+import { Cookies, dom } from 'quasar';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+import { CUSTOM_EVENTS, WEB_CONSTANTS, TERMINAL_TYPES, TERMINAL_SIZE_OPTIONS } from 'shared/Constants';
 import 'xterm/css/xterm.css';
 
 const { height } = dom;
@@ -33,13 +57,9 @@ export default {
       type: Object,
       required: true,
     },
-    cols: {
-      type: Number,
-      default: 80,
-    },
-    rows: {
-      type: Number,
-      default: 24,
+    size: {
+      type: String,
+      validator: value => TERMINAL_SIZE_OPTIONS.findIndex(tso => tso.value === value) !== -1,
     },
     bgcolor: {
       type: String,
@@ -56,15 +76,22 @@ export default {
       zIndex: 1000,
       draggableConfig: {
         handle: undefined,
-        resetInitialPos: true,
+        onDragEnd: () => {
+          this.instance.focus();
+        },
       },
       draggableElement: undefined,
-      initialPosition: undefined,
+      commandCounter: 0,
+      command: [],
+      hasFocus: false,
+      selectedSize: null,
+      selectSize: false,
+      TERMINAL_SIZE_OPTIONS,
     };
   },
   computed: {
     background() {
-      return this.bgcolor !== '' ? this.bgcolor : this.terminal.type === 'debugger' ? '#0747a6' : '#410066';
+      return this.bgcolor !== '' ? this.bgcolor : this.terminal.type === TERMINAL_TYPES.DEBUGGER ? '#002f74' : '#2e0047';
     },
   },
   methods: {
@@ -73,38 +100,66 @@ export default {
     ]),
     minimize() {
       this.terminal.active = false;
-      this.$nextTick(() => {
-        this.changeDraggablePosition({ top: window.innerHeight - 55, left: 25 });
-      });
+      this.changeDraggablePosition({ top: window.innerHeight - 55, left: 25 });
     },
     maximize() {
+      this.changeDraggablePosition(this.draggableConfig.initialPosition);
       this.terminal.active = true;
       this.$nextTick(() => {
-        this.changeDraggablePosition(this.initialPosition);
-        this.$forceUpdate();
         this.instance.focus();
       });
     },
+    closeTerminal() {
+      this.sendStompMessage(MESSAGES_BUILDERS.CONSOLE_CLOSED({ consoleId: this.terminal.id, consoleType: this.terminal.type }, this.$store.state.data.session).body);
+      this.instance = null;
+      this.removeTerminal(this.terminal.id);
+    },
     changeDraggablePosition(position) {
+      this.draggableElement.style.left = `${position.left}px`;
+      this.draggableElement.style.top = `${position.top}px`;
       const draggableState = JSON.parse(this.draggableConfig.handle.getAttribute('draggable-state'));
-      if (!this.initialPosition) {
-        this.initialPosition = position;
-      }
-      draggableState.initialPosition = position;
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
       this.draggableConfig.handle.setAttribute('draggable-state', JSON.stringify(draggableState));
-      this.$forceUpdate();
-      this.draggableConfig.handle.style.left = `${position.left}px`;
-      this.draggableConfig.handle.top = `${position.top}px`;
+    },
+    commandResponseListener(command) {
+      if (command && command.payload && command.consoleId === this.terminal.id) {
+        this.instance.write(`\b \b\b \b${command.payload}`);
+        this.instance.prompt();
+      }
+    },
+    onFocusListener(terminalId) {
+      this.hasFocus = this.terminal.id === terminalId;
+    },
+    async sizeSelected(okFunction, setDefault) {
+      await okFunction();
+      const sizeItem = TERMINAL_SIZE_OPTIONS.find(s => s.value === this.selectedSize);
+      this.instance.resize(sizeItem.cols, sizeItem.rows);
+      if (setDefault) {
+        Cookies.set(WEB_CONSTANTS.COOKIE_TERMINAL_SIZE, this.selectedSize, {
+          expires: 30,
+          path: '/',
+        });
+      }
     },
   },
   created() {
+    this.sendStompMessage(MESSAGES_BUILDERS.CONSOLE_CREATED({ consoleId: this.terminal.id, consoleType: this.terminal.type }, this.$store.state.data.session).body);
   },
   mounted() {
+    let initialSize;
+    if (this.size) {
+      initialSize = this.size;
+    } else if (Cookies.has(WEB_CONSTANTS.COOKIE_TERMINAL_SIZE)) {
+      initialSize = Cookies.get(WEB_CONSTANTS.COOKIE_TERMINAL_SIZE);
+    } else {
+      initialSize = TERMINAL_SIZE_OPTIONS[0].value;
+    }
+    const sizeItem = TERMINAL_SIZE_OPTIONS.find(s => s.value === initialSize);
+    this.selectedSize = sizeItem.value;
     this.instance = new Terminal({
-      cols: this.cols,
-      rows: this.rows,
+      cols: sizeItem.cols,
+      rows: sizeItem.rows,
       cursorBlink: true,
       theme: {
         background: this.background,
@@ -116,14 +171,20 @@ export default {
       this.instance.write('\r\n$ ');
     };
     this.instance.open(document.getElementById(`kterm-${this.terminal.id}`));
-    this.instance.writeln(`\n${this.$t('messages.terminalHello', { type: this.terminal.type })}`);
+    this.instance.writeln(`\n${this.$t('messages.terminalHello', { type: this.terminal.type })} / ${this.terminal.id}`);
     this.instance.prompt();
 
     this.instance.onData((e) => {
       switch (e) {
         case '\r': // Enter
         // case '\u0003': // Ctrl+C
-          console.warn('ENTER');
+          this.sendStompMessage(MESSAGES_BUILDERS.COMMAND_REQUEST({
+            consoleId: this.terminal.id,
+            consoleType: this.terminal.type,
+            commandId: `${this.terminal.id}-${++this.commandCounter}`,
+            payload: this.command.join(),
+          }, this.$store.state.data.session).body);
+          this.command.splice(0, this.command.length);
           this.instance.prompt();
           break;
         case '\u007F': // Backspace (DEL)
@@ -132,30 +193,49 @@ export default {
           if (this.instance._core.buffer.x > 2) {
             this.instance.write('\b \b');
           }
+          if (this.command.length > 0) {
+            this.command.pop();
+          }
           break;
         default: // Print all other characters for demo
+          this.command.push(e);
           this.instance.write(e);
       }
     });
-    this.draggableConfig.handle = document.getElementById(`kterm-handle-${this.terminal.id}`);
-    this.instance.focus();
-    this.$nextTick(() => {
-      const h = height(document.getElementById(`kterm-container-${this.terminal.id}`));
-      this.changeDraggablePosition({ top: window.innerHeight - h - 25, left: 25 });
+    this.instance.textarea.addEventListener('focus', () => {
+      this.$eventBus.$emit(CUSTOM_EVENTS.TERMINAL_FOCUSED, this.terminal.id);
     });
+    this.draggableConfig.handle = document.getElementById(`kterm-handle-${this.terminal.id}`);
+    this.draggableElement = document.getElementById(`kterm-container-${this.terminal.id}`);
+    this.draggableConfig.initialPosition = { top: window.innerHeight - height(this.draggableElement) - 25, left: 25 };
+    this.instance.focus();
+    this.$eventBus.$on(CUSTOM_EVENTS.TERMINAL_FOCUSED, this.onFocusListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.COMMAND_RESPONSE, this.commandResponseListener);
+  },
+  beforeDestroy() {
+    if (this.instance !== null) {
+      this.closeTerminal();
+    }
+    this.$eventBus.$off(CUSTOM_EVENTS.TERMINAL_FOCUSED, this.onFocusListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.COMMAND_RESPONSE, this.commandResponseListener);
   },
 };
 </script>
 
 <style lang="stylus">
+$kterm-$border-color = rgba(255, 255, 255, .5)
+.kterm-container
+  z-index 4999
   .kterm-header
-    border-top-right-radius 10px;
-    border-top-left-radius 10px;
+    border-top-right-radius 8px;
+    border-top-left-radius 8px;
     height 30px
-    border-bottom 1px solid white
+    border-top 1px solid $kterm-$border-color
+    border-left 1px solid $kterm-$border-color
+    border-right 1px solid $kterm-$border-color
     cursor move
     opacity 0.9
-    z-index 9999
+    z-index 5001
     .kterm-button
       position absolute
     .kterm-close
@@ -177,4 +257,8 @@ export default {
       border-bottom-left-radius 10px;
       border-bottom-right-radius 10px;
       border none
+  &.kterm-focused
+    z-index 5000
+  .kterm-terminal
+    border 1px solid $kterm-$border-color
 </style>

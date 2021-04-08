@@ -1,6 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
 
@@ -622,9 +622,9 @@ export default {
     if (!id) {
       id = `${state.session}-${++state.terminalsCounter}`;
       commit('ADD_TERMINAL', {
-        id: `${state.session}-${++state.terminalsCounter}`,
+        id,
         active: typeof active === 'undefined' ? true : active,
-        type: type || 'console',
+        type: type || TERMINAL_TYPES.CONSOLE,
       });
     } else {
       const idx = state.terminals.findIndex(t => t.id === id);

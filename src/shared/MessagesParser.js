@@ -1,5 +1,7 @@
+import { eventBus } from 'plugins/initApp';
 import { IN } from './MessagesConstants';
-import { DATAFLOW_STATUS, FAKE_TEXTS, MESSAGE_TYPES } from './Constants';
+import { CUSTOM_EVENTS, DATAFLOW_STATUS, FAKE_TEXTS, MESSAGE_TYPES } from './Constants';
+
 
 function addToKexplorerLog(dispatch, type, message, attach, important = false) {
   dispatch('view/addToKexplorerLog', { type, payload: { message, attach }, important }, { root: true });
@@ -199,6 +201,10 @@ const PARSERS = {
   [IN.TYPE_VIEWAVAILABLE]: ({ payload: knowledgeView }, { dispatch }) => {
     dispatch('data/addKnowledgeView', knowledgeView, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view available', knowledgeView);
+  },
+  [IN.TYPE_COMMANDRESPONSE]: ({ payload }, { dispatch }) => {
+    eventBus.$emit(CUSTOM_EVENTS.COMMAND_RESPONSE, payload);
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Command response received', payload);
   },
 };
 

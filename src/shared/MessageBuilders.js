@@ -329,4 +329,40 @@ export const MESSAGES_BUILDERS = {
     },
     session,
   ),
+
+  CONSOLE_CREATED: ({ consoleId, consoleType }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_CONSOLECREATED,
+    OUT.PAYLOAD_CLASS_CONSOLENOTIFICATION,
+    {
+      // scriptUrl: null,
+      consoleId,
+      consoleType,
+    },
+    session,
+  ),
+  CONSOLE_CLOSED: ({ consoleId, consoleType }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_CONSOLECLOSED,
+    OUT.PAYLOAD_CLASS_CONSOLENOTIFICATION,
+    {
+      // scriptUrl: null,
+      consoleId,
+      consoleType,
+    },
+    session,
+  ),
+  COMMAND_REQUEST: ({ consoleId, consoleType, commandId, payload }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_COMMANDREQUEST,
+    OUT.PAYLOAD_CLASS_CONSOLENOTIFICATION,
+    {
+      // scriptUrl: null,
+      consoleId,
+      consoleType,
+      commandId,
+      payload,
+    },
+    session,
+  ),
 };
