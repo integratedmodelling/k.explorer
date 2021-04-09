@@ -133,4 +133,6 @@ export default {
   engineEvents: state => state.engineEvents,
   engineEventsCount: state => state.engineEvents.length,
   hasShowSettings: state => state.showSettings,
+
+  notificationsParams: state => state.notificationsParams,
 };

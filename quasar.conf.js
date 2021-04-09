@@ -41,17 +41,20 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            WS_BASE_URL: JSON.stringify('http://localhost:8283'),
-            // WS_BASE_URL: JSON.stringify('http://192.168.0.105:8283'),
+            // WS_BASE_URL: JSON.stringify('http://localhost:8283'),
+            WS_BASE_URL: JSON.stringify('http://192.168.0.105:8283'),
             STOMP_CLIENT_DEBUG: true,
             KEXPLORER_DEBUG: true,
             ROUTER_BASE: JSON.stringify(''),
+            // WEB_BASE_URL: JSON.stringify('http://localhost:90'),
+            WEB_BASE_URL: JSON.stringify('http://192.168.0.105:90'),
           }
           : { // and on build (production):
             WS_BASE_URL: JSON.stringify(''),
             STOMP_CLIENT_DEBUG: false,
             KEXPLORER_DEBUG: false,
             ROUTER_BASE: JSON.stringify('/modeler/ui'),
+            WEB_BASE_URL: JSON.stringify('https://integratedmodelling.org'),
           },
         PACKAGE_VERSION: JSON.stringify(version),
         PACKAGE_BUILD: JSON.stringify(build),
@@ -125,6 +128,8 @@ module.exports = function (ctx) {
         'QInput',
         'QSelect',
         'QSlider',
+        'QRadio',
+        'QOptionGroup',
         'QTree',
         'QList',
         'QListHeader',

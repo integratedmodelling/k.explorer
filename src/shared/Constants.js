@@ -424,8 +424,14 @@ export const WEB_CONSTANTS = {
   COOKIE_SAVELOCATION: 'klab_saveLocation',
   COOKIE_HELP_ON_START: 'klab_helponstart',
   COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not set
-
+  COOKIE_NOTIFICATIONS: 'klab_notifications',
+  COOKIE_TERMINAL_SIZE: 'klab_terminalsize',
   LOCAL_STORAGE_APP_ID: 'klab:appId',
+  LOCAL_STORAGE_TERMINAL_COMMANDS: 'klab:terminalCommands',
+};
+
+export const APP_URLS = {
+  NOTIFICATIONS_URL: `${process.env.WEB_BASE_URL}/statics/notifications/index.php`,
 };
 
 export const COLORS = {
@@ -527,6 +533,9 @@ export const CUSTOM_EVENTS = {
   SELECT_ELEMENT: 'selectelement',
   PROPOSED_CONTEXT_CHANGE: 'proposedcontextchange',
   NEW_SCHEDULING: 'newscheduling',
+  SHOW_NOTIFICATIONS: 'shownotifications',
+  TERMINAL_FOCUSED: 'terminalfocused',
+  COMMAND_RESPONSE: 'commandresponse',
 };
 
 export const SCALE_TYPE = {
@@ -947,6 +956,35 @@ export const DEFAULT_STYLES = {
     'line-height': '1em',
   },
 };
+
+export const TERMINAL_TYPES = {
+  DEBUGGER: 'Debugger',
+  CONSOLE: 'Console',
+};
+
+export const TERMINAL_SIZE_OPTIONS = [
+  {
+    value: '80x24',
+    label: '80x24',
+    cols: 80,
+    rows: 24,
+  }, {
+    value: '80x43',
+    label: '80x43',
+    cols: 80,
+    rows: 43,
+  }, {
+    value: '132x24',
+    label: '132x24',
+    cols: 132,
+    rows: 24,
+  }, {
+    value: '132x43',
+    label: '132x43',
+    cols: 132,
+    rows: 43,
+  },
+];
 
 export default {
   CONSTANTS,

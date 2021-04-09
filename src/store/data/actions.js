@@ -1,6 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
 
@@ -616,5 +616,35 @@ export default {
 
   setCrossingIDL: ({ commit }, value) => {
     commit('SET_CROSSING_IDL', value);
+  },
+
+  addTerminal: ({ state, commit }, { id, active, type }) => {
+    if (!id) {
+      id = `${state.session}-${++state.terminalsCounter}`;
+      commit('ADD_TERMINAL', {
+        id,
+        active: typeof active === 'undefined' ? true : active,
+        type: type || TERMINAL_TYPES.CONSOLE,
+      });
+    } else {
+      const idx = state.terminals.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        console.warn('Terminal already exists');
+      } else {
+        state.terminals[idx].active = true;
+      }
+    }
+  },
+
+  removeTerminal: ({ commit }, terminalId) => {
+    commit('REMOVE_TERMINAL', terminalId);
+  },
+
+  addTerminalCommand: ({ commit }, command) => {
+    commit('ADD_TERMINAL_COMMAND', command);
+  },
+
+  clearTerminalCommands: ({ commit }) => {
+    commit('CLEAR_TERMINAL_COMMANDS');
   },
 };

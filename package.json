@@ -1,6 +1,6 @@
 {
   "name": "klab.explorer",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "Web based explorer for k.LAB engine",
   "productName": "k.Explorer",
   "license": "AGPL-3.0-only",
@@ -36,7 +36,9 @@
     "sprotty": "^0.4.2",
     "vue-d3-network": "^0.1.28",
     "vue-i18n": "^8.1.0",
-    "webstomp-client": "^1.2.0"
+    "webstomp-client": "^1.2.0",
+    "xterm": "^4.11.0",
+    "xterm-addon-fit": "^0.5.0"
   },
   "devDependencies": {
     "@types/node": "^12.0.3",

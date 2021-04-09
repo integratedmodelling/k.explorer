@@ -456,4 +456,8 @@ export default {
   SHOW_SETTINGS: (state, show) => {
     state.showSettings = show;
   },
+
+  SET_NOTIFICATIONS_PARAMS: (state, params) => {
+    state.notificationsParams = params;
+  },
 };

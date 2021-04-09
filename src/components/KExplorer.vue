@@ -82,6 +82,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'session',
+      'hasActiveTerminal',
     ]),
     ...mapGetters('stomp', [
       'connectionDown',
@@ -143,7 +144,7 @@ export default {
       this.askForUndocking = ask;
     },
     keydownListener(event) {
-      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown || this.searchInApp) {
+      if (this.connectionDown || this.isInModalMode || !this.admitSearch || this.isHelpShown || this.searchInApp || this.hasActiveTerminal) {
         return;
       }
       if (event.keyCode === 27 && this.searchIsActive) {

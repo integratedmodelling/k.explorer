@@ -44,6 +44,9 @@ export const OUT = Object.freeze({
   TYPE_ENGINEEVENT: 'EngineEvent',
   TYPE_VIEWACTION: 'ViewAction',
   TYPE_RUNAPP: 'RunApp',
+  TYPE_CONSOLECREATED: 'ConsoleCreated',
+  TYPE_CONSOLECLOSED: 'ConsoleClosed',
+  TYPE_COMMANDREQUEST: 'CommandRequest',
 
   PAYLOAD_CLASS_SPATIALEXTENT: 'SpatialExtent',
   PAYLOAD_CLASS_SPATIALLOCATION: 'SpatialLocation',
@@ -61,6 +64,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_EMPTY: 'String',
   PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
   PAYLOAD_CLASS_LOADAPPLICATIONREQUEST: 'LoadApplicationRequest',
+  PAYLOAD_CLASS_CONSOLENOTIFICATION: 'ConsoleNotification',
 
 });
 
@@ -100,6 +104,7 @@ export const IN = Object.freeze({
   TYPE_VIEWACTION: 'ViewAction',
   TYPE_VIEWAVAILABLE: 'ViewAvailable',
   TYPE_VIEWSETTING: 'ViewSetting',
+  TYPE_COMMANDRESPONSE: 'CommandResponse',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -125,6 +130,7 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
   PAYLOAD_CLASS_VIEWSETTING: 'ViewSetting',
   PAYLOAD_CLASS_KNOWLEDGEVIEWREFERENCE: 'KnowledgeViewReference',
+  PAYLOAD_CLASS_CONSOLENOTIFICATION: 'ConsoleNotification',
 });
 
 export const URLS = Object.freeze({

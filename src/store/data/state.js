@@ -1,5 +1,6 @@
 import Stack from 'classes/Stack';
-import { CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+
 /**
  * Data states
  */
@@ -348,4 +349,19 @@ export default {
    */
   packageVersion: process.env.PACKAGE_VERSION || '0',
   packageBuild: process.env.PACKAGE_BUILD || '0',
+
+  /**
+   * terminalCounter
+   */
+  terminalsCounter: 0,
+  /**
+   * Terminals as object
+   * {
+   *   id: String
+   *   active: Boolean
+   *   type: ['console'|'debugger']
+   * }
+   */
+  terminals: [],
+  terminalCommands: localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS) !== null ? JSON.parse(localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS)) : [],
 };

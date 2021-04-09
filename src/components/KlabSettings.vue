@@ -63,6 +63,12 @@
             </div>
             -->
             <div class="ks-title">{{ $t('label.userDetails') }}</div>
+            <q-btn class="ks-debug" icon="mdi-bug" dense flat round color="app-main-color" v-if="isDeveloper" @click.native="openTerminal(TERMINAL_TYPES.DEBUGGER)">
+              <q-tooltip class="klab-setting-tooltip" anchor="bottom middle" self="top middle" :offset="[0, 8]" :delay="1000">{{ $t('label.openDebugger') }}</q-tooltip>
+            </q-btn>
+            <q-btn class="ks-term" icon="mdi-console" dense flat round color="app-main-color" v-if="isDeveloper" @click.native="openTerminal(TERMINAL_TYPES.CONSOLE)">
+              <q-tooltip class="klab-setting-tooltip" anchor="bottom middle" self="top middle" :offset="[0, 8]" :delay="1000">{{ $t('label.openTerminal') }}</q-tooltip>
+            </q-btn>
             <div class="kud-owner">
               <div class="kud-owner-unknown" v-if="owner.unknown">{{ owner.unknown }}</div>
               <template v-else>
@@ -137,7 +143,7 @@ import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { getBase64Resource } from 'shared/Helpers';
-import { APPS_DEFAULT_VALUES } from 'shared/Constants';
+import { APPS_DEFAULT_VALUES, TERMINAL_TYPES } from 'shared/Constants';
 
 export default {
   name: 'KlabSettings',
@@ -154,6 +160,7 @@ export default {
       fabVisible: false,
       closeTimeout: null,
       appsList: [],
+      TERMINAL_TYPES,
     };
   },
   computed: {
@@ -175,13 +182,18 @@ export default {
         unknown: this.$t('label.unknownUser'),
       };
     },
+    isDeveloper() {
+      return this.owner.groups.findIndex(g => g.id === 'DEVELOPERS');
+    },
   },
   methods: {
     ...mapActions('data', [
       'loadSessionReference',
+      'addTerminal',
     ]),
     ...mapActions('view', [
       'setLayout',
+      'setShowSettings',
     ]),
     loadApplications() {
       this.appsList.splice(0);
@@ -322,6 +334,13 @@ export default {
         }
       }, 100);
     },
+    openTerminal(type = null) {
+      this.mousePopupLeave('userDetails');
+      this.mouseFabLeave();
+      setTimeout(() => {
+        this.addTerminal({ ...(type && { type }) });
+      }, 200);
+    },
   },
   watch: {
     sessionReference() {
@@ -388,6 +407,14 @@ export default {
         opacity .3
         &:hover
           opacity 1
+    .ks-debug
+    .ks-term
+      position absolute
+      top 8px
+    .ks-debug
+      right 46px
+    .ks-term
+      right 16px
     .kud-owner
       border 1px solid var(--app-main-color)
       border-radius 5px

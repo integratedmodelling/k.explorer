@@ -75,7 +75,14 @@
             icon="mdi-arrow-up"
             class="kt-upload"
             v-if="!prop.node.empty && !prop.node.noTick"
-          >
+            disable
+          ><q-tooltip
+            :delay="300"
+            :offset="[0, 8]"
+            self="bottom left"
+            anchor="top left"
+            class="kt-q-tooltip"
+          >{{ $t('tooltips.uploadData') }}</q-tooltip>
           </q-btn>
           <q-btn
             round
