@@ -142,7 +142,7 @@ export default {
     },
     commandResponseListener(command) {
       if (command && command.payload && command.consoleId === this.terminal.id) {
-        this.instance.write(`\b \b\b \b${command.payload}`);
+        this.instance.write(`\b \b\b \b${command.payload.replaceAll('\n', '\r\n')}`);
         this.instance.prompt();
       }
     },
@@ -250,14 +250,14 @@ export default {
           }
           break;
         case '\x1b[C':
-          if (xPos < this.command.length + 2) {
-            this.instance.write(e);
-          }
+          // if (xPos < this.command.length + 2) {
+          //  this.instance.write(e);
+          // }
           break;
         case '\x1b[D':
-          if (xPos > 2) {
-            this.instance.write(e);
-          }
+          // if (xPos > 2) {
+          //  this.instance.write(e);
+          // }
           break;
 
         default: // Print all other characters for demo
