@@ -9,6 +9,7 @@ is not available.
 ## Next
 ### Features
 - Notifications from static file
+- Terminal for developers
 
 ## 0.12.3
 ### Changes
