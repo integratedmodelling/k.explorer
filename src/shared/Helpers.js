@@ -610,6 +610,17 @@ export function downloadFromEngine(id, format, label, formatObj, timestamp = -1)
   );
 }
 
+export function flattenTree(root, key) {
+  const flatten = [Object.assign({}, root)];
+  delete flatten[0][key];
+  if (root[key] && root[key].length > 0) {
+    return flatten.concat(root[key]
+      .map(child => flattenTree(child, key))
+      .reduce((a, b) => a.concat(b), []));
+  }
+  return flatten;
+}
+
 const Helpers = {
   WKTInstance,
   isRasterObservation,
@@ -624,6 +635,7 @@ const Helpers = {
   getStateIcon,
   getError,
   findInLayout,
+  flattenTree,
 };
 
 export { Helpers };

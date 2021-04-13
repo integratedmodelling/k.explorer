@@ -280,7 +280,7 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
-  setReloadReport: ({ commit }, reload) => {
+  setReloadDocumentation: ({ commit }, reload) => {
     commit('SET_RELOAD_REPORT', reload);
   },
 

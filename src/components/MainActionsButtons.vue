@@ -18,21 +18,21 @@
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.DOCUMENTATION_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && !hasObservations }]"
-      ><q-icon name="mdi-file-chart">
+      ><q-icon name="mdi-text-box-multiple-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations"></span>
         <q-tooltip
           :delay="600"
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
-        >{{ hasObservations ? $t('tooltips.documentationViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
+        >{{ hasObservations ? $t('tooltips.documentationViewer') : $t('tooltips.noDocumentation') }}</q-tooltip>
       </q-icon></div>
       <!-- REPORT BUTTON -->
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.REPORT_VIEWER.name, disabled: mainViewerName !== VIEWERS.REPORT_VIEWER.name && !hasObservations }]"
       ><q-icon name="mdi-text-box-outline">
-        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadReport && hasObservations"></span>
+        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadDocumentation && hasObservations"></span>
         <q-tooltip
           :delay="600"
           :offset="[0, 8]"
@@ -91,7 +91,7 @@ export default {
   },
   computed: {
     ...mapState('view', [
-      'reloadReport',
+      'reloadDocumentation',
       'reloadDataflow',
     ]),
     ...mapGetters('data', [

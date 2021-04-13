@@ -7,11 +7,11 @@
       color="mc-main"
       underline-color="mc-main"
     >
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.REPORT" icon="mdi-text-box-outline" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.TABLES" icon="mdi-table" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.FIGURES" icon="mdi-image" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" icon="mdi-database-outline" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" icon="mdi-graph-outline" />
+      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.REPORT" class="klab-tab" icon="mdi-text-box-outline" />
+      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.TABLES" class="klab-tab" icon="mdi-table" />
+      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.FIGURES" class="klab-tab" icon="mdi-image" />
+      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" class="klab-tab" icon="mdi-database-outline" />
+      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" />
     </q-tabs>
     <div class="dt-doc-container simplebar-vertical-only">
       <div v-show="tree.length === 0" class="dt-tree-empty">{{ $t('label.noDocumentation') }}</div>
@@ -19,10 +19,8 @@
         ref="klab-doc-tree"
         :nodes="tree"
         node-key="id"
-        :ticked.sync="ticked"
         :selected.sync="selected"
         :expanded.sync="expanded"
-        tick-strategy="strict"
         text-color="white"
         control-color="white"
         color="white"
@@ -58,7 +56,6 @@ export default {
   },
   data() {
     return {
-      ticked: [],
       selected: null,
       expanded: [],
       selectedTab: this.view,
@@ -67,10 +64,10 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
-      'documentationTree',
+      'documentationTrees',
     ]),
     tree() {
-      return this.documentationTree.find(dt => dt.view === this.selectedTab).tree || [];
+      return this.documentationTrees.find(dt => dt.view === this.selectedTab).tree || [];
     },
   },
   methods: {

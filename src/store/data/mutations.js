@@ -561,11 +561,11 @@ export default {
    * @constructor
    */
   SET_DOCUMENTATION: (state, { view, tree }) => {
-    const idx = state.documentationTree.findIndex(dt => dt.view === view);
+    const idx = state.documentationTrees.findIndex(dt => dt.view === view);
     if (idx === -1) {
       console.warn(`Unknown documentation view: ${view}`);
     } else {
-      state.documentationTree[idx].tree = tree;
+      state.documentationTrees[idx].tree = tree;
     }
   },
 

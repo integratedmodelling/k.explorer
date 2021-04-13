@@ -141,6 +141,6 @@ export default {
   /**
    * Documentation
    */
-  documentationTree: state => state.documentationTree || [],
-  documentationMap: state => state.documentationMap,
+  documentationTrees: state => state.documentationTrees,
+  documentationContent: state => state.documentationContent,
 };

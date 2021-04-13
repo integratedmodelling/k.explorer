@@ -221,7 +221,7 @@ export default {
   },
 
   SET_RELOAD_REPORT: (state, reload) => {
-    state.reloadReport = reload;
+    state.reloadDocumentation = reload;
   },
 
   SET_RELOAD_DATAFLOW: (state, reload) => {

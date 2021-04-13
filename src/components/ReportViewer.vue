@@ -49,15 +49,15 @@ export default {
       'hasObservations',
     ]),
     ...mapState('view', [
-      'reloadReport',
+      'reloadDocumentation',
     ]),
   },
   methods: {
     ...mapActions('view', [
-      'setReloadReport',
+      'setReloadDocumentation',
     ]),
     loadReport() {
-      if (this.reloadReport && this.hasContext && this.hasObservations) {
+      if (this.reloadDocumentation && this.hasContext && this.hasObservations) {
         this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}report/${this.contextId}`, {})
           .then(({ data }) => {
             if (data === '') {
@@ -65,12 +65,12 @@ export default {
               data = this.$t('messages.emptyReport');
             }
             this.report = data;
-            this.setReloadReport(false);
+            this.setReloadDocumentation(false);
           });
       }
     },
     forceReload() {
-      this.setReloadReport(true);
+      this.setReloadDocumentation(true);
     },
     launchPrint() {
       this.$nextTick(() => {
@@ -82,7 +82,7 @@ export default {
     },
   },
   watch: {
-    reloadReport() {
+    reloadDocumentation() {
       // eslint-disable-next-line no-underscore-dangle
       if (!this._inactive) {
         this.loadReport();

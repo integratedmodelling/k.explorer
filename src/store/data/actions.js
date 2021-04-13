@@ -665,22 +665,22 @@ export default {
         buildTree(e.children, c);
       });
       node.push(e);
+      items.push({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        subtitle: item.subtitle,
+        bodyText: item.bodyText,
+        model: item.model,
+        section: item.section,
+        resource: item.resource,
+        table: item.table,
+        figure: item.figure,
+        reference: item.reference,
+      });
     };
     documentation.forEach((doc) => {
       buildTree(tree, doc);
-      items.push({
-        id: doc.id,
-        type: doc.type,
-        title: doc.title,
-        subtitle: doc.subtitle,
-        bodyText: doc.bodyText,
-        model: doc.model,
-        section: doc.section,
-        resource: doc.resource,
-        table: doc.table,
-        figure: doc.figure,
-        reference: doc.reference,
-      });
     });
     commit('SET_DOCUMENTATION', { view, tree });
     commit('ADD_DOCUMENTATION', items);

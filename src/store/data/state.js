@@ -368,7 +368,7 @@ export default {
   /**
    * The array of views with the related tree
    */
-  documentationTree: Object.keys(DOCUMENTATION_VIEWS).map(dv => ({ view: dv, tree: [] })),
+  documentationTrees: Object.keys(DOCUMENTATION_VIEWS).map(dv => ({ view: dv, tree: [] })),
   /**
    * The elements referred from the tree
    */
