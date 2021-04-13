@@ -265,9 +265,6 @@ export default {
     &.kcv-title
       color var(--app-alt-color)
       font-weight bold
-      cursor default
-    &.kcv-clickable
-      cursor pointer
   .kcv-text
     margin var(--app-large-mp) var(--app-small-mp)
     text-align justify
