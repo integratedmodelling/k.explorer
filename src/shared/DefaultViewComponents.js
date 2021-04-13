@@ -545,17 +545,22 @@ export const COMPONENTS = {
                   self.autocompleteSelected(item, keyboard);
                 },
               },
-            }, 'Cacca'),
+            }, ''),
           ]);
         }
         return h('div', {
           staticClass: 'kcv-label',
-          class: { 'kcv-title': component.attributes.tag && (component.attributes.tag === 'title' || component.attributes.tag === 'search'), 'kcv-ellipsis': component.attributes.ellipsis, 'kcv-with-icon': component.attributes.iconname },
+          class: {
+            'kcv-title': component.attributes.tag && (component.attributes.tag === 'title' || component.attributes.tag === 'search'),
+            'kcv-clickable': component.attributes.disabled !== 'true' && component.attributes.tag === 'search',
+            'kcv-ellipsis': component.attributes.ellipsis,
+            'kcv-with-icon': component.attributes.iconname,
+          },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
           style: DEFAULT_STYLE_FUNCTION(component),
-          ...(component.attributes.tag === 'search' && {
+          ...(component.attributes.disabled !== 'true' && component.attributes.tag === 'search' && {
             on: {
               click: () => {
                 this.editable = true;
