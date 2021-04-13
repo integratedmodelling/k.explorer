@@ -71,6 +71,7 @@ import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import DockedMainControl from 'components/KlabDockedMainControl.vue';
+import DocumentationTree from 'components/DocumentationTree.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
@@ -83,6 +84,7 @@ export default {
     MainActionsButtons,
     StopActionsButtons,
     DockedMainControl,
+    DocumentationTree,
     KlabLogPane,
     DataflowInfo,
     ScaleButtons,

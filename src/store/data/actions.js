@@ -647,4 +647,42 @@ export default {
   clearTerminalCommands: ({ commit }) => {
     commit('CLEAR_TERMINAL_COMMANDS');
   },
+
+  refreshDocumentation: ({ commit }, { view, documentation }) => {
+    const tree = [];
+    const items = [];
+    const buildTree = (node, item) => {
+      const e = {
+        type: item.type,
+        id: item.id,
+        parentId: item.parentId,
+        previousId: item.previousId,
+        nextId: item.nextId,
+        label: item.title,
+        children: [],
+      };
+      item.children.forEach((c) => {
+        buildTree(e.children, c);
+      });
+      node.push(e);
+    };
+    documentation.forEach((doc) => {
+      buildTree(tree, doc);
+      items.push({
+        id: doc.id,
+        type: doc.type,
+        title: doc.title,
+        subtitle: doc.subtitle,
+        bodyText: doc.bodyText,
+        model: doc.model,
+        section: doc.section,
+        resource: doc.resource,
+        table: doc.table,
+        figure: doc.figure,
+        reference: doc.reference,
+      });
+    });
+    commit('SET_DOCUMENTATION', { view, tree });
+    commit('ADD_DOCUMENTATION', items);
+  },
 };

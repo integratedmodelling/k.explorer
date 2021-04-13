@@ -150,6 +150,7 @@ export default {
     terminalMinimize: 'Minimize terminal',
     terminalMaximize: 'Maximize terminal',
     terminalClose: 'Close terminal',
+    noDocumentation: 'No elements available for this view',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -216,6 +217,7 @@ export default {
     interruptTask: 'Interrupt task {taskDescription}',
     dataViewer: 'View data',
     reportViewer: 'View report',
+    documentationViewer: 'View documentation',
     scenarios: 'Scenarios',
     observers: 'Observers',
     noReportTask: 'Cannot view report,\nwait for task end',

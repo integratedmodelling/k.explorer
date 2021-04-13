@@ -14,6 +14,19 @@
           :anchor="tooltipAnchor('bottom')"
         >{{ $t('tooltips.dataViewer') }}</q-tooltip>
       </q-icon></div>
+      <!-- DOCUMENTATION BUTTON -->
+      <div class="klab-button klab-action"
+           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.DOCUMENTATION_VIEWER) : false"
+           :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && !hasObservations }]"
+      ><q-icon name="mdi-file-chart">
+        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations"></span>
+        <q-tooltip
+          :delay="600"
+          :offset="[0, 8]"
+          :self="tooltipAnchor('top')"
+          :anchor="tooltipAnchor('bottom')"
+        >{{ hasObservations ? $t('tooltips.documentationViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
+      </q-icon></div>
       <!-- REPORT BUTTON -->
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"

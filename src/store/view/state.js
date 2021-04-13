@@ -253,4 +253,5 @@ export default {
    * }
    */
   notificationsParams: null,
+
 };

@@ -46,6 +46,7 @@ import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, WEB_CONSTANTS, LEFTMENU_CONSTANT
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
+import DocumentationViewer from 'components/DocumentationViewer.vue';
 import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
@@ -60,6 +61,7 @@ export default {
   components: {
     KlabMainControl,
     DataViewer,
+    DocumentationViewer,
     ReportViewer,
     DataflowViewer,
     InputRequestModal,
