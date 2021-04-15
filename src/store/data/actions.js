@@ -656,6 +656,7 @@ export default {
       let label;
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
+        case DOCUMENTATION_TYPES.TABLE:
           label = item.title;
           break;
         default:

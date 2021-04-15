@@ -16,16 +16,18 @@
 </template>
 
 <script>
+import Tabulator from 'tabulator-tables';
+import 'tabulator-tables/dist/css/tabulator_midnight.min.css';
 import { mapGetters, mapActions } from 'vuex';
-import { DOCUMENTATION_TYPES } from 'shared/Constants';
+import { DOCUMENTATION_TYPES, CUSTOM_EVENTS, TABLE_TYPES } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from '../shared/Constants';
 
 export default {
   name: 'DocumentationViewer',
   data() {
     return {
       content: '',
+      tables: [],
       rawDocumentation: [],
     };
   },
@@ -49,6 +51,31 @@ export default {
     forceReload() {
       this.setNeedReloadDoc(true);
     },
+    getFormatter(data) {
+      switch (data) {
+        case TABLE_TYPES.TEXT:
+        case TABLE_TYPES.VALUE:
+        case TABLE_TYPES.BOOLEAN:
+        case TABLE_TYPES.NUMBER:
+        default:
+          return 'plaintext';
+      }
+    },
+    formatColumns(columns) {
+      const getColumn = c => ({
+        title: c.title,
+        field: c.id,
+        headerVertical: c.headerVertical,
+        ...(c.sorter && { sorter: c.sorter }),
+        ...(c.hozAlign && { hozAlign: c.hozAlign }),
+        ...(c.formatter && { formatter: c.formatter }),
+        ...(!c.formatter && c.type && { formatter: this.getFormatter(c.type) }),
+        ...(c.columns && c.columns.length > 0 && [...c.columns.forEach(col => getColumn(col))]),
+      });
+      return columns.map(c => ({
+        ...getColumn(c),
+      }));
+    },
   },
   watch: {
     tree() {
@@ -64,11 +91,24 @@ export default {
         switch (doc.type) {
           case DOCUMENTATION_TYPES.PARAGRAPH:
             this.content += content.bodyText;
-            console.warn(content);
+            // console.warn(content);
+            break;
+          case DOCUMENTATION_TYPES.CITATION:
+            this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
+            // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.SECTION:
             this.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
-            console.warn(content);
+            // console.warn(content);
+            break;
+          case DOCUMENTATION_TYPES.TABLE:
+            this.content += `<div class="dv-table" id="${content.id}"></div>`;
+            this.$nextTick(() => {
+              this.tables.push(new Tabulator(`#${content.id}`, {
+                data: content.table.rows,
+                columns: this.formatColumns(content.table.columns),
+              }));
+            });
             break;
           default:
             // console.warn(content);
@@ -117,14 +157,45 @@ export default {
 
   .dv-documentation-wrapper
     position absolute
-    width 1024px
-    left calc((100% - 1024px) / 2)
-    height 100%
+    // width 1024px
+    // left calc((100% - 1024px) / 2)
+    top 78px
+    left 0
+    width 100%
+    height calc(100% - 78px)
     overflow auto
     border none
   .dv-doc-reload
     position fixed
-    top 30px
+    top 10px
     right 30px
 
+  .dv-documentation
+    .dv-content [id]
+      transition: .3s ease;
+      border-radius: 5px;
+      &.dv-selected
+        box-shadow 0 2px 6px rgba(17, 170, 187, .5);
+        transform translateY(15px) scale(1.02);
+        padding: 5px 10px;
+        margin-bottom calc(0.6em + 15px)
+    .dv-citation
+      color var(--app-main-color)
+      a
+        display inline-block
+        text-decoration none
+        color var(--app-main-color)
+        &:visited
+          color var(--app-main-color)
+        &::after
+          content ''
+          display block
+          width 0
+          border-bottom-width 1px
+          border-bottom-style solid
+          transition width .3s
+        &:not(.disabled):hover::after
+          width: 100%;
+        &.disabled
+          cursor default !important
 </style>

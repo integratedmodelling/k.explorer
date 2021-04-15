@@ -85,7 +85,8 @@ export default {
   },
   methods: {
     noParagraph(node, filter) {
-      return filter === DOCUMENTATION_VIEWS.REPORT && node.type !== DOCUMENTATION_TYPES.PARAGRAPH;
+      return filter !== DOCUMENTATION_VIEWS.REPORT
+        || (node.type !== DOCUMENTATION_TYPES.PARAGRAPH && node.type !== DOCUMENTATION_TYPES.CITATION);
     },
     ...mapActions('data', [
       'reloadDocumentation',
