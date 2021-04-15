@@ -280,8 +280,8 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
-  setReloadDocumentation: ({ commit }, reload) => {
-    commit('SET_RELOAD_REPORT', reload);
+  setNeedReloadDoc: ({ commit }, reload) => {
+    commit('SET_NEED_RELOAD_DOC', reload);
   },
 
   setObservationInfo: ({ commit }, observation) => {
@@ -460,5 +460,13 @@ export default {
 
   setNotificationsParams: ({ commit }, params) => {
     commit('SET_NOTIFICATIONS_PARAMS', params);
+  },
+
+  setDocumentationView: ({ commit }, view) => {
+    commit('SET_DOCUMENTATION_VIEW', view);
+  },
+
+  setDocumentationSelected: ({ commit }, selected) => {
+    commit('SET_DOCUMENTATION_SELECTED', selected);
   },
 };

@@ -135,4 +135,8 @@ export default {
   hasShowSettings: state => state.showSettings,
 
   notificationsParams: state => state.notificationsParams,
+
+  needReloadDoc: state => state.needReloadDoc,
+  documentationView: state => state.documentationView,
+  documentationSelected: state => state.documentationSelected,
 };

@@ -16,19 +16,19 @@
     <div class="dt-doc-container simplebar-vertical-only">
       <div v-show="tree.length === 0" class="dt-tree-empty">{{ $t('label.noDocumentation') }}</div>
       <klab-q-tree
-        ref="klab-doc-tree"
         :nodes="tree"
         node-key="id"
+        :check-click="false"
         :selected.sync="selected"
         :expanded.sync="expanded"
+        :ticked.sync="ticked"
         text-color="white"
         control-color="white"
         color="white"
         :dark="true"
         :no-nodes-label="$t('label.noNodes')"
         :no-results-label="$t('label.noNodes')"
-        :double-click-function="doubleClick"
-        :filter="view"
+        :filter="selectedTab"
         :filter-method="noParagraph"
         >
       </klab-q-tree>
@@ -38,51 +38,98 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { DOCUMENTATION_VIEWS, DOCUMENTATION_TYPES } from 'shared/Constants';
+import { URLS } from 'shared/MessagesConstants';
 // import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
+import { CUSTOM_EVENTS } from '../shared/Constants';
 
 export default {
   name: 'DocumentationTree',
   components: {
     KlabQTree,
   },
-  props: {
-    view: {
-      type: String,
-      default: DOCUMENTATION_VIEWS.REPORT,
-    },
-  },
   data() {
     return {
-      selected: null,
       expanded: [],
-      selectedTab: this.view,
+      selected: null,
+      ticked: [],
       DOCUMENTATION_VIEWS,
     };
   },
   computed: {
     ...mapGetters('data', [
+      'hasContext',
+      'contextId',
+      'hasObservations',
       'documentationTrees',
+      'documentationContent',
     ]),
+    ...mapGetters('view', [
+      'documentationView',
+      'documentationSelected',
+      'needReloadDoc',
+    ]),
+    selectedTab: {
+      get() {
+        return this.$store.getters['view/documentationView'];
+      },
+      set(value) {
+        this.$store.dispatch('view/setDocumentationView', value, { root: true });
+      },
+    },
     tree() {
       return this.documentationTrees.find(dt => dt.view === this.selectedTab).tree || [];
     },
   },
   methods: {
-    async doubleClick() {
-      // NOTHING TO DO
-    },
     noParagraph(node, filter) {
       return filter === DOCUMENTATION_VIEWS.REPORT && node.type !== DOCUMENTATION_TYPES.PARAGRAPH;
     },
+    ...mapActions('data', [
+      'reloadDocumentation',
+    ]),
+    ...mapActions('view', [
+      'setNeedReloadDoc',
+      'setDocumentationSelected',
+    ]),
+    loadDocumentation() {
+      if (this.needReloadDoc && this.hasContext && this.hasObservations) {
+        this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}documentation/${this.documentationView}/${this.contextId}`, {})
+          .then(({ data }) => {
+            if (data === '') {
+              console.warn('Empty report');
+              this.content = this.$t('messages.emptyReport');
+            } else {
+              this.reloadDocumentation({ view: this.documentationView, documentation: data });
+              this.setNeedReloadDoc(false);
+            }
+          });
+      }
+    },
   },
   watch: {
+    needReloadDoc() {
+      // eslint-disable-next-line no-underscore-dangle
+      if (!this._inactive) {
+        this.loadDocumentation();
+      }
+    },
+    selected(newValue) {
+      console.warn(`Selected ${newValue}`);
+      this.setDocumentationSelected(newValue);
+    },
+    documentationView() {
+      this.setNeedReloadDoc(true);
+      this.loadDocumentation();
+    },
   },
   mounted() {
+    this.$eventBus.$on(CUSTOM_EVENTS.DOCUMETATION_ACTIVATED, this.loadDocumentation);
   },
   beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.DOCUMETATION_ACTIVATED, this.loadDocumentation);
   },
 
 };
@@ -91,7 +138,7 @@ export default {
 @import '~variables'
 .dt-container
   .dt-tree-empty
-    margin 16px 0
+    margin 16px
     color white
   .q-tabs-head
     background-color rgba(0, 0, 0, 0)
@@ -100,5 +147,5 @@ export default {
       padding-top 16px
       padding-bottom 16px
       &.active
-        color $main-control-main-color
+        color $main-control-main-color !important
 </style>

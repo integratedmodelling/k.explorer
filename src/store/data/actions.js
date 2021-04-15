@@ -3,6 +3,7 @@ import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage
 import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
+import { DOCUMENTATION_TYPES } from '../../shared/Constants';
 
 export default {
 
@@ -648,17 +649,25 @@ export default {
     commit('CLEAR_TERMINAL_COMMANDS');
   },
 
-  refreshDocumentation: ({ commit }, { view, documentation }) => {
+  reloadDocumentation: ({ commit }, { view, documentation }) => {
     const tree = [];
     const items = [];
     const buildTree = (node, item) => {
+      let label;
+      switch (item.type) {
+        case DOCUMENTATION_TYPES.SECTION:
+          label = item.title;
+          break;
+        default:
+          label = item.type;
+      }
       const e = {
         type: item.type,
         id: item.id,
         parentId: item.parentId,
         previousId: item.previousId,
         nextId: item.nextId,
-        label: item.title,
+        label,
         children: [],
       };
       item.children.forEach((c) => {

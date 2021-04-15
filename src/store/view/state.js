@@ -1,7 +1,7 @@
 /**
  * State of view
  */
-import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS, HELP_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, LEFTMENU_CONSTANTS, SPINNER_CONSTANTS, HELP_CONSTANTS, DOCUMENTATION_VIEWS } from 'shared/Constants';
 import { IN } from 'shared/MessagesConstants';
 
 export default {
@@ -126,7 +126,7 @@ export default {
    * If true, when report button is clicked, we ask for report
    * Need to notify that we have unview report too
    */
-  reloadDocumentation: false,
+  needReloadDoc: false,
 
   /**
    * If true, when dataflow button is clicked, if dataflow not exists we ask for it.
@@ -253,5 +253,9 @@ export default {
    * }
    */
   notificationsParams: null,
-
+  /**
+   * Selected documentation view
+   */
+  documentationView: DOCUMENTATION_VIEWS.REPORT,
+  documentationSelected: null,
 };

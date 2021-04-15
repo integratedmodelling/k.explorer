@@ -17,6 +17,10 @@ export default {
       type: String,
       default: null,
     },
+    checkClick: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -74,7 +78,11 @@ export default {
           },
           on: {
             click: (event) => {
-              if (event && event.srcElement && event.srcElement.className.indexOf('node-element') !== -1) {
+              if (this.checkClick) {
+                if (event && event.srcElement && event.srcElement.className.indexOf('node-element') !== -1) {
+                  this.__onClick(node, meta);
+                }
+              } else {
                 this.__onClick(node, meta);
               }
             },

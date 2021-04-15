@@ -27,7 +27,7 @@
           :anchor="tooltipAnchor('bottom')"
         >{{ hasObservations ? $t('tooltips.documentationViewer') : $t('tooltips.noDocumentation') }}</q-tooltip>
       </q-icon></div>
-      <!-- REPORT BUTTON -->
+      <!-- REPORT BUTTON
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.REPORT_VIEWER.name, disabled: mainViewerName !== VIEWERS.REPORT_VIEWER.name && !hasObservations }]"
@@ -39,7 +39,7 @@
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
         >{{ hasObservations ? $t('tooltips.reportViewer') : $t('tooltips.noReportObservation') }}</q-tooltip>
-      </q-icon></div>
+      </q-icon></div> -->
       <!-- DATAFLOW -->
       <div
         class="klab-button klab-action"
@@ -91,7 +91,7 @@ export default {
   },
   computed: {
     ...mapState('view', [
-      'reloadDocumentation',
+      'needReloadDoc',
       'reloadDataflow',
     ]),
     ...mapGetters('data', [

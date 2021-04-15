@@ -3,7 +3,7 @@
     <div class="dv-documentation-wrapper">
       <div class="dv-empty-documentation" v-if="content === ''">{{ $t('messages.noDocumentation') }}</div>
       <div class="dv-content" v-html="content" v-else></div>
-      <q-btn icon="mdi-refresh" round class="mc-report-reload" color="mc-main" @click="forceReload">
+      <q-btn icon="mdi-refresh" round class="dv-doc-reload" color="mc-main" @click="forceReload">
         <q-tooltip
           :offset="[0, 8]"
           self="bottom middle"
@@ -16,20 +16,13 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
-import { URLS } from 'shared/MessagesConstants';
-import { DOCUMENTATION_VIEWS, DOCUMENTATION_TYPES } from 'shared/Constants';
+import { mapGetters, mapActions } from 'vuex';
+import { DOCUMENTATION_TYPES } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
-// import SimpleBar from 'simplebar';
+import { CUSTOM_EVENTS } from '../shared/Constants';
 
 export default {
   name: 'DocumentationViewer',
-  props: {
-    view: {
-      type: String,
-      default: DOCUMENTATION_VIEWS.REPORT,
-    },
-  },
   data() {
     return {
       content: '',
@@ -37,52 +30,27 @@ export default {
     };
   },
   computed: {
-    ...mapState('view', [
-      'reloadDocumentation',
-    ]),
     ...mapGetters('data', [
-      'hasContext',
-      'contextId',
-      'hasObservations',
       'documentationTrees',
       'documentationContent',
     ]),
+    ...mapGetters('view', [
+      'documentationView',
+      'documentationSelected',
+    ]),
     tree() {
-      return this.documentationTrees.find(dt => dt.view === this.view).tree;
+      return this.documentationTrees.find(dt => dt.view === this.documentationView).tree;
     },
   },
   methods: {
-    ...mapActions('data', [
-      'refreshDocumentation',
-    ]),
     ...mapActions('view', [
-      'setReloadDocumentation',
+      'setNeedReloadDoc',
     ]),
-    loadDocumentation() {
-      if (this.reloadDocumentation && this.hasContext && this.hasObservations) {
-        this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}documentation/REPORT/${this.contextId}`, {})
-          .then(({ data }) => {
-            if (data === '') {
-              console.warn('Empty report');
-              this.content = this.$t('messages.emptyReport');
-            } else {
-              this.refreshDocumentation({ view: this.view, documentation: data });
-              this.setReloadDocumentation(false);
-            }
-          });
-      }
-    },
     forceReload() {
-      this.setReloadDocumentation(true);
+      this.setNeedReloadDoc(true);
     },
   },
   watch: {
-    reloadDocumentation() {
-      // eslint-disable-next-line no-underscore-dangle
-      if (!this._inactive) {
-        this.loadDocumentation();
-      }
-    },
     tree() {
       this.rawDocumentation.splice(0, this.rawDocumentation.length);
       this.content = '';
@@ -96,41 +64,43 @@ export default {
         switch (doc.type) {
           case DOCUMENTATION_TYPES.PARAGRAPH:
             this.content += content.bodyText;
+            console.warn(content);
             break;
           case DOCUMENTATION_TYPES.SECTION:
-            this.content += `<h1>${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
+            this.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
+            console.warn(content);
             break;
           default:
+            // console.warn(content);
             break;
         }
       });
     },
+    documentationSelected(newValue) {
+      Array.prototype.forEach.call(document.getElementsByClassName('dv-selected'), (e) => {
+        e.classList.remove('dv-selected');
+      });
+      if (newValue !== null) {
+        const el = document.getElementById(newValue);
+        if (el) {
+          // Use el.scrollIntoView() to instantly scroll to the element
+          el.scrollIntoView({ behavior: 'smooth' });
+          el.classList.add('dv-selected');
+        }
+      }
+    },
   },
   activated() {
-    this.loadDocumentation();
+    this.$eventBus.$emit(CUSTOM_EVENTS.DOCUMETATION_ACTIVATED);
+  },
+  mounted() {
+  },
+  beforeDestroy() {
   },
 };
 </script>
 
 <style lang="stylus">
-@media print
-  #q-app
-    display none
-  .dv-content table td
-  .dv-content p
-    word-break break-word
-
-  .dv-content
-    display: block !important
-    position: relative !important
-    overflow: visible !important
-    overflow-y: visible !important
-    width: 100% !important
-    height: 100% !important
-    margin: 0 !important
-    left: 0 !important
-    border: none !important
-
   .dv-empty-documentation
     position absolute
     width 400px
@@ -145,7 +115,7 @@ export default {
     font-weight bold
     color rgb(17, 170, 187)
 
-  .dv-content-container
+  .dv-documentation-wrapper
     position absolute
     width 1024px
     left calc((100% - 1024px) / 2)
@@ -153,7 +123,8 @@ export default {
     overflow auto
     border none
   .dv-doc-reload
-    position absolute
-    top 10px
-    right 60px
+    position fixed
+    top 30px
+    right 30px
+
 </style>
