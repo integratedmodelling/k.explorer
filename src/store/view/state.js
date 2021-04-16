@@ -226,6 +226,7 @@ export default {
     }
    */
   layout: null,
+  windowSide: 'left',
   dialogs: [],
 
   /**

@@ -402,6 +402,10 @@ export default {
     }
   },
 
+  setWindowSide: ({ commit }, side) => {
+    commit('SET_WINDOW_SIDE', side);
+  },
+
   setEngineEvent: ({ commit }, event) => {
     commit('SET_ENGINE_EVENT', event);
   },

@@ -2,17 +2,6 @@
   <div
     class="dt-container relative-position klab-menu-component"
   >
-    <q-tabs
-      v-model="selectedTab"
-      color="mc-main"
-      underline-color="mc-main"
-    >
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.REPORT" class="klab-tab" icon="mdi-text-box-outline" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.TABLES" class="klab-tab" icon="mdi-table" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.FIGURES" class="klab-tab" icon="mdi-image" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" class="klab-tab" icon="mdi-database-outline" />
-      <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" />
-    </q-tabs>
     <div class="dt-doc-container simplebar-vertical-only">
       <div v-show="tree.length === 0" class="dt-tree-empty">{{ $t('label.noDocumentation') }}</div>
       <klab-q-tree
@@ -28,7 +17,7 @@
         :dark="true"
         :no-nodes-label="$t('label.noNodes')"
         :no-results-label="$t('label.noNodes')"
-        :filter="selectedTab"
+        :filter="documentationView"
         :filter-method="noParagraph"
         >
       </klab-q-tree>
@@ -39,11 +28,9 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { DOCUMENTATION_VIEWS, DOCUMENTATION_TYPES } from 'shared/Constants';
+import { DOCUMENTATION_VIEWS, DOCUMENTATION_TYPES, CUSTOM_EVENTS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
-// import SimpleBar from 'simplebar';
 import KlabQTree from 'components/custom/KlabQTree';
-import { CUSTOM_EVENTS } from '../shared/Constants';
 
 export default {
   name: 'DocumentationTree',
@@ -71,16 +58,8 @@ export default {
       'documentationSelected',
       'needReloadDoc',
     ]),
-    selectedTab: {
-      get() {
-        return this.$store.getters['view/documentationView'];
-      },
-      set(value) {
-        this.$store.dispatch('view/setDocumentationView', value, { root: true });
-      },
-    },
     tree() {
-      return this.documentationTrees.find(dt => dt.view === this.selectedTab).tree || [];
+      return this.documentationTrees.find(dt => dt.view === this.documentationView).tree || [];
     },
   },
   methods: {
@@ -138,15 +117,9 @@ export default {
 <style lang="stylus">
 @import '~variables'
 .dt-container
+  padding-top 16px
   .dt-tree-empty
     margin 16px
     color white
-  .q-tabs-head
-    background-color rgba(0, 0, 0, 0)
-    margin-bottom 16px
-    .q-tab
-      padding-top 16px
-      padding-bottom 16px
-      &.active
-        color $main-control-main-color !important
+
 </style>

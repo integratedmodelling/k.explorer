@@ -386,6 +386,10 @@ export default {
     */
   },
 
+  SET_WINDOW_SIDE: (state, side) => {
+    state.windowSide = side;
+  },
+
   CREATE_VIEW_COMPONENT: (state, component) => {
     if (component.type === APPS_COMPONENTS.ALERT || component.type === APPS_COMPONENTS.CONFIRM) {
       state.dialogs.push({

@@ -39,6 +39,7 @@ export const LEFTMENU_CONSTANTS = {
     */
   LEFTMENU_MAXSIZE: 512,
   LEFTMENU_MINSIZE: 80,
+  LEFTMENU_DOCUMENTATION_SIZE: 400,
   LEFTMENU_MAXIMIZED: 'max',
   LEFTMENU_MINIMIZED: 'min',
   LEFTMENU_HIDDEN: 'hidden',
@@ -80,8 +81,8 @@ export const VIEWERS = {
     hasSearch: true,
   },
   DOCUMENTATION_VIEWER: {
-    name: 'DocumentationViewer',
-    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED,
+    name: 'KlabDocumentation',
+    leftMenuState: LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED,
     leftMenuContent: LEFTMENU_CONSTANTS.DOCUMENTATION_VIEWER_COMPONENT,
     mainControl: false,
     hasSearch: false,

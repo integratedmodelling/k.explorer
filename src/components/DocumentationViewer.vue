@@ -2,28 +2,25 @@
   <div class="dv-documentation">
     <div class="dv-documentation-wrapper">
       <div class="dv-empty-documentation" v-if="content.length === 0">{{ $t('messages.noDocumentation') }}</div>
-      <div class="dv-content" v-else v-for="doc in content" :key="doc.id">
-        <template v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></template>
-        <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
-        <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-          <div class="dv-table-title">{{ doc.title }}</div>
-          <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="doc.id"></div>
-          <div class="dv-table-actions col">
-            <div class="dv-actions-right justify-end row">
-              <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(doc.id, 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
-              <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
+      <div class="dv-content" v-else>
+        <div class="dv-item" v-for="doc in content" :key="doc.id">
+          <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
+            <h1 :id="doc.id">{{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+          </template>
+          <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
+          <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
+          <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
+            <div class="dv-table-title">{{ doc.title }}</div>
+            <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="doc.id"></div>
+            <div class="dv-table-actions col">
+              <div class="dv-actions-right justify-end row">
+                <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(doc.id, 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
+                <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <q-btn icon="mdi-refresh" round class="dv-doc-reload" color="mc-main" @click="forceReload">
-        <q-tooltip
-          :offset="[0, 8]"
-          self="bottom middle"
-          anchor="top middle"
-          :delay="1000"
-        >{{ $t('label.appReload')}}</q-tooltip>
-      </q-btn>
     </div>
   </div>
 </template>
@@ -31,7 +28,7 @@
 <script>
 import Tabulator from 'tabulator-tables';
 import 'tabulator-tables/dist/css/tabulator_midnight.min.css';
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 import { DOCUMENTATION_TYPES, CUSTOM_EVENTS, TABLE_TYPES } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
 
@@ -60,12 +57,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('view', [
-      'setNeedReloadDoc',
-    ]),
-    forceReload() {
-      this.setNeedReloadDoc(true);
-    },
     getFormatter(data) {
       switch (data) {
         case TABLE_TYPES.TEXT:
@@ -195,16 +186,11 @@ export default {
     position absolute
     // width 1024px
     // left calc((100% - 1024px) / 2)
-    top 78px
     left 0
     width 100%
-    height calc(100% - 78px)
+    height 100%
     overflow auto
     border none
-  .dv-doc-reload
-    position fixed
-    top 10px
-    right 30px
 
   .dv-documentation
     .dv-content [id]

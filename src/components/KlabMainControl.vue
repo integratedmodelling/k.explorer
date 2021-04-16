@@ -198,7 +198,6 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       kvListOpen: false,
-      windowSide: 'left',
       KNOWLEDGE_VIEWS,
     };
   },
@@ -218,6 +217,7 @@ export default {
       'isDrawMode',
       'fuzzyMode',
       'largeMode',
+      'windowSide',
     ]),
     qCardStyle() {
       return {
@@ -234,6 +234,7 @@ export default {
       'setLargeMode',
       'searchStart',
       'searchFocus',
+      'setWindowSide',
     ]),
     callStartType(event) {
       if (!this.searchIsFocused) {
@@ -283,7 +284,12 @@ export default {
       const draggableState = JSON.parse(this.dragMCConfig.handle.getAttribute('draggable-state'));
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
-      document.querySelector('.mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
+      const el = document.querySelector('.mc-q-card-title');
+      if (el) {
+        el.setAttribute('draggable-state', JSON.stringify(draggableState));
+      } else {
+        this.dragMCConfig.handle.setAttribute('draggable-state', JSON.stringify(draggableState));
+      }
     },
     checkWhereWasDragged() {
       this.dragging = false;
@@ -317,7 +323,7 @@ export default {
     mapSizeChangedListener(event) {
       if (event && event.type === 'changelayout') {
         if (event.align) {
-          this.windowSide = event.align;
+          this.setWindowSide(event.align);
         }
         this.updateCorrectedPosition();
         this.$nextTick(() => {

@@ -3,9 +3,9 @@
     <div class="klab-main-actions">
       <!-- MAP BUTTON -->
       <div class="klab-button klab-action"
-           @click="mainViewerName !== VIEWERS.DATA_VIEWER.name ? setMainViewer(isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER) : false"
+           @click="mainViewerName !== VIEWERS.DATA_VIEWER.name ? click(isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DATA_VIEWER.name }]"
-           v-if="orientation !== 'horizontal'"
+           v-if="orientation !== 'horizontal' || isHeader"
       ><q-icon name="mdi-eye-outline">
         <q-tooltip
           :delay="600"
@@ -16,10 +16,10 @@
       </q-icon></div>
       <!-- DOCUMENTATION BUTTON -->
       <div class="klab-button klab-action"
-           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.DOCUMENTATION_VIEWER) : false"
+           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && !hasObservations }]"
       ><q-icon name="mdi-text-box-multiple-outline">
-        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations"></span>
+        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name  && needReloadDoc && hasObservations"></span>
         <q-tooltip
           :delay="600"
           :offset="[0, 8]"
@@ -29,7 +29,7 @@
       </q-icon></div>
       <!-- REPORT BUTTON
       <div class="klab-button klab-action"
-           @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? setMainViewer(VIEWERS.REPORT_VIEWER) : false"
+           @click="mainViewerName !== VIEWERS.REPORT_VIEWER.name && hasObservations ? click(VIEWERS.REPORT_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.REPORT_VIEWER.name, disabled: mainViewerName !== VIEWERS.REPORT_VIEWER.name && !hasObservations }]"
       ><q-icon name="mdi-text-box-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.REPORT_VIEWER.name && reloadDocumentation && hasObservations"></span>
@@ -43,7 +43,7 @@
       <!-- DATAFLOW -->
       <div
         class="klab-button klab-action"
-        @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext ? setMainViewer(VIEWERS.DATAFLOW_VIEWER) : false"
+        @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext ? click(VIEWERS.DATAFLOW_VIEWER) : false"
         :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && !hasContext }]"
       ><q-icon name="mdi-sitemap">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
@@ -72,7 +72,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { VIEWERS } from 'shared/Constants';
+import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
   name: 'MainActionsButtons',
@@ -84,6 +84,10 @@ export default {
     separatorClass: {
       type: String,
       default: '',
+    },
+    isHeader: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -113,6 +117,12 @@ export default {
     ]),
     tooltipAnchor(where) {
       return `${where} ${this.orientation === 'horizontal' ? 'middle' : 'left'}`;
+    },
+    click(viewer) {
+      this.setMainViewer(viewer);
+      this.$nextTick(() => {
+        this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout' });
+      });
     },
   },
   created() {

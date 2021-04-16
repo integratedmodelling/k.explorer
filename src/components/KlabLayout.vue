@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
     <q-layout-header
-      :class="{ 'kapp-main':  isRootLayout}"
+      :class="{ 'kapp-main':  isRootLayout }"
       class="kapp-header-container kapp-container print-hide"
       :id="`kapp-${idSuffix}-header`"
       v-if="hasHeader"
@@ -19,6 +19,9 @@
         <div class="kapp-title-container">
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
+        </div>
+        <div class="row item-center q-ma-md">
+          <main-actions-buttons :is-header="true" class="col justify-end self-center"></main-actions-buttons>
         </div>
       </div>
     </q-layout-header>
@@ -57,6 +60,7 @@ import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
+import MainActionsButtons from 'components/MainActionsButtons';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
 import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
@@ -70,6 +74,7 @@ const { width, height } = dom;
 export default {
   name: 'KlabLayout',
   components: {
+    MainActionsButtons,
     KExplorer,
     KlabAppViewer,
   },
@@ -99,13 +104,16 @@ export default {
     ]),
     ...mapGetters('view', [
       'isApp',
+      'hasHeader',
     ]),
     isRootLayout() {
       return this.layout !== null && this.layout.parentId === null;
     },
+    /*
     hasHeader() {
       return this.layout && (this.layout.header || this.layout.logo || this.layout.label || this.layout.description);
     },
+     */
     showLeftPanel: {
       get() {
         return this.layout && this.layout.leftPanels.length > 0;
@@ -119,8 +127,8 @@ export default {
     },
     mainPanelStyle() {
       return {
-        width: `${this.header.width - this.leftPanel.width}px`,
-        height: `${this.leftPanel.height}px`,
+        width: this.header.width - this.leftPanel.width,
+        height: this.leftPanel.height,
       };
     },
     idSuffix() {
@@ -337,6 +345,23 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+    .klab-main-actions .klab-button
+        font-size 32px
+        margin 0
+        padding 0 12px
+        border-top-left-radius 4px
+        border-top-right-radius 4px
+        text-shadow none
+        &:hover
+          color var(--app-main-color) !important
+        &:active
+          color var(--app-main-color)
+      .klab-button-notification
+        width 12px
+        height 12px
+        top -5px
+        right 8px
+        color var(--app-main-color)
   .kcv-dir-vertical
     display flex
     flex-direction column
