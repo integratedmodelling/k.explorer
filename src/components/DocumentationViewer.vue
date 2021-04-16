@@ -1,8 +1,21 @@
 <template>
   <div class="dv-documentation">
     <div class="dv-documentation-wrapper">
-      <div class="dv-empty-documentation" v-if="content === ''">{{ $t('messages.noDocumentation') }}</div>
-      <div class="dv-content" v-html="content" v-else></div>
+      <div class="dv-empty-documentation" v-if="content.length === 0">{{ $t('messages.noDocumentation') }}</div>
+      <div class="dv-content" v-else v-for="doc in content" :key="doc.id">
+        <template v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></template>
+        <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
+        <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
+          <div class="dv-table-title">{{ doc.title }}</div>
+          <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="doc.id"></div>
+          <div class="dv-table-actions col">
+            <div class="dv-actions-right justify-end row">
+              <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(doc.id, 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
+              <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
+            </div>
+          </div>
+        </div>
+      </div>
       <q-btn icon="mdi-refresh" round class="dv-doc-reload" color="mc-main" @click="forceReload">
         <q-tooltip
           :offset="[0, 8]"
@@ -26,9 +39,11 @@ export default {
   name: 'DocumentationViewer',
   data() {
     return {
-      content: '',
+      content: [],
       tables: [],
       rawDocumentation: [],
+      tableFontSize: 12,
+      DOCUMENTATION_TYPES,
     };
   },
   computed: {
@@ -76,11 +91,19 @@ export default {
         ...getColumn(c),
       }));
     },
+    tableFontSizeChange(id, amount) {
+      const table = this.tables.find(t => t.id === id);
+      if (table) {
+        this.tableFontSize += amount;
+        table.instance.redraw(true);
+      }
+    },
   },
   watch: {
     tree() {
       this.rawDocumentation.splice(0, this.rawDocumentation.length);
-      this.content = '';
+      this.content.splice(0, this.content.length);
+      this.tables.splice(0, this.tables.length);
       this.tree.forEach((doc) => {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);
@@ -88,32 +111,45 @@ export default {
       });
       this.rawDocumentation.forEach((doc) => {
         const content = this.documentationContent.get(doc.id);
+        this.content.push(content);
         switch (doc.type) {
           case DOCUMENTATION_TYPES.PARAGRAPH:
-            this.content += content.bodyText;
+            // this.content += content.bodyText;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.CITATION:
-            this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
+            // this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.SECTION:
-            this.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
+            // this.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.TABLE:
-            this.content += `<div class="dv-table" id="${content.id}"></div>`;
-            this.$nextTick(() => {
-              this.tables.push(new Tabulator(`#${content.id}`, {
+            // this.content += `<div class="dv-table-container">
+            //                   <div class="dv-table-title">${content.title}</div>
+            //                   <div class="dv-table" style="font-size: ${this.tableFontSize}px" id="${content.id}"></div>
+            //                   <div class="dv-table-actions"><q-btn flat @click="tableFontSize++"></q-btn></div>
+            //                 </div>`;
+            // this.$nextTick(() => {
+            this.tables.push({
+              id: content.id,
+              tabulator: {
                 data: content.table.rows,
                 columns: this.formatColumns(content.table.columns),
-              }));
+              },
             });
+            // });
             break;
           default:
             // console.warn(content);
             break;
         }
+      });
+      this.$nextTick(() => {
+        this.tables.forEach((table) => {
+          table.instance = new Tabulator(`#${table.id}`, table.tabulator);
+        });
       });
     },
     documentationSelected(newValue) {
@@ -179,6 +215,12 @@ export default {
         transform translateY(15px) scale(1.02);
         padding: 5px 10px;
         margin-bottom calc(0.6em + 15px)
+    .dv-table-container
+      .dv-table-title
+        font-weight bold
+        color rgb(17, 170, 187)
+        font-size larger
+        padding-bottom 16px
     .dv-citation
       color var(--app-main-color)
       a
@@ -198,4 +240,9 @@ export default {
           width: 100%;
         &.disabled
           cursor default !important
+    .dv-table-actions
+      padding-top 16px
+      .q-btn
+        padding 8px
+
 </style>
