@@ -10,8 +10,8 @@
           <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
           <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
           <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-            <div class="dv-table-title">{{ doc.title }}</div>
-            <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="doc.id"></div>
+            <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
+            <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }"></div>
             <div class="dv-table-actions col">
               <div class="dv-actions-right justify-end row">
                 <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
@@ -41,6 +41,73 @@ export default {
       rawDocumentation: [],
       tableFontSize: 12,
       DOCUMENTATION_TYPES,
+      columns: [{
+        title: '',
+        id: 'rowtitles_1',
+        headerVertical: false,
+        sorter: null,
+        hozAlign: null,
+        formatter: null,
+        type: 'TEXT',
+        frozen: true,
+        caption: null,
+        columns: [],
+      }, {
+        title: 'Temperate forest',
+        id: 'c3',
+        headerVertical: false,
+        sorter: null,
+        hozAlign: null,
+        formatter: null,
+        type: 'NUMBER',
+        frozen: false,
+        caption: null,
+        columns: [{
+          title: 'Opening value',
+          id: 'g1',
+          headerVertical: false,
+          sorter: null,
+          hozAlign: null,
+          formatter: null,
+          type: 'NUMBER',
+          frozen: false,
+          caption: null,
+          columns: [],
+        }, {
+          title: 'Closing value',
+          id: 'g2',
+          headerVertical: false,
+          sorter: null,
+          hozAlign: null,
+          formatter: null,
+          type: 'NUMBER',
+          frozen: false,
+          caption: null,
+          columns: [],
+        }, {
+          title: 'Change',
+          id: 'c',
+          headerVertical: false,
+          sorter: null,
+          hozAlign: null,
+          formatter: null,
+          type: 'NUMBER',
+          frozen: false,
+          caption: null,
+          columns: [],
+        }],
+      }],
+      rows: [{
+        c3c: '0.04945810482210633',
+        c3g2: '0.7105812909906749',
+        c3g1: '0.6611231861685686',
+        rowtitles_1: 'indicator_normalized_difference_vegetation_index',
+      }, {
+        c3c: '0.11011138858305558',
+        c3g2: '2.104810344827588',
+        c3g1: '1.9946989562445323',
+        rowtitles_1: 'indicator_leaf_area_index',
+      }],
     };
   },
   computed: {
@@ -68,16 +135,20 @@ export default {
       }
     },
     formatColumns(columns) {
-      const getColumn = c => ({
-        title: c.title,
-        field: c.id,
-        headerVertical: c.headerVertical,
-        ...(c.sorter && { sorter: c.sorter }),
-        ...(c.hozAlign && { hozAlign: c.hozAlign }),
-        ...(c.formatter && { formatter: c.formatter }),
-        ...(!c.formatter && c.type && { formatter: this.getFormatter(c.type) }),
-        ...(c.columns && c.columns.length > 0 && [...c.columns.forEach(col => getColumn(col))]),
-      });
+      const getColumn = (c, parentId) => {
+        const field = `${parentId || ''}${c.id}`;
+        const formatter = this.getFormatter(c.type);
+        return {
+          title: c.title,
+          field,
+          headerVertical: c.headerVertical,
+          ...(c.sorter && { sorter: c.sorter }),
+          ...(c.hozAlign && { hozAlign: c.hozAlign }),
+          ...(c.formatter && { formatter: c.formatter }),
+          ...(!c.formatter && c.type && { formatter }),
+          ...(c.columns && c.columns.length > 0 && { columns: c.columns.map(col => getColumn(col, field)) }),
+        };
+      };
       return columns.map(c => ({
         ...getColumn(c),
       }));
@@ -134,8 +205,10 @@ export default {
             this.tables.push({
               id: content.id,
               tabulator: {
-                data: content.table.rows,
-                columns: this.formatColumns(content.table.columns),
+                // data: content.table.rows,
+                data: this.rows,
+                // columns: this.formatColumns(content.table.columns),
+                columns: this.formatColumns(this.columns),
               },
             });
             // });
