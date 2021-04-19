@@ -138,7 +138,7 @@ export default {
 
   notificationsParams: state => state.notificationsParams,
 
-  needReloadDoc: state => state.needReloadDoc,
+  reloadDocumentation: state => state.reloadDocumentation,
   documentationView: state => state.documentationView,
   documentationSelected: state => state.documentationSelected,
 };

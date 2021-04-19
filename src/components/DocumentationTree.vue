@@ -18,7 +18,7 @@
         :no-nodes-label="$t('label.noNodes')"
         :no-results-label="$t('label.noNodes')"
         :filter="documentationView"
-        :filter-method="noParagraph"
+        :filter-method="filter"
         >
       </klab-q-tree>
     </div>
@@ -28,8 +28,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { DOCUMENTATION_VIEWS, DOCUMENTATION_TYPES, CUSTOM_EVENTS } from 'shared/Constants';
-import { URLS } from 'shared/MessagesConstants';
+import { DOCUMENTATION_VIEWS, DOCUMENTATION_TYPES } from 'shared/Constants';
 import KlabQTree from 'components/custom/KlabQTree';
 
 export default {
@@ -47,71 +46,37 @@ export default {
   },
   computed: {
     ...mapGetters('data', [
-      'hasContext',
-      'contextId',
-      'hasObservations',
       'documentationTrees',
-      'documentationContent',
     ]),
     ...mapGetters('view', [
       'documentationView',
       'documentationSelected',
-      'needReloadDoc',
     ]),
     tree() {
-      return this.documentationTrees.find(dt => dt.view === this.documentationView).tree || [];
+      const tree = this.documentationTrees.find(dt => dt.view === this.documentationView).tree || [];
+      return tree;
     },
   },
   methods: {
-    noParagraph(node, filter) {
+    ...mapActions('view', [
+      'setDocumentationSelected',
+    ]),
+    filter(node, filter) {
       return filter !== DOCUMENTATION_VIEWS.REPORT
         || (node.type !== DOCUMENTATION_TYPES.PARAGRAPH && node.type !== DOCUMENTATION_TYPES.CITATION);
     },
-    ...mapActions('data', [
-      'reloadDocumentation',
-    ]),
-    ...mapActions('view', [
-      'setNeedReloadDoc',
-      'setDocumentationSelected',
-    ]),
-    loadDocumentation() {
-      if (this.needReloadDoc && this.hasContext && this.hasObservations) {
-        this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}documentation/${this.documentationView}/${this.contextId}`, {})
-          .then(({ data }) => {
-            if (data === '') {
-              console.warn('Empty report');
-              this.content = this.$t('messages.emptyReport');
-            } else {
-              this.reloadDocumentation({ view: this.documentationView, documentation: data });
-              this.setNeedReloadDoc(false);
-            }
-          });
-      }
-    },
   },
   watch: {
-    needReloadDoc() {
-      // eslint-disable-next-line no-underscore-dangle
-      if (!this._inactive) {
-        this.loadDocumentation();
-      }
-    },
     selected(newValue) {
-      console.warn(`Selected ${newValue}`);
       this.setDocumentationSelected(newValue);
     },
-    documentationView() {
-      this.setNeedReloadDoc(true);
-      this.loadDocumentation();
+    documentationSelected() {
+      this.selected = this.documentationSelected;
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.DOCUMETATION_ACTIVATED, this.loadDocumentation);
+    this.selected = this.documentationSelected;
   },
-  beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.DOCUMETATION_ACTIVATED, this.loadDocumentation);
-  },
-
 };
 </script>
 <style lang="stylus">

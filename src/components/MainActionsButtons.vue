@@ -19,7 +19,7 @@
            @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && !hasObservations }]"
       ><q-icon name="mdi-text-box-multiple-outline">
-        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name  && needReloadDoc && hasObservations"></span>
+        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name  && reloadDocumentation && hasObservations"></span>
         <q-tooltip
           :delay="600"
           :offset="[0, 8]"
@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     ...mapState('view', [
-      'needReloadDoc',
+      'reloadDocumentation',
       'reloadDataflow',
     ]),
     ...mapGetters('data', [

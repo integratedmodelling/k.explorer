@@ -49,12 +49,12 @@ export default {
       'hasObservations',
     ]),
     ...mapState('view', [
-      'reloadDocumentation',
+      'refreshDocumentation',
     ]),
   },
   methods: {
     ...mapActions('view', [
-      'setNeedReloadDoc',
+      'setReloadDocumentation',
     ]),
     loadReport() {
       if (this.needReloadDoc && this.hasContext && this.hasObservations) {
@@ -65,12 +65,12 @@ export default {
               data = this.$t('messages.emptyReport');
             }
             this.report = data;
-            this.setNeedReloadDoc(false);
+            this.setReloadDocumentation(false);
           });
       }
     },
     forceReload() {
-      this.setNeedReloadDoc(true);
+      this.setReloadDocumentation(true);
     },
     launchPrint() {
       this.$nextTick(() => {

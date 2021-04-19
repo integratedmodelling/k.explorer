@@ -220,8 +220,8 @@ export default {
     state.searchHistory.unshift(searchArray);
   },
 
-  SET_NEED_RELOAD_DOC: (state, reload) => {
-    state.needReloadDoc = reload;
+  SET_RELOAD_DOCUMENTATION: (state, reload) => {
+    state.reloadDocumentation = reload;
   },
 
   SET_RELOAD_DATAFLOW: (state, reload) => {

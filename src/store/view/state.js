@@ -126,7 +126,7 @@ export default {
    * If true, when report button is clicked, we ask for report
    * Need to notify that we have unview report too
    */
-  needReloadDoc: false,
+  reloadDocumentation: false,
 
   /**
    * If true, when dataflow button is clicked, if dataflow not exists we ask for it.

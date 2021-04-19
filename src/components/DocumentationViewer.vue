@@ -14,8 +14,8 @@
             <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="doc.id"></div>
             <div class="dv-table-actions col">
               <div class="dv-actions-right justify-end row">
-                <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(doc.id, 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
                 <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
+                <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(doc.id, 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
               </div>
             </div>
           </div>
@@ -29,7 +29,7 @@
 import Tabulator from 'tabulator-tables';
 import 'tabulator-tables/dist/css/tabulator_midnight.min.css';
 import { mapGetters } from 'vuex';
-import { DOCUMENTATION_TYPES, CUSTOM_EVENTS, TABLE_TYPES } from 'shared/Constants';
+import { DOCUMENTATION_TYPES, TABLE_TYPES } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
 
 export default {
@@ -87,6 +87,14 @@ export default {
       if (table) {
         this.tableFontSize += amount;
         table.instance.redraw(true);
+      }
+    },
+    selectElement(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        // Use el.scrollIntoView() to instantly scroll to the element
+        el.scrollIntoView({ behavior: 'smooth' });
+        el.classList.add('dv-selected');
       }
     },
   },
@@ -148,21 +156,19 @@ export default {
         e.classList.remove('dv-selected');
       });
       if (newValue !== null) {
-        const el = document.getElementById(newValue);
-        if (el) {
-          // Use el.scrollIntoView() to instantly scroll to the element
-          el.scrollIntoView({ behavior: 'smooth' });
-          el.classList.add('dv-selected');
-        }
+        this.selectElement(newValue);
       }
     },
   },
-  activated() {
-    this.$eventBus.$emit(CUSTOM_EVENTS.DOCUMETATION_ACTIVATED);
-  },
   mounted() {
+    if (this.documentationSelected !== null) {
+      this.selectElement(this.documentationSelected);
+    }
   },
-  beforeDestroy() {
+  updated() {
+    if (this.documentationSelected !== null) {
+      this.selectElement(this.documentationSelected);
+    }
   },
 };
 </script>

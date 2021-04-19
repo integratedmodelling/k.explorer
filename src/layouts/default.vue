@@ -8,7 +8,7 @@
       <klab-settings class="print-hide"></klab-settings>
       <klab-terminal v-for="terminal in terminals" :terminal="terminal" :key="terminal.id"></klab-terminal>
       <klab-presentation></klab-presentation>
-      <knowledge-view-viewer></knowledge-view-viewer>
+      <!-- <knowledge-view-viewer></knowledge-view-viewer> -->
     </template>
     <template v-if="errorLoading">
       <q-modal
@@ -40,7 +40,7 @@ import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
 import KlabPresentation from 'components/KlabPresentation';
 import KlabNotifications from 'components/KlabNotifications';
-import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
+// import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
 import 'simplebar/dist/simplebar.css';
 
 export default {
@@ -53,7 +53,7 @@ export default {
     AppDialogs,
     KlabPresentation,
     KlabNotifications,
-    KnowledgeViewViewer,
+    // KnowledgeViewViewer,
   },
   data() {
     return {

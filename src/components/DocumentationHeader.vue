@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import { DOCUMENTATION_VIEWS } from 'shared/Constants';
+import { CUSTOM_EVENTS } from '../shared/Constants';
 
 export default {
   name: 'DocumentationHeader',
@@ -48,11 +48,8 @@ export default {
     },
   },
   methods: {
-    ...mapActions('view', [
-      'setNeedReloadDoc',
-    ]),
     forceReload() {
-      this.setNeedReloadDoc(true);
+      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
     },
   },
 };

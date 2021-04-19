@@ -177,6 +177,9 @@ export default {
         }
       }
     },
+    showDocumentation() {
+      this.setMainViewer(VIEWERS.DOCUMENTATION_VIEWER);
+    },
   },
   watch: {
     spinnerErrorMessage(newValue, oldValue) {
@@ -206,6 +209,7 @@ export default {
     window.addEventListener('keydown', this.keydownListener);
     this.setChildrenToAskFor();
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_DOCUMENTATION, this.showDocumentation);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_SPACE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
@@ -213,6 +217,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('keydown', this.keydownListener);
     this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.SHOW_DOCUMENTATION, this.showDocumentation);
   },
 };
 </script>

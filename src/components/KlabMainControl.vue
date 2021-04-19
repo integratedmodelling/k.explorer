@@ -116,9 +116,11 @@
           >{{ $t('tooltips.observers') }}</q-tooltip>
         </div>
         <observations-timeline class="mc-timeline" v-if="contextHasTime"></observations-timeline>
+        <!--
         <div class="klab-bottom-right-actions">
           <knowledge-views-selector :docked="false"></knowledge-views-selector>
         </div>
+        -->
       </q-card-actions>
     </q-card>
     </transition>

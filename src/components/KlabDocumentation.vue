@@ -26,10 +26,12 @@
 
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import DocumentationHeader from 'components/DocumentationHeader.vue';
 import DocumentationTree from 'components/DocumentationTree';
 import DocumentationViewer from 'components/DocumentationViewer';
 import { LEFTMENU_CONSTANTS } from 'shared/Constants';
+import { CUSTOM_EVENTS } from '../shared/Constants';
 
 export default {
   name: 'KlabDocumentation',
@@ -48,6 +50,49 @@ export default {
       leftMenu: true,
       LEFTMENU_CONSTANTS,
     };
+  },
+  computed: {
+    ...mapGetters('data', [
+      'hasContext',
+      'contextId',
+      'hasObservations',
+    ]),
+    ...mapGetters('view', [
+      'documentationView',
+      'reloadDocumentation',
+    ]),
+  },
+  methods: {
+    ...mapActions('data', [
+      'loadDocumentation',
+      'refreshDocumentation',
+    ]),
+    load(view = null) {
+      if (this.hasContext && this.hasObservations) {
+        this.loadDocumentation(view || this.documentationView);
+      }
+    },
+  },
+  watch: {
+    documentationView() {
+      this.$nextTick(() => {
+        this.load();
+      });
+    },
+    reloadDocumentation() {
+      this.$nextTick(() => {
+        this.load();
+      });
+    },
+  },
+  activated() {
+    this.load();
+  },
+  mounted() {
+    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
   },
 };
 </script>

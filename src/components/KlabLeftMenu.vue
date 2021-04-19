@@ -20,8 +20,8 @@
         <div class="lm-separator"></div>
         <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
         <div class="lm-separator"></div>
-        <knowledge-views-selector :docked="true"></knowledge-views-selector>
-        <div class="lm-separator"></div>
+        <!-- <knowledge-views-selector :docked="true"></knowledge-views-selector>
+        <div class="lm-separator"></div> -->
       </template>
       <div class="klab-button klab-action"
            :class="[{ active: logShowed }]"

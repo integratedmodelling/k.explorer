@@ -545,7 +545,8 @@ export const CUSTOM_EVENTS = {
   SHOW_NOTIFICATIONS: 'shownotifications',
   TERMINAL_FOCUSED: 'terminalfocused',
   COMMAND_RESPONSE: 'commandresponse',
-  DOCUMETATION_ACTIVATED: 'DOCUMETATION_ACTIVATED',
+  REFRESH_DOCUMENTATION: 'refreshdocumentation',
+  SHOW_DOCUMENTATION: 'showdowcumentation',
 };
 
 export const SCALE_TYPE = {
