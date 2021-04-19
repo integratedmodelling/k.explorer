@@ -11,7 +11,7 @@
           <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
           <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
             <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
-            <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }"></div>
+            <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
             <div class="dv-table-actions col">
               <div class="dv-actions-right justify-end row">
                 <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
@@ -41,6 +41,7 @@ export default {
       rawDocumentation: [],
       tableFontSize: 12,
       DOCUMENTATION_TYPES,
+      /*
       columns: [{
         title: '',
         id: 'rowtitles_1',
@@ -108,6 +109,7 @@ export default {
         c3g1: '1.9946989562445323',
         rowtitles_1: 'indicator_leaf_area_index',
       }],
+      */
     };
   },
   computed: {
@@ -137,15 +139,15 @@ export default {
     formatColumns(columns) {
       const getColumn = (c, parentId) => {
         const field = `${parentId || ''}${c.id}`;
-        const formatter = this.getFormatter(c.type);
         return {
           title: c.title,
           field,
           headerVertical: c.headerVertical,
+          frozen: c.frozen,
           ...(c.sorter && { sorter: c.sorter }),
           ...(c.hozAlign && { hozAlign: c.hozAlign }),
           ...(c.formatter && { formatter: c.formatter }),
-          ...(!c.formatter && c.type && { formatter }),
+          ...(!c.formatter && c.type && { formatter: this.getFormatter(c.type) }),
           ...(c.columns && c.columns.length > 0 && { columns: c.columns.map(col => getColumn(col, field)) }),
         };
       };
@@ -196,19 +198,13 @@ export default {
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.TABLE:
-            // this.content += `<div class="dv-table-container">
-            //                   <div class="dv-table-title">${content.title}</div>
-            //                   <div class="dv-table" style="font-size: ${this.tableFontSize}px" id="${content.id}"></div>
-            //                   <div class="dv-table-actions"><q-btn flat @click="tableFontSize++"></q-btn></div>
-            //                 </div>`;
-            // this.$nextTick(() => {
             this.tables.push({
               id: content.id,
               tabulator: {
-                // data: content.table.rows,
-                data: this.rows,
-                // columns: this.formatColumns(content.table.columns),
-                columns: this.formatColumns(this.columns),
+                data: content.table.rows,
+                // data: this.rows,
+                columns: this.formatColumns(content.table.columns),
+                // columns: this.formatColumns(this.columns),
               },
             });
             // });
@@ -220,7 +216,7 @@ export default {
       });
       this.$nextTick(() => {
         this.tables.forEach((table) => {
-          table.instance = new Tabulator(`#${table.id}`, table.tabulator);
+          table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
         });
       });
     },
