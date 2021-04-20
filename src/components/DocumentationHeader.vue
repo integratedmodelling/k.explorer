@@ -1,6 +1,6 @@
 <template>
   <div class="dh-container full-width row items-center">
-    <div class="dh-spinner col-1 justify-start">
+    <div class="dh-spinner col-1 justify-start" v-if="hasSpinner">
       <transition
         appear
         enter-active-class="animated fadeIn"
@@ -34,7 +34,7 @@
       </q-tabs>
     </div>
     <div class="dh-actions col justify-end self-center">
-      <q-btn icon="mdi-refresh" round class="dv-doc-reload" size="sm" color="mc-main" @click="forceReload">
+      <q-btn icon="mdi-refresh" round class="dv-doc-reload" size="sm" color="mc-grey" @click="forceReload">
         <q-tooltip
           :offset="[0, 8]"
           self="bottom middle"
@@ -48,7 +48,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { DOCUMENTATION_VIEWS, CUSTOM_EVENTS } from 'shared/Constants';
+import { DOCUMENTATION_VIEWS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner';
 
 export default {
@@ -65,6 +65,13 @@ export default {
     ...mapGetters('stomp', [
       'hasTasks',
     ]),
+    ...mapGetters('view', [
+      'leftMenuState',
+      'hasHeader',
+    ]),
+    hasSpinner() {
+      return !(this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN && !this.hasHeader);
+    },
     selectedTab: {
       get() {
         return this.$store.getters['view/documentationView'];
@@ -89,7 +96,7 @@ export default {
   .dh-spinner
     width 28px
     margin-left 16px
-    margin-right 16px
+    margin-right 10px
   .dh-tabs
     .q-tabs-head
       background-color rgba(0, 0, 0, 0)
