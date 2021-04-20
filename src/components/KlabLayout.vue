@@ -21,25 +21,6 @@
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
         <div class="row item-center q-ma-md">
-          <transition
-            appear
-            enter-active-class="animated fadeIn"
-            leave-active-class="animated fadeOut"
-          >
-            <div
-              id="kl-spinner"
-              class="klab-spinner-div"
-              v-if="hasTasks()"
-            >
-              <klab-spinner
-                id="spinner-documentation"
-                :store-controlled="true"
-                :size="50"
-                :ball="22"
-                wrapperId="kl-spinner"
-              ></klab-spinner>
-            </div>
-          </transition>
           <main-actions-buttons :is-header="true" class="col justify-end self-center"></main-actions-buttons>
         </div>
       </div>
@@ -80,7 +61,6 @@ import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
 import MainActionsButtons from 'components/MainActionsButtons';
-import KlabSpinner from 'components/KlabSpinner';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
 import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
@@ -97,7 +77,6 @@ export default {
     MainActionsButtons,
     KExplorer,
     KlabAppViewer,
-    KlabSpinner,
   },
   props: {
     layout: {
@@ -122,9 +101,6 @@ export default {
   computed: {
     ...mapGetters('data', [
       'sessionReference',
-    ]),
-    ...mapGetters('stomp', [
-      'hasTasks',
     ]),
     ...mapGetters('view', [
       'isApp',

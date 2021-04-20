@@ -27,7 +27,7 @@
 
 <script>
 import Tabulator from 'tabulator-tables';
-import 'tabulator-tables/dist/css/tabulator_midnight.min.css';
+import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 import { mapGetters } from 'vuex';
 import { DOCUMENTATION_TYPES, TABLE_TYPES } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
@@ -243,67 +243,77 @@ export default {
 </script>
 
 <style lang="stylus">
-  .dv-empty-documentation
-    position absolute
-    width 400px
-    height 80px
-    left calc((100% - 400px) / 2)
-    top calc((100% - 80px) / 2)
-    margin-left -200px
-    margin-top -40px
-    padding 0
-    text-align center
-    font-size 60px
-    font-weight bold
-    color rgb(17, 170, 187)
+@import '~variables'
+.dv-empty-documentation
+  position absolute
+  width 400px
+  height 80px
+  left calc((100% - 400px) / 2)
+  top calc((100% - 80px) / 2)
+  margin-left -200px
+  margin-top -40px
+  padding 0
+  text-align center
+  font-size 60px
+  font-weight bold
+  color rgb(17, 170, 187)
 
-  .dv-documentation-wrapper
-    position absolute
-    // width 1024px
-    // left calc((100% - 1024px) / 2)
-    left 0
-    width 100%
-    height 100%
-    overflow auto
-    border none
+.dv-documentation-wrapper
+  position absolute
+  // width 1024px
+  // left calc((100% - 1024px) / 2)
+  left 0
+  width 100%
+  height 100%
+  overflow auto
+  border none
 
-  .dv-documentation
-    .dv-content [id]
-      transition: .3s ease;
-      border-radius: 5px;
-      &.dv-selected
-        box-shadow 0 2px 6px rgba(17, 170, 187, .5);
-        transform translateY(15px) scale(1.02);
-        padding: 5px 10px;
-        margin-bottom calc(0.6em + 15px)
-    .dv-table-container
-      .dv-table-title
-        font-weight bold
-        color rgb(17, 170, 187)
-        font-size larger
-        padding-bottom 16px
-    .dv-citation
+.dv-documentation
+  .dv-content
+    h1
+    h2
+    h3
+    h4
+    h5
+    h6
+      font-weight bold
+      color $main-control-grey
+  .dv-content [id]
+    transition: .3s ease;
+    border-radius: 5px;
+    &.dv-selected
+      box-shadow 0 2px 6px $main-control-grey-alpha
+      transform translateY(15px) scale(1.02)
+      padding 5px 10px
+      margin-bottom calc(0.6em + 15px)
+  .dv-table-container
+    .dv-table-title
+      font-weight bold
+      color $main-control-grey
+      font-size larger
+      padding-bottom 16px
+  .dv-citation
+    color var(--app-main-color)
+    a
+      display inline-block
+      text-decoration none
       color var(--app-main-color)
-      a
-        display inline-block
-        text-decoration none
+      &:visited
         color var(--app-main-color)
-        &:visited
-          color var(--app-main-color)
-        &::after
-          content ''
-          display block
-          width 0
-          border-bottom-width 1px
-          border-bottom-style solid
-          transition width .3s
-        &:not(.disabled):hover::after
-          width: 100%;
-        &.disabled
-          cursor default !important
-    .dv-table-actions
-      padding-top 16px
-      .q-btn
-        padding 8px
+      &::after
+        content ''
+        display block
+        width 0
+        border-bottom-width 1px
+        border-bottom-style solid
+        transition width .3s
+      &:not(.disabled):hover::after
+        width: 100%;
+      &.disabled
+        cursor default !important
+  .dv-table-actions
+    padding-top 16px
+    .q-btn
+      padding 8px
 
 </style>

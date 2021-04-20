@@ -1,5 +1,25 @@
 <template>
-  <div class="dh-container full-width row">
+  <div class="dh-container full-width row items-center">
+    <div class="dh-spinner col-1 justify-start">
+      <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+      >
+        <div
+          id="kd-spinner"
+          class="klab-spinner-div item-center"
+        >
+          <klab-spinner
+            id="spinner-documentation"
+            :store-controlled="true"
+            :size="28"
+            :ball="22"
+            wrapperId="kd-spinner"
+          ></klab-spinner>
+        </div>
+      </transition>
+    </div>
     <div class="dh-tabs col justify-start">
       <q-tabs
         v-model="selectedTab"
@@ -27,17 +47,24 @@
 </template>
 
 <script>
-import { DOCUMENTATION_VIEWS } from 'shared/Constants';
-import { CUSTOM_EVENTS } from '../shared/Constants';
+import { mapGetters } from 'vuex';
+import { DOCUMENTATION_VIEWS, CUSTOM_EVENTS } from 'shared/Constants';
+import KlabSpinner from 'components/KlabSpinner';
 
 export default {
   name: 'DocumentationHeader',
+  components: {
+    KlabSpinner,
+  },
   data() {
     return {
       DOCUMENTATION_VIEWS,
     };
   },
   computed: {
+    ...mapGetters('stomp', [
+      'hasTasks',
+    ]),
     selectedTab: {
       get() {
         return this.$store.getters['view/documentationView'];
@@ -59,13 +86,16 @@ export default {
 @import '~variables'
 .dh-container
   background-color rgba(35,35,35,0.8)
+  .dh-spinner
+    width 28px
+    margin-left 16px
+    margin-right 16px
   .dh-tabs
     .q-tabs-head
       background-color rgba(0, 0, 0, 0)
       padding 0 !important
       .q-tab
-        padding-top 16px
-        padding-bottom 10px
+        padding 10px 16px
         &.active
           color $main-control-main-color !important
   .dh-actions
