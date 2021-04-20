@@ -20,8 +20,8 @@
         <div class="lm-separator"></div>
         <main-actions-buttons orientation="vertical" separator-class="lm-separator"></main-actions-buttons>
         <div class="lm-separator"></div>
-        <knowledge-views-selector :docked="true"></knowledge-views-selector>
-        <div class="lm-separator"></div>
+        <!-- <knowledge-views-selector :docked="true"></knowledge-views-selector>
+        <div class="lm-separator"></div> -->
       </template>
       <div class="klab-button klab-action"
            :class="[{ active: logShowed }]"
@@ -71,6 +71,7 @@ import MainActionsButtons from 'components/MainActionsButtons';
 import StopActionsButtons from 'components/StopActionsButtons';
 import KlabSpinner from 'components/KlabSpinner.vue';
 import DockedMainControl from 'components/KlabDockedMainControl.vue';
+import DocumentationTree from 'components/DocumentationTree.vue';
 import KlabLogPane from 'components/KlabLogPane.vue';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
 import ScaleButtons from 'components/ScaleButtons.vue';
@@ -83,6 +84,7 @@ export default {
     MainActionsButtons,
     StopActionsButtons,
     DockedMainControl,
+    DocumentationTree,
     KlabLogPane,
     DataflowInfo,
     ScaleButtons,

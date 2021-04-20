@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
     <q-layout-header
-      :class="{ 'kapp-main':  isRootLayout}"
+      :class="{ 'kapp-main':  isRootLayout }"
       class="kapp-header-container kapp-container print-hide"
       :id="`kapp-${idSuffix}-header`"
       v-if="hasHeader"
@@ -19,6 +19,9 @@
         <div class="kapp-title-container">
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
+        </div>
+        <div class="kapp-actions-container row items-end">
+          <main-actions-buttons :is-header="true" class="col justify-end self-end"></main-actions-buttons>
         </div>
       </div>
     </q-layout-header>
@@ -57,6 +60,7 @@ import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
 import KExplorer from 'components/KExplorer.vue';
 import KlabAppViewer from 'components/KlabAppViewer.vue';
+import MainActionsButtons from 'components/MainActionsButtons';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
 import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
@@ -70,6 +74,7 @@ const { width, height } = dom;
 export default {
   name: 'KlabLayout',
   components: {
+    MainActionsButtons,
     KExplorer,
     KlabAppViewer,
   },
@@ -99,13 +104,16 @@ export default {
     ]),
     ...mapGetters('view', [
       'isApp',
+      'hasHeader',
     ]),
     isRootLayout() {
       return this.layout !== null && this.layout.parentId === null;
     },
+    /*
     hasHeader() {
       return this.layout && (this.layout.header || this.layout.logo || this.layout.label || this.layout.description);
     },
+     */
     showLeftPanel: {
       get() {
         return this.layout && this.layout.leftPanels.length > 0;
@@ -119,8 +127,8 @@ export default {
     },
     mainPanelStyle() {
       return {
-        width: `${this.header.width - this.leftPanel.width}px`,
-        height: `${this.leftPanel.height}px`,
+        width: this.header.width - this.leftPanel.width,
+        height: this.leftPanel.height,
       };
     },
     idSuffix() {
@@ -304,7 +312,6 @@ export default {
       margin 0
     .simplebar-scrollbar::before
       background-color var(--app-main-color)
-
   // header
   .kapp-header
     background-color var(--app-background-color)
@@ -337,6 +344,40 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+    .kapp-actions-container
+      .klab-main-actions
+        margin 0 1px 0 0
+        .klab-button
+          width 60px
+          height 45px
+          font-size 32px
+          margin 0 -1px 0 0
+          text-align center
+          padding 8px 0
+          border-top-left-radius 8px !important
+          border-top-right-radius 4px !important
+          border 2px solid var(--app-main-color)
+          border-bottom 0
+          text-shadow none
+          color var(--app-main-color) !important
+          position relative
+          bottom -1px
+          &.active
+            color var(--app-main-color) !important
+            background-color var(--app-darken-background-color)
+            border-color var(--app-main-color)
+          &:hover:not(.active)
+            // color var(--app-background-color) !important
+            background-color var(--app-darken-background-color)
+            border-bottom 1px solid var(--app-main-color)
+        .klab-button-notification
+          width 12px
+          height 12px
+          border-radius 18px
+          top 2px
+          right 8px
+          background-color var(--app-main-color) !important
+          border 1px solid var(--app-background-color)
   .kcv-dir-vertical
     display flex
     flex-direction column

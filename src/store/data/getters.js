@@ -137,4 +137,10 @@ export default {
   terminals: state => state.terminals,
   hasActiveTerminal: state => state.terminals.findIndex(t => t.active) !== -1,
   terminalCommands: state => state.terminalCommands,
+
+  /**
+   * Documentation
+   */
+  documentationTrees: state => state.documentationTrees,
+  documentationContent: state => state.documentationContent,
 };

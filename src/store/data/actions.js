@@ -3,6 +3,7 @@ import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage
 import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
+import { DOCUMENTATION_TYPES } from '../../shared/Constants';
 
 export default {
 
@@ -646,5 +647,76 @@ export default {
 
   clearTerminalCommands: ({ commit }) => {
     commit('CLEAR_TERMINAL_COMMANDS');
+  },
+
+  loadDocumentation: ({ dispatch, getters, rootGetters }, documentationView = null) => new Promise((resolve, reject) => {
+    if (documentationView === null) {
+      documentationView = rootGetters['view/documentationView'];
+    }
+    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}documentation/${documentationView}/${getters.contextId}`, {})
+      .then(({ data }) => {
+        if (data === '') {
+          console.warn('Empty report');
+          resolve(false);
+        } else {
+          dispatch('refreshDocumentation', { view: documentationView, documentation: data }).then(() => {
+            dispatch('view/setReloadDocumentation', false, { root: true }).then(() => {
+              resolve(true);
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  }),
+
+  refreshDocumentation: ({ commit }, { view, documentation }) => {
+    const tree = [];
+    const items = [];
+    const buildTree = (node, item) => {
+      let label;
+      switch (item.type) {
+        case DOCUMENTATION_TYPES.SECTION:
+          label = item.title;
+          break;
+        case DOCUMENTATION_TYPES.TABLE:
+          label = item.bodyText;
+          break;
+        default:
+          label = item.type;
+      }
+      const e = {
+        type: item.type,
+        id: item.id,
+        parentId: item.parentId,
+        previousId: item.previousId,
+        nextId: item.nextId,
+        label,
+        children: [],
+      };
+      item.children.forEach((c) => {
+        buildTree(e.children, c);
+      });
+      node.push(e);
+      items.push({
+        id: item.id,
+        type: item.type,
+        title: item.title,
+        subtitle: item.subtitle,
+        bodyText: item.bodyText,
+        model: item.model,
+        section: item.section,
+        resource: item.resource,
+        table: item.table,
+        figure: item.figure,
+        reference: item.reference,
+      });
+    };
+    documentation.forEach((doc) => {
+      buildTree(tree, doc);
+    });
+    commit('SET_DOCUMENTATION', { view, tree });
+    commit('ADD_DOCUMENTATION', items);
   },
 };

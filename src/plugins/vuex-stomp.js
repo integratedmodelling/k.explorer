@@ -12,6 +12,12 @@ export default ({ Vue, store }) => {
     stompOptions: {
       debug,
       protocol: 'v12.stomp',
+      /*
+      heartbeat: {
+        outgoing: 1000,
+        incoming: 1000,
+      }, // client will send heartbeats every 20000ms
+       */
     },
     store,
     storeNS: 'stomp',

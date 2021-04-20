@@ -126,6 +126,8 @@ export default {
    * Layout from k.LAB
    */
   layout: state => state.layout,
+  hasHeader: state => (state.layout && (state.layout.header || state.layout.logo || state.layout.label || state.layout.description)),
+  windowSide: state => state.windowSide,
   isApp: state => state.klabApp !== null,
   klabApp: state => state.klabApp,
   activeDialogs: state => state.dialogs.filter(a => !a.dismiss),
@@ -135,4 +137,8 @@ export default {
   hasShowSettings: state => state.showSettings,
 
   notificationsParams: state => state.notificationsParams,
+
+  reloadDocumentation: state => state.reloadDocumentation,
+  documentationView: state => state.documentationView,
+  documentationSelected: state => state.documentationSelected,
 };

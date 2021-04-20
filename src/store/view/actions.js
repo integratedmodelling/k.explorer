@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { eventBus } from 'plugins/initApp';
 import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS,
-  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS } from 'shared/Constants';
+  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS, DOCUMENTATION_TYPES_VIEWS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import { transform } from 'ol/proj';
@@ -280,8 +280,8 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
-  setReloadReport: ({ commit }, reload) => {
-    commit('SET_RELOAD_REPORT', reload);
+  setReloadDocumentation: ({ commit }, reload) => {
+    commit('SET_RELOAD_DOCUMENTATION', reload);
   },
 
   setObservationInfo: ({ commit }, observation) => {
@@ -402,6 +402,10 @@ export default {
     }
   },
 
+  setWindowSide: ({ commit }, side) => {
+    commit('SET_WINDOW_SIDE', side);
+  },
+
   setEngineEvent: ({ commit }, event) => {
     commit('SET_ENGINE_EVENT', event);
   },
@@ -424,7 +428,7 @@ export default {
           });
           break;
         case VIEW_SETTING.VIEW:
-          dispatch('data/showKnowledgeView', viewSetting.targetId, { root: true });
+          dispatch('view/setDocumentation', { id: viewSetting.targetId }, { root: true });
           break;
         case VIEW_SETTING.TREE:
           // check if we need to change the attribute
@@ -460,5 +464,28 @@ export default {
 
   setNotificationsParams: ({ commit }, params) => {
     commit('SET_NOTIFICATIONS_PARAMS', params);
+  },
+
+  setDocumentationView: ({ commit }, view) => {
+    commit('SET_DOCUMENTATION_VIEW', view);
+  },
+
+  setDocumentationSelected: ({ commit }, selected) => {
+    commit('SET_DOCUMENTATION_SELECTED', selected);
+  },
+
+  setDocumentation: ({ commit, rootGetters }, documentation) => {
+    if (!documentation.view) {
+      const doc = rootGetters['data/documentationContent'].get(documentation.id);
+      if (doc) {
+        documentation.view = DOCUMENTATION_TYPES_VIEWS[doc.type];
+      } else {
+        console.debug(`Try to show an unknown document: ${documentation.id}`);
+        return;
+      }
+    }
+    commit('SET_DOCUMENTATION_VIEW', documentation.view);
+    commit('SET_DOCUMENTATION_SELECTED', documentation.id);
+    eventBus.$emit(CUSTOM_EVENTS.SHOW_DOCUMENTATION);
   },
 };

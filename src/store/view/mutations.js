@@ -220,8 +220,8 @@ export default {
     state.searchHistory.unshift(searchArray);
   },
 
-  SET_RELOAD_REPORT: (state, reload) => {
-    state.reloadReport = reload;
+  SET_RELOAD_DOCUMENTATION: (state, reload) => {
+    state.reloadDocumentation = reload;
   },
 
   SET_RELOAD_DATAFLOW: (state, reload) => {
@@ -386,6 +386,10 @@ export default {
     */
   },
 
+  SET_WINDOW_SIDE: (state, side) => {
+    state.windowSide = side;
+  },
+
   CREATE_VIEW_COMPONENT: (state, component) => {
     if (component.type === APPS_COMPONENTS.ALERT || component.type === APPS_COMPONENTS.CONFIRM) {
       state.dialogs.push({
@@ -459,5 +463,12 @@ export default {
 
   SET_NOTIFICATIONS_PARAMS: (state, params) => {
     state.notificationsParams = params;
+  },
+
+  SET_DOCUMENTATION_VIEW: (state, view) => {
+    state.documentationView = view;
+  },
+  SET_DOCUMENTATION_SELECTED: (state, selected) => {
+    state.documentationSelected = selected;
   },
 };

@@ -552,4 +552,32 @@ export default {
     state.terminalCommands.splice(0, state.terminalCommands.length);
     localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS, JSON.stringify(state.terminalCommands));
   },
+
+  /**
+   * Set the documentation tree for a view type
+   * @param state
+   * @param view
+   * @param documentation
+   * @constructor
+   */
+  SET_DOCUMENTATION: (state, { view, tree }) => {
+    const idx = state.documentationTrees.findIndex(dt => dt.view === view);
+    if (idx === -1) {
+      console.warn(`Unknown documentation view: ${view}`);
+    } else {
+      state.documentationTrees[idx].tree = tree;
+    }
+  },
+
+  /**
+   * Add a group of item to documentation
+   * @param state
+   * @param items an array of elements
+   * @constructor
+   */
+  ADD_DOCUMENTATION: (state, items) => {
+    items.forEach((item) => {
+      state.documentationContent.set(item.id, item);
+    });
+  },
 };

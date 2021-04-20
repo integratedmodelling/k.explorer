@@ -1,5 +1,10 @@
 <template>
-  <q-layout view="hHh lpr fFf" :style="mainPanelStyle" class="kexplorer-main-container print-hide" container>
+  <q-layout
+    view="hHh lpr fFf"
+    :style="{ width: `${mainPanelStyle.width}px`, height: `${mainPanelStyle.height}px` }"
+    class="kexplorer-main-container print-hide"
+    container
+  >
     <q-layout-drawer
       side="left"
       :overlay="false"
@@ -13,10 +18,10 @@
 
     <q-page-container>
       <q-page class="column">
-        <div class="col row full-height kexplorer-container">
+        <div :class="{ 'kd-is-app': layout !== null }" class="col row full-height kexplorer-container">
           <keep-alive>
             <!-- <transition name="component-fade" mode="out-in"> -->
-            <component :is="mainViewer.name"></component>
+            <component :is="mainViewer.name" :container-style="{ width: mainPanelStyle.width - leftMenuWidth, height: mainPanelStyle.height }"></component>
             <!-- </transition> -->
           </keep-alive>
           <q-resize-observable @resize="setChildrenToAskFor" />
@@ -46,6 +51,7 @@ import { VIEWERS, CUSTOM_EVENTS, SETTING_NAMES, WEB_CONSTANTS, LEFTMENU_CONSTANT
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
+import KlabDocumentation from 'components/KlabDocumentation.vue';
 import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
@@ -60,6 +66,7 @@ export default {
   components: {
     KlabMainControl,
     DataViewer,
+    KlabDocumentation,
     ReportViewer,
     DataflowViewer,
     InputRequestModal,
@@ -102,6 +109,8 @@ export default {
       'mainViewer',
       'leftMenuState',
       'largeMode',
+      'hasHeader',
+      'layout',
     ]),
     waitingGeolocation: {
       get() {
@@ -116,11 +125,18 @@ export default {
     },
     leftMenuVisible: {
       get() {
-        return this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN;
+        return this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN && !this.hasHeader;
       },
       set(visibility) {
         this.setLeftMenuState(visibility);
       },
+    },
+    leftMenuWidth() {
+      return (this.leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MAXIMIZED
+        ? LEFTMENU_CONSTANTS.LEFTMENU_MAXSIZE
+        : this.leftMenuState === LEFTMENU_CONSTANTS.LEFTMENU_MINIMIZED
+          ? LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE
+          : 0) - (this.hasHeader ? LEFTMENU_CONSTANTS.LEFTMENU_MINSIZE : 0);
     },
   },
   methods: {
@@ -162,6 +178,9 @@ export default {
         }
       }
     },
+    showDocumentation() {
+      this.setMainViewer(VIEWERS.DOCUMENTATION_VIEWER);
+    },
   },
   watch: {
     spinnerErrorMessage(newValue, oldValue) {
@@ -191,6 +210,7 @@ export default {
     window.addEventListener('keydown', this.keydownListener);
     this.setChildrenToAskFor();
     this.$eventBus.$on(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.SHOW_DOCUMENTATION, this.showDocumentation);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.INTERACTIVE_MODE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_SPACE, value: false }, this.session).body);
     this.sendStompMessage(MESSAGES_BUILDERS.SETTING_CHANGE_REQUEST({ setting: SETTING_NAMES.LOCK_TIME, value: false }, this.session).body);
@@ -198,6 +218,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('keydown', this.keydownListener);
     this.$eventBus.$off(CUSTOM_EVENTS.ASK_FOR_UNDOCK, this.askForUndockListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.SHOW_DOCUMENTATION, this.showDocumentation);
   },
 };
 </script>

@@ -150,6 +150,7 @@ export default {
     terminalMinimize: 'Minimize terminal',
     terminalMaximize: 'Maximize terminal',
     terminalClose: 'Close terminal',
+    noDocumentation: 'No elements available for this view',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -206,6 +207,7 @@ export default {
     errorLoadingApp: 'Error loading app <strong>{app}</strong>',
     errorLoggingOut: 'Error logging out, contact support',
     terminalHello: 'Welcome to k.LAB {type}',
+    noDocumentation: 'No documentation available',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
@@ -216,10 +218,12 @@ export default {
     interruptTask: 'Interrupt task {taskDescription}',
     dataViewer: 'View data',
     reportViewer: 'View report',
+    documentationViewer: 'View documentation',
     scenarios: 'Scenarios',
     observers: 'Observers',
     noReportTask: 'Cannot view report,\nwait for task end',
     noReportObservation: 'Report not available,\nno observations',
+    noDocumentation: 'Documentation not available,\nno observations',
     noDataflow: 'Dataflow not availble',
     noDataflowInfo: 'No details',
     dataflowViewer: 'View data flow',

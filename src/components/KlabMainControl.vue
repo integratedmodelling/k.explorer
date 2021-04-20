@@ -52,7 +52,7 @@
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
       </q-card-title>
       <q-card-actions
-        v-show="hasContext && !isHidden"
+        v-show="hasContext && !isHidden && !hasHeader && layout === null"
         class="context-actions no-margin"
       >
         <!-- TABS -->
@@ -70,7 +70,7 @@
           <div class="klab-button mc-tab"
                :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
                @click="selectedTab = 'klab-tree-pane'"
-          ><q-icon name="mdi-eye-outline">
+          ><q-icon name="mdi-folder-image">
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
@@ -116,9 +116,11 @@
           >{{ $t('tooltips.observers') }}</q-tooltip>
         </div>
         <observations-timeline class="mc-timeline" v-if="contextHasTime"></observations-timeline>
+        <!--
         <div class="klab-bottom-right-actions">
           <knowledge-views-selector :docked="false"></knowledge-views-selector>
         </div>
+        -->
       </q-card-actions>
     </q-card>
     </transition>
@@ -198,7 +200,6 @@ export default {
       draggableElement: undefined,
       draggableElementWidth: 0,
       kvListOpen: false,
-      windowSide: 'left',
       KNOWLEDGE_VIEWS,
     };
   },
@@ -218,6 +219,9 @@ export default {
       'isDrawMode',
       'fuzzyMode',
       'largeMode',
+      'windowSide',
+      'layout',
+      'hasHeader',
     ]),
     qCardStyle() {
       return {
@@ -234,6 +238,7 @@ export default {
       'setLargeMode',
       'searchStart',
       'searchFocus',
+      'setWindowSide',
     ]),
     callStartType(event) {
       if (!this.searchIsFocused) {
@@ -283,7 +288,12 @@ export default {
       const draggableState = JSON.parse(this.dragMCConfig.handle.getAttribute('draggable-state'));
       draggableState.startDragPosition = position;
       draggableState.currentDragPosition = position;
-      document.querySelector('.mc-q-card-title').setAttribute('draggable-state', JSON.stringify(draggableState));
+      const el = document.querySelector('.mc-q-card-title');
+      if (el) {
+        el.setAttribute('draggable-state', JSON.stringify(draggableState));
+      } else {
+        this.dragMCConfig.handle.setAttribute('draggable-state', JSON.stringify(draggableState));
+      }
     },
     checkWhereWasDragged() {
       this.dragging = false;
@@ -317,7 +327,7 @@ export default {
     mapSizeChangedListener(event) {
       if (event && event.type === 'changelayout') {
         if (event.align) {
-          this.windowSide = event.align;
+          this.setWindowSide(event.align);
         }
         this.updateCorrectedPosition();
         this.$nextTick(() => {

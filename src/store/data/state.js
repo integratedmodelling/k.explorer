@@ -1,5 +1,5 @@
 import Stack from 'classes/Stack';
-import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS, DOCUMENTATION_VIEWS } from 'shared/Constants';
 
 /**
  * Data states
@@ -364,4 +364,13 @@ export default {
    */
   terminals: [],
   terminalCommands: localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS) !== null ? JSON.parse(localStorage.getItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS)) : [],
+
+  /**
+   * The array of views with the related tree
+   */
+  documentationTrees: Object.keys(DOCUMENTATION_VIEWS).map(dv => ({ view: dv, tree: [] })),
+  /**
+   * The elements referred from the tree
+   */
+  documentationContent: new Map(),
 };
