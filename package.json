@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@korzio/djv-draft-04": "^2.0.0",
-    "@mdi/font": "^5.8.55",
+    "@mdi/font": "^5.9.55",
     "axios": "^0.18.0",
     "djv": "^2.0.0",
     "draggable-vue-directive": "^2.0.2",

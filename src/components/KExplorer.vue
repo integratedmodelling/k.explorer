@@ -18,7 +18,7 @@
 
     <q-page-container>
       <q-page class="column">
-        <div class="col row full-height kexplorer-container">
+        <div :class="{ 'kd-is-app': layout !== null }" class="col row full-height kexplorer-container">
           <keep-alive>
             <!-- <transition name="component-fade" mode="out-in"> -->
             <component :is="mainViewer.name" :container-style="{ width: mainPanelStyle.width - leftMenuWidth, height: mainPanelStyle.height }"></component>
@@ -110,6 +110,7 @@ export default {
       'leftMenuState',
       'largeMode',
       'hasHeader',
+      'layout',
     ]),
     waitingGeolocation: {
       get() {

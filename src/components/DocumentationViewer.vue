@@ -1,26 +1,46 @@
 <template>
   <div class="dv-documentation">
     <div class="dv-documentation-wrapper">
-      <div class="dv-empty-documentation" v-if="content.length === 0">{{ $t('messages.noDocumentation') }}</div>
-      <div class="dv-content" v-else>
-        <div class="dv-item" v-for="doc in content" :key="doc.id">
-          <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-            <h1 :id="doc.id">{{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
-          </template>
-          <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
-          <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
-          <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-            <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
-            <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
-            <div class="dv-table-actions col">
-              <div class="dv-actions-right justify-end row">
-                <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(doc.id, -1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
-                <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(doc.id, 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
-              </div>
+      <template v-if="content.length === 0">
+        <div class="dv-main-actions">
+          <q-btn icon="mdi-refresh" class="dv-button" flat color="mc-main" @click="forceReload">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="bottom middle"
+              anchor="top middle"
+              :delay="1000"
+            >{{ $t('label.appReload')}}</q-tooltip>
+          </q-btn>
+        </div>
+        <div class="dv-empty-documentation">{{ $t('messages.noDocumentation') }}</div>
+      </template>
+      <template v-else>
+        <div class="dv-main-actions">
+          <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(-1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
+          <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange( 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
+          <q-btn icon="mdi-refresh" class="dv-button" flat color="mc-main" @click="forceReload">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="bottom middle"
+              anchor="top middle"
+              :delay="1000"
+            >{{ $t('label.appReload')}}</q-tooltip>
+          </q-btn>
+        </div>
+        <div class="dv-content">
+          <div class="dv-item" v-for="doc in content" :key="doc.id">
+            <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
+              <h1 :id="doc.id">{{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+            </template>
+            <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
+            <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
+              <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
+              <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
             </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -29,7 +49,7 @@
 import Tabulator from 'tabulator-tables';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 import { mapGetters } from 'vuex';
-import { DOCUMENTATION_TYPES, TABLE_TYPES } from 'shared/Constants';
+import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
 
 export default {
@@ -155,11 +175,12 @@ export default {
         ...getColumn(c),
       }));
     },
-    tableFontSizeChange(id, amount) {
-      const table = this.tables.find(t => t.id === id);
-      if (table) {
+    tableFontSizeChange(amount) {
+      if (this.tables.length > 0) {
         this.tableFontSize += amount;
-        table.instance.redraw(true);
+        this.tables.forEach((t) => {
+          t.instance.redraw(true);
+        });
       }
     },
     selectElement(id) {
@@ -169,6 +190,9 @@ export default {
         el.scrollIntoView({ behavior: 'smooth' });
         el.classList.add('dv-selected');
       }
+    },
+    forceReload() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
     },
   },
   watch: {
@@ -246,17 +270,15 @@ export default {
 @import '~variables'
 .dv-empty-documentation
   position absolute
-  width 400px
+  width 100%
   height 80px
-  left calc((100% - 400px) / 2)
+  text-aling center
   top calc((100% - 80px) / 2)
-  margin-left -200px
-  margin-top -40px
   padding 0
   text-align center
   font-size 60px
   font-weight bold
-  color rgb(17, 170, 187)
+  color $main-control-main-color
 
 .dv-documentation-wrapper
   position absolute
@@ -267,7 +289,11 @@ export default {
   height 100%
   overflow auto
   border none
-
+.dv-main-actions
+  position absolute
+  right 0
+  .dv-button
+    padding 8px
 .dv-documentation
   .dv-content
     h1
@@ -282,7 +308,7 @@ export default {
     transition: .3s ease;
     border-radius: 5px;
     &.dv-selected
-      box-shadow 0 2px 6px $main-control-grey-alpha
+      // box-shadow 0 2px 6px $main-control-grey-alpha
       transform translateY(15px) scale(1.02)
       padding 5px 10px
       margin-bottom calc(0.6em + 15px)
@@ -315,5 +341,25 @@ export default {
     padding-top 16px
     .q-btn
       padding 8px
-
+.kd-is-app
+  background-image none !important
+  .dv-main-actions
+    .dv-button
+      color var(--app-main-color)
+  .dv-empty-documentation
+    color var(--app-text-color)
+  .dv-documentation
+    background-color var(--app-background-color)
+    .dv-content
+      background-color var(--app-background-color)
+      h1
+      h2
+      h3
+      h4
+      h5
+      h6
+        color var(--app-text-color)
+    .dv-table-container
+      .dv-table-title
+        color var(--app-main-color)
 </style>

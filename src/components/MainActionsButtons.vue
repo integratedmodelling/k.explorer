@@ -6,7 +6,7 @@
            @click="mainViewerName !== VIEWERS.DATA_VIEWER.name ? click(isMainControlDocked ? VIEWERS.DOCKED_DATA_VIEWER : VIEWERS.DATA_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DATA_VIEWER.name }]"
            v-if="orientation !== 'horizontal' || isHeader"
-      ><q-icon name="mdi-eye-outline">
+      ><q-icon name="mdi-folder-image">
         <q-tooltip
           :delay="600"
           :offset="[0, 8]"
@@ -17,7 +17,7 @@
       <!-- DOCUMENTATION BUTTON -->
       <div class="klab-button klab-action"
            @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
-           :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && !hasObservations }]"
+           :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && (!hasContext || !hasObservations) }]"
       ><q-icon name="mdi-text-box-multiple-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name  && reloadDocumentation && hasObservations"></span>
         <q-tooltip
@@ -44,7 +44,7 @@
       <div
         class="klab-button klab-action"
         @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext ? click(VIEWERS.DATAFLOW_VIEWER) : false"
-        :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && !hasContext }]"
+        :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && !hasContext}]"
       ><q-icon name="mdi-sitemap">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
         <q-tooltip
@@ -109,6 +109,7 @@ export default {
       'statusTextsString',
       'statusTextsLength',
       'isMainControlDocked',
+      'reloadDocumentation',
     ]),
   },
   methods: {

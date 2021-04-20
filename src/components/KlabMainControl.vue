@@ -52,7 +52,7 @@
         <klab-breadcrumbs slot="subtitle"></klab-breadcrumbs>
       </q-card-title>
       <q-card-actions
-        v-show="hasContext && !isHidden"
+        v-show="hasContext && !isHidden && !hasHeader && layout === null"
         class="context-actions no-margin"
       >
         <!-- TABS -->
@@ -70,7 +70,7 @@
           <div class="klab-button mc-tab"
                :class="['tab-button', { active: selectedTab === 'klab-tree-pane' }]"
                @click="selectedTab = 'klab-tree-pane'"
-          ><q-icon name="mdi-eye-outline">
+          ><q-icon name="mdi-folder-image">
             <q-tooltip
               :offset="[0, 8]"
               self="top middle"
@@ -220,6 +220,8 @@ export default {
       'fuzzyMode',
       'largeMode',
       'windowSide',
+      'layout',
+      'hasHeader',
     ]),
     qCardStyle() {
       return {

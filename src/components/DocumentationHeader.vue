@@ -33,8 +33,9 @@
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" />
       </q-tabs>
     </div>
+    <!--
     <div class="dh-actions col justify-end self-center">
-      <q-btn icon="mdi-refresh" round class="dv-doc-reload" size="sm" color="mc-grey" @click="forceReload">
+      <q-btn icon="mdi-refresh" class="dv-doc-reload" size="md" color="mc-main" @click="forceReload">
         <q-tooltip
           :offset="[0, 8]"
           self="bottom middle"
@@ -43,12 +44,13 @@
         >{{ $t('label.appReload')}}</q-tooltip>
       </q-btn>
     </div>
+    -->
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import { DOCUMENTATION_VIEWS, CUSTOM_EVENTS, LEFTMENU_CONSTANTS } from 'shared/Constants';
+import { DOCUMENTATION_VIEWS, LEFTMENU_CONSTANTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner';
 
 export default {
@@ -82,9 +84,6 @@ export default {
     },
   },
   methods: {
-    forceReload() {
-      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
-    },
   },
 };
 </script>
@@ -108,4 +107,24 @@ export default {
   .dh-actions
     text-align right
     padding-right 16px
+.kd-is-app
+  .q-layout-header
+    box-shadow none
+    border-bottom 1px solid var(--app-darken-background-color)
+  .dh-container
+    // border-left 1px solid var(--app-main-color)
+    // border-bottom 1px solid var(--app-main-color)
+    background-color var(--app-darken-background-color)
+  .dh-tabs
+    .q-tabs-head
+      background-color rgba(0, 0, 0, 0)
+      padding 0 !important
+      .q-tab
+        padding 13px 16px
+        text-shadow none
+        &.active
+          color var(--app-main-color) !important
+    .q-tabs-bar
+      color var(--app-main-color)
+      border-bottom-width 4px
 </style>

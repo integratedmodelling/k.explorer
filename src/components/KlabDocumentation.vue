@@ -98,5 +98,6 @@ export default {
 </script>
 
 <style lang="stylus">
-
+.kexplorer-container.kd-is-app
+  background-color var(--app-background-color)
 </style>

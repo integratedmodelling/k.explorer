@@ -20,8 +20,8 @@
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
-        <div class="row item-center q-ma-md">
-          <main-actions-buttons :is-header="true" class="col justify-end self-center"></main-actions-buttons>
+        <div class="kapp-actions-container row items-end">
+          <main-actions-buttons :is-header="true" class="col justify-end self-end"></main-actions-buttons>
         </div>
       </div>
     </q-layout-header>
@@ -312,7 +312,6 @@ export default {
       margin 0
     .simplebar-scrollbar::before
       background-color var(--app-main-color)
-
   // header
   .kapp-header
     background-color var(--app-background-color)
@@ -345,23 +344,40 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
-    .klab-main-actions .klab-button
-        font-size 32px
-        margin 0
-        padding 0 12px
-        border-top-left-radius 4px
-        border-top-right-radius 4px
-        text-shadow none
-        &:hover
+    .kapp-actions-container
+      .klab-main-actions
+        margin 0 1px 0 0
+        .klab-button
+          width 60px
+          height 45px
+          font-size 32px
+          margin 0 -1px 0 0
+          text-align center
+          padding 8px 0
+          border-top-left-radius 8px !important
+          border-top-right-radius 4px !important
+          border 2px solid var(--app-main-color)
+          border-bottom 0
+          text-shadow none
           color var(--app-main-color) !important
-        &:active
-          color var(--app-main-color)
-      .klab-button-notification
-        width 12px
-        height 12px
-        top -5px
-        right 8px
-        color var(--app-main-color)
+          position relative
+          bottom -1px
+          &.active
+            color var(--app-main-color) !important
+            background-color var(--app-darken-background-color)
+            border-color var(--app-main-color)
+          &:hover:not(.active)
+            // color var(--app-background-color) !important
+            background-color var(--app-darken-background-color)
+            border-bottom 1px solid var(--app-main-color)
+        .klab-button-notification
+          width 12px
+          height 12px
+          border-radius 18px
+          top 2px
+          right 8px
+          background-color var(--app-main-color) !important
+          border 1px solid var(--app-background-color)
   .kcv-dir-vertical
     display flex
     flex-direction column

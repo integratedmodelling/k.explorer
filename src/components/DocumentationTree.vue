@@ -81,10 +81,20 @@ export default {
 </script>
 <style lang="stylus">
 @import '~variables'
+.q-layout-header
+.q-layout-drawer
+  box-shadow none !important
+  border-bottom 1px solid var(--app-main-color)
 .dt-container
-  padding-top 16px
+  padding 16px 8px 0
   .dt-tree-empty
     margin 16px
     color white
-
+.kd-is-app
+  .klab-left
+    background-color var(--app-darken-background-color)
+    .dt-tree-empty
+    .q-tree .q-tree-node
+    .text-white
+      color var(--app-main-color) !important
 </style>

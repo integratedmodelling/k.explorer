@@ -280,5 +280,9 @@ export default {
             fill $grey-6
             stroke $grey-7
 
+.kd-is-app
+  #dfv-container #sprotty
+    background-color var(--app-darken-background-color)
+    padding-left 16px
 
 </style>
