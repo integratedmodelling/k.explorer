@@ -347,6 +347,7 @@ export default {
     .kapp-actions-container
       .klab-main-actions
         margin 0 1px 0 0
+        min-width 178px
         .klab-button
           width 60px
           height 45px
@@ -356,7 +357,7 @@ export default {
           padding 8px 0
           border-top-left-radius 8px !important
           border-top-right-radius 4px !important
-          border 2px solid var(--app-main-color)
+          border 1px solid var(--app-main-color)
           border-bottom 0
           text-shadow none
           color var(--app-main-color) !important
