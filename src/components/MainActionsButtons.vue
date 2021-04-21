@@ -16,7 +16,7 @@
       </q-icon></div>
       <!-- DOCUMENTATION BUTTON -->
       <div class="klab-button klab-action"
-           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasObservations ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
+           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasContext && hasObservations ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && (!hasContext || !hasObservations) }]"
       ><q-icon name="mdi-text-box-multiple-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name  && reloadDocumentation && hasObservations"></span>
@@ -95,8 +95,8 @@ export default {
   },
   computed: {
     ...mapState('view', [
-      'reloadDocumentation',
       'reloadDataflow',
+      'reloadDocumentation',
     ]),
     ...mapGetters('data', [
       'hasObservations',
@@ -109,7 +109,6 @@ export default {
       'statusTextsString',
       'statusTextsLength',
       'isMainControlDocked',
-      'reloadDocumentation',
     ]),
   },
   methods: {

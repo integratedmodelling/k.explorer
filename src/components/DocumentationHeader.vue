@@ -1,25 +1,5 @@
 <template>
   <div class="dh-container full-width row items-center">
-    <div class="dh-spinner col-1 justify-start" v-if="hasSpinner">
-      <transition
-        appear
-        enter-active-class="animated fadeIn"
-        leave-active-class="animated fadeOut"
-      >
-        <div
-          id="kd-spinner"
-          class="klab-spinner-div item-center"
-        >
-          <klab-spinner
-            id="spinner-documentation"
-            :store-controlled="true"
-            :size="28"
-            :ball="22"
-            wrapperId="kd-spinner"
-          ></klab-spinner>
-        </div>
-      </transition>
-    </div>
     <div class="dh-tabs col justify-start">
       <q-tabs
         v-model="selectedTab"
@@ -32,6 +12,26 @@
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" class="klab-tab" icon="mdi-database-outline" />
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" />
       </q-tabs>
+    </div>
+    <div class="dh-spinner col-1 justify-end" v-if="hasSpinner">
+      <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+      >
+        <div
+          id="kd-spinner"
+          class="klab-spinner-div item-center"
+        >
+          <klab-spinner
+            id="spinner-documentation"
+            :store-controlled="true"
+            :size="30"
+            :ball="22"
+            wrapperId="kd-spinner"
+          ></klab-spinner>
+        </div>
+      </transition>
     </div>
     <!--
     <div class="dh-actions col justify-end self-center">
@@ -95,7 +95,7 @@ export default {
   .dh-spinner
     width 28px
     margin-left 16px
-    margin-right 10px
+    margin-right 16px
   .dh-tabs
     .q-tabs-head
       background-color rgba(0, 0, 0, 0)
