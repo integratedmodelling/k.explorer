@@ -47,6 +47,7 @@
 
 <script>
 import Tabulator from 'tabulator-tables';
+import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 import { mapGetters } from 'vuex';
 import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS } from 'shared/Constants';
@@ -146,17 +147,21 @@ export default {
     },
   },
   methods: {
-    getFormatter(data) {
+    getFormatter(data, params) {
+      const { numberFormat } = params;
       switch (data) {
         case TABLE_TYPES.TEXT:
         case TABLE_TYPES.VALUE:
         case TABLE_TYPES.BOOLEAN:
+          return 'plaintext';
         case TABLE_TYPES.NUMBER:
+          return numberFormat ? cell => printf(numberFormat, cell.getValue()) : 'plaintext';
         default:
           return 'plaintext';
       }
     },
-    formatColumns(columns) {
+    formatColumns(columns, params = {}) {
+      const { numberFormat } = params;
       const getColumn = (c, parentId) => {
         const field = `${parentId || ''}${c.id}`;
         return {
@@ -167,7 +172,7 @@ export default {
           ...(c.sorter && { sorter: c.sorter }),
           ...(c.hozAlign && { hozAlign: c.hozAlign }),
           ...(c.formatter && { formatter: c.formatter }),
-          ...(!c.formatter && c.type && { formatter: this.getFormatter(c.type) }),
+          ...(!c.formatter && c.type && { formatter: this.getFormatter(c.type, { numberFormat: c.numberFormat || numberFormat }) }),
           ...(c.columns && c.columns.length > 0 && { columns: c.columns.map(col => getColumn(col, field)) }),
         };
       };
@@ -227,7 +232,7 @@ export default {
               tabulator: {
                 data: content.table.rows,
                 // data: this.rows,
-                columns: this.formatColumns(content.table.columns),
+                columns: this.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
                 // columns: this.formatColumns(this.columns),
               },
             });
