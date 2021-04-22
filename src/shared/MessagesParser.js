@@ -23,7 +23,6 @@ const PARSERS = {
     // dispatch('data/recalculateTree', { taskId: task.id, fromTask: true }, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
-    dispatch('view/setReloadDocumentation', true, { root: true });
   },
   [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch }) => {
     if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
@@ -201,6 +200,10 @@ const PARSERS = {
   [IN.TYPE_VIEWAVAILABLE]: ({ payload: documentation }, { dispatch }) => {
     dispatch('view/setDocumentation', { id: documentation.viewId, view: documentation.viewClass }, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New documentation available', documentation);
+  },
+  [IN.TYPE_DOCUMENTATIONCHANGED]: ({ payload: change }, { dispatch }) => {
+    dispatch('view/changeInDocumentation', change, { root: true });
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New change in documentation', change);
   },
   [IN.TYPE_COMMANDRESPONSE]: ({ payload }, { dispatch }) => {
     eventBus.$emit(CUSTOM_EVENTS.COMMAND_RESPONSE, payload);

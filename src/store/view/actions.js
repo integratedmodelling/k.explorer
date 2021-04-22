@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { eventBus } from 'plugins/initApp';
 import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS,
-  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS, DOCUMENTATION_TYPES_VIEWS } from 'shared/Constants';
+  SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS, DOCUMENTATION_TYPES_VIEWS, DOCUMENTATION_VIEWS } from 'shared/Constants';
 import { URLS } from 'shared/MessagesConstants';
 import { getAxiosContent, getContextGeometry, findNodeById } from 'shared/Helpers';
 import { transform } from 'ol/proj';
@@ -280,10 +280,6 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
-  setReloadDocumentation: ({ commit }, reload) => {
-    commit('SET_RELOAD_DOCUMENTATION', reload);
-  },
-
   setObservationInfo: ({ commit }, observation) => {
     commit('SET_OBSERVATION_INFO', observation);
   },
@@ -452,6 +448,11 @@ export default {
             dispatch('setMainViewer', VIEWERS.DATAFLOW_VIEWER);
           }
           break;
+        case VIEW_SETTING.URL:
+          // if (viewSetting.operation === VIEW_SETTING.DOWNLOAD) {
+          eventBus.$emit(CUSTOM_EVENTS.DOWNLOAD_URL, viewSetting.targetId);
+          // }
+          break;
         default:
           break;
       }
@@ -487,5 +488,23 @@ export default {
     commit('SET_DOCUMENTATION_VIEW', documentation.view);
     commit('SET_DOCUMENTATION_SELECTED', documentation.id);
     eventBus.$emit(CUSTOM_EVENTS.SHOW_DOCUMENTATION);
+  },
+
+  changeInDocumentation: ({ commit }, change) => {
+    if (change.viewsAffected) {
+      const views = change.viewsAffected.filter(v => v !== DOCUMENTATION_VIEWS.REFERENCES);
+      if (views.length > 0) {
+        commit('SET_RELOAD_VIEWS', views);
+      }
+    }
+  },
+  removeReloadView: ({ commit }, view) => {
+    commit('REMOVE_RELOAD_VIEW', view);
+  },
+  setTableFontSize: ({ commit }, size) => {
+    commit('SET_TABLE_FONT_SIZE', size);
+  },
+  setTextFontSize: ({ commit }, size) => {
+    commit('SET_TABLE_FONT_SIZE', size);
   },
 };

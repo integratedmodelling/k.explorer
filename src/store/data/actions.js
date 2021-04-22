@@ -660,7 +660,7 @@ export default {
           resolve(false);
         } else {
           dispatch('refreshDocumentation', { view: documentationView, documentation: data }).then(() => {
-            dispatch('view/setReloadDocumentation', false, { root: true }).then(() => {
+            dispatch('view/removeReloadView', documentationView, { root: true }).then(() => {
               resolve(true);
             });
           });
@@ -682,6 +682,12 @@ export default {
           break;
         case DOCUMENTATION_TYPES.TABLE:
           label = item.bodyText;
+          break;
+        case DOCUMENTATION_TYPES.RESOURCE:
+          label = item.title;
+          break;
+        case DOCUMENTATION_TYPES.MODEL:
+          label = item.id;
           break;
         default:
           label = item.type;

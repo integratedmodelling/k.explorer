@@ -101,6 +101,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'sessionReference',
+      'session',
     ]),
     ...mapGetters('view', [
       'isApp',
@@ -255,6 +256,26 @@ export default {
         });
       }
     },
+    downloadListener(url) {
+      this.$axios.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, {
+        params: {
+          format: 'RAW',
+        },
+        responseType: 'blob',
+      }).then((response) => {
+        const blob = new Blob([response.data]);
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `output_${new Date().getTime()}`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(downloadUrl);
+      }).catch((error) => {
+        console.error(error);
+      });
+    },
   },
   watch: {
     layout(newLayout, oldLayout) {
@@ -281,6 +302,10 @@ export default {
   created() {},
   mounted() {
     this.updateLayout(true);
+    this.$eventBus.$on(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
   },
 };
 </script>
@@ -351,7 +376,7 @@ export default {
         .klab-button
           width 60px
           height 45px
-          font-size 32px
+          font-size 28px
           margin 0 -1px 0 0
           text-align center
           padding 8px 0
@@ -375,8 +400,8 @@ export default {
           width 12px
           height 12px
           border-radius 18px
-          top 2px
-          right 8px
+          top 4px
+          right 10px
           background-color var(--app-main-color) !important
           border 1px solid var(--app-background-color)
   .kcv-dir-vertical

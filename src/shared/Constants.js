@@ -39,7 +39,7 @@ export const LEFTMENU_CONSTANTS = {
     */
   LEFTMENU_MAXSIZE: 512,
   LEFTMENU_MINSIZE: 80,
-  LEFTMENU_DOCUMENTATION_SIZE: 360,
+  LEFTMENU_DOCUMENTATION_SIZE: 320,
   LEFTMENU_MAXIMIZED: 'max',
   LEFTMENU_MINIMIZED: 'min',
   LEFTMENU_HIDDEN: 'hidden',
@@ -547,6 +547,8 @@ export const CUSTOM_EVENTS = {
   COMMAND_RESPONSE: 'commandresponse',
   REFRESH_DOCUMENTATION: 'refreshdocumentation',
   SHOW_DOCUMENTATION: 'showdowcumentation',
+  FONT_SIZE_CHANGE: 'fontsizechange',
+  DOWNLOAD_URL: 'download_url',
 };
 
 export const SCALE_TYPE = {
@@ -810,6 +812,8 @@ export const VIEW_SETTING = {
   DATAFLOW: 'Dataflow',
   SHOW: 'Show',
   HIDE: 'Hide',
+  URL: 'Url',
+  DOWNLOAD: 'Download',
 };
 
 export const ENGINE_EVENTS = {
@@ -1004,6 +1008,7 @@ export const DOCUMENTATION_VIEWS = {
   RESOURCES: 'RESOURCES',
   MODELS: 'MODELS',
   PROVENANCE: 'PROVENANCE',
+  REFERENCES: 'REFERENCES',
 };
 
 export const DOCUMENTATION_TYPES = {

@@ -86,7 +86,7 @@ export default {
   box-shadow none !important
   border-bottom 1px solid var(--app-main-color)
 .dt-container
-  padding 16px 8px 0
+  padding 16px 0
   .dt-tree-empty
     margin 16px
     color white

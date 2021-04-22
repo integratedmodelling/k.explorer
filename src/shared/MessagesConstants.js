@@ -105,6 +105,7 @@ export const IN = Object.freeze({
   TYPE_VIEWAVAILABLE: 'ViewAvailable',
   TYPE_VIEWSETTING: 'ViewSetting',
   TYPE_COMMANDRESPONSE: 'CommandResponse',
+  TYPE_DOCUMENTATIONCHANGED: 'DocumentationChanged',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -131,6 +132,7 @@ export const IN = Object.freeze({
   PAYLOAD_CLASS_VIEWSETTING: 'ViewSetting',
   PAYLOAD_CLASS_KNOWLEDGEVIEWREFERENCE: 'KnowledgeViewReference',
   PAYLOAD_CLASS_CONSOLENOTIFICATION: 'ConsoleNotification',
+  PAYLOAD_CLASS_DOCUMENTATIONEVENT: 'DocumentationEvent',
 });
 
 export const URLS = Object.freeze({
