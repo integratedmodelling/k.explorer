@@ -16,7 +16,7 @@
       </q-icon></div>
       <!-- DOCUMENTATION BUTTON -->
       <div class="klab-button klab-action"
-           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
+           @click="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && hasContext && hasObservations ? click(VIEWERS.DOCUMENTATION_VIEWER) : false"
            :class="[{ active: mainViewerName === VIEWERS.DOCUMENTATION_VIEWER.name, disabled: mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name && (!hasContext || !hasObservations) }]"
       ><q-icon name="mdi-text-box-multiple-outline">
         <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DOCUMENTATION_VIEWER.name  && reloadViews.length > 0"></span>
