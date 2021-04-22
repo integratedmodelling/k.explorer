@@ -263,15 +263,14 @@ export default {
         },
         responseType: 'blob',
       }).then((response) => {
-        const blob = new Blob([response.data]);
-        const downloadUrl = window.URL.createObjectURL(blob);
+        // const blob = new Blob([response.data]);
         const link = document.createElement('a');
-        link.href = url;
+        link.href = URL.createObjectURL(response.data);
         link.setAttribute('download', `output_${new Date().getTime()}`);
         document.body.appendChild(link);
         link.click();
         link.remove();
-        window.URL.revokeObjectURL(downloadUrl);
+        setTimeout(() => URL.revokeObjectURL(link.href), 5000);
       }).catch((error) => {
         console.error(error);
       });
