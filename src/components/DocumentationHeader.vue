@@ -13,6 +13,20 @@
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.MODELS) !== -1"></q-tab>
       </q-tabs>
     </div>
+    <div class="dh-actions justify-end">
+      <q-btn icon="mdi-refresh" class="dh-button" flat color="mc-main" @click="forceReload">
+        <q-tooltip
+          :offset="[0, 8]"
+          self="bottom middle"
+          anchor="top middle"
+          :delay="1000"
+        >{{ $t('label.appReload')}}</q-tooltip>
+      </q-btn>
+      <template v-if="selectedTab === DOCUMENTATION_VIEWS.TABLES">
+        <q-btn class="dh-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(-1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
+        <q-btn class="dh-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
+      </template>
+    </div>
     <div class="dh-spinner col-1 justify-end" v-if="hasSpinner">
       <transition
         appear
@@ -49,8 +63,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { DOCUMENTATION_VIEWS, LEFTMENU_CONSTANTS } from 'shared/Constants';
+import { mapGetters, mapActions } from 'vuex';
+import { DOCUMENTATION_VIEWS, LEFTMENU_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import KlabSpinner from 'components/KlabSpinner';
 
 export default {
@@ -71,6 +85,7 @@ export default {
       'leftMenuState',
       'hasHeader',
       'reloadViews',
+      'tableFontSize',
     ]),
     hasSpinner() {
       return !(this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN && !this.hasHeader);
@@ -85,6 +100,16 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setTableFontSize',
+    ]),
+    tableFontSizeChange(amount) {
+      this.setTableFontSize(this.tableFontSize + amount);
+      this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
+    },
+    forceReload() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
+    },
   },
 };
 </script>
@@ -111,7 +136,9 @@ export default {
           top -1px
   .dh-actions
     text-align right
-    padding-right 16px
+    padding-right 12px
+    .dh-button
+      padding 8px
 .kd-is-app
   .q-layout-header
     box-shadow none
@@ -120,6 +147,9 @@ export default {
     // border-left 1px solid var(--app-main-color)
     // border-bottom 1px solid var(--app-main-color)
     background-color var(--app-darken-background-color)
+  .dh-actions
+    .dh-button
+      color var(--app-main-color)
   .dh-tabs
     .q-tabs-head
       background-color rgba(0, 0, 0, 0)
@@ -129,6 +159,8 @@ export default {
         text-shadow none
         &.active
           color var(--app-main-color) !important
+        .q-dot
+          background-color var(--app-main-color)
     .q-tabs-bar
       color var(--app-main-color)
       border-bottom-width 4px

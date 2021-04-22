@@ -161,8 +161,10 @@ export default {
         .kcv-group:not(.kcv-wrapper)>.kcv-group-content
           // background-color #ff0000 !important
           // border 1px solid #000
-          padding var(--app-smaller-mp) 0
+          padding-bottom var(--app-smaller-mp)
           justify-content space-around
+          .kcv-group
+            padding calc(var(--app-smaller-mp) / 4) 0
           .kcv-pushbutton
             margin var(--app-large-mp) 0
           // margin var(--app-small-mp) 0

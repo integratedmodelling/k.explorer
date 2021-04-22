@@ -39,7 +39,7 @@ export const LEFTMENU_CONSTANTS = {
     */
   LEFTMENU_MAXSIZE: 512,
   LEFTMENU_MINSIZE: 80,
-  LEFTMENU_DOCUMENTATION_SIZE: 296,
+  LEFTMENU_DOCUMENTATION_SIZE: 320,
   LEFTMENU_MAXIMIZED: 'max',
   LEFTMENU_MINIMIZED: 'min',
   LEFTMENU_HIDDEN: 'hidden',
@@ -547,6 +547,7 @@ export const CUSTOM_EVENTS = {
   COMMAND_RESPONSE: 'commandresponse',
   REFRESH_DOCUMENTATION: 'refreshdocumentation',
   SHOW_DOCUMENTATION: 'showdowcumentation',
+  FONT_SIZE_CHANGE: 'fontsizechange',
 };
 
 export const SCALE_TYPE = {

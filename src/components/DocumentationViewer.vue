@@ -2,31 +2,9 @@
   <div class="dv-documentation">
     <div class="dv-documentation-wrapper">
       <template v-if="content.length === 0">
-        <div class="dv-main-actions">
-          <q-btn icon="mdi-refresh" class="dv-button" flat color="mc-main" @click="forceReload">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="bottom middle"
-              anchor="top middle"
-              :delay="1000"
-            >{{ $t('label.appReload')}}</q-tooltip>
-          </q-btn>
-        </div>
         <div class="dv-empty-documentation">{{ $t('messages.noDocumentation') }}</div>
       </template>
       <template v-else>
-        <div class="dv-main-actions">
-          <q-btn class="dv-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(-1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
-          <q-btn class="dv-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange( 1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
-          <q-btn icon="mdi-refresh" class="dv-button" flat color="mc-main" @click="forceReload">
-            <q-tooltip
-              :offset="[0, 8]"
-              self="bottom middle"
-              anchor="top middle"
-              :delay="1000"
-            >{{ $t('label.appReload')}}</q-tooltip>
-          </q-btn>
-        </div>
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
@@ -37,6 +15,15 @@
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
               <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
+            </div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
+              <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
+            </div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.RESOURCE" class="dv-resource-container">
+              <div :id="doc.id" class="dv-resource-name">{{ doc.id }}</div>
+            </div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-other-container">
+              <div class="dv-other-content">{{ JSON.stringify(doc, null, 2) }}</div>
             </div>
           </div>
         </div>
@@ -60,7 +47,6 @@ export default {
       content: [],
       tables: [],
       rawDocumentation: [],
-      tableFontSize: 12,
       DOCUMENTATION_TYPES,
       /*
       columns: [{
@@ -334,6 +320,7 @@ export default {
     ...mapGetters('view', [
       'documentationView',
       'documentationSelected',
+      'tableFontSize',
     ]),
     tree() {
       return this.documentationTrees.find(dt => dt.view === this.documentationView).tree;
@@ -376,14 +363,6 @@ export default {
         ...getColumn(c),
       }));
     },
-    tableFontSizeChange(amount) {
-      if (this.tables.length > 0) {
-        this.tableFontSize += amount;
-        this.tables.forEach((t) => {
-          t.instance.redraw(true);
-        });
-      }
-    },
     selectElement(id) {
       const el = document.getElementById(id);
       if (el) {
@@ -392,8 +371,20 @@ export default {
         el.classList.add('dv-selected');
       }
     },
-    forceReload() {
-      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
+    getModelCode(code) {
+      if (code) {
+        return code.replaceAll('\n', '<br>').replaceAll('  ', '<span class="dv-model-space"></span>');
+      }
+      return '';
+    },
+    fontSizeChangeListener(event) {
+      if (event === 'table') {
+        if (this.tables.length > 0) {
+          this.tables.forEach((t) => {
+            t.instance.redraw(true);
+          });
+        }
+      }
     },
   },
   watch: {
@@ -459,11 +450,15 @@ export default {
     if (this.documentationSelected !== null) {
       this.selectElement(this.documentationSelected);
     }
+    this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
   },
   updated() {
     if (this.documentationSelected !== null) {
       this.selectElement(this.documentationSelected);
     }
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
   },
 };
 </script>
@@ -491,11 +486,6 @@ export default {
   height 100%
   overflow auto
   border none
-.dv-main-actions
-  position absolute
-  right 0
-  .dv-button
-    padding 8px
 .dv-documentation
   .dv-content
     h1
@@ -539,15 +529,13 @@ export default {
         width: 100%;
       &.disabled
         cursor default !important
-  .dv-table-actions
-    padding-top 16px
-    .q-btn
-      padding 8px
+  .dv-resource-container
+  .dv-model-container
+    padding 8px 16px
+    color $main-control-main-color
+    font-weight 400
 .kd-is-app
   background-image none !important
-  .dv-main-actions
-    .dv-button
-      color var(--app-main-color)
   .dv-empty-documentation
     color var(--app-text-color)
   .dv-documentation
@@ -564,4 +552,14 @@ export default {
     .dv-table-container
       .dv-table-title
         color var(--app-main-color)
+    .dv-resource-container
+    .dv-model-container
+      color var(--app-main-color)
+      font-family monospace
+      .dv-selected
+        font-size larger
+      .dv-model-space
+        display inline-block
+        width 2em
+
 </style>

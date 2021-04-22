@@ -683,6 +683,12 @@ export default {
         case DOCUMENTATION_TYPES.TABLE:
           label = item.bodyText;
           break;
+        case DOCUMENTATION_TYPES.RESOURCE:
+          label = item.title;
+          break;
+        case DOCUMENTATION_TYPES.MODEL:
+          label = item.id;
+          break;
         default:
           label = item.type;
       }

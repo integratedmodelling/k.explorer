@@ -141,4 +141,6 @@ export default {
   reloadViews: state => state.reloadViews,
   documentationView: state => state.documentationView,
   documentationSelected: state => state.documentationSelected,
+  tableFontSize: state => state.tableFontSize,
+  textFontSize: state => state.textFontSize,
 };

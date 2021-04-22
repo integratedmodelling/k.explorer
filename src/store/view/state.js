@@ -258,4 +258,6 @@ export default {
    */
   documentationView: DOCUMENTATION_VIEWS.REPORT,
   documentationSelected: null,
+  tableFontSize: 12,
+  textFontSize: 10,
 };

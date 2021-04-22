@@ -482,4 +482,10 @@ export default {
   REMOVE_RELOAD_VIEW: (state, view) => {
     state.reloadViews.splice(state.reloadViews.indexOf(view), 1);
   },
+  SET_TABLE_FONT_SIZE: (state, size) => {
+    state.tableFontSize = size;
+  },
+  SET_TEXT_FONT_SIZE: (state, size) => {
+    state.textFontSize = size;
+  },
 };

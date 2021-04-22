@@ -496,4 +496,10 @@ export default {
   removeReloadView: ({ commit }, view) => {
     commit('REMOVE_RELOAD_VIEW', view);
   },
+  setTableFontSize: ({ commit }, size) => {
+    commit('SET_TABLE_FONT_SIZE', size);
+  },
+  setTextFontSize: ({ commit }, size) => {
+    commit('SET_TABLE_FONT_SIZE', size);
+  },
 };
