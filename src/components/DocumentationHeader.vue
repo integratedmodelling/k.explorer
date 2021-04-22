@@ -6,11 +6,11 @@
         color="mc-main"
         underline-color="mc-main"
       >
-        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.REPORT" class="klab-tab" icon="mdi-text-box-outline" />
-        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.TABLES" class="klab-tab" icon="mdi-table" />
-        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.FIGURES" class="klab-tab" icon="mdi-image" />
-        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" class="klab-tab" icon="mdi-database-outline" />
-        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" />
+        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.REPORT" class="klab-tab" icon="mdi-text-box-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.REPORT) !== -1"></q-tab>
+        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.TABLES" class="klab-tab" icon="mdi-table" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.TABLES) !== -1"></q-tab>
+        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.FIGURES" class="klab-tab" icon="mdi-image" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.FIGURES) !== -1"></q-tab>
+        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" class="klab-tab" icon="mdi-database-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.RESOURCES) !== -1"></q-tab>
+        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.MODELS) !== -1"></q-tab>
       </q-tabs>
     </div>
     <div class="dh-spinner col-1 justify-end" v-if="hasSpinner">
@@ -70,6 +70,7 @@ export default {
     ...mapGetters('view', [
       'leftMenuState',
       'hasHeader',
+      'reloadViews',
     ]),
     hasSpinner() {
       return !(this.leftMenuState !== LEFTMENU_CONSTANTS.LEFTMENU_HIDDEN && !this.hasHeader);
@@ -104,6 +105,10 @@ export default {
         padding 10px 16px
         &.active
           color $main-control-main-color !important
+        .q-dot
+          background-color $main-control-main-color
+          right -3px
+          top -1px
   .dh-actions
     text-align right
     padding-right 16px

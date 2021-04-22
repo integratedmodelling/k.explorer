@@ -123,12 +123,6 @@ export default {
   searchInApp: false,
 
   /**
-   * If true, when report button is clicked, we ask for report
-   * Need to notify that we have unview report too
-   */
-  reloadDocumentation: false,
-
-  /**
    * If true, when dataflow button is clicked, if dataflow not exists we ask for it.
    * Need to notify that we have unview dataflow too
    */
@@ -254,6 +248,11 @@ export default {
    * }
    */
   notificationsParams: null,
+  /**
+   * If true, when report button is clicked, we ask for report
+   * Need to notify that we have unview report too
+   */
+  reloadViews: [],
   /**
    * Selected documentation view
    */

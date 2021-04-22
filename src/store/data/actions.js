@@ -660,7 +660,7 @@ export default {
           resolve(false);
         } else {
           dispatch('refreshDocumentation', { view: documentationView, documentation: data }).then(() => {
-            dispatch('view/setReloadDocumentation', false, { root: true }).then(() => {
+            dispatch('view/removeReloadView', documentationView, { root: true }).then(() => {
               resolve(true);
             });
           });

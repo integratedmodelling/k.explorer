@@ -59,7 +59,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'documentationView',
-      'reloadDocumentation',
+      'reloadViews',
     ]),
   },
   methods: {
@@ -67,9 +67,12 @@ export default {
       'loadDocumentation',
       'refreshDocumentation',
     ]),
-    load(view = null) {
-      if (this.hasContext && this.hasObservations) {
-        this.loadDocumentation(view || this.documentationView);
+    load(view = null, force = false) {
+      if (view === null) {
+        view = this.documentationView;
+      }
+      if (this.reloadViews.indexOf(view) !== -1 || force) {
+        this.loadDocumentation(view);
       }
     },
   },
@@ -79,7 +82,7 @@ export default {
         this.load();
       });
     },
-    reloadDocumentation() {
+    reloadViews() {
       this.$nextTick(() => {
         this.load();
       });
@@ -89,7 +92,7 @@ export default {
     this.load();
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
+    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load(null, true));
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
