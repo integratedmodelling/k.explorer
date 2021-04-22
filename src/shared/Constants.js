@@ -548,6 +548,7 @@ export const CUSTOM_EVENTS = {
   REFRESH_DOCUMENTATION: 'refreshdocumentation',
   SHOW_DOCUMENTATION: 'showdowcumentation',
   FONT_SIZE_CHANGE: 'fontsizechange',
+  DOWNLOAD_URL: 'download_url',
 };
 
 export const SCALE_TYPE = {
@@ -811,6 +812,8 @@ export const VIEW_SETTING = {
   DATAFLOW: 'Dataflow',
   SHOW: 'Show',
   HIDE: 'Hide',
+  URL: 'Url',
+  DOWNLOAD: 'Download',
 };
 
 export const ENGINE_EVENTS = {

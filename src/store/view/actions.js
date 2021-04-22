@@ -448,6 +448,11 @@ export default {
             dispatch('setMainViewer', VIEWERS.DATAFLOW_VIEWER);
           }
           break;
+        case VIEW_SETTING.URL:
+          // if (viewSetting.operation === VIEW_SETTING.DOWNLOAD) {
+          eventBus.$emit(CUSTOM_EVENTS.DOWNLOAD_URL, viewSetting.targetId);
+          // }
+          break;
         default:
           break;
       }
