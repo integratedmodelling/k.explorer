@@ -1,5 +1,5 @@
 import { pushElementInFixedQueue, findInLayout, findComponent } from 'shared/Helpers';
-import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS, DOCUMENTATION_VIEWS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS, ENGINE_EVENTS, APPS_COMPONENTS } from 'shared/Constants';
 import { Cookies } from 'quasar';
 
 export default {
@@ -49,7 +49,6 @@ export default {
     state.treeSelected = null;
     state.topLayer = null;
     state.reloadViews.splice(0, state.reloadViews.length);
-    state.documentationView = DOCUMENTATION_VIEWS.REPORT;
     state.documentationSelected = null;
   },
 

@@ -863,6 +863,9 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
   Object.keys(component.attributes).forEach((key) => {
     const value = component.attributes[key];
     switch (key) {
+      case 'hidden':
+        retStyle.display = 'none';
+        break;
       case 'width':
         if (value === 'content') {
           retStyle['flex-basis'] = '0';

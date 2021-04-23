@@ -338,7 +338,7 @@ export default {
         case TABLE_TYPES.BOOLEAN:
           return 'plaintext';
         case TABLE_TYPES.NUMBER:
-          return cell => (cell.getValue() && cell.getValue() !== '' ? printf(numberFormat, cell.getValue()) : 'plaintext');
+          return cell => (cell.getValue() && cell.getValue() !== '' ? printf(numberFormat, cell.getValue()) : '');
         default:
           return 'plaintext';
       }
@@ -496,14 +496,17 @@ export default {
     h6
       font-weight bold
       color $main-control-grey
+      margin 0
+      padding 0.6em 0
   .dv-content [id]
-    transition: .3s ease;
-    border-radius: 5px;
+    transition .3s ease
+    border-radius 4px
     &.dv-selected
       // box-shadow 0 2px 6px $main-control-grey-alpha
-      transform translateY(15px) scale(1.02)
-      padding 5px 10px
-      margin-bottom calc(0.6em + 15px)
+      animation blinker 1.5s
+      // transform translateY(10px) scale(1.02)
+      // padding 5px 10px
+      // margin-bottom calc(0.6em + 10px)
   .dv-table-container
     .dv-table-title
       font-weight bold
@@ -536,6 +539,10 @@ export default {
     font-weight 400
 .kd-is-app
   background-image none !important
+  .kd-container
+    background-color var(--app-darken-background-color)
+  .dv-documentation-wrapper
+    border-top-left-radius 8px
   .dv-empty-documentation
     color var(--app-text-color)
   .dv-documentation
@@ -562,4 +569,15 @@ export default {
         display inline-block
         width 2em
 
+@keyframes blinker {
+  40% {
+    opacity 1
+  }
+  60% {
+    opacity .2
+  }
+  80% {
+    opacity 1
+  }
+}
 </style>

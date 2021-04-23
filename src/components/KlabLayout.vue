@@ -256,7 +256,7 @@ export default {
         });
       }
     },
-    downloadListener(url) {
+    downloadListener({ url, parameters }) {
       this.$axios.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, {
         params: {
           format: 'RAW',
@@ -266,7 +266,7 @@ export default {
         // const blob = new Blob([response.data]);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(response.data);
-        link.setAttribute('download', `output_${new Date().getTime()}`);
+        link.setAttribute('download', parameters.filename || `output_${new Date().getTime()}`);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -375,32 +375,31 @@ export default {
         .klab-button
           width 60px
           height 45px
-          font-size 28px
+          font-size 26px
           margin 0 -1px 0 0
           text-align center
-          padding 8px 0
-          border-top-left-radius 8px !important
+          padding 10px 0
+          border-top-left-radius 4px !important
           border-top-right-radius 4px !important
           border 1px solid var(--app-main-color)
           border-bottom 0
-          text-shadow none
+          //text-shadow none
+          text-shadow 0 1px 2px var(--app-lighten-background-color)
           color var(--app-main-color) !important
           position relative
           bottom -1px
           &.active
-            color var(--app-main-color) !important
             background-color var(--app-darken-background-color)
-            border-color var(--app-main-color)
           &:hover:not(.active)
             // color var(--app-background-color) !important
             background-color var(--app-darken-background-color)
             border-bottom 1px solid var(--app-main-color)
         .klab-button-notification
-          width 12px
-          height 12px
-          border-radius 18px
-          top 4px
-          right 10px
+          width 11px
+          height 11px
+          border-radius 10px
+          top 5px
+          right 11px
           background-color var(--app-main-color) !important
           border 1px solid var(--app-background-color)
   .kcv-dir-vertical
