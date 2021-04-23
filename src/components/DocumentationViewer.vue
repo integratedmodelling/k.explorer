@@ -338,7 +338,7 @@ export default {
         case TABLE_TYPES.BOOLEAN:
           return 'plaintext';
         case TABLE_TYPES.NUMBER:
-          return cell => (cell.getValue() && cell.getValue() !== '' ? printf(numberFormat, cell.getValue()) : 'plaintext');
+          return cell => (cell.getValue() && cell.getValue() !== '' ? printf(numberFormat, cell.getValue()) : '');
         default:
           return 'plaintext';
       }
