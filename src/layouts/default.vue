@@ -1,5 +1,6 @@
 <template>
   <div class="klab-main-app">
+    <klab-modal-window v-for="(modalWindow, index) in modalWindows" :key="index" :modal="modalWindow"></klab-modal-window>
     <template  v-if="!isApp || layout !== null">
       <klab-notifications></klab-notifications>
       <klab-layout :layout="layout"></klab-layout>
@@ -38,6 +39,7 @@ import KlabSettings from 'components/KlabSettings';
 import KlabTerminal from 'components/KlabTerminal';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
+import KlabModalWindow from 'components/KlabModalWindow';
 import KlabPresentation from 'components/KlabPresentation';
 import KlabNotifications from 'components/KlabNotifications';
 // import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
@@ -47,6 +49,7 @@ export default {
   name: 'LayoutDefault',
   components: {
     KlabLayout,
+    KlabModalWindow,
     ConnectionStatus,
     KlabSettings,
     KlabTerminal,
@@ -68,6 +71,7 @@ export default {
       'layout',
       'isApp',
       'klabApp',
+      'modalWindows',
     ]),
     modal: {
       set() {},

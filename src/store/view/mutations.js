@@ -50,6 +50,7 @@ export default {
     state.topLayer = null;
     state.reloadViews.splice(0, state.reloadViews.length);
     state.documentationSelected = null;
+    state.modalWindows.splice(0, state.modalWindows.length);
   },
 
   /**
@@ -382,6 +383,28 @@ export default {
       state.layouts.push(layout);
     }
     */
+  },
+
+  ADD_MODAL_WINDOW: (state, modal) => {
+    const m = state.modalWindows.find(mw => mw.id === modal.id);
+    if (m) {
+      console.warn(`Modal with id ${modal.id} exists`);
+      m.open = true;
+    } else {
+      state.modalWindows.push({
+        ...modal,
+        open: true,
+      });
+    }
+  },
+
+  REMOVE_MODAL_WINDOW: (state, id) => {
+    const idx = state.modalWindows.find(mw => mw.id === id);
+    if (idx) {
+      state.modalWindows.splice(idx, 1);
+    } else {
+      console.warn(`No modal with id ${id}`);
+    }
   },
 
   SET_WINDOW_SIDE: (state, side) => {

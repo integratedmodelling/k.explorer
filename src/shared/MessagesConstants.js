@@ -106,6 +106,7 @@ export const IN = Object.freeze({
   TYPE_VIEWSETTING: 'ViewSetting',
   TYPE_COMMANDRESPONSE: 'CommandResponse',
   TYPE_DOCUMENTATIONCHANGED: 'DocumentationChanged',
+  TYPE_CREATEMODALWINDOW: 'CreateModalWindow',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',

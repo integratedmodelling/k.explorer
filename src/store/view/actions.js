@@ -398,6 +398,14 @@ export default {
     }
   },
 
+  addModalWindow: ({ commit }, modal) => {
+    commit('ADD_MODAL_WINDOW', modal);
+  },
+
+  removeModalWindow: ({ commit }, modalId) => {
+    commit('REMOVE_MODAL_WINDOW', modalId);
+  },
+
   setWindowSide: ({ commit }, side) => {
     commit('SET_WINDOW_SIDE', side);
   },

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
+  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`" :style="modalDimensions">
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout }"
       class="kapp-header-container kapp-container print-hide"
@@ -83,6 +83,18 @@ export default {
       type: Object,
       default: null,
     },
+    isModal: {
+      type: Boolean,
+      default: false,
+    },
+    modalWidth: {
+      type: String,
+      default: '60vw',
+    },
+    modalHeight: {
+      type: String,
+      default: '60vh',
+    },
   },
   data() {
     return {
@@ -108,7 +120,7 @@ export default {
       'hasHeader',
     ]),
     isRootLayout() {
-      return this.layout !== null && this.layout.parentId === null;
+      return this.isModal ? false : this.layout !== null && this.layout.parentId === null;
     },
     /*
     hasHeader() {
@@ -137,6 +149,12 @@ export default {
         return this.layout.applicationId;
       }
       return 'default';
+    },
+    modalDimensions() {
+      if (this.isModal) {
+        return { width: this.modalWidth, height: this.modalHeight, 'min-height': this.modalHeight };
+      }
+      return {};
     },
   },
   methods: {
