@@ -256,7 +256,7 @@ export default {
         });
       }
     },
-    downloadListener(url) {
+    downloadListener({ url, parameters }) {
       this.$axios.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, {
         params: {
           format: 'RAW',
@@ -266,7 +266,7 @@ export default {
         // const blob = new Blob([response.data]);
         const link = document.createElement('a');
         link.href = URL.createObjectURL(response.data);
-        link.setAttribute('download', `output_${new Date().getTime()}`);
+        link.setAttribute('download', parameters.filename || `output_${new Date().getTime()}`);
         document.body.appendChild(link);
         link.click();
         link.remove();

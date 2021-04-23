@@ -338,7 +338,8 @@ export default {
   .kcv-pushbutton
     font-size var(--app-font-size)
     margin 0 var(--app-small-mp)
-
+  .kcv-reset-button
+    margin 0 var(--app-smaller-mp)
   .kcv-checkbutton
     display block
     padding var(--app-smaller-mp) var(--app-small-mp)

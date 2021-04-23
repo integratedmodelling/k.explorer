@@ -689,7 +689,7 @@ export const COMPONENTS = {
       const round = component.attributes.iconname && !component.name;
       return h('div', {}, [
         h(QBtn, {
-          class: [round ? 'kcv-roundbutton' : 'kcv-pushbutton', 'kcv-form-element'],
+          class: [round ? 'kcv-roundbutton' : 'kcv-pushbutton', 'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : ''],
           style: DEFAULT_STYLE_FUNCTION(component),
           attrs: {
             id: `${component.applicationId}-${component.id}`,

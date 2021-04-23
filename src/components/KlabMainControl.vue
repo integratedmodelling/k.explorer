@@ -249,7 +249,7 @@ export default {
     },
     onDebouncedPositionChanged(event) {
       // this.askForDocking = !!(this.hasContext && this.dragging && absolutePosition && absolutePosition.left < -(this.draggableElementWidth / 3));
-      this.askForDocking = !!(this.hasContext && this.dragging && event && event.x <= 30 + this.correctedPosition.left);
+      this.askForDocking = !!(this.hasContext && this.dragging && this.layout === null && event && event.x <= 30 + this.correctedPosition.left);
     },
     hide() {
       this.dragMCConfig.resetInitialPos = false;
