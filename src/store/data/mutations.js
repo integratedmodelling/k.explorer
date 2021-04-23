@@ -1,8 +1,7 @@
 import { /* getNodeFromObservation, */findNodeById, WKTInstance } from 'shared/Helpers';
 import { eventBus } from 'plugins/initApp';
-import { SCALE_TYPE, SCALE_VALUES, CUSTOM_EVENTS } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES, CUSTOM_EVENTS, WEB_CONSTANTS } from 'shared/Constants';
 import { MAP_CONSTANTS } from 'shared/MapConstants';
-import { WEB_CONSTANTS } from '../../shared/Constants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
 export default {
@@ -48,6 +47,10 @@ export default {
     state.timestamp = -1;
     state.engineTimestamp = -1;
     state.proposedContext = null;
+    state.documentationTrees.forEach((dv) => {
+      dv.tree.splice(0, dv.tree.length);
+    });
+    state.documentationContent.clear();
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {
