@@ -5,7 +5,7 @@
     no-esc-dismiss
     no-backdrop-dismiss
   >
-    <klab-layout :layout="null" :isModal="true" :modal-width="width" :modal-height="height"></klab-layout>
+    <klab-layout :layout="modal" :isModal="true" :modal-width="width" :modal-height="height"></klab-layout>
     <div class="km-buttons justify-end row">
       <q-btn class="klab-button" @click="open = false" :label="$t('label.appClose')"></q-btn>
     </div>

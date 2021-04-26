@@ -6,11 +6,12 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
-## 0.13.0
+## 0.20.0
 ### Features
 - New documentation view
 - Notifications from static file
 - Terminal for developers
+- Modal from applications
 
 ## 0.12.3
 ### Changes
