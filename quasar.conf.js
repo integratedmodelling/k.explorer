@@ -173,6 +173,7 @@ module.exports = function (ctx) {
         'QDatetime',
         'QFab',
         'QFabAction',
+        'QModalLayout'
       ],
       directives: [
         'Ripple',

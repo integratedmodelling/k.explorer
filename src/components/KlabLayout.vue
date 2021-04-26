@@ -4,7 +4,7 @@
       :class="{ 'kapp-main':  isRootLayout }"
       class="kapp-header-container kapp-container print-hide"
       :id="`kapp-${idSuffix}-header`"
-      v-if="hasHeader"
+      v-if="!isModal && hasHeader"
       >
       <klab-app-viewer
         class="kapp-header"
@@ -12,7 +12,7 @@
         :component="layout.header"
         direction="horizontal"
       ></klab-app-viewer>
-      <div class="kapp-header" v-else>
+      <div class="kapp-header row" v-else>
         <div class="kapp-logo-container">
           <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
         </div>
@@ -20,8 +20,13 @@
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}<span class="kapp-version" v-if="layout.versionString">{{ layout.versionString }}</span></div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
-        <div class="kapp-actions-container row items-end">
-          <main-actions-buttons :is-header="true" class="col justify-end self-end"></main-actions-buttons>
+        <div class="kapp-header-right-container col self-end">
+          <div class="kapp-header-menu-container row items-end justify-end" v-if="layout.menu && layout.menu.length > 0">
+            <div class="kapp-header-menu-item klab-link" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id)">{{ item.text }}</div>
+          </div>
+          <div class="kapp-actions-container row items-end justify-end">
+            <main-actions-buttons :is-header="true"></main-actions-buttons>
+          </div>
         </div>
       </div>
     </q-layout-header>
@@ -293,6 +298,17 @@ export default {
         console.error(error);
       });
     },
+    clickOnMenu(id) {
+      if (this.layout) {
+        const { applicationId, identity } = this.layout;
+        this.sendStompMessage(MESSAGES_BUILDERS.MENU_ACTION({
+          // ...EMPTY_VIEWACTION_MESSAGE,
+          identity,
+          applicationId,
+          menuId: id,
+        }, this.$store.state.data.session).body);
+      }
+    },
   },
   watch: {
     layout(newLayout, oldLayout) {
@@ -396,6 +412,12 @@ export default {
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+    .kapp-header-menu-container
+      padding 8px 16px
+      .kapp-header-menu-item
+        margin 0 0 0 16px
+        color var(--app-title-color)
+        cursor pointer
     .kapp-actions-container
       .klab-main-actions
         margin 0 1px 0 0

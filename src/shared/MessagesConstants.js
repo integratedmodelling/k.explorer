@@ -63,6 +63,7 @@ export const OUT = Object.freeze({
   PAYLOAD_CLASS_WATCHREQUEST: 'WatchRequest',
   PAYLOAD_CLASS_EMPTY: 'String',
   PAYLOAD_CLASS_VIEWACTION: 'ViewAction',
+  PAYLOAD_CLASS_MENUACTION: 'MenuAction',
   PAYLOAD_CLASS_LOADAPPLICATIONREQUEST: 'LoadApplicationRequest',
   PAYLOAD_CLASS_CONSOLENOTIFICATION: 'ConsoleNotification',
 

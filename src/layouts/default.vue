@@ -1,9 +1,9 @@
 <template>
   <div class="klab-main-app">
-    <klab-modal-window v-for="(modalWindow, index) in modalWindows" :key="index" :modal="modalWindow"></klab-modal-window>
     <template  v-if="!isApp || layout !== null">
       <klab-notifications></klab-notifications>
       <klab-layout :layout="layout"></klab-layout>
+      <klab-modal-window v-if="modalWindow !== null" :modal="modalWindow"></klab-modal-window>
       <app-dialogs></app-dialogs>
       <connection-status class="print-hide"></connection-status>
       <klab-settings class="print-hide"></klab-settings>
@@ -71,7 +71,7 @@ export default {
       'layout',
       'isApp',
       'klabApp',
-      'modalWindows',
+      'modalWindow',
     ]),
     modal: {
       set() {},

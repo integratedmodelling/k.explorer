@@ -186,7 +186,7 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `App ${layout.name} loaded`, layout, true);
   },
   [IN.TYPE_CREATEMODALWINDOW]: ({ payload: modal }, { dispatch }) => {
-    dispatch('view/addModalWindow', modal, { root: true });
+    dispatch('view/setModalWindow', modal, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `Modal ${modal.name} loaded`, modal, true);
   },
   [IN.TYPE_CREATEVIEWCOMPONENT]: ({ payload: component }, { dispatch }) => {

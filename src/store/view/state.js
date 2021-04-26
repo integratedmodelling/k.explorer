@@ -222,7 +222,7 @@ export default {
   layout: null,
   windowSide: 'left',
   dialogs: [],
-  modalWindows: [],
+  modalWindow: null,
 
   /**
    * Engine events
