@@ -843,6 +843,9 @@ export const APPS_COMPONENTS = {
   INPUT_GROUP: 'InputGroup',
   SEPARATOR: 'Separator',
   MODAL_WINDOW: 'ModalWindow',
+  WINDOW: 'Window',
+  BROWSER: 'Browser',
+  IMAGE: 'Image',
 };
 
 export const APPS_OPERATION = {

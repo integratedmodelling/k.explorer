@@ -53,7 +53,7 @@ export default {
       return this.modal && (`${this.modal.panels[0].attributes.width}px` || '50vw');
     },
     height() {
-      return this.modal && (`${this.modal.panels[0].attributes.height}px` || '50vh');
+      return this.modal && (`calc(${this.modal.panels[0].attributes.height}px` || '50vh');
     },
   },
   methods: {

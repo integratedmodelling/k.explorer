@@ -2,9 +2,11 @@ import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip, QAutocomplete } from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from './MessageBuilders';
-import { MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from './Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES,
+  MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+// import { URLS } from 'shared/MessagesConstants';
+// import { axiosInstance } from '../plugins/axios';
 
 
 export const COMPONENTS = {
@@ -881,6 +883,50 @@ export const COMPONENTS = {
     },
   }),
 
+  BROWSER: component => Vue.component('KBrowswer', {
+    mounted() {
+      // axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${component.content}`, {
+      // axiosInstance.get('http://localhost:8283/modeler/engine/project/resource/get/un.seea.aries/static/en/about.html', {
+      // responseType: 'blob',
+      // 'Content-Type': 'application/text',
+      // })
+      //   .then((response) => {
+      //     if (response.data) {
+      //       // const binaryData = [];
+      //       // binaryData.push(response.data);
+      //       // const iframeObj = URL.createObjectURL(new Blob(binaryData, { type: 'application/text' }));
+      //       // const dataUrl = URL.createObjectURL(this.response);
+      //       const iframe = document.getElementById(`${component.applicationId}-${component.id}`).contentDocument;
+      //       iframe.write(response.data);
+      //       // iframe.src = `data:text/html;charset=utf-8,${response.data}`;
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+    },
+    render(h) {
+      return h('iframe', {
+        class: 'kcv-browser',
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+          width: component.attributes.width || '100%',
+          height: component.attributes.height || '100%',
+          frameBorder: '0',
+          src: `${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${component.content}`,
+        },
+        style: {
+          ...DEFAULT_STYLE_FUNCTION(component),
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+      });
+    },
+  }),
+
   UNKNOWN: component => Vue.component('KAppUnknown', {
     render(h) {
       return h('div', {
@@ -943,6 +989,7 @@ export function createComponent(node, h, options = {}) {
       break;
     case APPS_COMPONENTS.TREE:
       component = COMPONENTS.TREE(node);
+      // component = COMPONENTS.BROWSER(node);
       break;
     case APPS_COMPONENTS.GROUP:
       component = COMPONENTS.GROUP(node);
@@ -958,6 +1005,9 @@ export function createComponent(node, h, options = {}) {
       break;
     case APPS_COMPONENTS.COMBO:
       component = COMPONENTS.COMBO(node);
+      break;
+    case APPS_COMPONENTS.BROWSER:
+      component = COMPONENTS.BROWSER(node);
       break;
     default:
       component = COMPONENTS.UNKNOWN(node);

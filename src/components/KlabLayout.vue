@@ -69,9 +69,11 @@ import MainActionsButtons from 'components/MainActionsButtons';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
 import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
-import { getBase64Resource } from 'shared/Helpers';
+// import { getBase64Resource } from 'shared/Helpers';
+import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
+
 
 const { lighten } = colors;
 const { width, height } = dom;
@@ -165,18 +167,19 @@ export default {
   methods: {
     setLogoImage() {
       if (this.layout && this.layout.logo) {
-        getBase64Resource(this.layout.projectId, this.layout.logo)
-          .then((logo) => {
-            if (logo !== null) {
-              this.logoImage = logo;
-            } else {
-              this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-          });
+        this.logoImage = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`;
+        // getBase64Resource(this.layout.projectId, this.layout.logo)
+        //   .then((logo) => {
+        //     if (logo !== null) {
+        //       this.logoImage = logo;
+        //     } else {
+        //       this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //     this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+        //   });
       } else {
         this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
       }

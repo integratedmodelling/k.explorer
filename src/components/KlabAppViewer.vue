@@ -357,4 +357,6 @@ export default {
     text-shadow: -1px -1px 0px var(--app-main-color); /* 50% black coming from the bottom */
   .kcv-error-tooltip
     background-color var(--app-negative-color)
+  .kcv-browser
+    border-radius 8px
 </style>
