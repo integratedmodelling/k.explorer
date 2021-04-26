@@ -17,7 +17,7 @@
           <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
         </div>
         <div class="kapp-title-container">
-          <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
+          <div class="kapp-title" v-if="layout.label">{{ layout.label }}<span class="kapp-version" v-if="layout.versionString">{{ layout.versionString }}</span></div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
         <div class="kapp-actions-container row items-end">
@@ -381,6 +381,16 @@ export default {
         font-weight 500
         font-size var(--app-title-size)
         margin-bottom 6px
+      .kapp-version
+        display inline-block
+        font-weight 300
+        font-size var(--app-subtitle-size)
+        margin-left 16px
+        position relative
+        bottom 3px
+        padding 0px 4px
+        opacity .5
+        border 1px solid var(--app-main-color)
       .kapp-subtitle
         height var(--app-subtitle-size)
         line-height var(--app-subtitle-size)
