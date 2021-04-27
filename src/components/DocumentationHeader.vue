@@ -10,7 +10,7 @@
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.TABLES" class="klab-tab" icon="mdi-table" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.TABLES) !== -1"></q-tab>
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.FIGURES" class="klab-tab" icon="mdi-image" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.FIGURES) !== -1"></q-tab>
         <q-tab slot="title" :name="DOCUMENTATION_VIEWS.RESOURCES" class="klab-tab" icon="mdi-database-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.RESOURCES) !== -1"></q-tab>
-        <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.MODELS) !== -1"></q-tab>
+        <!-- <q-tab slot="title" :name="DOCUMENTATION_VIEWS.MODELS" class="klab-tab" icon="mdi-graph-outline" :alert="reloadViews.indexOf(DOCUMENTATION_VIEWS.MODELS) !== -1"></q-tab> -->
       </q-tabs>
     </div>
     <div class="dh-actions justify-end">
@@ -108,7 +108,7 @@ export default {
       this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
     },
     forceReload() {
-      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
+      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, { force: true });
     },
   },
 };

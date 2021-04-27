@@ -842,6 +842,10 @@ export const APPS_COMPONENTS = {
   NOTIFICATION: 'Notification',
   INPUT_GROUP: 'InputGroup',
   SEPARATOR: 'Separator',
+  MODAL_WINDOW: 'ModalWindow',
+  WINDOW: 'Window',
+  BROWSER: 'Browser',
+  IMAGE: 'Image',
 };
 
 export const APPS_OPERATION = {
@@ -849,6 +853,7 @@ export const APPS_OPERATION = {
   ENABLE: 'Enable',
   HIDE: 'Hide',
   UPDATE: 'Update',
+  MENU_ACTION: 'MenuAction',
 };
 
 export const APPS_DEFAULT_VALUES = {

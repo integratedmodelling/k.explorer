@@ -50,6 +50,7 @@ export default {
     state.topLayer = null;
     state.reloadViews.splice(0, state.reloadViews.length);
     state.documentationSelected = null;
+    state.modalWindow = null;
   },
 
   /**
@@ -384,6 +385,33 @@ export default {
     */
   },
 
+  /*
+  ADD_MODAL_WINDOW: (state, modal) => {
+    const m = state.modalWindows.find(mw => mw.id === modal.id);
+    if (m) {
+      console.warn(`Modal with id ${modal.id} exists`);
+      m.open = true;
+    } else {
+      state.modalWindows.push({
+        ...modal,
+        open: true,
+      });
+    }
+  },
+   */
+  SET_MODAL_WINDOW: (state, modal) => {
+    state.modalWindow = modal;
+  },
+  /*
+  REMOVE_MODAL_WINDOW: (state, id) => {
+    const idx = state.modalWindows.find(mw => mw.id === id);
+    if (idx) {
+      state.modalWindows.splice(idx, 1);
+    } else {
+      console.warn(`No modal with id ${id}`);
+    }
+  },
+  */
   SET_WINDOW_SIDE: (state, side) => {
     state.windowSide = side;
   },
@@ -396,13 +424,13 @@ export default {
       });
       return;
     }
-    const existingComponent = state.layout && findInLayout(state.layout, component.id);
+    const existingComponent = state.layout && (findInLayout(state.layout, component.id) || (state.modalWindow && findInLayout(state.modalWindow, component.id)));
     if (existingComponent) {
       console.log('Updating component: ', JSON.stringify(existingComponent, null, 2));
       Object.assign(existingComponent, component);
       console.log('Updated component: ', JSON.stringify(existingComponent, null, 2));
     } else {
-      const parent = findComponent(state.layout, component.parentId);
+      const parent = findComponent(state.layout, component.parentId) || (state.modalWindow && findComponent(state.modalWindow, component.id));
       if (parent) {
         parent.children.push(component);
         console.warn('Update parent: ', parent);
@@ -442,13 +470,8 @@ export default {
       console.warn('Action component is null');
       return;
     }
-    if (state.layout) {
-      const component = findInLayout(state.layout, action.component.id, (n, needle) => {
-        if (n.id === needle) {
-          return n;
-        }
-        return null;
-      });
+    if (state.layout || state.modalWindow) {
+      const component = findInLayout(state.layout, action.component.id) || (state.modalWindow !== null && findInLayout(state.modalWindow, action.component.id));
       if (component) {
         Object.assign(component, action.component);
       }

@@ -1,10 +1,10 @@
 <template>
-  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`">
+  <q-layout view="hhh lpr fFf" :class="{ 'kapp-main':  isRootLayout}" class="kapp-layout-container" :id="`kapp-${idSuffix}`" :style="modalDimensions">
     <q-layout-header
       :class="{ 'kapp-main':  isRootLayout }"
       class="kapp-header-container kapp-container print-hide"
       :id="`kapp-${idSuffix}-header`"
-      v-if="hasHeader"
+      v-if="!isModal && hasHeader"
       >
       <klab-app-viewer
         class="kapp-header"
@@ -12,16 +12,19 @@
         :component="layout.header"
         direction="horizontal"
       ></klab-app-viewer>
-      <div class="kapp-header" v-else>
+      <div class="kapp-header row" v-else>
         <div class="kapp-logo-container">
           <img ref="kapp-logo" class="kapp-logo" :id="`kapp-${idSuffix}-logo`" :src="logoImage"/>
         </div>
         <div class="kapp-title-container">
-          <div class="kapp-title" v-if="layout.label">{{ layout.label }}</div>
+          <div class="kapp-title" v-if="layout.label">{{ layout.label }}<span class="kapp-version" v-if="layout.versionString">{{ layout.versionString }}</span></div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
-        <div class="kapp-actions-container row items-end">
-          <main-actions-buttons :is-header="true" class="col justify-end self-end"></main-actions-buttons>
+        <div class="kapp-header-menu-container" v-if="layout.menu && layout.menu.length > 0">
+          <div class="kapp-header-menu-item klab-link" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id)">{{ item.text }}</div>
+        </div>
+        <div class="kapp-actions-container row items-end justify-end">
+          <main-actions-buttons :is-header="true" class="col items-end"></main-actions-buttons>
         </div>
       </div>
     </q-layout-header>
@@ -64,9 +67,11 @@ import MainActionsButtons from 'components/MainActionsButtons';
 import { CUSTOM_EVENTS, DEFAULT_STYLES, APPS_DEFAULT_VALUES, WEB_CONSTANTS } from 'shared/Constants';
 import * as colors from 'shared/colors';
 import { getColorObject } from 'shared/Utils';
-import { getBase64Resource } from 'shared/Helpers';
+// import { getBase64Resource } from 'shared/Helpers';
+import { URLS } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
+
 
 const { lighten } = colors;
 const { width, height } = dom;
@@ -82,6 +87,18 @@ export default {
     layout: {
       type: Object,
       default: null,
+    },
+    isModal: {
+      type: Boolean,
+      default: false,
+    },
+    modalWidth: {
+      type: String,
+      default: '60vw',
+    },
+    modalHeight: {
+      type: String,
+      default: '60vh',
     },
   },
   data() {
@@ -108,7 +125,7 @@ export default {
       'hasHeader',
     ]),
     isRootLayout() {
-      return this.layout !== null && this.layout.parentId === null;
+      return this.isModal ? false : this.layout !== null && this.layout.parentId === null;
     },
     /*
     hasHeader() {
@@ -138,22 +155,29 @@ export default {
       }
       return 'default';
     },
+    modalDimensions() {
+      if (this.isModal) {
+        return { width: this.modalWidth, height: this.modalHeight, 'min-height': this.modalHeight };
+      }
+      return {};
+    },
   },
   methods: {
     setLogoImage() {
       if (this.layout && this.layout.logo) {
-        getBase64Resource(this.layout.projectId, this.layout.logo)
-          .then((logo) => {
-            if (logo !== null) {
-              this.logoImage = logo;
-            } else {
-              this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-          });
+        this.logoImage = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`;
+        // getBase64Resource(this.layout.projectId, this.layout.logo)
+        //   .then((logo) => {
+        //     if (logo !== null) {
+        //       this.logoImage = logo;
+        //     } else {
+        //       this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //     this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+        //   });
       } else {
         this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
       }
@@ -275,6 +299,17 @@ export default {
         console.error(error);
       });
     },
+    clickOnMenu(id) {
+      if (this.layout) {
+        const { applicationId, identity } = this.layout;
+        this.sendStompMessage(MESSAGES_BUILDERS.MENU_ACTION({
+          // ...EMPTY_VIEWACTION_MESSAGE,
+          identity,
+          applicationId,
+          menuId: id,
+        }, this.$store.state.data.session).body);
+      }
+    },
   },
   watch: {
     layout(newLayout, oldLayout) {
@@ -342,6 +377,7 @@ export default {
     padding 0
     margin 0
     display flex
+    flex-wrap nowrap
     flex-direction row
     height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
     min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
@@ -363,11 +399,29 @@ export default {
         font-weight 500
         font-size var(--app-title-size)
         margin-bottom 6px
+      .kapp-version
+        display inline-block
+        font-weight 300
+        font-size var(--app-subtitle-size)
+        margin-left 16px
+        position relative
+        bottom 3px
+        padding 0px 4px
+        opacity .5
+        border 1px solid var(--app-main-color)
       .kapp-subtitle
         height var(--app-subtitle-size)
         line-height var(--app-subtitle-size)
         font-size var(--app-subtitle-size)
         font-weight 300
+    .kapp-header-menu-container
+      position absolute
+      right 0
+      padding 10px 16px
+      .kapp-header-menu-item
+        margin 0 0 0 16px
+        color var(--app-title-color)
+        cursor pointer
     .kapp-actions-container
       .klab-main-actions
         margin 0 1px 0 0

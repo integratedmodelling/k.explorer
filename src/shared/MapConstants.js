@@ -333,7 +333,7 @@ export const BASE_LAYERS = {
     // Layers.GOOGLE_HYBRID,
     // Layers.GOOGLE_TERRAIN,
     Layers.MAPBOX_MINIMO,
-    Layers.ARCGIS_LAYER,
+    // Layers.ARCGIS_LAYER,
     Layers.OSM_LAYER,
     // Layers.MAPBOX_CALI_TERRAIN,
     // Layers.MAPBOX_GOT, // Game of throne joke

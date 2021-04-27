@@ -652,6 +652,9 @@ export default {
   loadDocumentation: ({ dispatch, getters, rootGetters }, documentationView = null) => new Promise((resolve, reject) => {
     if (documentationView === null) {
       documentationView = rootGetters['view/documentationView'];
+      if (documentationView === null) {
+        console.warn('No view selected');
+      }
     }
     axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}documentation/${documentationView}/${getters.contextId}`, {})
       .then(({ data }) => {
@@ -687,6 +690,9 @@ export default {
           label = item.title;
           break;
         case DOCUMENTATION_TYPES.MODEL:
+          label = item.id;
+          break;
+        case DOCUMENTATION_TYPES.REFERENCE:
           label = item.id;
           break;
         default:

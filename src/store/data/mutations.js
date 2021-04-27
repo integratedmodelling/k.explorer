@@ -1,6 +1,6 @@
 import { /* getNodeFromObservation, */findNodeById, WKTInstance } from 'shared/Helpers';
 import { eventBus } from 'plugins/initApp';
-import { SCALE_TYPE, SCALE_VALUES, CUSTOM_EVENTS, WEB_CONSTANTS } from 'shared/Constants';
+import { SCALE_TYPE, SCALE_VALUES, CUSTOM_EVENTS, WEB_CONSTANTS, DOCUMENTATION_VIEWS } from 'shared/Constants';
 import { MAP_CONSTANTS } from 'shared/MapConstants';
 // import { DATAFLOW_STATUS } from 'shared/Constants';
 
@@ -51,6 +51,7 @@ export default {
       dv.tree.splice(0, dv.tree.length);
     });
     state.documentationContent.clear();
+    state.documentationView = DOCUMENTATION_VIEWS.REPORT;
     if (context === null) {
       state.contextsHistory = [];
     } else if (typeof context.restored === 'undefined') {

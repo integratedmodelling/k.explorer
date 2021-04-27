@@ -142,7 +142,8 @@
 import { axiosInstance } from 'plugins/axios';
 import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { getBase64Resource } from 'shared/Helpers';
+// import { getBase64Resource } from 'shared/Helpers';
+import { URLS } from 'shared/MessagesConstants';
 import { APPS_DEFAULT_VALUES, TERMINAL_TYPES } from 'shared/Constants';
 
 export default {
@@ -201,20 +202,22 @@ export default {
         const apps = this.sessionReference.publicApps.filter(app => app.platform === 'WEB' || app.platform === 'ANY');
         apps.forEach((app) => {
           if (app.logo) {
-            getBase64Resource(app.projectId, app.logo)
-              .then((logo) => {
-                if (logo !== null) {
-                  app.logoSrc = logo;
-                } else {
-                  app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-                }
-                this.appsList.push(app);
-              })
-              .catch((error) => {
-                console.error(error);
-                app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-                this.appsList.push(app);
-              });
+            app.logoSrc = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${app.projectId}/${app.logo.replace('/', ':')}`;
+            this.appsList.push(app);
+            // getBase64Resource(app.projectId, app.logo)
+            //   .then((logo) => {
+            //     if (logo !== null) {
+            //       app.logoSrc = logo;
+            //     } else {
+            //       app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+            //     }
+            //     this.appsList.push(app);
+            //   })
+            //   .catch((error) => {
+            //     console.error(error);
+            //     app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+            //     this.appsList.push(app);
+            //   });
           } else {
             app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
             this.appsList.push(app);

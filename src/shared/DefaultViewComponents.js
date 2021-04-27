@@ -2,9 +2,11 @@ import Vue from 'vue';
 import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip, QAutocomplete } from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from './MessageBuilders';
-import { MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from './Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES,
+  MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from 'shared/Constants';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
+// import { URLS } from 'shared/MessagesConstants';
+// import { axiosInstance } from '../plugins/axios';
 
 
 export const COMPONENTS = {
@@ -682,15 +684,43 @@ export const COMPONENTS = {
   }),
   PUSH_BUTTON: component => Vue.component('KAppPushButton', {
     data() {
-      return {};
+      return {
+        state: null,
+      };
+    },
+    watch: {
+      state() {
+        if (component.attributes.timeout) {
+          setTimeout(() => {
+            delete component.attributes.error;
+            delete component.attributes.waiting;
+            delete component.attributes.done;
+            this.state = null;
+          }, component.attributes.timeout);
+        }
+      },
     },
     render(h) {
       const self = this;
       const round = component.attributes.iconname && !component.name;
+      this.state = component.attributes.waiting ? 'waiting' : component.attributes.computing ? 'computing'
+        : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
+      const iconColor = component.attributes.waiting ? 'app-background-color' : component.attributes.computing ? 'app-alt-color'
+        : component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-background-color';
       return h('div', {}, [
         h(QBtn, {
-          class: [round ? 'kcv-roundbutton' : 'kcv-pushbutton', 'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : ''],
-          style: DEFAULT_STYLE_FUNCTION(component),
+          class: [
+            round ? 'kcv-roundbutton' : 'kcv-pushbutton',
+            'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : '',
+          ],
+          style: {
+            ...DEFAULT_STYLE_FUNCTION(component),
+            ...((component.attributes.timeout && {
+              '--button-icon-color': 'app-background-color',
+              '--flash-color': component.attributes.error ? 'var(--app-negative-color)' : component.attributes.done ? 'var(--app-positive-color)' : 'var(--app-main-color)',
+              animation: `flash-button ${component.attributes.timeout}ms`,
+            }) || { '--button-icon-color': `var(--${iconColor})` }),
+          },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
@@ -700,7 +730,11 @@ export const COMPONENTS = {
             ...(round && { round: true, dense: true, flat: true }),
             noCaps: true,
             disable: component.attributes.disabled === 'true',
-            ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
+            ...((this.state === 'error' && { icon: 'mdi-alert-circle' })
+               || (this.state === 'done' && { icon: 'mdi-check-circle' })
+               || (component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` })),
+            // ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
+            ...(this.state === 'waiting' && { loading: true }),
           },
           on: {
             click: () => {
@@ -881,6 +915,51 @@ export const COMPONENTS = {
     },
   }),
 
+  BROWSER: component => Vue.component('KBrowswer', {
+    mounted() {
+      // axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${component.content}`, {
+      // axiosInstance.get('http://localhost:8283/modeler/engine/project/resource/get/un.seea.aries/static/en/about.html', {
+      // responseType: 'blob',
+      // 'Content-Type': 'application/text',
+      // })
+      //   .then((response) => {
+      //     if (response.data) {
+      //       // const binaryData = [];
+      //       // binaryData.push(response.data);
+      //       // const iframeObj = URL.createObjectURL(new Blob(binaryData, { type: 'application/text' }));
+      //       // const dataUrl = URL.createObjectURL(this.response);
+      //       const iframe = document.getElementById(`${component.applicationId}-${component.id}`).contentDocument;
+      //       iframe.write(response.data);
+      //       // iframe.src = `data:text/html;charset=utf-8,${response.data}`;
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+    },
+    render(h) {
+      const src = component.content.startsWith('http') ? component.content : `${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${component.content}`;
+      return h('iframe', {
+        class: 'kcv-browser',
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+          width: component.attributes.width || '100%',
+          height: component.attributes.height || '100%',
+          frameBorder: '0',
+          src,
+        },
+        style: {
+          ...DEFAULT_STYLE_FUNCTION(component),
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+      });
+    },
+  }),
+
   UNKNOWN: component => Vue.component('KAppUnknown', {
     render(h) {
       return h('div', {
@@ -943,6 +1022,7 @@ export function createComponent(node, h, options = {}) {
       break;
     case APPS_COMPONENTS.TREE:
       component = COMPONENTS.TREE(node);
+      // component = COMPONENTS.BROWSER(node);
       break;
     case APPS_COMPONENTS.GROUP:
       component = COMPONENTS.GROUP(node);
@@ -958,6 +1038,9 @@ export function createComponent(node, h, options = {}) {
       break;
     case APPS_COMPONENTS.COMBO:
       component = COMPONENTS.COMBO(node);
+      break;
+    case APPS_COMPONENTS.BROWSER:
+      component = COMPONENTS.BROWSER(node);
       break;
     default:
       component = COMPONENTS.UNKNOWN(node);

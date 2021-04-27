@@ -316,6 +316,22 @@ export const MESSAGES_BUILDERS = {
     session,
   ),
 
+  MENU_ACTION: ({
+    identity,
+    applicationId,
+    menuId,
+  }, session) => buildMessage(
+    OUT.CLASS_USERINTERFACE,
+    OUT.TYPE_VIEWACTION,
+    OUT.PAYLOAD_CLASS_MENUACTION,
+    {
+      identity,
+      applicationId,
+      menuId,
+    },
+    session,
+  ),
+
   RUN_APPLICATION: ({ applicationId, test = false, stop = false }, session) => buildMessage(
     OUT.CLASS_RUN,
     OUT.TYPE_RUNAPP,

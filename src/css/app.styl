@@ -391,3 +391,34 @@ body
     .klab-modal-content
       position relative
       background-color white
+.klab-online-link
+  color $light-blue-9
+  text-decoration underline
+  cursor pointer
+  &:visited
+    color $cyan-9
+.klab-link
+  display inline-block
+  text-decoration none
+  color $light-blue-9
+  &:visited
+    color $cyan-9
+  &::after
+    content ''
+    display block
+    width 0
+    border-bottom-width 1px
+    border-bottom-style solid
+    transition width .3s
+  &:not(.disabled):hover::after
+    width: 100%;
+  &.disabled
+    cursor default !important
+  i
+    display inline-block
+    margin-right 2px
+  img
+    width 14px
+    display inline-block
+    margin-right 4px
+    vertical-align text-bottom

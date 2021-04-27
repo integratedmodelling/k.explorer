@@ -334,10 +334,11 @@ export default {
     color var(--app-main-color)
     min-height unset
     padding var(--app-small-mp) var(--app-large-mp)
-
   .kcv-pushbutton
     font-size var(--app-font-size)
     margin 0 var(--app-small-mp)
+    .q-icon
+      color var(--button-icon-color)
   .kcv-reset-button
     margin 0 var(--app-smaller-mp)
   .kcv-checkbutton
@@ -357,4 +358,12 @@ export default {
     text-shadow: -1px -1px 0px var(--app-main-color); /* 50% black coming from the bottom */
   .kcv-error-tooltip
     background-color var(--app-negative-color)
+  .kcv-browser
+    border-radius 8px
+
+  @keyframes flash-button {
+    50% {
+      background-color var(--flash-color)
+    }
+  }
 </style>

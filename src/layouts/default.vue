@@ -3,6 +3,7 @@
     <template  v-if="!isApp || layout !== null">
       <klab-notifications></klab-notifications>
       <klab-layout :layout="layout"></klab-layout>
+      <klab-modal-window v-if="modalWindow !== null" :modal="modalWindow"></klab-modal-window>
       <app-dialogs></app-dialogs>
       <connection-status class="print-hide"></connection-status>
       <klab-settings class="print-hide"></klab-settings>
@@ -38,6 +39,7 @@ import KlabSettings from 'components/KlabSettings';
 import KlabTerminal from 'components/KlabTerminal';
 import AppDialogs from 'components/AppDialogsViewer';
 import KlabLayout from 'components/KlabLayout.vue';
+import KlabModalWindow from 'components/KlabModalWindow';
 import KlabPresentation from 'components/KlabPresentation';
 import KlabNotifications from 'components/KlabNotifications';
 // import KnowledgeViewViewer from 'components/KlabKnowledgeViewViewer';
@@ -47,6 +49,7 @@ export default {
   name: 'LayoutDefault',
   components: {
     KlabLayout,
+    KlabModalWindow,
     ConnectionStatus,
     KlabSettings,
     KlabTerminal,
@@ -68,6 +71,7 @@ export default {
       'layout',
       'isApp',
       'klabApp',
+      'modalWindow',
     ]),
     modal: {
       set() {},

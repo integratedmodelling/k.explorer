@@ -345,8 +345,9 @@ export const getAxiosContent = (uid, url, parameters, callback, errorCallback = 
  * @param projectId the project id
  * @param resourceName the resource url using
  */
-export const getBase64Resource = (projectId, resourceName) => new Promise((resolve, reject) => {
-  axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${projectId}/${resourceName.replace('/', ':')}`, {
+export const getBase64Resource = ({ url, projectId, resourceName }) => new Promise((resolve, reject) => {
+  const resUrl = url || `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${projectId}/${resourceName.replace('/', ':')}`;
+  axiosInstance.get(resUrl, {
     responseType: 'arraybuffer',
   })
     .then((response) => {

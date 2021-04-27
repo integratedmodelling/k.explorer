@@ -126,6 +126,7 @@ export default {
    * Layout from k.LAB
    */
   layout: state => state.layout,
+  modalWindow: state => state.modalWindow,
   hasHeader: state => (state.layout && (state.layout.header || state.layout.logo || state.layout.label || state.layout.description)),
   windowSide: state => state.windowSide,
   isApp: state => state.klabApp !== null,
