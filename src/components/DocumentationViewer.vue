@@ -350,20 +350,21 @@ export default {
     font-weight 400
   .dv-resource-container
     border 1px solid $main-control-main-color
-    border-radius 8px
+    border-radius 10px !important
     margin 16px 0
     &.dv-selected
       border-width 4px !important
     .dv-resource-title
-      font-size larger
+      font-size var(--app-title-size)
       font-weight 300
-      margin 8px 0 0
+      margin 16px 0 8px
 
     .dv-resource-originator
-      margin-bottom 8px
+      margin-bottom 16px
+      font-size var(--app-subtitle-size)
+      font-weight 300
     .dv-resource-description
       font-size smaller
-      padding-right 16px
 .kd-is-app
   background-image none !important
   .kd-container
@@ -390,7 +391,7 @@ export default {
     .dv-model-container
       color var(--app-main-color)
     .dv-resource-container
-      border 1px solid var(--app-main-color)
+      border-color var(--app-main-color)
     .dv-model-container
       font-family monospace
       .dv-selected

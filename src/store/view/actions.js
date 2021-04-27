@@ -426,14 +426,14 @@ export default {
 
   viewSetting: ({ getters, rootGetters, dispatch }, viewSetting) => {
     if (viewSetting) {
+      const launchEvent = () => {
+        eventBus.$emit(CUSTOM_EVENTS.SELECT_ELEMENT, {
+          id: viewSetting.targetId,
+          selected: viewSetting.operation === VIEW_SETTING.SHOW,
+        });
+      };
       switch (viewSetting.target) {
         case VIEW_SETTING.OBSERVATION: {
-          const launchEvent = () => {
-            eventBus.$emit(CUSTOM_EVENTS.SELECT_ELEMENT, {
-              id: viewSetting.targetId,
-              selected: viewSetting.operation === VIEW_SETTING.SHOW,
-            });
-          };
           if (getters.mainViewerName !== VIEWERS.DATA_VIEWER.name && viewSetting.operation === VIEW_SETTING.SHOW) {
             dispatch('setMainViewer', VIEWERS.DATA_VIEWER).then(() => {
               launchEvent();
@@ -445,7 +445,8 @@ export default {
           break;
         }
         case VIEW_SETTING.VIEW:
-          dispatch('view/setDocumentation', { id: viewSetting.targetId }, { root: true });
+          // dispatch('view/setDocumentation', { id: viewSetting.targetId }, { root: true });
+          launchEvent();
           break;
         case VIEW_SETTING.TREE:
           // check if we need to change the attribute
