@@ -513,7 +513,8 @@ export default {
 
   changeInDocumentation: ({ commit }, change) => {
     if (change.viewsAffected) {
-      const views = change.viewsAffected.filter(v => v !== DOCUMENTATION_VIEWS.REFERENCES);
+      const views = change.viewsAffected.filter(v => v !== DOCUMENTATION_VIEWS.REFERENCES && v !== DOCUMENTATION_VIEWS.MODELS);
+      // TODO: removed models
       if (views.length > 0) {
         commit('SET_RELOAD_VIEWS', views);
       }

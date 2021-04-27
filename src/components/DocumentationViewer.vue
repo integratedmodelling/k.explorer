@@ -20,8 +20,18 @@
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
             </div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.RESOURCE" class="dv-resource-container">
-              <div :id="doc.id" class="dv-resource-name">{{ doc.id }}</div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.RESOURCE" class="dv-resource-container" :id="doc.id" >
+              <div class="dv-resource-title">{{ doc.title }}</div>
+              <div class="dv-resource-originator">{{ doc.resource.originatorDescription }}</div>
+              <div class="dv-resource-content row justify-around">
+                <div class="dv-resource-description col self-start" v-html="doc.resource.resourceDescription"></div>
+                <div class="dv-resource-map col self-start text-center">
+                  <img src="" :id="`resimg-${doc.id}`"  wdith=360 height=180 />
+                </div>
+              </div>
+              <div class="dv-resource-urls">
+                <a :href="url" v-for="(url, index) in doc.resource.urls" :key="index" class="klab-link" target="_blank">{{ url }}</a>
+              </div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-other-container">
               <div class="dv-other-content">{{ JSON.stringify(doc, null, 2) }}</div>
@@ -38,8 +48,9 @@ import Tabulator from 'tabulator-tables';
 import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 import { mapGetters, mapActions } from 'vuex';
-import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS, DOCUMENTATION_TYPES_VIEWS } from 'shared/Constants';
+import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS, DOCUMENTATION_TYPES_VIEWS, APPS_DEFAULT_VALUES } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
+import { axiosInstance } from 'plugins/axios';
 
 export default {
   name: 'DocumentationViewer',
@@ -51,268 +62,6 @@ export default {
       DOCUMENTATION_TYPES,
       links: new Map(),
       tableCounter: 0,
-      /*
-      columns: [{
-        title: '',
-        id: 'rowtitles_1',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'TEXT',
-        frozen: true,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Cropland',
-        id: 'c2',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Urban industrial ecosystem',
-        id: 'c3',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Coastal saltmarsh reedbed',
-        id: 'c6',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Episodic arid floodplain',
-        id: 'c9',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Boreal cool temperate palustrine wetland',
-        id: 'c11',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Warm temperate tropical marsh',
-        id: 'c12',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Polar alpine rocky outcrop',
-        id: 'c15',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Alpine grassland shrubland',
-        id: 'c16',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Temperate woodland',
-        id: 'c19',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Temperate subhumid grassland',
-        id: 'c20',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Aquatic',
-        id: 'c22',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Rocky pavement lavaflow scree',
-        id: 'c27',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Cool temperate heathland',
-        id: 'c28',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Seasonally dry temperate heath shrubland',
-        id: 'c29',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Boreal temperate montane forest woodland',
-        id: 'c31',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }, {
-        title: 'Temperate forest',
-        id: 'c32',
-        headerVertical: false,
-        sorter: null,
-        hozAlign: null,
-        formatter: null,
-        type: 'NUMBER',
-        frozen: false,
-        caption: null,
-        numberformat: null,
-        columns: [],
-      }],
-      rows: [{
-        c20: '2527.4165229785126',
-        c31: '2.9716831545897433',
-        c11: '279.3382165314367',
-        c22: '6744.23491934154',
-        c32: '124315.90724741382',
-        c12: '4.4575247318846145',
-        c15: '20.801782082128202',
-        c28: '16428.950320145992',
-        c16: '243.6780186763596',
-        c27: '564.6197993720531',
-        c19: '3940.451862985725',
-        c29: '2.9716831545897433',
-        rowtitles_1: 'Extent at start of 2010 (km²)',
-        c2: '289314.15688079834',
-        c3: '23703.630682578372',
-        c6: '1450.1813794398',
-        c9: '1181.244053949427',
-      }, {
-        c20: '9689.172925539522',
-        c31: '25.259306814012813',
-        c11: '62.405346246384575',
-        c22: '5301.4827477879935',
-        c32: '127119.6903037611',
-        c12: '',
-        c15: '34.17435627778204',
-        c28: '22988.940883899864',
-        c16: '200.58861293480817',
-        c27: '150.06999930678234',
-        c19: '1303.083063287607',
-        c29: '',
-        rowtitles_1: 'Extent at start of 2019 (km²)',
-        c2: '284913.0941288637',
-        c3: '16712.746061409183',
-        c6: '1531.9026661910182',
-        c9: '692.4021750194125',
-      }, {
-        c20: '7161.75640256101',
-        c31: '22.28762365942307',
-        c11: '-216.9328702850521',
-        c22: '-1442.7521715535468',
-        c32: '2803.7830563472817',
-        c12: '-4.4575247318846145',
-        c15: '13.372574195653836',
-        c28: '6559.990563753872',
-        c16: '-43.089405741551445',
-        c27: '-414.54980006527074',
-        c19: '-2637.368799698118',
-        c29: '-2.9716831545897433',
-        rowtitles_1: 'Net change',
-        c2: '-4401.062751934631',
-        c3: '-6990.884621169189',
-        c6: '81.72128675121826',
-        c9: '-488.84187893001456',
-      }],
-       */
     };
   },
   computed: {
@@ -422,6 +171,16 @@ export default {
       }
       return text;
     },
+    getImage(id, url) {
+      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, { responseType: 'arraybuffer' })
+        .then(({ data: image }) => {
+          if (image) {
+            document.getElementById(`resimg-${id}`).src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
+          } else {
+            document.getElementById(`resimg-${id}`).src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+          }
+        });
+    },
   },
   watch: {
     tree() {
@@ -444,7 +203,8 @@ export default {
             // this.content += content.bodyText;
             // console.warn(content);
             break;
-          case DOCUMENTATION_TYPES.CITATION:
+          case DOCUMENTATION_TYPES.RESOURCE:
+            this.getImage(doc.id, content.resource.spaceDescriptionUrl);
             // this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
             // console.warn(content);
             break;
@@ -584,9 +344,26 @@ export default {
         cursor default !important
   .dv-resource-container
   .dv-model-container
+    margin 8px 0
     padding 8px 16px
     color $main-control-main-color
     font-weight 400
+  .dv-resource-container
+    border 1px solid $main-control-main-color
+    border-radius 8px
+    margin 16px 0
+    &.dv-selected
+      border-width 4px !important
+    .dv-resource-title
+      font-size larger
+      font-weight 300
+      margin 8px 0 0
+
+    .dv-resource-originator
+      margin-bottom 8px
+    .dv-resource-description
+      font-size smaller
+      padding-right 16px
 .kd-is-app
   background-image none !important
   .kd-container
@@ -612,6 +389,9 @@ export default {
     .dv-resource-container
     .dv-model-container
       color var(--app-main-color)
+    .dv-resource-container
+      border 1px solid var(--app-main-color)
+    .dv-model-container
       font-family monospace
       .dv-selected
         font-size larger
