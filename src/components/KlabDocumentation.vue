@@ -67,7 +67,7 @@ export default {
       'loadDocumentation',
       'refreshDocumentation',
     ]),
-    load(view = null, force = false) {
+    load({ view = null, force = false } = {}) {
       if (view === null) {
         view = this.documentationView;
       }
@@ -92,7 +92,7 @@ export default {
     this.load();
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load(null, true));
+    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);

@@ -727,7 +727,6 @@ export const COMPONENTS = {
           props: {
             ...(component.name && { label: component.name }),
             color: component.attributes.color ? component.attributes.color : 'app-main-color',
-            'text-color': 'app-background-color',
             ...(round && { round: true, dense: true, flat: true }),
             noCaps: true,
             disable: component.attributes.disabled === 'true',

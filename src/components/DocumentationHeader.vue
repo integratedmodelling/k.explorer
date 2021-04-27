@@ -108,7 +108,7 @@ export default {
       this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
     },
     forceReload() {
-      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION);
+      this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, { force: true });
     },
   },
 };

@@ -471,7 +471,7 @@ export default {
       return;
     }
     if (state.layout || state.modalWindow) {
-      const component = findInLayout(state.layout, action.component.id) || findInLayout(state.modalWindow, action.component.id);
+      const component = findInLayout(state.layout, action.component.id) || (state.modalWindow !== null && findInLayout(state.modalWindow, action.component.id));
       if (component) {
         Object.assign(component, action.component);
       }

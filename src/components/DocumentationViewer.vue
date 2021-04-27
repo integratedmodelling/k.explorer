@@ -11,6 +11,7 @@
               <h1 :id="doc.id">{{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
+            <div class="dv-reference" :id="doc.id" v-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
               <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
@@ -36,8 +37,8 @@
 import Tabulator from 'tabulator-tables';
 import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
-import { mapGetters } from 'vuex';
-import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS } from 'shared/Constants';
+import { mapGetters, mapActions } from 'vuex';
+import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS, DOCUMENTATION_TYPES_VIEWS } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
 
 export default {
@@ -48,6 +49,7 @@ export default {
       tables: [],
       rawDocumentation: [],
       DOCUMENTATION_TYPES,
+      links: new Map(),
       /*
       columns: [{
         title: '',
@@ -327,6 +329,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions('view', [
+      'setDocumentation',
+    ]),
     getFormatter(data, params) {
       let { numberFormat } = params;
       if (!numberFormat) {
@@ -364,7 +369,12 @@ export default {
       }));
     },
     selectElement(id) {
-      const el = document.getElementById(id);
+      let el;
+      if (id.startsWith('.')) {
+        el = document.querySelector(id);
+      } else {
+        el = document.getElementById(id);
+      }
       if (el) {
         // Use el.scrollIntoView() to instantly scroll to the element
         el.scrollIntoView({ behavior: 'smooth' });
@@ -386,6 +396,25 @@ export default {
         }
       }
     },
+    getLinkedText(text) {
+      if (text) {
+        const toReplace = [];
+        [...text.matchAll(/LINK\/(?<year>[^/]*)\/(?<month>[^/]*)\//g)].forEach((m) => {
+          const link = this.documentationContent.get(m[2]);
+          if (link) {
+            toReplace.push({ what: m[0], with: `<a class="klab-online-link link-${m[2]}">${link.bodyText}</a>"` });
+            this.links.set(m[2], link);
+          }
+        });
+        if (toReplace.length > 0) {
+          toReplace.forEach((tr) => {
+            text = text.replace(tr.what, tr.with);
+          });
+        }
+        return text;
+      }
+      return text;
+    },
   },
   watch: {
     tree() {
@@ -399,6 +428,9 @@ export default {
       });
       this.rawDocumentation.forEach((doc) => {
         const content = this.documentationContent.get(doc.id);
+        if (content.bodyText) {
+          content.bodyText = this.getLinkedText(content.bodyText);
+        }
         this.content.push(content);
         switch (doc.type) {
           case DOCUMENTATION_TYPES.PARAGRAPH:
@@ -455,6 +487,16 @@ export default {
   updated() {
     if (this.documentationSelected !== null) {
       this.selectElement(this.documentationSelected);
+    }
+    if (this.links.size > 0) {
+      this.links.forEach((l, k) => {
+        document.querySelectorAll(`.link-${k}`).forEach((link) => {
+          link.onclick = () => {
+            this.setDocumentation({ id: l.id, view: DOCUMENTATION_TYPES_VIEWS[l.type] });
+          };
+        });
+      });
+      this.links.clear();
     }
   },
   beforeDestroy() {
@@ -568,7 +610,9 @@ export default {
       .dv-model-space
         display inline-block
         width 2em
-
+    .dv-reference
+      margin 8px 0
+      padding 8px 0
 @keyframes blinker {
   40% {
     opacity 1
