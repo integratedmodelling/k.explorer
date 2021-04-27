@@ -684,25 +684,62 @@ export const COMPONENTS = {
   }),
   PUSH_BUTTON: component => Vue.component('KAppPushButton', {
     data() {
-      return {};
+      return {
+        state: null,
+      };
+    },
+    watch: {
+      state(newValue, oldValue) {
+        console.warn(`Changed: ${newValue}/${oldValue}`);
+        if (component.attributes.timeout) {
+          setTimeout(() => {
+            delete component.attributes.error;
+            delete component.attributes.waiting;
+            delete component.attributes.done;
+            this.state = null;
+          }, component.attributes.timeout);
+        }
+      },
+    },
+    mounted() {
+      // console.warn('Mounted');
     },
     render(h) {
       const self = this;
       const round = component.attributes.iconname && !component.name;
+      this.state = component.attributes.waiting ? 'waiting' : component.attributes.computing ? 'computing'
+        : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
+      const iconColor = component.attributes.waiting ? 'app-background-color' : component.attributes.computing ? 'app-alt-color'
+        : component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-background-color';
       return h('div', {}, [
         h(QBtn, {
-          class: [round ? 'kcv-roundbutton' : 'kcv-pushbutton', 'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : ''],
-          style: DEFAULT_STYLE_FUNCTION(component),
+          class: [
+            round ? 'kcv-roundbutton' : 'kcv-pushbutton',
+            'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : '',
+          ],
+          style: {
+            ...DEFAULT_STYLE_FUNCTION(component),
+            ...((component.attributes.timeout && {
+              '--button-icon-color': 'app-background-color',
+              '--flash-color': component.attributes.error ? 'var(--app-negative-color)' : component.attributes.done ? 'var(--app-positive-color)' : 'var(--app-main-color)',
+              animation: `flash-button ${component.attributes.timeout}ms`,
+            }) || { '--button-icon-color': `var(--${iconColor})` }),
+          },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
           },
           props: {
             ...(component.name && { label: component.name }),
             color: component.attributes.color ? component.attributes.color : 'app-main-color',
+            'text-color': 'app-background-color',
             ...(round && { round: true, dense: true, flat: true }),
             noCaps: true,
             disable: component.attributes.disabled === 'true',
-            ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
+            ...((this.state === 'error' && { icon: 'mdi-alert-circle' })
+               || (this.state === 'done' && { icon: 'mdi-check-circle' })
+               || (component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` })),
+            // ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
+            ...(this.state === 'waiting' && { loading: true }),
           },
           on: {
             click: () => {
