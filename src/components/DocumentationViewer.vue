@@ -50,6 +50,7 @@ export default {
       rawDocumentation: [],
       DOCUMENTATION_TYPES,
       links: new Map(),
+      tableCounter: 0,
       /*
       columns: [{
         title: '',
@@ -402,7 +403,13 @@ export default {
         [...text.matchAll(/LINK\/(?<year>[^/]*)\/(?<month>[^/]*)\//g)].forEach((m) => {
           const link = this.documentationContent.get(m[2]);
           if (link) {
-            toReplace.push({ what: m[0], with: `<a class="klab-online-link link-${m[2]}">${link.bodyText}</a>"` });
+            let t;
+            if (link.type === DOCUMENTATION_TYPES.REFERENCE) {
+              t = `[${link.id}]`;
+            } else if (link.type === DOCUMENTATION_TYPES.TABLE) {
+              t = `<${link.id}${++this.tableCounter}>`;
+            }
+            toReplace.push({ what: m[0], with: `<a class="klab-online-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${t}</a>` });
             this.links.set(m[2], link);
           }
         });
@@ -497,6 +504,7 @@ export default {
         });
       });
       this.links.clear();
+      this.tableCounter = 0;
     }
   },
   beforeDestroy() {
@@ -613,6 +621,8 @@ export default {
     .dv-reference
       margin 8px 0
       padding 8px 0
+      &.dv-selected
+        color var(--app-text-color)
 @keyframes blinker {
   40% {
     opacity 1
