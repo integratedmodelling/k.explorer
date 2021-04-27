@@ -689,8 +689,7 @@ export const COMPONENTS = {
       };
     },
     watch: {
-      state(newValue, oldValue) {
-        console.warn(`Changed: ${newValue}/${oldValue}`);
+      state() {
         if (component.attributes.timeout) {
           setTimeout(() => {
             delete component.attributes.error;
@@ -700,9 +699,6 @@ export const COMPONENTS = {
           }, component.attributes.timeout);
         }
       },
-    },
-    mounted() {
-      // console.warn('Mounted');
     },
     render(h) {
       const self = this;
