@@ -20,13 +20,11 @@
           <div class="kapp-title" v-if="layout.label">{{ layout.label }}<span class="kapp-version" v-if="layout.versionString">{{ layout.versionString }}</span></div>
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
-        <div class="kapp-header-right-container col self-end">
-          <div class="kapp-header-menu-container row items-end justify-end" v-if="layout.menu && layout.menu.length > 0">
-            <div class="kapp-header-menu-item klab-link" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id)">{{ item.text }}</div>
-          </div>
-          <div class="kapp-actions-container row items-end justify-end">
-            <main-actions-buttons :is-header="true"></main-actions-buttons>
-          </div>
+        <div class="kapp-header-menu-container" v-if="layout.menu && layout.menu.length > 0">
+          <div class="kapp-header-menu-item klab-link" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id)">{{ item.text }}</div>
+        </div>
+        <div class="kapp-actions-container row items-end justify-end">
+          <main-actions-buttons :is-header="true" class="col items-end"></main-actions-buttons>
         </div>
       </div>
     </q-layout-header>
@@ -379,6 +377,7 @@ export default {
     padding 0
     margin 0
     display flex
+    flex-wrap nowrap
     flex-direction row
     height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
     min-height calc(40px + var(--app-title-size) + var(--app-subtitle-size))
@@ -416,7 +415,9 @@ export default {
         font-size var(--app-subtitle-size)
         font-weight 300
     .kapp-header-menu-container
-      padding 8px 16px
+      position absolute
+      right 0
+      padding 10px 16px
       .kapp-header-menu-item
         margin 0 0 0 16px
         color var(--app-title-color)

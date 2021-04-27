@@ -53,7 +53,7 @@ export default {
       return this.modal && (`${this.modal.panels[0].attributes.width}px` || '50vw');
     },
     height() {
-      return this.modal && (`calc(${this.modal.panels[0].attributes.height}px` || '50vh');
+      return this.modal && (`${this.modal.panels[0].attributes.height}px` || '50vh');
     },
   },
   methods: {
@@ -69,6 +69,7 @@ export default {
 
 <style lang="stylus">
 .km-main-container
+  overflow hidden
   .km-title
     background-color var(--app-main-color) !important
     color var(--app-background-color)
@@ -77,15 +78,16 @@ export default {
     .km-subtitle
       font-size var(--app-modal-subtitle-size)
   .km-content
+    overflow hidden
     border-radius 8px
     border 1px solid var(--app-main-color)
-    margin 16px
+    margin 16px 16px 0 16px
     padding 8px
     background-color var(--app-background-color)
     .kcv-main-container > .kcv-group
       border none
   .km-buttons
-    padding 0 16px 16px 0
+    margin 10px 16px
     .klab-button
       font-size 16px
       background-color var(--app-main-color)

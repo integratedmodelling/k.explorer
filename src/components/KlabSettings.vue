@@ -202,7 +202,7 @@ export default {
         const apps = this.sessionReference.publicApps.filter(app => app.platform === 'WEB' || app.platform === 'ANY');
         apps.forEach((app) => {
           if (app.logo) {
-            app.logoSrc = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`;
+            app.logoSrc = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${app.projectId}/${app.logo.replace('/', ':')}`;
             this.appsList.push(app);
             // getBase64Resource(app.projectId, app.logo)
             //   .then((logo) => {

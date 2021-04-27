@@ -906,6 +906,7 @@ export const COMPONENTS = {
       //   });
     },
     render(h) {
+      const src = component.content.startsWith('http') ? component.content : `${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${component.content}`;
       return h('iframe', {
         class: 'kcv-browser',
         attrs: {
@@ -913,7 +914,7 @@ export const COMPONENTS = {
           width: component.attributes.width || '100%',
           height: component.attributes.height || '100%',
           frameBorder: '0',
-          src: `${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${component.content}`,
+          src,
         },
         style: {
           ...DEFAULT_STYLE_FUNCTION(component),
