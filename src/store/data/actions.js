@@ -696,6 +696,9 @@ export default {
         case DOCUMENTATION_TYPES.REFERENCE:
           label = item.id;
           break;
+        case DOCUMENTATION_TYPES.FIGURE:
+          ({ label } = item.figure);
+          break;
         default:
           label = item.type;
       }

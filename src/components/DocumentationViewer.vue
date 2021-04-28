@@ -16,6 +16,20 @@
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
               <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
+              <div class="dv-table-bottom text-right">
+                <q-btn class="dv-button" flat color="mc-main" icon="mdi-download" @click="tableDownload(doc.id)">
+                  <q-tooltip
+                    anchor="bottom middle"
+                    self="top middle"
+                    :offset="[0, 5]"
+                  >{{ $t('label.downloadTableAsXSLX') }}</q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container">
+              <div class="dv-figure-content">
+                <img src="" class="dv-figure-img" :id="`figimg-${documentationView}-${doc.id}`" />
+              </div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -52,7 +66,7 @@
                 <a :href="url" v-for="(url, index) in doc.resource.urls" :key="index" class="klab-link" target="_blank">{{ url }}</a>
               </div>
             </div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-other-container">
+            <div v-else class="dv-other-container">
               <div class="dv-other-content">{{ JSON.stringify(doc, null, 2) }}</div>
             </div>
           </div>
@@ -67,7 +81,8 @@ import Tabulator from 'tabulator-tables';
 import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 import { mapGetters, mapActions } from 'vuex';
-import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS, DOCUMENTATION_TYPES_VIEWS, APPS_DEFAULT_VALUES } from 'shared/Constants';
+import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS,
+  DOCUMENTATION_TYPES_VIEWS, APPS_DEFAULT_VALUES, GEOMETRY_CONSTANTS } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
 import { axiosInstance } from 'plugins/axios';
 
@@ -78,11 +93,15 @@ export default {
       content: [],
       tables: [],
       images: [],
+      cache: new Map(),
+      loadingImage: null,
+      figures: [],
       rawDocumentation: [],
       DOCUMENTATION_TYPES,
       links: new Map(),
       tableCounter: 0,
       referenceCounter: 0,
+      viewport: null,
     };
   },
   computed: {
@@ -206,6 +225,47 @@ export default {
           }
         });
     },
+    getFigure(figureId, instance, timestamp = -1) {
+      const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
+      if (image) {
+        const imageId = `${instance.observationId}/${timestamp}`;
+        if (this.cache.has(imageId)) {
+          image.src = this.cache.get(imageId);
+        } else if (imageId !== this.loadingImage) {
+          this.loadingImage = imageId;
+          axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
+            params: {
+              format: GEOMETRY_CONSTANTS.TYPE_RASTER,
+              viewport: this.viewport,
+              ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+            },
+            responseType: 'blob',
+          })
+            .then((response) => {
+              this.loadingImage = null;
+              if (response) {
+                const reader = new FileReader();
+                reader.readAsDataURL(response.data);
+                reader.onload = () => {
+                  image.src = reader.result;
+                  this.cache.set(imageId, reader.result);
+                };
+              }
+            });
+        }
+      }
+    },
+    tableDownload(id) {
+      const table = this.tables.find(t => t.id === id);
+      if (table) {
+        table.instance.download('xlsx', `${table.name}.xlsx`);
+      } else {
+        console.warn('table not found');
+      }
+    },
+    clearCache() {
+      this.cache.clear();
+    },
   },
   watch: {
     tree() {
@@ -244,6 +304,7 @@ export default {
           case DOCUMENTATION_TYPES.TABLE:
             this.tables.push({
               id: content.id,
+              name: content.bodyText.replaceAll(' ', '_').toLowerCase(),
               tabulator: {
                 clipboard: 'copy',
                 data: content.table.rows,
@@ -254,6 +315,13 @@ export default {
             });
             // });
             break;
+          case DOCUMENTATION_TYPES.FIGURE: {
+            this.figures.push({
+              id: content.id,
+              instance: content.figure,
+            });
+            break;
+          }
           default:
             // console.warn(content);
             break;
@@ -265,6 +333,9 @@ export default {
         });
         this.images.forEach((image) => {
           this.getImage(image.id, image.url);
+        });
+        this.figures.forEach((figure) => {
+          this.getFigure(figure.id, figure.instance);
         });
       });
     },
@@ -282,6 +353,8 @@ export default {
       this.selectElement(this.documentationSelected);
     }
     this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
+    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
+    this.viewport = document.body.clientWidth;
   },
   updated() {
     if (this.documentationSelected !== null) {
@@ -302,6 +375,7 @@ export default {
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
   },
 };
 </script>
@@ -356,6 +430,11 @@ export default {
       color $main-control-grey
       font-size larger
       padding-bottom 16px
+    .dv-table-bottom
+      margin 8px 0 0 0
+  .dv-figure-content
+    .dv-figure-img
+      width 100%
   .dv-citation
     color var(--app-main-color)
     a
@@ -427,6 +506,8 @@ export default {
   .klab-inline-link
     font-size var(--app-small-size)
     vertical-align super
+  .dv-button
+    padding 8px
 .kd-is-app
   background-image none !important
   .kd-container
@@ -466,11 +547,15 @@ export default {
       padding 8px 0
       &.dv-selected
         color var(--app-text-color)
+    .dv-other-container
+      display none
     .klab-link
       color var(--app-link-color)
       font-weight 500 !important
       &:visited
         color var(--app-link-visited-color)
+    .dv-button
+      color var(--app-main-color)
 
 @keyframes blinker {
   40% {

@@ -502,7 +502,9 @@ export default {
     }
   },
   REMOVE_RELOAD_VIEW: (state, view) => {
-    state.reloadViews.splice(state.reloadViews.indexOf(view), 1);
+    if (state.reloadViews.indexOf(view) !== -1) {
+      state.reloadViews.splice(state.reloadViews.indexOf(view), 1);
+    }
   },
   SET_TABLE_FONT_SIZE: (state, size) => {
     state.tableFontSize = size;

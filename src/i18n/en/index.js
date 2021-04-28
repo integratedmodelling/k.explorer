@@ -151,6 +151,7 @@ export default {
     terminalMaximize: 'Maximize terminal',
     terminalClose: 'Close terminal',
     noDocumentation: 'No elements available for this view',
+    downloadTableAsXSLX: 'Download table as .xslx',
   },
   messages: {
     connectionClosed: 'Connection closed',
