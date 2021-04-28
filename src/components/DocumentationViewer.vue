@@ -29,7 +29,9 @@
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container">
               <div class="dv-figure-content">
                 <img src="" class="dv-figure-img" :id="`figimg-${documentationView}-${doc.id}`" />
+                <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
               </div>
+
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -432,9 +434,11 @@ export default {
       padding-bottom 16px
     .dv-table-bottom
       margin 8px 0 0 0
-  .dv-figure-content
+  .dv-figure-container
     .dv-figure-img
       width 100%
+    .dv-figure-caption
+      color $main-control-main-color
   .dv-citation
     color var(--app-main-color)
     a
@@ -530,6 +534,9 @@ export default {
     .dv-table-container
       .dv-table-title
         color var(--app-main-color)
+    .dv-figure-container
+      .dv-figure-caption
+        color var(--app-text-color)
     .dv-resource-container
     .dv-model-container
       color var(--app-main-color)
