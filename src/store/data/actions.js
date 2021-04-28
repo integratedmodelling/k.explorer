@@ -677,11 +677,12 @@ export default {
   refreshDocumentation: ({ commit }, { view, documentation }) => {
     const tree = [];
     const items = [];
-    const buildTree = (node, item) => {
+    const buildTree = (node, item, l, idx) => {
       let label;
+      const levelIdx = l === null ? `${idx}.` : `${l}.${idx}.`;
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
-          label = item.title;
+          label = `${levelIdx} ${item.title}`;
           break;
         case DOCUMENTATION_TYPES.TABLE:
           label = item.bodyText;
@@ -707,12 +708,13 @@ export default {
         label,
         children: [],
       };
-      item.children.forEach((c) => {
-        buildTree(e.children, c);
+      item.children.forEach((c, i) => {
+        buildTree(e.children, c, idx, i + 1);
       });
       node.push(e);
       items.push({
         id: item.id,
+        internalIndex: idx,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,
@@ -725,8 +727,8 @@ export default {
         reference: item.reference,
       });
     };
-    documentation.forEach((doc) => {
-      buildTree(tree, doc);
+    documentation.forEach((doc, index) => {
+      buildTree(tree, doc, null, index + 1);
     });
     commit('SET_DOCUMENTATION', { view, tree });
     commit('ADD_DOCUMENTATION', items);

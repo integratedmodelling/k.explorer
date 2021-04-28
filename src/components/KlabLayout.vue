@@ -233,6 +233,7 @@ export default {
                 const multiplier = this.layout && this.layout.style === 'dark' ? -1 : 1;
                 document.documentElement.style.setProperty(`--app-rgb-${key}`, `${color.rgb.r},${color.rgb.g},${color.rgb.b}`);
                 document.documentElement.style.setProperty(`--app-highlight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -15 * multiplier));
+                document.documentElement.style.setProperty(`--app-darklight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -5 * multiplier));
                 document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -20 * multiplier));
                 document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 20 * multiplier));
               }

@@ -21,12 +21,31 @@
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.RESOURCE" class="dv-resource-container" :id="doc.id" >
-              <div class="dv-resource-title">{{ doc.title }}</div>
-              <div class="dv-resource-originator">{{ doc.resource.originatorDescription }}</div>
+              <div class="dv-resource-title-container">
+                <div class="dv-resource-title">{{ doc.title }}</div>
+                <div class="dv-resource-originator">{{ doc.resource.originatorDescription }}</div>
+                <div class="dv-resource-keywords text-right" v-if="doc.resource.keywords.length > 0">
+                  <div class="dv-resource-keyword" v-for="(keyword, index) in doc.resource.keywords" :key="index">
+                    <span class="dv-resource-keyword">{{ keyword }}</span>
+                    <span class="dv-resource-keyword-separator" v-if="index < doc.resource.keywords.length - 1">/</span>
+                  </div>
+                </div>
+              </div>
               <div class="dv-resource-content row justify-around">
                 <div class="dv-resource-description col self-start" v-html="doc.resource.resourceDescription"></div>
-                <div class="dv-resource-map col self-start text-center">
-                  <img src="" :id="`resimg-${doc.id}`"  wdith=360 height=180 />
+                <div class="dv-map-container col self-start">
+                  <div class="dv-resource-map-wrapper row justify-center">
+                    <div class="dv-resource-map">
+                      <img src="" :id="`resimg-${doc.id}`" wdith=360 height=180 />
+                      <div class="dv-resource-authors" v-if="doc.resource.authors.length > 0">
+                        <div class="dv-resource-author-wrapper" v-for="(author, index) in doc.resource.authors" :key="index">
+                          <span class="dv-resource-author">{{ author }}</span>
+                          <span class="dv-resource-author-separator" v-if="index < doc.resource.authors.length - 1">,</span>
+                        </div>
+                      </div>
+                      <div class="dv-resource-references" v-if="doc.resource.bibliographicReference">{{ doc.resource.bibliographicReference }}</div>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="dv-resource-urls">
@@ -58,10 +77,12 @@ export default {
     return {
       content: [],
       tables: [],
+      images: [],
       rawDocumentation: [],
       DOCUMENTATION_TYPES,
       links: new Map(),
       tableCounter: 0,
+      referenceCounter: 0,
     };
   },
   computed: {
@@ -158,7 +179,8 @@ export default {
             } else if (link.type === DOCUMENTATION_TYPES.TABLE) {
               t = `<${link.id}${++this.tableCounter}>`;
             }
-            toReplace.push({ what: m[0], with: `<a class="klab-online-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${t}</a>` });
+            link.internalIndex = ++this.referenceCounter;
+            toReplace.push({ what: m[0], with: `<a class="klab-inline-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${link.internalIndex}</a>` });
             this.links.set(m[2], link);
           }
         });
@@ -174,10 +196,13 @@ export default {
     getImage(id, url) {
       axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, { responseType: 'arraybuffer' })
         .then(({ data: image }) => {
-          if (image) {
-            document.getElementById(`resimg-${id}`).src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
-          } else {
-            document.getElementById(`resimg-${id}`).src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+          const docImage = document.getElementById(`resimg-${id}`);
+          if (docImage) {
+            if (image) {
+              docImage.src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
+            } else {
+              docImage.src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+            }
           }
         });
     },
@@ -187,6 +212,7 @@ export default {
       this.rawDocumentation.splice(0, this.rawDocumentation.length);
       this.content.splice(0, this.content.length);
       this.tables.splice(0, this.tables.length);
+      this.images.splice(0, this.images.length);
       this.tree.forEach((doc) => {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);
@@ -204,7 +230,10 @@ export default {
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.RESOURCE:
-            this.getImage(doc.id, content.resource.spaceDescriptionUrl);
+            this.images.push({
+              id: doc.id,
+              url: content.resource.spaceDescriptionUrl,
+            });
             // this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
             // console.warn(content);
             break;
@@ -233,6 +262,9 @@ export default {
       this.$nextTick(() => {
         this.tables.forEach((table) => {
           table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
+        });
+        this.images.forEach((image) => {
+          this.getImage(image.id, image.url);
         });
       });
     },
@@ -265,6 +297,7 @@ export default {
       });
       this.links.clear();
       this.tableCounter = 0;
+      this.referenceCounter = 0;
     }
   },
   beforeDestroy() {
@@ -354,17 +387,46 @@ export default {
     margin 16px 0
     &.dv-selected
       border-width 4px !important
-    .dv-resource-title
-      font-size var(--app-title-size)
-      font-weight 300
-      margin 16px 0 8px
-
-    .dv-resource-originator
-      margin-bottom 16px
-      font-size var(--app-subtitle-size)
-      font-weight 300
+    .dv-resource-title-container
+      background-color var(--app-darklight-background-color)
+      padding 8px
+      margin 8px 0 16px 0
+      border-radius 2px
+      .dv-resource-title
+        font-size var(--app-title-size)
+        font-weight 300
+      .dv-resource-originator
+        font-size var(--app-subtitle-size)
+        font-weight 300
+      .dv-resource-keywords
+        padding 8px 8px 0 0
+        .dv-resource-keyword-wrapper
+        .dv-resource-keyword
+        .dv-resource-keyword-separator
+          display inline-block
+          font-size var(--app-small-size)
+          color var(--app-link-color)
     .dv-resource-description
       font-size smaller
+  .dv-resource-map
+    width 360px
+    .dv-resource-authors
+      font-size var(--app-small-size)
+      .dv-resource-author-wrapper
+      .dv-resource-author-separator
+      .dv-resource-author
+        display inline-block
+      .dv-resource-author-separator
+        padding-right 8px
+    .dv-resource-references
+      padding-top 5px
+      font-size calc(var(--app-small-size) - 2px)
+  .dv-resource-urls
+    margin 16px 0 0
+    font-size var(--app-small-size)
+  .klab-inline-link
+    font-size var(--app-small-size)
+    vertical-align super
 .kd-is-app
   background-image none !important
   .kd-container
@@ -404,6 +466,12 @@ export default {
       padding 8px 0
       &.dv-selected
         color var(--app-text-color)
+    .klab-link
+      color var(--app-link-color)
+      font-weight 500 !important
+      &:visited
+        color var(--app-link-visited-color)
+
 @keyframes blinker {
   40% {
     opacity 1
