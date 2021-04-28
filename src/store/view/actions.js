@@ -497,7 +497,7 @@ export default {
     commit('SET_DOCUMENTATION_SELECTED', selected);
   },
 
-  setDocumentation: ({ commit, rootGetters }, documentation) => {
+  setDocumentation: ({ commit, rootGetters, dispatch, state }, documentation) => {
     if (!documentation.view) {
       const doc = rootGetters['data/documentationContent'].get(documentation.id);
       if (doc) {
@@ -509,7 +509,14 @@ export default {
     }
     commit('SET_DOCUMENTATION_VIEW', documentation.view);
     commit('SET_DOCUMENTATION_SELECTED', documentation.id);
-    eventBus.$emit(CUSTOM_EVENTS.SHOW_DOCUMENTATION);
+    // eventBus.$emit(CUSTOM_EVENTS.SHOW_DOCUMENTATION);
+    if (state.mainViewer.name !== VIEWERS.DOCUMENTATION_VIEWER.name) {
+      dispatch('setMainViewer', VIEWERS.DOCUMENTATION_VIEWER);
+    }
+    eventBus.$emit(CUSTOM_EVENTS.SELECT_ELEMENT, {
+      id: documentation.id,
+      selected: true,
+    });
   },
 
   changeInDocumentation: ({ commit }, change) => {
