@@ -28,7 +28,7 @@
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container">
               <div class="dv-figure-content">
-                <img src="" class="dv-figure-img" :id="`figimg-${documentationView}-${doc.id}`" />
+                <img src="" class="dv-figure-img" :class="`dv-figure-${documentationView.toLowerCase()}`" :id="`figimg-${documentationView}-${doc.id}`" />
                 <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
               </div>
 
@@ -535,6 +535,8 @@ export default {
       .dv-table-title
         color var(--app-main-color)
     .dv-figure-container
+      .dv-figure-img
+        max-width 640px
       .dv-figure-caption
         color var(--app-text-color)
     .dv-resource-container
