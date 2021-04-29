@@ -69,7 +69,8 @@ export default {
 
 <style lang="stylus">
 .km-main-container
-  overflow hidden
+  .scroll
+    overflow hidden
   .km-title
     background-color var(--app-main-color) !important
     color var(--app-background-color)
