@@ -87,7 +87,7 @@ export default {
     .kcv-main-container > .kcv-group
       border none
   .km-buttons
-    margin 10px 16px
+    margin 8px 16px
     .klab-button
       font-size 16px
       background-color var(--app-main-color)
