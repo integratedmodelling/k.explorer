@@ -10,7 +10,10 @@ export default {
    * @returns {null}
    */
   sessionReference: state => state.sessionReference,
-
+  isDeveloper: state => state.sessionReference
+    && state.sessionReference.owner
+    && state.sessionReference.owner.groups
+    && state.sessionReference.owner.groups.findIndex(g => g.id === 'DEVELOPERS') !== -1,
   /**
    * The observations tree
    */

@@ -67,6 +67,7 @@ export default {
     ...mapGetters('data', [
       'hasContext',
       'terminals',
+      'isDeveloper',
     ]),
     ...mapGetters('view', [
       'layout',
@@ -108,7 +109,7 @@ export default {
     }, 5000);
     window.addEventListener('beforeunload', (e) => {
       // Cancel the event
-      if (this.hasContext) {
+      if (this.hasContext && !this.isDeveloper) {
         e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
         // Chrome requires returnValue to be set
         e.returnValue = this.$t('messages.confirmExitPage');
