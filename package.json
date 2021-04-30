@@ -22,7 +22,6 @@
     "djv": "^2.0.0",
     "draggable-vue-directive": "^2.0.2",
     "elkjs": "^0.4.1",
-    "js-xlsx": "^0.8.22",
     "jsonp": "^0.2.1",
     "jsts": "^2.0.2",
     "moment": "^2.22.1",

@@ -209,6 +209,7 @@ export default {
     errorLoggingOut: 'Error logging out, contact support',
     terminalHello: 'Welcome to k.LAB {type}',
     noDocumentation: 'No documentation available',
+    confirmExitPage: 'Data will be lost if you leave the page, are you sure?',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {
