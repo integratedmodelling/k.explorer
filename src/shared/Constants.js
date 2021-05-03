@@ -548,7 +548,9 @@ export const CUSTOM_EVENTS = {
   REFRESH_DOCUMENTATION: 'refreshdocumentation',
   SHOW_DOCUMENTATION: 'showdowcumentation',
   FONT_SIZE_CHANGE: 'fontsizechange',
-  DOWNLOAD_URL: 'download_url',
+  DOWNLOAD_URL: 'downloadurl',
+  RESET_CONTEXT: 'resetcontext',
+  VIEW_ACTION: 'viewaction',
 };
 
 export const SCALE_TYPE = {
