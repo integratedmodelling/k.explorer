@@ -55,6 +55,16 @@
       </template>
     </q-page-container>
     <q-resize-observable @resize="updateLayout()" />
+    <q-modal
+      v-model="blockApp"
+      no-esc-dismiss
+      no-backdrop-dismiss
+      :content-classes="['absolute-center', 'kapp-loading']"
+      class="kapp-modal"
+    >
+      <q-spinner color="app-main-color" size="3em"></q-spinner>
+      <div class="kapp-loading-message">{{ $t('label.resettingContext') }}</div>
+    </q-modal>
   </q-layout>
 </template>
 
@@ -113,6 +123,8 @@ export default {
       },
       logoImage: APPS_DEFAULT_VALUES.DEFAULT_LOGO,
       showLeft: true,
+      resetTimeout: null,
+      blockApp: false,
     };
   },
   computed: {
@@ -311,6 +323,22 @@ export default {
         }, this.$store.state.data.session).body);
       }
     },
+    resetContextListener() {
+      if (this.resetTimeout !== null) {
+        clearTimeout(this.resetTimeout);
+        this.resetTimeout = null;
+      }
+      this.blockApp = true;
+      this.resetTimeout = setTimeout(() => {
+        this.blockApp = false;
+        this.resetTimeout = null;
+      }, 1000);
+    },
+    viewActionListener() {
+      if (this.resetTimeout !== null) {
+        this.resetContextListener();
+      }
+    },
   },
   watch: {
     layout(newLayout, oldLayout) {
@@ -338,9 +366,18 @@ export default {
   mounted() {
     this.updateLayout(true);
     this.$eventBus.$on(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
+    if (this.isRootLayout) {
+      // check reset events
+      this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.resetContextListener);
+      this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+    }
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
+    if (this.isRootLayout) {
+      this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.resetContextListener);
+      this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+    }
   },
 };
 </script>
@@ -484,5 +521,12 @@ export default {
     &.klab-close-app-on-panel
       background-color var(--app-main-color)
       color var(--app-background-color)
-
+  .kapp-loading
+    background-color var(--app-background-color)
+    padding 10px
+    text-align center
+    min-width 100px
+    div
+      margin-top 15px
+      color var(--app-main-color)
 </style>

@@ -153,6 +153,7 @@ export default {
     noDocumentation: 'No elements available for this view',
     tableDownloadAsXSLX: 'Download table as .xslx',
     tableCopy: 'Copy table to clipboard',
+    resettingContext: 'Resetting context',
   },
   messages: {
     connectionClosed: 'Connection closed',
