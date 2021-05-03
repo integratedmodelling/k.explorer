@@ -178,18 +178,6 @@ export default {
     setLogoImage() {
       if (this.layout && this.layout.logo) {
         this.logoImage = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`;
-        // getBase64Resource(this.layout.projectId, this.layout.logo)
-        //   .then((logo) => {
-        //     if (logo !== null) {
-        //       this.logoImage = logo;
-        //     } else {
-        //       this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error(error);
-        //     this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-        //   });
       } else {
         this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
       }

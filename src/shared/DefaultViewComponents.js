@@ -725,7 +725,10 @@ export const COMPONENTS = {
             id: `${component.applicationId}-${component.id}`,
           },
           props: {
-            ...(component.name && { label: component.name }),
+            ...(component.name && {
+              label: component.name,
+              'text-color': 'app-control-text-color',
+            }),
             color: component.attributes.color ? component.attributes.color : 'app-main-color',
             ...(round && { round: true, dense: true, flat: true }),
             noCaps: true,
