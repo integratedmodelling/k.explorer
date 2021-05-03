@@ -151,7 +151,8 @@ export default {
     terminalMaximize: 'Maximize terminal',
     terminalClose: 'Close terminal',
     noDocumentation: 'No elements available for this view',
-    downloadTableAsXSLX: 'Download table as .xslx',
+    tableDownloadAsXSLX: 'Download table as .xslx',
+    tableCopy: 'Copy table to clipboard',
   },
   messages: {
     connectionClosed: 'Connection closed',
@@ -210,6 +211,7 @@ export default {
     terminalHello: 'Welcome to k.LAB {type}',
     noDocumentation: 'No documentation available',
     confirmExitPage: 'Data will be lost if you leave the page, are you sure?',
+    tableCopied: 'Table copied to clipboard',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

@@ -17,12 +17,19 @@
               <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
               <div class="dv-table-bottom text-right">
+                <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
+                  <q-tooltip
+                    anchor="bottom middle"
+                    self="top middle"
+                    :offset="[0, 5]"
+                  >{{ $t('label.tableCopy') }}</q-tooltip>
+                </q-btn>
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-download" @click="tableDownload(doc.id)">
                   <q-tooltip
                     anchor="bottom middle"
                     self="top middle"
                     :offset="[0, 5]"
-                  >{{ $t('label.downloadTableAsXSLX') }}</q-tooltip>
+                  >{{ $t('label.tableDownloadAsXSLX') }}</q-tooltip>
                 </q-btn>
               </div>
             </div>
@@ -257,6 +264,14 @@ export default {
         }
       }
     },
+    tableCopy(id) {
+      const table = this.tables.find(t => t.id === id);
+      if (table) {
+        table.instance.copyToClipboard('all');
+      } else {
+        console.warn('table not found');
+      }
+    },
     tableDownload(id) {
       const table = this.tables.find(t => t.id === id);
       if (table) {
@@ -313,6 +328,14 @@ export default {
                 // data: this.rows,
                 columns: this.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
                 // columns: this.formatColumns(this.columns),
+                clipboardCopied: () => {
+                  this.$q.notify({
+                    message: this.$t('messages.tableCopied'),
+                    type: 'info',
+                    icon: 'mdi-information',
+                    timeout: 1000,
+                  });
+                },
               },
             });
             // });
