@@ -356,14 +356,14 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
     if (this.isRootLayout) {
       // check reset events
-      this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.resetContextListener);
+      this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
       this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
     }
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
     if (this.isRootLayout) {
-      this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.resetContextListener);
+      this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
       this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
     }
   },
