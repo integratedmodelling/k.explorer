@@ -63,7 +63,7 @@
       class="kapp-modal"
     >
       <q-spinner color="app-main-color" size="3em"></q-spinner>
-      <div class="kapp-loading-message">{{ $t('label.resettingContext') }}</div>
+      <!-- div class="kapp-loading-message">{{ $t('label.resettingContext') }}</div> -->
     </q-modal>
   </q-layout>
 </template>
@@ -511,9 +511,10 @@ export default {
       color var(--app-background-color)
   .kapp-loading
     background-color var(--app-background-color)
-    padding 10px
+    padding 16px
     text-align center
-    min-width 100px
+    min-width 60px
+    border-radius 20px
     div
       margin-top 15px
       color var(--app-main-color)
