@@ -208,6 +208,7 @@ export default {
     noGroupsAssigned: 'No groups assigned',
     appLoading: 'Loading app <strong>{app}</strong>',
     errorLoadingApp: 'Error loading app <strong>{app}</strong>',
+    reloadApp: 'Reload application',
     errorLoggingOut: 'Error logging out, contact support',
     terminalHello: 'Welcome to k.LAB {type}',
     noDocumentation: 'No documentation available',
