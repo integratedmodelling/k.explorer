@@ -214,6 +214,8 @@ export default {
     noDocumentation: 'No documentation available',
     confirmExitPage: 'Data will be lost if you leave the page, are you sure?',
     tableCopied: 'Table copied to clipboard',
+    invalidSession: 'Invalid session',
+    unknownSessionError: 'Problem with session',
     youHaveGOT: 'Winter is coming',
   },
   tooltips: {

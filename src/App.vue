@@ -9,7 +9,7 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
-import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS, CONNECTION_CONSTANTS } from 'shared/Constants';
 import '@mdi/font/css/materialdesignicons.css';
 
 export default {
@@ -20,6 +20,7 @@ export default {
     ]),
     ...mapGetters('data', [
       'session',
+      'isLocal',
     ]),
     ...mapGetters('stomp', [
       'queuedMessage',
@@ -43,6 +44,7 @@ export default {
     ]),
     ...mapActions('stomp', {
       stompCleanQueue: 'stomp_cleanqueue',
+      setConnectionState: 'setConnectionState',
     }),
   },
   sockets: {
@@ -167,18 +169,21 @@ export default {
       observation: OBSERVATION_DEFAULT,
       main: true,
     }, { root: true });
+    const self = this;
     this.loadSessionReference()
       .then(() => {
         console.info('Session reference loaded');
       })
       .catch((error) => {
         if (error.message === 'Invalid session') {
-          if (this.isLocal) {
+          if (!self.isLocal) {
             window.location = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}`;
           } else {
+            this.setConnectionState({ state: CONNECTION_CONSTANTS.CONNECTION_ERROR, error });
             console.error(error);
           }
         } else {
+          this.setConnectionState({ state: CONNECTION_CONSTANTS.CONNECTION_ERROR, error });
           console.error(error);
         }
       });

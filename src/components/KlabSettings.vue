@@ -184,7 +184,7 @@ export default {
       };
     },
     isDeveloper() {
-      return this.owner.groups.findIndex(g => g.id === 'DEVELOPERS') !== -1;
+      return this.owner && this.owner.groups && this.owner.groups.findIndex(g => g.id === 'DEVELOPERS') !== -1;
     },
   },
   methods: {
