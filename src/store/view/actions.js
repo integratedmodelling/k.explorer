@@ -521,6 +521,14 @@ export default {
   changeInDocumentation: ({ commit }, change) => {
     if (change.viewsAffected) {
       const views = change.viewsAffected.filter(v => v !== DOCUMENTATION_VIEWS.REFERENCES && v !== DOCUMENTATION_VIEWS.MODELS);
+      // check if tables exists, so we remove report for now
+      // TODO remove when it works correctly
+      if (views.length > 1 && views.includes(DOCUMENTATION_VIEWS.TABLES)) {
+        const i = views.indexOf(DOCUMENTATION_VIEWS.REPORT);
+        if (i !== -1) {
+          views.splice(i, 1);
+        }
+      }
       // TODO: removed models
       if (views.length > 0) {
         commit('SET_RELOAD_VIEWS', views);

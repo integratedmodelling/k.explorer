@@ -204,20 +204,6 @@ export default {
           if (app.logo) {
             app.logoSrc = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${app.projectId}/${app.logo.replace('/', ':')}`;
             this.appsList.push(app);
-            // getBase64Resource(app.projectId, app.logo)
-            //   .then((logo) => {
-            //     if (logo !== null) {
-            //       app.logoSrc = logo;
-            //     } else {
-            //       app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            //     }
-            //     this.appsList.push(app);
-            //   })
-            //   .catch((error) => {
-            //     console.error(error);
-            //     app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            //     this.appsList.push(app);
-            //   });
           } else {
             app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
             this.appsList.push(app);

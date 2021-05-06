@@ -340,6 +340,7 @@ export default {
     .q-icon
       color var(--button-icon-color)
   .kcv-reset-button
+  .kcv-roundbutton
     margin 0 var(--app-smaller-mp)
   .kcv-checkbutton
     display block

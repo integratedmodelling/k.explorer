@@ -136,6 +136,7 @@ const PARSERS = {
   },
   [IN.TYPE_RESETCONTEXT]: (message, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Received context reset');
+    eventBus.$emit(CUSTOM_EVENTS.RESET_CONTEXT);
     dispatch('data/resetContext', null, { root: true });
   },
   [IN.TYPE_SCALEDEFINED]: ({ payload: scaleReference }, { dispatch }) => {
@@ -195,6 +196,7 @@ const PARSERS = {
   },
   [IN.TYPE_VIEWACTION]: ({ payload: action }, { dispatch }) => {
     dispatch('view/viewAction', action, { root: true });
+    eventBus.$emit(CUSTOM_EVENTS.VIEW_ACTION);
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'New view action received', action);
   },
   [IN.TYPE_VIEWSETTING]: ({ payload: viewSetting }, { dispatch }) => {

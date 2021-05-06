@@ -55,6 +55,16 @@
       </template>
     </q-page-container>
     <q-resize-observable @resize="updateLayout()" />
+    <q-modal
+      v-model="blockApp"
+      no-esc-dismiss
+      no-backdrop-dismiss
+      :content-classes="['absolute-center', 'kapp-loading']"
+      class="kapp-modal"
+    >
+      <q-spinner color="app-main-color" size="3em"></q-spinner>
+      <!-- div class="kapp-loading-message">{{ $t('label.resettingContext') }}</div> -->
+    </q-modal>
   </q-layout>
 </template>
 
@@ -113,6 +123,8 @@ export default {
       },
       logoImage: APPS_DEFAULT_VALUES.DEFAULT_LOGO,
       showLeft: true,
+      resetTimeout: null,
+      blockApp: false,
     };
   },
   computed: {
@@ -166,18 +178,6 @@ export default {
     setLogoImage() {
       if (this.layout && this.layout.logo) {
         this.logoImage = `${process.env.WS_BASE_URL}${URLS.REST_GET_PROJECT_RESOURCE}/${this.layout.projectId}/${this.layout.logo.replace('/', ':')}`;
-        // getBase64Resource(this.layout.projectId, this.layout.logo)
-        //   .then((logo) => {
-        //     if (logo !== null) {
-        //       this.logoImage = logo;
-        //     } else {
-        //       this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error(error);
-        //     this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-        //   });
       } else {
         this.logoImage = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
       }
@@ -311,6 +311,22 @@ export default {
         }, this.$store.state.data.session).body);
       }
     },
+    resetContextListener() {
+      if (this.resetTimeout !== null) {
+        clearTimeout(this.resetTimeout);
+        this.resetTimeout = null;
+      }
+      this.blockApp = true;
+      this.resetTimeout = setTimeout(() => {
+        this.blockApp = false;
+        this.resetTimeout = null;
+      }, 1000);
+    },
+    viewActionListener() {
+      if (this.resetTimeout !== null) {
+        this.resetContextListener();
+      }
+    },
   },
   watch: {
     layout(newLayout, oldLayout) {
@@ -338,9 +354,18 @@ export default {
   mounted() {
     this.updateLayout(true);
     this.$eventBus.$on(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
+    if (this.isRootLayout) {
+      // check reset events
+      this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
+      this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+    }
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
+    if (this.isRootLayout) {
+      this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
+      this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+    }
   },
 };
 </script>
@@ -484,5 +509,13 @@ export default {
     &.klab-close-app-on-panel
       background-color var(--app-main-color)
       color var(--app-background-color)
-
+  .kapp-loading
+    background-color var(--app-background-color)
+    padding 16px
+    text-align center
+    min-width 60px
+    border-radius 20px
+    div
+      margin-top 15px
+      color var(--app-main-color)
 </style>

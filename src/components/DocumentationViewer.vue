@@ -430,6 +430,7 @@ export default {
   border none
 .dv-documentation
   .dv-content
+    padding 1em 2em
     h1
     h2
     h3
@@ -454,7 +455,7 @@ export default {
       font-weight bold
       color $main-control-grey
       font-size larger
-      padding-bottom 16px
+      padding 16px 0
     .dv-table-bottom
       margin 8px 0 0 0
   .dv-figure-container
