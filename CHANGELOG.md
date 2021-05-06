@@ -12,6 +12,11 @@ is not available.
 - Notifications from static file
 - Terminal for developers
 - Modal from applications
+### Improvements
+- Waiting page in app for loading it and resetting context
+- Better themes
+### Solved
+- Invalid session is notified, in remote now redirect to login
 
 ## 0.12.3
 ### Changes

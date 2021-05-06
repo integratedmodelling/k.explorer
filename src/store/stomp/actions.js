@@ -14,9 +14,12 @@ export default {
   stomp_onclose: ({ commit }) => {
     commit('STOMP_CONNECTION_STATE', CONNECTION_CONSTANTS.CONNECTION_DOWN);
   },
-  stomp_onerror: ({ commit }, error) => {
-    commit('STOMP_CONNECTION_STATE', CONNECTION_CONSTANTS.CONNECTION_ERROR);
-    commit('STOMP_ERROR', error);
+  stomp_onerror: ({ dispatch }, error) => {
+    dispatch('setConnectionState', { state: CONNECTION_CONSTANTS.CONNECTION_ERROR, message: error });
+  },
+  setConnectionState: ({ commit }, { state, message }) => {
+    commit('STOMP_CONNECTION_STATE', state);
+    commit('STOMP_ERROR', message);
   },
   stomp_onmessage: (context, message) => {
     // save it

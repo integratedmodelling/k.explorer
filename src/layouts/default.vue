@@ -5,28 +5,31 @@
       <klab-layout :layout="layout"></klab-layout>
       <klab-modal-window v-if="modalWindow !== null" :modal="modalWindow"></klab-modal-window>
       <app-dialogs></app-dialogs>
-      <connection-status class="print-hide"></connection-status>
       <klab-settings class="print-hide"></klab-settings>
       <klab-terminal v-for="terminal in terminals" :terminal="terminal" :key="terminal.id"></klab-terminal>
       <klab-presentation></klab-presentation>
       <!-- <knowledge-view-viewer></knowledge-view-viewer> -->
     </template>
-    <template v-if="errorLoading">
-      <q-modal
-        content-classes="klab-wait-app"
-        v-model="modal"
-        no-route-dismiss
-        no-esc-dismiss
-        no-backdrop-dismiss
-      >
-        <div class="klab-wait-app-container">
-          <div v-if="isApp">
-            <q-icon size="50px" name="mdi-alert-circle-outline" color="mc-red"></q-icon>
-            <p class="klab-app-error" v-html="$t('messages.errorLoadingApp', { app: klabApp })"></p>
-          </div>
+    <q-modal
+      content-classes="klab-wait-app"
+      v-model="wait"
+      no-route-dismiss
+      no-esc-dismiss
+      no-backdrop-dismiss
+    >
+      <div class="klab-wait-app-container">
+        <div v-if="errorLoading">
+          <q-icon size="50px" name="mdi-alert-circle-outline" color="mc-red"></q-icon>
+          <p class="klab-app-error" v-html="$t('messages.errorLoadingApp', { app: klabApp })"></p>
+          <a class="klab-app-refresh" href="#" @click="reload">{{ $t('messages.reloadApp') }}</a>
         </div>
-      </q-modal>
-    </template>
+        <div v-else>
+          <q-spinner color="app-main-color" size="2em"></q-spinner>
+          <p class="klab-app-wait" v-html="$t('messages.appLoading', { app: klabApp })"></p>
+        </div>
+      </div>
+    </q-modal>
+    <connection-status class="print-hide"></connection-status>
   </div>
 </template>
 
@@ -61,6 +64,7 @@ export default {
   data() {
     return {
       errorLoading: false,
+      waitApp: false,
     };
   },
   computed: {
@@ -69,17 +73,27 @@ export default {
       'terminals',
       'isDeveloper',
     ]),
+    ...mapGetters('stomp', [
+      'connectionDown',
+    ]),
     ...mapGetters('view', [
       'layout',
       'isApp',
       'klabApp',
       'modalWindow',
     ]),
-    modal: {
-      set() {},
+    wait: {
       get() {
-        return true;
+        return this.waitApp || this.errorLoading;
       },
+      set() {
+        // nothing to do, is modal
+      },
+    },
+  },
+  methods: {
+    reload() {
+      document.location.reload();
     },
   },
   created() {
@@ -101,11 +115,14 @@ export default {
       ).body);
       // localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID, this.$store.state.view.klabApp);
     }
-    setTimeout(() => {
-      if (this.isApp && this.layout === null) {
-        this.errorLoading = true;
-      }
-    }, 5000);
+    if (!this.connectionDown && this.isApp && this.layout === null) {
+      this.waitApp = true;
+      setTimeout(() => {
+        if (this.isApp && this.layout === null) {
+          this.errorLoading = true;
+        }
+      }, 7000);
+    }
     window.addEventListener('beforeunload', (e) => {
       // Cancel the event
       if (this.hasContext && !this.isDeveloper) {
@@ -117,6 +134,9 @@ export default {
   },
   watch: {
     layout(newValue) {
+      if (this.waitApp && newValue) {
+        this.waitApp = false;
+      }
       if (this.errorLoading && newValue) {
         this.errorLoading = false;
       }
@@ -126,14 +146,36 @@ export default {
 </script>
 <style lang="stylus">
   @import '~variables';
-  .klab-wait-app .klab-wait-app-container
-    text-align center
-    width 100%
-    font-weight 300
-    font-size 1.5em
-    padding 20px
-    strong
-      color $main-control-main-color
-    .klab-app-error
-      color $main-control-red
+  .klab-wait-app
+    min-width 50px
+    .klab-wait-app-container
+      text-align center
+      width 100%
+      font-weight 300
+      font-size 1.5em
+      padding 20px
+      p
+        margin-bottom 0
+      strong
+        color $main-control-main-color
+      .q-spinner
+        margin-bottom 16px
+      .klab-app-error
+        color $main-control-red
+        strong
+          color $main-control-red
+      a.klab-app-refresh
+        display block
+        color $main-control-main-color
+        padding 8px 0 0 0
+        text-decoration none
+        &::after
+          content:"\F0450"
+          display: inline-block;
+          font-family:"Material Design Icons"
+          margin 2px 0 0 8px
+          vertical-align bottom
+          transition .6s
+        &:hover::after
+          transform rotate(360deg)
 </style>
