@@ -215,6 +215,7 @@ export default {
     confirmExitPage: 'Data will be lost if you leave the page, are you sure?',
     tableCopied: 'Table copied to clipboard',
     invalidSession: 'Invalid session',
+    sessionClosed: 'Session closed by server',
     unknownSessionError: 'Problem with session',
     youHaveGOT: 'Winter is coming',
   },

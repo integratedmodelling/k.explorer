@@ -116,7 +116,7 @@ export default {
       ).body);
       // localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID, this.$store.state.view.klabApp);
     }
-    if (!this.connectionDown && this.isApp && this.layout === null) {
+    if (this.isApp && this.layout === null) {
       this.waitApp = true;
       setTimeout(() => {
         if (this.isApp && this.layout === null) {
