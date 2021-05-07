@@ -108,7 +108,8 @@ export default {
         this.$store.state.data.session,
       ).body);
       localStorage.removeItem(WEB_CONSTANTS.LOCAL_STORAGE_APP_ID);
-    } else if (this.isApp) {
+    }
+    if (this.isApp) {
       this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
         { applicationId: this.$store.state.view.klabApp },
         this.$store.state.data.session,
