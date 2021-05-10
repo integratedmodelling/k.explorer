@@ -348,24 +348,27 @@ export default {
           }
         }
       }
+      if (this.layout !== null) {
+        // check reset events
+        if (this.isRootLayout) {
+          this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
+          this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+        }
+      } else {
+        this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
+        this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+      }
     },
   },
   created() {},
   mounted() {
     this.updateLayout(true);
     this.$eventBus.$on(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
-    if (this.isRootLayout) {
-      // check reset events
-      this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
-      this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
-    }
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.DOWNLOAD_URL, this.downloadListener);
-    if (this.isRootLayout) {
-      this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
-      this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
-    }
+    this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
+    this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
   },
 };
 </script>
