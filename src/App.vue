@@ -51,7 +51,6 @@ export default {
       'addToKexplorerLog',
     ]),
     sessionCutListener() {
-      console.warn('HASTA AQUI');
       this.addToKexplorerLog({
         type: MESSAGE_TYPES.TYPE_ERROR,
         payload: {
