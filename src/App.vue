@@ -9,7 +9,8 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 import { IN } from 'shared/MessagesConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import Vue from 'vue';
-import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS, CONNECTION_CONSTANTS } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_DEFAULT, ENGINE_EVENTS,
+  CONNECTION_CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import '@mdi/font/css/materialdesignicons.css';
 
 export default {
@@ -46,6 +47,18 @@ export default {
       stompCleanQueue: 'stomp_cleanqueue',
       setConnectionState: 'setConnectionState',
     }),
+    ...mapActions('view', [
+      'addToKexplorerLog',
+    ]),
+    sessionCutListener() {
+      this.addToKexplorerLog({
+        type: MESSAGE_TYPES.TYPE_ERROR,
+        payload: {
+          message: this.$t('messages.sessionClosed'),
+        },
+      });
+      this.disconnect();
+    },
   },
   sockets: {
     onconnect(frame) {
@@ -75,12 +88,6 @@ export default {
           this.disconnect();
         });
     },
-    // onsubscribe(subscription) {
-    // const subscriptionObject = this.subscriptions.find(s => s.subscription.id === subscription.id);
-    // if (typeof subscriptionObject !== 'undefined') {
-    // console.log(`Someone subscribe with id: ${subscription.id}`);
-    // }
-    // },
     onmessage({ body }) {
       const { type, payload } = JSON.parse(body);
       if (type === IN.TYPE_TASKSTARTED) {
@@ -94,28 +101,6 @@ export default {
         }
       }
     },
-    /*
-    onerror: (error) => {
-      console.log(`Error: ${JSON.stringify(error)}`);
-    },
-
-    onmessage: (frame) => {
-      /*
-      let body = '';
-      if (frame.body) {
-        body = JSON.parse(frame.body);
-      }
-      *
-      console.log(`Received frame:\n${JSON.stringify(frame, null, 4)}`);
-      //  ${body !== '' ? `\nBody:\n${JSON.stringify(body, null, 4)}` : ''}`); // (`On message: ${JSON.stringify(frame, null, 4)}`);
-    },
-    onclose: () => {
-      console.log('Disconnected');
-    },
-    onerrorsend: (error) => {
-      console.log(`Error sending: ${JSON.stringify(error)}`);
-    },
-    */
     onsend({ message }) {
       if (this.queuedMessage && message === this.queuedMessage.message) {
         this.stompCleanQueue();
@@ -196,8 +181,10 @@ export default {
         console.warn(`[Intercepted Vue warn]: ${msg}${trace}`);
       }
     };
+    this.$eventBus.$on(CUSTOM_EVENTS.SESSION_CUT, this.sessionCutListener);
   },
   beforeDestroy() {
+    this.$eventBus.$off(CUSTOM_EVENTS.SESSION_CUT, this.sessionCutListener);
     const sessionSubscription = this.subscriptions.find(ts => ts.id === this.session);
     if (typeof sessionSubscription !== 'undefined' && typeof sessionSubscription.unsubscribe === 'function') {
       sessionSubscription.unsubscribe();

@@ -1,7 +1,6 @@
 import { eventBus } from 'plugins/initApp';
-import { IN } from './MessagesConstants';
-import { CUSTOM_EVENTS, DATAFLOW_STATUS, FAKE_TEXTS, MESSAGE_TYPES } from './Constants';
-
+import { IN } from 'shared/MessagesConstants';
+import { CONNECTION_CONSTANTS, CUSTOM_EVENTS, DATAFLOW_STATUS, FAKE_TEXTS, MESSAGE_TYPES } from 'shared/Constants';
 
 function addToKexplorerLog(dispatch, type, message, attach, important = false) {
   dispatch('view/addToKexplorerLog', { type, payload: { message, attach }, important }, { root: true });
@@ -174,7 +173,11 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARNING, message);
   },
   [IN.TYPE_ERROR]: ({ payload: message }, { dispatch }) => {
-    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, message);
+    if (message === CONNECTION_CONSTANTS.UNKNOWN_IDENTITY) {
+      eventBus.$emit(CUSTOM_EVENTS.SESSION_CUT);
+    } else {
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, message);
+    }
   },
   [IN.TYPE_USERPROJECTOPENED]: (context, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project opened in k.Modeler');

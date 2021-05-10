@@ -319,6 +319,7 @@ export const CONNECTION_CONSTANTS = {
   CONNECTION_DOWN: 'DOWN',
   CONNECTION_WORKING: 'WORKING',
   CONNECTION_ERROR: 'ERROR',
+  UNKNOWN_IDENTITY: 'UNKNOWN_IDENTITY',
 };
 
 /**
@@ -551,6 +552,7 @@ export const CUSTOM_EVENTS = {
   DOWNLOAD_URL: 'downloadurl',
   RESET_CONTEXT: 'resetcontext',
   VIEW_ACTION: 'viewaction',
+  SESSION_CUT: 'sessioncut',
 };
 
 export const SCALE_TYPE = {
