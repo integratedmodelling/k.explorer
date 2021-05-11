@@ -33,7 +33,7 @@
                 </q-btn>
               </div>
             </div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container">
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
               <div class="dv-figure-content">
                 <img src="" class="dv-figure-img" :class="`dv-figure-${documentationView.toLowerCase()}`" :id="`figimg-${documentationView}-${doc.id}`" />
                 <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
@@ -91,7 +91,7 @@ import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
 import { mapGetters, mapActions } from 'vuex';
 import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS,
-  DOCUMENTATION_TYPES_VIEWS, APPS_DEFAULT_VALUES, GEOMETRY_CONSTANTS } from 'shared/Constants';
+  DOCUMENTATION_TYPES_VIEWS, GEOMETRY_CONSTANTS } from 'shared/Constants';
 import { flattenTree } from 'shared/Helpers';
 import { axiosInstance } from 'plugins/axios';
 
@@ -103,7 +103,7 @@ export default {
       tables: [],
       images: [],
       cache: new Map(),
-      loadingImage: null,
+      loadingImages: [],
       figures: [],
       rawDocumentation: [],
       DOCUMENTATION_TYPES,
@@ -222,17 +222,29 @@ export default {
       return text;
     },
     getImage(id, url) {
-      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, { responseType: 'arraybuffer' })
-        .then(({ data: image }) => {
-          const docImage = document.getElementById(`resimg-${id}`);
-          if (docImage) {
-            if (image) {
-              docImage.src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
-            } else {
-              docImage.src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            }
+      const docImage = document.getElementById(`resimg-${id}`);
+      if (docImage) {
+        if (this.cache.has(id)) {
+          const src = this.cache.get(id);
+          if (src !== null) {
+            docImage.src = this.cache.get(id);
+          } else {
+            docImage.style.display = 'none';
           }
-        });
+        } else {
+          axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, { responseType: 'arraybuffer' })
+            .then(({ data: image }) => {
+              if (image && image.byteLength > 0) {
+                docImage.src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
+                this.cache.set(id, docImage.src);
+              } else {
+                // docImage.src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+                docImage.style.display = 'none';
+                this.cache.set(id, null);
+              }
+            });
+        }
+      }
     },
     getFigure(figureId, instance, timestamp = -1) {
       const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
@@ -240,8 +252,8 @@ export default {
         const imageId = `${instance.observationId}/${timestamp}`;
         if (this.cache.has(imageId)) {
           image.src = this.cache.get(imageId);
-        } else if (imageId !== this.loadingImage) {
-          this.loadingImage = imageId;
+        } else if (!this.loadingImages.includes(imageId)) {
+          this.loadingImages.push(imageId);
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
               format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -251,7 +263,10 @@ export default {
             responseType: 'blob',
           })
             .then((response) => {
-              this.loadingImage = null;
+              const liIdx = this.loadingImages.indexOf(imageId);
+              if (liIdx !== -1) {
+                this.loadingImages.splice(this.loadingImages.indexOf(imageId), 1);
+              }
               if (response) {
                 const reader = new FileReader();
                 reader.readAsDataURL(response.data);
@@ -260,6 +275,13 @@ export default {
                   this.cache.set(imageId, reader.result);
                 };
               }
+            })
+            .catch((error) => {
+              const liIdx = this.loadingImages.indexOf(imageId);
+              if (liIdx !== -1) {
+                this.loadingImages.splice(this.loadingImages.indexOf(imageId), 1);
+              }
+              console.error(error);
             });
         }
       }
@@ -519,6 +541,7 @@ export default {
     width 360px
     .dv-resource-authors
       font-size var(--app-small-size)
+      padding-bottom 5px
       .dv-resource-author-wrapper
       .dv-resource-author-separator
       .dv-resource-author
@@ -526,7 +549,6 @@ export default {
       .dv-resource-author-separator
         padding-right 8px
     .dv-resource-references
-      padding-top 5px
       font-size calc(var(--app-small-size) - 2px)
   .dv-resource-urls
     margin 16px 0 0

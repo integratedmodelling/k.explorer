@@ -678,8 +678,9 @@ export default {
     const tree = [];
     const items = [];
     const buildTree = (node, item, l, idx) => {
+      const indexes = new Map();
       let label;
-      const levelIdx = l === null ? `${idx}.` : `${l}.${idx}.`;
+      const levelIdx = l === null ? `${idx}.` : `${l}${idx}.`;
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
           label = `${levelIdx} ${item.title}`;
@@ -711,8 +712,15 @@ export default {
         label,
         children: [],
       };
-      item.children.forEach((c, i) => {
-        buildTree(e.children, c, idx, i + 1);
+      item.children.forEach((c) => {
+        let i;
+        if (indexes.has(item.type)) {
+          i = indexes.get(item.type) + 1;
+        } else {
+          i = 1;
+        }
+        indexes.set(item.type, i);
+        buildTree(e.children, c, levelIdx, i);
       });
       node.push(e);
       items.push({
