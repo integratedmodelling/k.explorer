@@ -8,7 +8,7 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="doc.id">{{ doc.internalIndex }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
             <div class="dv-reference" :id="doc.id" v-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>

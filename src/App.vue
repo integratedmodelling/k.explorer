@@ -66,7 +66,7 @@ export default {
       console.debug(`Connect frame:\n${JSON.stringify(frame, null, 4)}`);
       const sessionSubscriptionObject = this.subscriptions.find(ts => ts.id === this.session);
       if (typeof sessionSubscriptionObject !== 'undefined') {
-        console.warn(`Invalidate session ${this.session}`); // very strange behaviour
+        console.warn(`Subscription exists for the session ${this.session}, unsuscribe`); // very strange behaviour
         sessionSubscriptionObject.subscription.unsubscribe();
       }
       // watch engine event

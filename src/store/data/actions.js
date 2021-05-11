@@ -725,7 +725,7 @@ export default {
       node.push(e);
       items.push({
         id: item.id,
-        internalIndex: idx,
+        internalIndex: levelIdx,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,
