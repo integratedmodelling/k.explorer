@@ -35,6 +35,9 @@
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
               <div class="dv-figure-content">
+                <div class="dv-figure-wait row items-center" v-show="loadingImages.includes(`${doc.figure.observationId}/-1`)">
+                  <q-spinner size="3em" class="col"></q-spinner>
+                </div>
                 <img src="" class="dv-figure-img" :class="`dv-figure-${documentationView.toLowerCase()}`" :id="`figimg-${documentationView}-${doc.id}`" />
                 <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
               </div>
@@ -401,7 +404,7 @@ export default {
     }
     this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
     this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
-    this.viewport = document.body.clientWidth;
+    this.viewport = Math.min(document.body.clientWidth, 640);
   },
   updated() {
     if (this.documentationSelected !== null) {
@@ -485,6 +488,13 @@ export default {
       width 100%
     .dv-figure-caption
       color $main-control-main-color
+    .dv-figure-wait
+      width 640px
+      height 320px
+      border 1px solid $grey-3
+      text-align center
+      .q-spinner
+        color $grey-6
   .dv-citation
     color var(--app-main-color)
     a
@@ -585,6 +595,9 @@ export default {
         max-width 640px
       .dv-figure-caption
         color var(--app-text-color)
+      .dv-figure-wait
+        .q-spinner
+          color var(--app-main-color)
     .dv-resource-container
     .dv-model-container
       color var(--app-main-color)

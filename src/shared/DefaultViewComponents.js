@@ -490,7 +490,7 @@ export const COMPONENTS = {
         const self = this;
         if (this.isSearch) {
           return h(QInput, {
-            class: ['kcv-text-input', 'kcv-form-element'],
+            class: ['kcv-text-input', 'kcv-form-element', 'kcv-search'],
             style: DEFAULT_STYLE_FUNCTION(component),
             attrs: {
               id: `${component.applicationId}-${component.id}`,

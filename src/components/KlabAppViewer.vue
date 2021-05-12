@@ -268,6 +268,7 @@ export default {
       color var(--app-alt-color)
       font-weight bold
       cursor default
+      margin-top var(--app-smaller-mp)
     &.kcv-clickable
       cursor pointer
   .kcv-text
@@ -324,7 +325,8 @@ export default {
     border 1px solid var(--app-main-color)
     background-color  var(--app-background-color)
     padding var(--app-smaller-mp) var(--app-small-mp)
-
+    &.kcv-search
+      margin-top var(--app-smaller-mp)
   .kcv-combo
     padding 2px 10px
     background-color var(--app-background-color)
