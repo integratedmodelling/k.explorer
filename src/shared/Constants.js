@@ -553,6 +553,7 @@ export const CUSTOM_EVENTS = {
   RESET_CONTEXT: 'resetcontext',
   VIEW_ACTION: 'viewaction',
   SESSION_CUT: 'sessioncut',
+  SHOW_DATA_INFO: 'showdatainfo',
 };
 
 export const SCALE_TYPE = {

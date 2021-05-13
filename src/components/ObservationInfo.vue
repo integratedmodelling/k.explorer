@@ -39,63 +39,22 @@
       <!-- info map will be 50% -->
       <div id="oi-mapinfo-container"
         v-show="hasMapInfo"
-        @mouseenter="infoShowed = { index: 0, categories: [], values: [mapSelection.value] }"
-        @mouseleave="resetInfoShowed"
+        @mouseenter="setInfoShowed({ index: 0, categories: [], values: [mapSelection.value] })"
+        @mouseleave="setInfoShowed(null)"
       >
         <div id="oi-mapinfo-map"></div>
         <div id="oi-pixel-h" class="oi-pixel-indicator"></div>
         <div id="oi-pixel-v" class="oi-pixel-indicator"></div>
       </div>
     </div>
-    <!-- histogram and colormap container FIXED WIDTH -->
-    <div id="oi-histogram-container" v-if="observationInfo.dataSummary !== null" :style="{ 'min-width': `${Math.max(observationInfo.dataSummary.histogram.length * 4, 256)}px` }"  @mouseleave="resetInfoShowed()">
-      <!-- histogram  % to fill container -->
-      <div id="oi-histogram" v-if="hasHistogram" :class="[this.observationInfo.colormap !== null ? 'with-colormap' : '']">
-        <div
-          class="oi-histogram-col"
-          v-for="(data, index) in observationInfo.dataSummary.histogram"
-          :key="index"
-          :style="{ width:`${histogramWidth}%` }"
-          @mouseover="infoShowed = { index, categories: observationInfo.dataSummary.categories, values: observationInfo.dataSummary.histogram }"
-        >
-          <q-tooltip :offset="[0,10]" :delay="500">{{ infoShowed.values[infoShowed.index] }}</q-tooltip>
-          <div class="oi-histogram-val" :style="{ height: `${getHistogramDataHeight(data)}%` }">
-          </div>
-        </div>
-      </div>
-      <div id="oi-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
-      <!-- colormap FIXED sixe -->
-      <div id="oi-colormap" v-if="observationInfo.colormap !== null" :style="{ 'min-width': `${Math.min(observationInfo.colormap.colors.length, 256)}px`}">
-        <div
-          class="oi-colormap-col"
-          v-for="(data, index) in observationInfo.colormap.colors"
-          :key="index"
-          :style="{ width:`${ colormapWidth }%`, 'background-color': data  }"
-          @mouseover="infoShowed = { index, categories: [], values: observationInfo.colormap.labels }"
-        >
-        </div>
-      </div>
-      <!-- info about everything FIXED sixe -->
-      <div id="oi-data-details">
-        <div id="oi-histogram-min" class="oi-data-details" @mouseover="tooltipIt($event, `q-hmin-${infoShowed.index}`)">{{ histogramMin }}<q-tooltip v-show="needTooltip(`q-hmin-${infoShowed.index}`)" class="oi-tooltip">{{ histogramMin }}</q-tooltip></div>
-        <template v-if="infoShowed.index === -1"><div id="oi-data-nodetail" class="oi-data-details">{{ $t('label.noInfoValues') }}</div></template>
-        <template v-else>
-          <div id="oi-data-detail" class="oi-data-details" @mouseover="tooltipIt($event, `q-hdata-${infoShowed.index}`)">
-            {{ infoShowedText }}
-            <q-tooltip class="oi-tooltip" v-show="needTooltip(`q-hdata-${infoShowed.index}`)" anchor="center right" self="center left" :offset="[10, 10]">
-              {{ infoShowedText }}
-            </q-tooltip>
-          </div>
-        </template>
-        <div id="oi-histogram-max" class="oi-data-details" @mouseover="tooltipIt($event, `q-hmax-${infoShowed.index}`)">{{ histogramMax }}<q-tooltip v-show="needTooltip(`q-hmax-${infoShowed.index}`)" class="oi-tooltip">{{ histogramMax }}</q-tooltip></div>
-      </div>
-    </div>
+    <histogram-viewer :dataSummary="observationInfo.dataSummary" :colormap="observationInfo.colormap"></histogram-viewer>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import SimpleBar from 'simplebar';
+import HistogramViewer from 'components/HistogramViewer';
 import { copyToClipboard } from 'shared/Utils';
 import TooltipIt from 'shared/TooltipItMixin';
 import Map from 'ol/Map';
@@ -106,6 +65,9 @@ import { CUSTOM_EVENTS, VIEWER_COMPONENTS } from 'shared/Constants';
 
 export default {
   name: 'ObservationInfo',
+  components: {
+    HistogramViewer,
+  },
   mixins: [TooltipIt],
   data() {
     return {
@@ -131,56 +93,13 @@ export default {
         && this.observationInfo.viewerIdx !== null
         && this.viewer(this.observationInfo.viewerIdx).type.component === VIEWER_COMPONENTS.VIEW_MAP.component;
     },
-    hasHistogram() {
-      return this.observationInfo.dataSummary.histogram.length > 0;
-    },
-    maxHistogramValue() {
-      return Math.max.apply(null, this.observationInfo.dataSummary.histogram);
-    },
-    histogramWidth() {
-      return 100 / this.observationInfo.dataSummary.histogram.length;
-    },
-    histogramMin() {
-      if (this.observationInfo.dataSummary.minValue === 'NaN' || this.observationInfo.dataSummary.categorized) {
-        return '';
-      }
-      return Math.round(this.observationInfo.dataSummary.minValue * 100) / 100;
-    },
-    histogramMax() {
-      if (this.observationInfo.dataSummary.maxValue === 'NaN' || this.observationInfo.dataSummary.categorized) {
-        return '';
-      }
-      return Math.round(this.observationInfo.dataSummary.maxValue * 100) / 100;
-    },
-    colormapWidth() {
-      return 100 / this.observationInfo.colormap.colors.length;
-    },
     hasMapInfo() {
       return this.exploreMode
         && this.mapSelection.pixelSelected !== null
         && this.mapSelection.layerSelected.get('id').startsWith(`cl_${this.observationInfo.id}`);
     },
-    infoShowedText() {
-      let text;
-      if (this.infoShowed.categories.length > 0) {
-        text = this.infoShowed.categories[this.infoShowed.index];
-        if (typeof text !== 'undefined' && text !== null && text !== '') {
-          return text;
-        }
-      }
-      if (this.infoShowed.values.length > 0) {
-        text = this.infoShowed.values[this.infoShowed.index];
-        if (typeof text !== 'undefined' && text !== null && text !== '') {
-          return text;
-        }
-      }
-      return '';
-    },
   },
   methods: {
-    getHistogramDataHeight(value) {
-      return value * 100 / this.maxHistogramValue;
-    },
     copyToClipboard(value) {
       copyToClipboard(value);
       this.$q.notify({
@@ -197,13 +116,6 @@ export default {
       }
       return finalClasses;
     },
-    resetInfoShowed() {
-      this.infoShowed = {
-        index: -1,
-        categories: [],
-        values: [],
-      };
-    },
     showNode() {
       this.$emit(CUSTOM_EVENTS.SHOW_NODE, { nodeId: this.observationInfo.id, state: this.layerShow });
     },
@@ -211,6 +123,9 @@ export default {
       if (idx === this.observationInfo.viewerIdx) {
         this.layerShow = false;
       }
+    },
+    setInfoShowed(infoShowed) {
+      this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_DATA_INFO, infoShowed);
     },
   },
   watch: {
@@ -230,11 +145,11 @@ export default {
         this.$nextTick(() => {
           this.infoMap.updateSize();
         });
-        this.infoShowed = {
+        this.$eventBus.$emit(CUSTOM_EVENTS.SHOW_DATA_INFO, {
           index: 0,
           categories: [],
           values: [this.mapSelection.value],
-        };
+        });
       } else if (layers.length > 1) {
         this.infoMap.removeLayer(layers[1]);
       }
@@ -267,8 +182,6 @@ export default {
   #oi-container
     height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
     max-height "calc(var(--main-control-max-height) - %s)" % ($main-control-spc-height + $main-control-scrollbar + $main-control-header-height + $main-control-actions-height)
-    // min-height $oi-histogram-height + $main-control-spc-height
-    // padding 10px 0 0 0
 
   #oi-metadata-map-wrapper
     height "calc(100% - %s)" % ($oi-controls-height)
