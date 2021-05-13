@@ -10,8 +10,8 @@
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
               <h1 :id="doc.id">{{ doc.internalIndex }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
-            <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
-            <div class="dv-reference" :id="doc.id" v-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
               <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
@@ -320,10 +320,11 @@ export default {
           this.rawDocumentation.push(e);
         });
       });
+      const self = this;
       this.rawDocumentation.forEach((doc) => {
-        const content = this.documentationContent.get(doc.id);
+        const content = self.documentationContent.get(doc.id);
         if (content.bodyText) {
-          content.bodyText = this.getLinkedText(content.bodyText);
+          content.bodyText = self.getLinkedText(content.bodyText);
         }
         this.content.push(content);
         switch (doc.type) {
