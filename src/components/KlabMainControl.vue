@@ -366,7 +366,8 @@ export default {
       if (this.moved) {
         return;
       }
-      if (event && (event.target.className.indexOf('q-icon') !== -1 || event.target.className.indexOf('mdi-chevron') !== -1)) {
+      if (event && event.target.className
+        && event.target.className.some(e => ['mcm-button', 'q-icon', 'q-btn-inner'].includes(e))) {
         return;
       }
       if (!this.searchIsActive) {

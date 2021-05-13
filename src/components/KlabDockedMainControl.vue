@@ -125,12 +125,12 @@ export default {
         height 100%
 
       #oi-container
-        height "calc(100% -  %s)" % ($main-control-scrollbar + $docked-padding)
-        max-height "calc(100% - %s)" % ($main-control-scrollbar + $docked-padding)
+        height "calc(100% -  %s)" % ($docked-padding)
+        max-height "calc(100% - %s)" % ($docked-padding)
         #oi-metadata-map-wrapper
-          height "calc(100% - %s)" % ($docked-padding + $docked-correction)
+          height "calc(100% - %s)" % ($docked-padding)
           &.with-histogram
-            height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height + $docked-correction)
+            height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height)
 
     &.dmc-dragging
       cursor move !important
