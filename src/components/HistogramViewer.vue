@@ -28,20 +28,20 @@
       </div>
     </div>
     <!-- info about everything FIXED sixe -->
-    <div class="hv-data-details-container">
-      <div class="hv-histogram-min hv-data-details" @mouseover="tooltipIt($event, `q-hmin-${infoShowed.index}`)">{{ histogramMin }}
-        <q-tooltip v-show="needTooltip(`q-hmin-${infoShowed.index}`)" class="hv-tooltip">{{ histogramMin }}</q-tooltip></div>
+    <div class="hv-data-details-container" :class="{ 'hv-details-nodata': !hasHistogram && colormap == null }">
+      <div class="hv-histogram-min hv-data-details" @mouseover="tooltipIt($event, `q-hmin${id}-${infoShowed.index}`)">{{ histogramMin }}
+        <q-tooltip v-show="needTooltip(`q-hmin${id}-${infoShowed.index}`)" class="hv-tooltip">{{ histogramMin }}</q-tooltip></div>
       <template v-if="infoShowed.index === -1"><div class="hv-data-nodetail hv-data-details">{{ $t('label.noInfoValues') }}</div></template>
       <template v-else>
-        <div class="hv-data-value hv-data-details" @mouseover="tooltipIt($event, `q-hdata-${infoShowed.index}`)">
+        <div class="hv-data-value hv-data-details" @mouseover="tooltipIt($event, `q-hdata${id}-${infoShowed.index}`)">
           {{ infoShowedText }}
-          <q-tooltip class="hv-tooltip" v-show="needTooltip(`q-hdata-${infoShowed.index}`)" anchor="center right" self="center left" :offset="[10, 10]">
+          <q-tooltip class="hv-tooltip" v-show="needTooltip(`q-hdata${id}-${infoShowed.index}`)" anchor="center right" self="center left" :offset="[10, 10]">
             {{ infoShowedText }}
           </q-tooltip>
         </div>
       </template>
-      <div class="hv-histogram-max hv-data-details" @mouseover="tooltipIt($event, `q-hmax-${infoShowed.index}`)">{{ histogramMax }}
-        <q-tooltip v-show="needTooltip(`q-hmax-${infoShowed.index}`)" class="hv-tooltip">{{ histogramMax }}</q-tooltip></div>
+      <div class="hv-histogram-max hv-data-details" @mouseover="tooltipIt($event, `q-hmax${id}-${infoShowed.index}`)">{{ histogramMax }}
+        <q-tooltip v-show="needTooltip(`q-hmax${id}-${infoShowed.index}`)" class="hv-tooltip">{{ histogramMax }}</q-tooltip></div>
     </div>
   </div>
 </template>
@@ -58,6 +58,10 @@ export default {
       required: true,
     },
     colormap: Object,
+    id: {
+      type: String,
+      default: '',
+    },
   },
   mixins: [TooltipIt],
   data() {

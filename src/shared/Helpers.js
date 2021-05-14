@@ -361,6 +361,29 @@ export const getBase64Resource = ({ url, projectId, resourceName }) => new Promi
     });
 });
 
+export const getColormap = (colormap) => {
+  if (colormap.type === 'RAMP' && colormap.colors.length > 1 && colormap.colors.length < 256) {
+    const cmcol = [];
+    const cmlab = [];
+    const cml = colormap.colors.length;
+    const steps = Math.floor(256 / cml);
+    const lastSteps = steps + (256 - cml * steps);
+    for (let i = 0; i < cml - 1; i++) {
+      const tmpCol = getGradient(colormap.colors[i], colormap.colors[i + 1], (i === cml - 2) ? lastSteps : steps);
+      const tmpLab = interpolateArray([parseFloat(colormap.labels[i]), parseFloat(colormap.labels[i + 1])], (i === cml - 2) ? lastSteps : steps, 4);
+      cmcol.push(...tmpCol);
+      cmlab.push(...tmpLab);
+    }
+    return {
+      colors: cmcol,
+      labels: cmlab,
+      type: 'MODRAMP',
+      // ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+    };
+  }
+  return colormap;
+};
+
 /**
  * Build a layer object. If needed ask for projection (reason for async function)
  * @param observation the observations: needed for projection ad type of representation
@@ -444,30 +467,9 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
                 observation.loaded = true;
                 store.dispatch('data/setLoadingLayers', { loading: false, observation });
                 // load colormap if necesary
-                getAxiosContent(`cm_${observation.id}`, url, { params: { format: 'COLORMAP', ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
+                getAxiosContent(`cm_${observation.id}`, url, { params: { format: GEOMETRY_CONSTANTS.TYPE_COLORMAP, ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }) } }, (colormapResponse, colormapCallback) => {
                   if (colormapResponse && colormapResponse.data) {
-                    const colormap = colormapResponse.data;
-                    if (colormap.type === 'RAMP' && colormap.colors.length > 1 && colormap.colors.length < 256) {
-                      const cmcol = [];
-                      const cmlab = [];
-                      const cml = colormap.colors.length;
-                      const steps = Math.floor(256 / cml);
-                      const lastSteps = steps + (256 - cml * steps);
-                      for (let i = 0; i < cml - 1; i++) {
-                        const tmpCol = getGradient(colormap.colors[i], colormap.colors[i + 1], (i === cml - 2) ? lastSteps : steps);
-                        const tmpLab = interpolateArray([parseFloat(colormap.labels[i]), parseFloat(colormap.labels[i + 1])], (i === cml - 2) ? lastSteps : steps, 4);
-                        cmcol.push(...tmpCol);
-                        cmlab.push(...tmpLab);
-                      }
-                      observation.colormap = {
-                        colors: cmcol,
-                        labels: cmlab,
-                        type: 'MODRAMP',
-                        // ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
-                      };
-                    } else {
-                      observation.colormap = colormap;
-                    }
+                    observation.colormap = getColormap(colormapResponse.data);
                   }
                   colormapCallback();
                 });
