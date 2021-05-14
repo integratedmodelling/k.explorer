@@ -129,8 +129,8 @@ export default {
         max-height "calc(100% - %s)" % ($docked-padding)
         #oi-metadata-map-wrapper
           height "calc(100% - %s)" % ($docked-padding)
-          &.with-histogram
-            height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height)
+          &.k-with-histogram
+            height "calc(100% - %s)" % ($oi-controls-height + $hv-histogram-height)
 
     &.dmc-dragging
       cursor move !important

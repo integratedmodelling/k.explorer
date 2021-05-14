@@ -112,7 +112,7 @@ export default {
     getContainerClasses() {
       const finalClasses = [];
       if (this.observationInfo.dataSummary !== null) {
-        finalClasses.push('with-histogram');
+        finalClasses.push('k-with-histogram');
       }
       return finalClasses;
     },
@@ -185,8 +185,8 @@ export default {
 
   #oi-metadata-map-wrapper
     height "calc(100% - %s)" % ($oi-controls-height)
-    &.with-histogram
-      height "calc(100% - %s)" % ($oi-controls-height + $oi-histogram-height)
+    &.k-with-histogram
+      height "calc(100% - %s)" % ($oi-controls-height + $hv-histogram-height)
     #oi-scroll-metadata-container
       padding-top 5px
 
@@ -260,85 +260,5 @@ export default {
     left 5px
     height 1px
     width calc(100% - 10px)
-
-  #oi-histogram-container
-    height $oi-histogram-height
-    width 100%
-
-  #oi-histogram
-  #oi-histogram-nodata
-    height "calc(100% - %s)" % $oi-data-details-height
-    position relative
-    &.with-colormap
-      height "calc(100% - %s)" % ($oi-data-details-height + $oi-colormap-height)
-
-  #oi-histogram-nodata
-    color #fff
-    text-align center
-    background-color $main-control-grey-alpha
-    padding-top 20%
-
-  .oi-histogram
-    position relative
-    bottom 0
-    border-bottom 1px solid #777
-
-  .oi-histogram-col
-    float left
-    height 100%
-    position relative
-    &:hover
-      background $main-control-grey-alpha
-
-  .oi-histogram-val
-    background #000
-    width 100%
-    position: absolute
-    bottom 0
-
-    border-right 1px solid alpha($main-control-grey, 0.85)
-    border-left 1px solid alpha($main-control-grey, 0.85)
-    &:hover
-      background rgba(0, 0, 0, 0.7)
-
-  #oi-colormap
-    height $oi-colormap-height
-    position: relative
-
-  .oi-colormap-col
-    float left
-    height 100%
-    background-color #fff
-    min-width 1px
-
-  .oi-data-details
-    color #fff
-    text-align center
-    font-size small
-    padding 2px 0
-    display inline-block
-    overflow hidden
-    white-space nowrap
-    vertical-align: middle;
-    height: $oi-data-details-height
-    line-height: $oi-data-details-height
-    text-overflow: ellipsis;
-
-  #oi-histogram-min
-  #oi-histogram-max
-    width $oi-histogram-minmax-width
-
-  #oi-data-detail, #oi-data-nodetail
-    width "calc(100% - %s)" % ($oi-histogram-minmax-width * 2)
-    border-left 1px solid #696969
-    border-right 1px solid #696969
-
-  #oi-data-detail, .oi-tooltip
-    color $main-control-yellow
-    transition none
-    font-style normal
-
-  .oi-tooltip
-    background-color #444
 
 </style>
