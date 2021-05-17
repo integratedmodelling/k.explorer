@@ -202,7 +202,7 @@ export default {
       width 10px
       height 10px
       top 5px
-      right 8px
+      right 5px
     .sb-scales
       margin 0
       .lm-separator

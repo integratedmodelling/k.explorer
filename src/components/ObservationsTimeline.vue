@@ -4,7 +4,7 @@
       class="ot-container"
       :class="{ 'ot-active-timeline': visibleEvents.length > 0, 'ot-docked': isMainControlDocked,  }"
     >
-      <div class="ot-player" v-if="visibleEvents.length > 0">
+      <div class="ot-player" v-show="visibleEvents.length > 0">
         <q-icon
           :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
           :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
@@ -423,7 +423,7 @@ export default {
       width calc(100% - 5px)
       // padding: 0 "calc(50% - %s / 2)" % ($leftmenu-content-width - $timestampViewerWidth);
     &:not(.ot-no-timestamp) .ot-container.ot-docked
-      width $leftmenu-content-width - $timestampViewerWidth - 1px
+      width $leftmenu-content-width - $timestampViewerWidth - 2px
       float left
   .ot-container
     position relative
