@@ -39,6 +39,7 @@
                   <q-spinner size="3em" class="col"></q-spinner>
                 </div>
                 <img src="" class="dv-figure-img" :class="`dv-figure-${documentationView.toLowerCase()}`" :id="`figimg-${documentationView}-${doc.id}`" />
+                <histogram-viewer :dataSummary="doc.figure.dataSummary" :colormap="doc.figure.colormap" :id="doc.observationId"></histogram-viewer>
                 <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
               </div>
 
@@ -92,14 +93,18 @@
 import Tabulator from 'tabulator-tables';
 import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
+import HistogramViewer from 'components/HistogramViewer';
 import { mapGetters, mapActions } from 'vuex';
 import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS,
   DOCUMENTATION_TYPES_VIEWS, GEOMETRY_CONSTANTS } from 'shared/Constants';
-import { flattenTree } from 'shared/Helpers';
+import { flattenTree, getColormap } from 'shared/Helpers';
 import { axiosInstance } from 'plugins/axios';
 
 export default {
   name: 'DocumentationViewer',
+  components: {
+    HistogramViewer,
+  },
   data() {
     return {
       content: [],
@@ -252,10 +257,12 @@ export default {
     getFigure(figureId, instance, timestamp = -1) {
       const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
       if (image) {
+        const content = this.documentationContent.get(figureId);
         const imageId = `${instance.observationId}/${timestamp}`;
         if (this.cache.has(imageId)) {
-          image.src = this.cache.get(imageId);
-        } else if (!this.loadingImages.includes(imageId)) {
+          image.src = this.cache.get(imageId).src;
+          content.figure.colormap = this.cache.get(imageId).colormap;
+        } else { // if (!this.loadingImages.includes(imageId)) {
           this.loadingImages.push(imageId);
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
@@ -272,11 +279,32 @@ export default {
               }
               if (response) {
                 const reader = new FileReader();
+                const cachedImage = {
+                  src: null,
+                  colormap: null,
+                };
                 reader.readAsDataURL(response.data);
                 reader.onload = () => {
                   image.src = reader.result;
-                  this.cache.set(imageId, reader.result);
+                  cachedImage.src = reader.result;
                 };
+                axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
+                  params: {
+                    format: GEOMETRY_CONSTANTS.TYPE_COLORMAP,
+                    ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+                  },
+                })
+                  .then((colormapResponse) => {
+                    if (colormapResponse && colormapResponse.data) {
+                      content.figure.colormap = getColormap(colormapResponse.data);
+                      cachedImage.colormap = content.figure.colormap;
+                    }
+                    this.cache.set(imageId, cachedImage);
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                    this.cache.set(imageId, cachedImage);
+                  });
               }
             })
             .catch((error) => {
@@ -367,6 +395,7 @@ export default {
             // });
             break;
           case DOCUMENTATION_TYPES.FIGURE: {
+            this.$set(content.figure, 'colormap', null);
             this.figures.push({
               id: content.id,
               instance: content.figure,
@@ -486,7 +515,15 @@ export default {
       margin 8px 0 0 0
   .dv-figure-container
     .dv-figure-img
-      width 100%
+      max-width 640px
+    .hv-histogram-container
+      .hv-colormap
+      .hv-histogram
+      .hv-data-details-container
+        max-width 512px
+      .hv-data-value, .hv-tooltip
+      .hv-data-details
+        color $main-control-main-color
     .dv-figure-caption
       color $main-control-main-color
     .dv-figure-wait
@@ -496,6 +533,12 @@ export default {
       text-align center
       .q-spinner
         color $grey-6
+    .hv-histogram-nodata
+    .hv-details-nodata
+      display none
+    .hv-histogram-container
+      height 100px
+      margin 16px 0
   .dv-citation
     color var(--app-main-color)
     a
@@ -592,13 +635,15 @@ export default {
       .dv-table-title
         color var(--app-main-color)
     .dv-figure-container
-      .dv-figure-img
-        max-width 640px
       .dv-figure-caption
         color var(--app-text-color)
       .dv-figure-wait
         .q-spinner
           color var(--app-main-color)
+      .hv-data-value, .hv-tooltip
+        color var(--app-main-color)
+      .hv-data-details
+        color var(--app-text-color)
     .dv-resource-container
     .dv-model-container
       color var(--app-main-color)

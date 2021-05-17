@@ -650,6 +650,11 @@ export default {
   },
 
   loadDocumentation: ({ dispatch, getters, rootGetters }, documentationView = null) => new Promise((resolve, reject) => {
+    if (getters.contextId === null) {
+      console.warn('Ask documentation without context');
+      reject(new Error('Ask documentation without context'));
+      return;
+    }
     if (documentationView === null) {
       documentationView = rootGetters['view/documentationView'];
       if (documentationView === null) {

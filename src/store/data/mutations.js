@@ -57,6 +57,7 @@ export default {
     } else if (typeof context.restored === 'undefined') {
       context.restored = false;
     }
+    state.schedulingResolution = null;
   },
 
   SET_CONTEXT_CUSTOM_LABEL(state, contextCustomLabel = null) {
@@ -229,14 +230,13 @@ export default {
 
   SET_SCHEDULING_STATUS: (state, scheduling) => {
     if (state.scaleReference !== null) {
-      state.scaleReference.schedulingType = scheduling.type;
       switch (scheduling.type) {
         case 'TIME_ADVANCED':
           state.engineTimestamp = scheduling.currentTime;
           break;
         case 'STARTED':
           state.engineTimestamp = scheduling.currentTime;
-          state.scaleReference.schedulingResolution = scheduling.resolution;
+          state.schedulingResolution = scheduling.resolution;
           eventBus.$emit(CUSTOM_EVENTS.NEW_SCHEDULING);
           break;
         case 'FINISHED':

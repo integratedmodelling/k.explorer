@@ -150,6 +150,7 @@ export default {
     }
    */
   scaleReference: null,
+  schedulingResolution: null,
   proposedContext: null,
   scaleLocked: {
     space: false,

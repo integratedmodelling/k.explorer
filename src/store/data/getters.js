@@ -109,7 +109,7 @@ export default {
     }
     return state.scaleReference;
   },
-
+  schedulingResolution: state => state.schedulingResolution,
   isScaleLocked: state => state.scaleLocked,
   nextScale: state => state.nextScale,
   hasNextScale: state => (type = null) => state.nextScale !== null

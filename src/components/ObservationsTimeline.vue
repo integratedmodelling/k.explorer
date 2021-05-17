@@ -174,6 +174,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'scaleReference',
+      'schedulingResolution',
       'timeEvents',
       'timestamp',
       'modificationsTask',
@@ -280,7 +281,6 @@ export default {
               this.stop();
               return;
             }
-            // console.warn(`Timestamp:${this.timestamp};toLoad.start:${toLoad.start};toLoad.stop:${toLoad.stop};LIMIT:${toLoad.stop - this.scaleReference.schedulingResolution};this.scaleReference.schedulingResolution:${this.scaleReference.schedulingResolution};this.scaleReference.end:${this.scaleReference.end}`);
             if (this.timestamp > toLoad.stop - this.interval.step && this.timestamp <= this.scaleReference.end) {
               toLoad = { start: this.timestamp, stop: this.timestamp + this.interval.buffer };
               this.$eventBus.$emit(CUSTOM_EVENTS.NEED_LAYER_BUFFER, toLoad);
@@ -292,13 +292,13 @@ export default {
       }
     },
     calculateInterval() {
-      if (this.scaleReference && this.scaleReference.schedulingResolution) {
+      if (this.scaleReference && this.schedulingResolution) {
         let divider = 1;
-        const position = this.calculatePosition(this.scaleReference.start + this.scaleReference.schedulingResolution);
+        const position = this.calculatePosition(this.scaleReference.start + this.schedulingResolution);
         if (position > 1) {
           divider = position;
         }
-        const step = (this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP) / divider;
+        const step = (this.schedulingResolution || TIMES.DEFAULT_STEP) / divider;
         const steps = (this.scaleReference.end - this.scaleReference.start) / step;
         const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth); // assume 1ms por px in Enrico computer
         const buffer = (this.scaleReference.end - this.scaleReference.start) / 4;

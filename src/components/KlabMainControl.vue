@@ -239,6 +239,7 @@ export default {
       'searchStart',
       'searchFocus',
       'setWindowSide',
+      'setObservationInfo',
     ]),
     callStartType(event) {
       if (!this.searchIsFocused) {
@@ -300,6 +301,7 @@ export default {
       if (this.askForDocking) {
         this.askForDocking = false;
         this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
+        this.setObservationInfo(null);
         return;
       }
       if (this.draggableElement.offsetTop < 0) { // upper than window
@@ -366,8 +368,10 @@ export default {
       if (this.moved) {
         return;
       }
-      if (event && event.target.className
-        && event.target.className.some(e => ['mcm-button', 'q-icon', 'q-btn-inner'].includes(e))) {
+      if (event && event.target.classList
+        && (event.target.classList.contains('mcm-button')
+        || event.target.classList.contains('q-icon')
+        || event.target.classList.contains('q-btn-inner'))) {
         return;
       }
       if (!this.searchIsActive) {
