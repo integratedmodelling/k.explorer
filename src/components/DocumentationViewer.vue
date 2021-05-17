@@ -8,10 +8,10 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="doc.id">{{ doc.internalIndex }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
-            <div class="dv-paragraph" v-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" v-html="doc.bodyText"></div>
-            <div class="dv-reference" :id="doc.id" v-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
               <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
@@ -33,9 +33,13 @@
                 </q-btn>
               </div>
             </div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container">
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
               <div class="dv-figure-content">
+                <div class="dv-figure-wait row items-center" v-show="loadingImages.includes(`${doc.figure.observationId}/-1`)">
+                  <q-spinner size="3em" class="col"></q-spinner>
+                </div>
                 <img src="" class="dv-figure-img" :class="`dv-figure-${documentationView.toLowerCase()}`" :id="`figimg-${documentationView}-${doc.id}`" />
+                <histogram-viewer :dataSummary="doc.figure.dataSummary" :colormap="doc.figure.colormap" :id="doc.observationId"></histogram-viewer>
                 <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
               </div>
 
@@ -89,21 +93,25 @@
 import Tabulator from 'tabulator-tables';
 import printf from 'printf';
 import 'tabulator-tables/dist/css/tabulator_simple.min.css';
+import HistogramViewer from 'components/HistogramViewer';
 import { mapGetters, mapActions } from 'vuex';
 import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS,
-  DOCUMENTATION_TYPES_VIEWS, APPS_DEFAULT_VALUES, GEOMETRY_CONSTANTS } from 'shared/Constants';
-import { flattenTree } from 'shared/Helpers';
+  DOCUMENTATION_TYPES_VIEWS, GEOMETRY_CONSTANTS } from 'shared/Constants';
+import { flattenTree, getColormap } from 'shared/Helpers';
 import { axiosInstance } from 'plugins/axios';
 
 export default {
   name: 'DocumentationViewer',
+  components: {
+    HistogramViewer,
+  },
   data() {
     return {
       content: [],
       tables: [],
       images: [],
       cache: new Map(),
-      loadingImage: null,
+      loadingImages: [],
       figures: [],
       rawDocumentation: [],
       DOCUMENTATION_TYPES,
@@ -222,26 +230,40 @@ export default {
       return text;
     },
     getImage(id, url) {
-      axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, { responseType: 'arraybuffer' })
-        .then(({ data: image }) => {
-          const docImage = document.getElementById(`resimg-${id}`);
-          if (docImage) {
-            if (image) {
-              docImage.src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
-            } else {
-              docImage.src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
-            }
+      const docImage = document.getElementById(`resimg-${id}`);
+      if (docImage) {
+        if (this.cache.has(id)) {
+          const src = this.cache.get(id);
+          if (src !== null) {
+            docImage.src = this.cache.get(id);
+          } else {
+            docImage.style.display = 'none';
           }
-        });
+        } else {
+          axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${url}`, { responseType: 'arraybuffer' })
+            .then(({ data: image }) => {
+              if (image && image.byteLength > 0) {
+                docImage.src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
+                this.cache.set(id, docImage.src);
+              } else {
+                // docImage.src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
+                docImage.style.display = 'none';
+                this.cache.set(id, null);
+              }
+            });
+        }
+      }
     },
     getFigure(figureId, instance, timestamp = -1) {
       const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
       if (image) {
+        const content = this.documentationContent.get(figureId);
         const imageId = `${instance.observationId}/${timestamp}`;
         if (this.cache.has(imageId)) {
-          image.src = this.cache.get(imageId);
-        } else if (imageId !== this.loadingImage) {
-          this.loadingImage = imageId;
+          image.src = this.cache.get(imageId).src;
+          content.figure.colormap = this.cache.get(imageId).colormap;
+        } else { // if (!this.loadingImages.includes(imageId)) {
+          this.loadingImages.push(imageId);
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
               format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -251,15 +273,46 @@ export default {
             responseType: 'blob',
           })
             .then((response) => {
-              this.loadingImage = null;
+              const liIdx = this.loadingImages.indexOf(imageId);
+              if (liIdx !== -1) {
+                this.loadingImages.splice(this.loadingImages.indexOf(imageId), 1);
+              }
               if (response) {
                 const reader = new FileReader();
+                const cachedImage = {
+                  src: null,
+                  colormap: null,
+                };
                 reader.readAsDataURL(response.data);
                 reader.onload = () => {
                   image.src = reader.result;
-                  this.cache.set(imageId, reader.result);
+                  cachedImage.src = reader.result;
                 };
+                axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
+                  params: {
+                    format: GEOMETRY_CONSTANTS.TYPE_COLORMAP,
+                    ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+                  },
+                })
+                  .then((colormapResponse) => {
+                    if (colormapResponse && colormapResponse.data) {
+                      content.figure.colormap = getColormap(colormapResponse.data);
+                      cachedImage.colormap = content.figure.colormap;
+                    }
+                    this.cache.set(imageId, cachedImage);
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                    this.cache.set(imageId, cachedImage);
+                  });
               }
+            })
+            .catch((error) => {
+              const liIdx = this.loadingImages.indexOf(imageId);
+              if (liIdx !== -1) {
+                this.loadingImages.splice(this.loadingImages.indexOf(imageId), 1);
+              }
+              console.error(error);
             });
         }
       }
@@ -295,10 +348,11 @@ export default {
           this.rawDocumentation.push(e);
         });
       });
+      const self = this;
       this.rawDocumentation.forEach((doc) => {
-        const content = this.documentationContent.get(doc.id);
+        const content = self.documentationContent.get(doc.id);
         if (content.bodyText) {
-          content.bodyText = this.getLinkedText(content.bodyText);
+          content.bodyText = self.getLinkedText(content.bodyText);
         }
         this.content.push(content);
         switch (doc.type) {
@@ -341,6 +395,7 @@ export default {
             // });
             break;
           case DOCUMENTATION_TYPES.FIGURE: {
+            this.$set(content.figure, 'colormap', null);
             this.figures.push({
               id: content.id,
               instance: content.figure,
@@ -379,7 +434,7 @@ export default {
     }
     this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
     this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
-    this.viewport = document.body.clientWidth;
+    this.viewport = Math.min(document.body.clientWidth, 640);
   },
   updated() {
     if (this.documentationSelected !== null) {
@@ -460,9 +515,30 @@ export default {
       margin 8px 0 0 0
   .dv-figure-container
     .dv-figure-img
-      width 100%
+      max-width 640px
+    .hv-histogram-container
+      .hv-colormap
+      .hv-histogram
+      .hv-data-details-container
+        max-width 512px
+      .hv-data-value, .hv-tooltip
+      .hv-data-details
+        color $main-control-main-color
     .dv-figure-caption
       color $main-control-main-color
+    .dv-figure-wait
+      width 640px
+      height 320px
+      border 1px solid $grey-3
+      text-align center
+      .q-spinner
+        color $grey-6
+    .hv-histogram-nodata
+    .hv-details-nodata
+      display none
+    .hv-histogram-container
+      height 100px
+      margin 16px 0
   .dv-citation
     color var(--app-main-color)
     a
@@ -519,6 +595,7 @@ export default {
     width 360px
     .dv-resource-authors
       font-size var(--app-small-size)
+      padding-bottom 5px
       .dv-resource-author-wrapper
       .dv-resource-author-separator
       .dv-resource-author
@@ -526,7 +603,6 @@ export default {
       .dv-resource-author-separator
         padding-right 8px
     .dv-resource-references
-      padding-top 5px
       font-size calc(var(--app-small-size) - 2px)
   .dv-resource-urls
     margin 16px 0 0
@@ -559,9 +635,14 @@ export default {
       .dv-table-title
         color var(--app-main-color)
     .dv-figure-container
-      .dv-figure-img
-        max-width 640px
       .dv-figure-caption
+        color var(--app-text-color)
+      .dv-figure-wait
+        .q-spinner
+          color var(--app-main-color)
+      .hv-data-value, .hv-tooltip
+        color var(--app-main-color)
+      .hv-data-details
         color var(--app-text-color)
     .dv-resource-container
     .dv-model-container

@@ -650,6 +650,11 @@ export default {
   },
 
   loadDocumentation: ({ dispatch, getters, rootGetters }, documentationView = null) => new Promise((resolve, reject) => {
+    if (getters.contextId === null) {
+      console.warn('Ask documentation without context');
+      reject(new Error('Ask documentation without context'));
+      return;
+    }
     if (documentationView === null) {
       documentationView = rootGetters['view/documentationView'];
       if (documentationView === null) {
@@ -678,8 +683,9 @@ export default {
     const tree = [];
     const items = [];
     const buildTree = (node, item, l, idx) => {
+      const indexes = new Map();
       let label;
-      const levelIdx = l === null ? `${idx}.` : `${l}.${idx}.`;
+      const levelIdx = l === null ? `${idx}.` : `${l}${idx}.`;
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
           label = `${levelIdx} ${item.title}`;
@@ -711,13 +717,20 @@ export default {
         label,
         children: [],
       };
-      item.children.forEach((c, i) => {
-        buildTree(e.children, c, idx, i + 1);
+      item.children.forEach((c) => {
+        let i;
+        if (indexes.has(item.type)) {
+          i = indexes.get(item.type) + 1;
+        } else {
+          i = 1;
+        }
+        indexes.set(item.type, i);
+        buildTree(e.children, c, levelIdx, i);
       });
       node.push(e);
       items.push({
         id: item.id,
-        internalIndex: idx,
+        internalIndex: levelIdx,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,

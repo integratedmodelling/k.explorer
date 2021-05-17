@@ -4,7 +4,7 @@
       class="ot-container"
       :class="{ 'ot-active-timeline': visibleEvents.length > 0, 'ot-docked': isMainControlDocked,  }"
     >
-      <div class="ot-player" v-if="visibleEvents.length > 0">
+      <div class="ot-player" v-show="visibleEvents.length > 0">
         <q-icon
           :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
           :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
@@ -174,6 +174,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'scaleReference',
+      'schedulingResolution',
       'timeEvents',
       'timestamp',
       'modificationsTask',
@@ -280,7 +281,6 @@ export default {
               this.stop();
               return;
             }
-            // console.warn(`Timestamp:${this.timestamp};toLoad.start:${toLoad.start};toLoad.stop:${toLoad.stop};LIMIT:${toLoad.stop - this.scaleReference.schedulingResolution};this.scaleReference.schedulingResolution:${this.scaleReference.schedulingResolution};this.scaleReference.end:${this.scaleReference.end}`);
             if (this.timestamp > toLoad.stop - this.interval.step && this.timestamp <= this.scaleReference.end) {
               toLoad = { start: this.timestamp, stop: this.timestamp + this.interval.buffer };
               this.$eventBus.$emit(CUSTOM_EVENTS.NEED_LAYER_BUFFER, toLoad);
@@ -292,13 +292,13 @@ export default {
       }
     },
     calculateInterval() {
-      if (this.scaleReference && this.scaleReference.schedulingResolution) {
+      if (this.scaleReference && this.schedulingResolution) {
         let divider = 1;
-        const position = this.calculatePosition(this.scaleReference.start + this.scaleReference.schedulingResolution);
+        const position = this.calculatePosition(this.scaleReference.start + this.schedulingResolution);
         if (position > 1) {
           divider = position;
         }
-        const step = (this.scaleReference.schedulingResolution || TIMES.DEFAULT_STEP) / divider;
+        const step = (this.schedulingResolution || TIMES.DEFAULT_STEP) / divider;
         const steps = (this.scaleReference.end - this.scaleReference.start) / step;
         const timeToLoad = Math.max(document.body.clientHeight, document.body.clientWidth); // assume 1ms por px in Enrico computer
         const buffer = (this.scaleReference.end - this.scaleReference.start) / 4;
@@ -423,7 +423,7 @@ export default {
       width calc(100% - 5px)
       // padding: 0 "calc(50% - %s / 2)" % ($leftmenu-content-width - $timestampViewerWidth);
     &:not(.ot-no-timestamp) .ot-container.ot-docked
-      width $leftmenu-content-width - $timestampViewerWidth - 1px
+      width $leftmenu-content-width - $timestampViewerWidth - 2px
       float left
   .ot-container
     position relative

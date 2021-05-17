@@ -388,6 +388,7 @@ export const GEOMETRY_CONSTANTS = {
   TYPE_TIMESERIES: 'TIMESERIES',
   TYPE_NETWORK: 'NETWORK',
   TYPE_PROPORTIONS: 'PROPORTIONS',
+  TYPE_COLORMAP: 'COLORMAP',
   /**
    * Shapes types
    */
@@ -553,6 +554,7 @@ export const CUSTOM_EVENTS = {
   RESET_CONTEXT: 'resetcontext',
   VIEW_ACTION: 'viewaction',
   SESSION_CUT: 'sessioncut',
+  SHOW_DATA_INFO: 'showdatainfo',
 };
 
 export const SCALE_TYPE = {
