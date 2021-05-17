@@ -239,6 +239,7 @@ export default {
       'searchStart',
       'searchFocus',
       'setWindowSide',
+      'setObservationInfo',
     ]),
     callStartType(event) {
       if (!this.searchIsFocused) {
@@ -300,6 +301,7 @@ export default {
       if (this.askForDocking) {
         this.askForDocking = false;
         this.setMainViewer(VIEWERS.DOCKED_DATA_VIEWER);
+        this.setObservationInfo(null);
         return;
       }
       if (this.draggableElement.offsetTop < 0) { // upper than window
