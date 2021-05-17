@@ -161,11 +161,6 @@ export default {
   background-color $main-control-grey-alpha
   padding-top 20%
 
-.hv-histogram
-  position relative
-  bottom 0
-  border-bottom 1px solid #777
-
 .hv-histogram-col
   float left
   height 100%
