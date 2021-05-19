@@ -24,7 +24,7 @@
       <div class="hv-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
     </template>
     <!-- colormap FIXED size -->
-    <div class="hv-colormap-container" :class="[`hv-colormap-container-${direction}`]">
+    <div class="hv-colormap-container" :class="[`hv-colormap-container-${direction}`]" v-if="dataSummary.categories.length > 0">
       <div class="hv-colormap" :class="[`hv-colormap-${direction}`]" v-if="colormap !== null" :style="{ [`min-${colormapStyle}`]: `${Math.min(colormap.colors.length, 256)}px` }">
         <div
           class="hv-colormap-col"
@@ -35,7 +35,7 @@
         >
         </div>
       </div>
-      <div class="hv-legend hv-categories full-height" v-if="legend">
+      <div class="hv-legend hv-categories full-height" v-if="legend && dataSummary.categories.length > 0">
         <div v-for="(category, index) in dataSummary.categories" :key="index" class="hv-category" :style="{ 'line-height': `${calculateFontSize()}px`, 'font-size': `${calculateFontSize()}px` }">
           <span v-if="dataSummary.categorized">{{ category }}</span>
           <span v-else>{{ category.split(" ")[0] }}</span>
