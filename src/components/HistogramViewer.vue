@@ -1,34 +1,50 @@
 <template>
   <!-- histogram and colormap container FIXED WIDTH -->
-  <div class="hv-histogram-container" v-if="dataSummary !== null" :style="{ 'min-width': `${Math.max(dataSummary.histogram.length * 4, 256)}px` }"  @mouseleave="setInfoShowed(null)">
-    <!-- histogram  % to fill container -->
-    <div class="hv-histogram" v-if="hasHistogram" :class="[colormap !== null ? 'k-with-colormap' : '']">
-      <div
-        class="hv-histogram-col"
-        v-for="(data, index) in dataSummary.histogram"
-        :key="index"
-        :style="{ width:`${histogramWidth}%` }"
-        @mouseover="infoShowed = { index, categories: dataSummary.categories, values: dataSummary.histogram }"
-      >
-        <q-tooltip :offset="[0,10]" :delay="500">{{ infoShowed.values[infoShowed.index] }}</q-tooltip>
-        <div class="hv-histogram-val" :style="{ height: `${getHistogramDataHeight(data)}%` }">
+  <div
+    class="hv-histogram-container"
+    :class="`hv-histogram-${direction}`"
+    v-if="dataSummary !== null"
+    :style="{ [`min-${colormapStyle}`]: `${Math.max(dataSummary.histogram.length * 4, 256)}px` }"
+    @mouseleave="tooltips ? setInfoShowed(null) : false">
+    <template v-if="isHorizontal">
+      <!-- histogram  % to fill container -->
+      <div class="hv-histogram" v-if="hasHistogram" :class="[colormap !== null ? 'k-with-colormap' : '']">
+        <div
+          class="hv-histogram-col"
+          v-for="(data, index) in dataSummary.histogram"
+          :key="index"
+          :style="{ width:`${histogramWidth}%` }"
+          @mouseover="infoShowed = { index, categories: dataSummary.categories, values: dataSummary.histogram }"
+        >
+          <q-tooltip :offset="[0,10]" :delay="500">{{ infoShowed.values[infoShowed.index] }}</q-tooltip>
+          <div class="hv-histogram-val" :style="{ height: `${getHistogramDataHeight(data)}%` }">
+          </div>
         </div>
       </div>
-    </div>
-    <div class="hv-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
-    <!-- colormap FIXED sixe -->
-    <div class="hv-colormap" v-if="colormap !== null" :style="{ 'min-width': `${Math.min(colormap.colors.length, 256)}px`}">
-      <div
-        class="hv-colormap-col"
-        v-for="(data, index) in colormap.colors"
-        :key="index"
-        :style="{ width:`${ colormapWidth }%`, 'background-color': data  }"
-        @mouseover="infoShowed = { index, categories: [], values: colormap.labels }"
-      >
+      <div class="hv-histogram-nodata" v-else>{{ $t('label.noHistogramData') }}</div>
+    </template>
+    <!-- colormap FIXED size -->
+    <div class="hv-colormap-container" :class="[`hv-colormap-container-${direction}`]" v-if="dataSummary.categories.length > 0">
+      <div class="hv-colormap" :class="[`hv-colormap-${direction}`]" v-if="colormap !== null" :style="{ [`min-${colormapStyle}`]: `${Math.min(colormap.colors.length, 256)}px` }">
+        <div
+          class="hv-colormap-col"
+          v-for="(data, index) in colormap.colors"
+          :key="index"
+          :style="{ [colormapStyle]:`${ colormapWidth }%`, 'background-color': data  }"
+          @mouseover="tooltips ? infoShowed = { index, categories: [], values: colormap.labels } : false"
+        >
+        </div>
+      </div>
+      <div class="hv-legend hv-categories full-height" v-if="legend && dataSummary.categories.length > 0">
+        <div v-for="(category, index) in dataSummary.categories" :key="index" class="hv-category" :style="{ 'line-height': `${calculateFontSize()}px`, 'font-size': `${calculateFontSize()}px` }">
+          <span v-if="dataSummary.categorized">{{ category }}</span>
+          <span v-else>{{ category.split(" ")[0] }}</span>
+        </div>
+        <div v-if="!dataSummary.categorized" class="hv-category">{{ histogramMax }}</div>
       </div>
     </div>
-    <!-- info about everything FIXED sixe -->
-    <div class="hv-data-details-container" :class="{ 'hv-details-nodata': !hasHistogram && colormap == null }">
+    <!-- info about everything on tooltip if horizontal FIXED sixe -->
+    <div class="hv-data-details-container" :class="{ 'hv-details-nodata': !hasHistogram && colormap == null }" v-if="tooltips">
       <div class="hv-histogram-min hv-data-details" @mouseover="tooltipIt($event, `q-hmin${id}-${infoShowed.index}`)">{{ histogramMin }}
         <q-tooltip v-show="needTooltip(`q-hmin${id}-${infoShowed.index}`)" class="hv-tooltip">{{ histogramMin }}</q-tooltip></div>
       <template v-if="infoShowed.index === -1"><div class="hv-data-nodetail hv-data-details">{{ $t('label.noInfoValues') }}</div></template>
@@ -49,6 +65,9 @@
 <script>
 import TooltipIt from 'shared/TooltipItMixin';
 import { CUSTOM_EVENTS } from 'shared/Constants';
+import { dom } from 'quasar';
+
+const { height } = dom;
 
 export default {
   name: 'HistogramViewer',
@@ -61,6 +80,19 @@ export default {
     id: {
       type: String,
       default: '',
+    },
+    direction: {
+      type: String,
+      default: 'horizontal',
+      validator: value => ['horizontal', 'vertical'].indexOf(value) !== -1,
+    },
+    tooltips: {
+      type: Boolean,
+      default: true,
+    },
+    legend: {
+      type: Boolean,
+      default: false,
     },
   },
   mixins: [TooltipIt],
@@ -76,6 +108,9 @@ export default {
   computed: {
     hasHistogram() {
       return this.dataSummary.histogram.length > 0;
+    },
+    isHorizontal() {
+      return this.direction === 'horizontal';
     },
     maxHistogramValue() {
       return Math.max.apply(null, this.dataSummary.histogram);
@@ -114,6 +149,13 @@ export default {
       }
       return '';
     },
+    colormapStyle() {
+      return this.direction === 'horizontal' ? 'width' : 'height';
+    },
+    categoryHeight() {
+      console.warn(100 / this.dataSummary.categories.length + (this.dataSummary.categorized ? 0 : 2));
+      return 100 / (this.dataSummary.categories.length + (this.dataSummary.categorized ? 0 : 2));
+    },
   },
   methods: {
     getHistogramDataHeight(value) {
@@ -132,6 +174,14 @@ export default {
         };
       }
     },
+    calculateFontSize() {
+      const el = document.querySelector('.hv-categories');
+      if (el) {
+        const h = height(el);
+        return Math.min(Math.max(h / this.dataSummary.categories.length, 6), 12);
+      }
+      return 12;
+    },
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.SHOW_DATA_INFO, this.setInfoShowed);
@@ -145,8 +195,11 @@ export default {
 <style lang="stylus">
 @import '~variables'
 .hv-histogram-container
-  height $hv-histogram-height
-  width 100%
+  &.hv-histogram-horizontal
+    height $hv-histogram-height
+    width 100%
+  &.hv-histogram-vertical
+    height 100%
 
 .hv-histogram
 .hv-histogram-nodata
@@ -179,16 +232,37 @@ export default {
   &:hover
     background rgba(0, 0, 0, 0.7)
 
-.hv-colormap
+.hv-colormap-horizontal
   height $hv-colormap-height
   position: relative
+  .hv-colormap-col
+    float left
+    height 100%
+    min-width 1px
+
+.hv-colormap-vertical
+  width $hv-colormap-width
+  min-width $hv-colormap-width
+  position relative
+  flex-direction column
+  .hv-colormap-col
+    display block
+    width 100%
+    min-height 1px
+.hv-colormap-container-vertical
+  display flex
+  height 100%
+  .hv-colormap-legend
+    flex 1
+    flex-direction column
+  .hv-categories
+    overflow hidden
 
 .hv-colormap-col
-  float left
-  height 100%
   background-color #fff
-  min-width 1px
 
+.hv-details-vertical
+  float left
 .hv-data-details
   color #fff
   text-align center
@@ -205,6 +279,17 @@ export default {
 .hv-histogram-min
 .hv-histogram-max
   width $hv-histogram-minmax-width
+.hv-categories
+  display flex
+  flex-direction column
+  justify-content space-between
+  margin-left 16px
+  .hv-category
+    text-overflow: ellipsis;
+    white-space nowrap
+    align-items  flex-end
+    flex-direction row
+    font-size 12px
 
 .hv-data-value, .hv-data-nodetail
   width "calc(100% - %s)" % ($hv-histogram-minmax-width * 2)
