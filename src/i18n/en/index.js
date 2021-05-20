@@ -154,6 +154,8 @@ export default {
     tableDownloadAsXSLX: 'Download table as .xslx',
     tableCopy: 'Copy table to clipboard',
     resettingContext: 'Resetting context',
+    reportTable: 'Table',
+    reportFigure: 'Figure',
   },
   messages: {
     connectionClosed: 'Connection closed',

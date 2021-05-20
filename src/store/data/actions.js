@@ -682,13 +682,27 @@ export default {
   refreshDocumentation: ({ commit }, { view, documentation }) => {
     const tree = [];
     const items = [];
+    const indexes = new Map();
     const buildTree = (node, item, l, idx) => {
-      const indexes = new Map();
       let label;
-      const levelIdx = l === null ? `${idx}.` : `${l}${idx}.`;
+      let index;
+      if (item.type === DOCUMENTATION_TYPES.SECTION) {
+        if (l === null) {
+          index = `${idx}.`;
+        } else {
+          index = `${l}${idx}.`;
+        }
+      } else {
+        if (indexes.has(item.type)) {
+          index = indexes.get(item.type) + 1;
+        } else {
+          index = 1;
+        }
+        indexes.set(item.type, index);
+      }
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
-          label = `${levelIdx} ${item.title}`;
+          label = `${index} ${item.title}`;
           break;
         case DOCUMENTATION_TYPES.TABLE:
           label = item.bodyText;
@@ -717,20 +731,18 @@ export default {
         label,
         children: [],
       };
+      let sectionCounter = 0;
       item.children.forEach((c) => {
-        let i;
-        if (indexes.has(item.type)) {
-          i = indexes.get(item.type) + 1;
-        } else {
-          i = 1;
+        let i = -1;
+        if (c.type === DOCUMENTATION_TYPES.SECTION) {
+          i = ++sectionCounter;
         }
-        indexes.set(item.type, i);
-        buildTree(e.children, c, levelIdx, i);
+        buildTree(e.children, c, index, i);
       });
       node.push(e);
       items.push({
         id: item.id,
-        internalIndex: levelIdx,
+        index,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,
@@ -743,8 +755,9 @@ export default {
         reference: item.reference,
       });
     };
+    let sectionCounter = 0;
     documentation.forEach((doc, index) => {
-      buildTree(tree, doc, null, index + 1);
+      buildTree(tree, doc, null, doc.type === DOCUMENTATION_TYPES.SECTION ? ++sectionCounter : index);
     });
     commit('SET_DOCUMENTATION', { view, tree });
     commit('ADD_DOCUMENTATION', items);

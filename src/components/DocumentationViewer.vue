@@ -8,13 +8,13 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.internalIndex }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="doc.id">{{ doc.index }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-              <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
+              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.index}. ${doc.title}` }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
               <div class="dv-table-bottom text-right">
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
@@ -55,7 +55,7 @@
                   ></histogram-viewer>
                 </div>
               </div>
-              <div class="dv-figure-caption row" v-if="doc.figure.caption !== ''">{{ doc.figure.caption }}</div>
+              <div class="dv-figure-caption row">{{ `${$t('label.reportFigure')} ${doc.index }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -228,8 +228,8 @@ export default {
             } else if (link.type === DOCUMENTATION_TYPES.TABLE) {
               t = `<${link.id}${++this.tableCounter}>`;
             }
-            link.internalIndex = ++this.referenceCounter;
-            toReplace.push({ what: m[0], with: `<a class="klab-inline-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${link.internalIndex}</a>` });
+            link.index = ++this.referenceCounter;
+            toReplace.push({ what: m[0], with: `<a class="klab-inline-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${link.index}</a>` });
             this.links.set(m[2], link);
           }
         });
