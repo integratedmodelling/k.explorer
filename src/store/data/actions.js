@@ -1,9 +1,10 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS,
+  OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
-import { DOCUMENTATION_TYPES } from '../../shared/Constants';
+import { getI18N } from 'plugins/vue-i18n';
 
 export default {
 
@@ -705,7 +706,7 @@ export default {
           label = `${index} ${item.title}`;
           break;
         case DOCUMENTATION_TYPES.TABLE:
-          label = item.bodyText;
+          label = `${getI18N().tc('label.reportTable')} ${index}. ${item.bodyText}`;
           break;
         case DOCUMENTATION_TYPES.RESOURCE:
           label = item.title;
@@ -717,7 +718,7 @@ export default {
           label = item.id;
           break;
         case DOCUMENTATION_TYPES.FIGURE:
-          ({ label } = item.figure);
+          label = `${getI18N().tc('label.reportFigure')} ${index}. ${item.figure.label}`;
           break;
         default:
           label = item.type;
@@ -725,6 +726,7 @@ export default {
       const e = {
         type: item.type,
         id: item.id,
+        index,
         parentId: item.parentId,
         previousId: item.previousId,
         nextId: item.nextId,
