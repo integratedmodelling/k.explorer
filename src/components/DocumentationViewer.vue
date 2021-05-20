@@ -8,13 +8,13 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.internalIndex }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="doc.id">{{ doc.index }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-              <div class="dv-table-title" :id="doc.id">{{ doc.title }}</div>
+              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.index}. ${doc.title}` }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
               <div class="dv-table-bottom text-right">
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
@@ -34,15 +34,28 @@
               </div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
-              <div class="dv-figure-content">
-                <div class="dv-figure-wait row items-center" v-show="loadingImages.includes(`${doc.figure.observationId}/-1`)">
-                  <q-spinner size="3em" class="col"></q-spinner>
+              <div class="dv-figure-wrapper row content-center">
+                <div class="dv-figure-content col">
+                  <div class="dv-figure-wait row items-center" v-show="loadingImages.includes(doc.id)">
+                    <q-spinner size="3em" class="col"></q-spinner>
+                  </div>
+                  <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
+                    <img src="" :id="`figimg-${documentationView}-${doc.id}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                  </div>
                 </div>
-                <img src="" class="dv-figure-img" :class="`dv-figure-${documentationView.toLowerCase()}`" :id="`figimg-${documentationView}-${doc.id}`" />
-                <histogram-viewer :dataSummary="doc.figure.dataSummary" :colormap="doc.figure.colormap" :id="doc.observationId"></histogram-viewer>
-                <div class="dv-figure-caption" v-if="doc.figure.caption === ''">{{ doc.figure.caption }}</div>
+                <div class="dv-figure-legend col">
+                  <histogram-viewer
+                    class="dv-figure-colormap"
+                    :dataSummary="doc.figure.dataSummary"
+                    :colormap="doc.figure.colormap"
+                    :id="doc.observationId"
+                    direction="vertical"
+                    :tooltips="false"
+                    :legend="true"
+                  ></histogram-viewer>
+                </div>
               </div>
-
+              <div class="dv-figure-caption row">{{ `${$t('label.reportFigure')} ${doc.index }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -215,8 +228,8 @@ export default {
             } else if (link.type === DOCUMENTATION_TYPES.TABLE) {
               t = `<${link.id}${++this.tableCounter}>`;
             }
-            link.internalIndex = ++this.referenceCounter;
-            toReplace.push({ what: m[0], with: `<a class="klab-inline-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${link.internalIndex}</a>` });
+            link.index = ++this.referenceCounter;
+            toReplace.push({ what: m[0], with: `<a class="klab-inline-link link-${m[2]}" title="${link.type === DOCUMENTATION_TYPES.REFERENCE ? link.bodyText : t}">${link.index}</a>` });
             this.links.set(m[2], link);
           }
         });
@@ -262,8 +275,8 @@ export default {
         if (this.cache.has(imageId)) {
           image.src = this.cache.get(imageId).src;
           content.figure.colormap = this.cache.get(imageId).colormap;
-        } else { // if (!this.loadingImages.includes(imageId)) {
-          this.loadingImages.push(imageId);
+        } else if (!this.loadingImages.includes(figureId)) {
+          this.loadingImages.push(figureId);
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
               format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -273,9 +286,9 @@ export default {
             responseType: 'blob',
           })
             .then((response) => {
-              const liIdx = this.loadingImages.indexOf(imageId);
+              const liIdx = this.loadingImages.indexOf(figureId);
               if (liIdx !== -1) {
-                this.loadingImages.splice(this.loadingImages.indexOf(imageId), 1);
+                this.loadingImages.splice(this.loadingImages.indexOf(figureId), 1);
               }
               if (response) {
                 const reader = new FileReader();
@@ -308,9 +321,9 @@ export default {
               }
             })
             .catch((error) => {
-              const liIdx = this.loadingImages.indexOf(imageId);
+              const liIdx = this.loadingImages.indexOf(figureId);
               if (liIdx !== -1) {
-                this.loadingImages.splice(this.loadingImages.indexOf(imageId), 1);
+                this.loadingImages.splice(this.loadingImages.indexOf(figureId), 1);
               }
               console.error(error);
             });
@@ -347,6 +360,10 @@ export default {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);
         });
+      });
+      const nodelist = document.querySelectorAll('.dv-figure-img');
+      nodelist.forEach((node) => {
+        node.setAttribute('src', '');
       });
       const self = this;
       this.rawDocumentation.forEach((doc) => {
@@ -462,6 +479,12 @@ export default {
 
 <style lang="stylus">
 @import '~variables'
+$img-max-width-big = 640px
+$legend-min-width-big = 320px
+$img-max-width-normal = 512px
+$legend-min-width-normal = 256px
+$img-max-width-small = 320px
+$legend-min-width-small = 160px
 .dv-empty-documentation
   position absolute
   width 100%
@@ -514,21 +537,29 @@ export default {
     .dv-table-bottom
       margin 8px 0 0 0
   .dv-figure-container
-    .dv-figure-img
-      max-width 640px
-    .hv-histogram-container
-      .hv-colormap
-      .hv-histogram
-      .hv-data-details-container
-        max-width 512px
-      .hv-data-value, .hv-tooltip
-      .hv-data-details
-        color $main-control-main-color
+    padding 16px
+    margin 16px 0
+    border 1px solid $main-control-main-color
+    max-width ($img-max-width-big + $legend-min-width-big)
     .dv-figure-caption
       color $main-control-main-color
+      font-style italic
+      padding-top 8px
+  .dv-figure-wrapper
+    .dv-figure-image
+      text-align center
+      overflow hidden
+      max-width $img-max-width-big
+      img
+        width auto
+        max-width $img-max-width-big
+    .dv-figure-legend
+      padding-left 16px
+      width $legend-min-width-big
+      max-width $legend-min-width-big
     .dv-figure-wait
-      width 640px
-      height 320px
+      width $img-max-width-big
+      height ($img-max-width-big / 2)
       border 1px solid $grey-3
       text-align center
       .q-spinner
@@ -536,9 +567,12 @@ export default {
     .hv-histogram-nodata
     .hv-details-nodata
       display none
-    .hv-histogram-container
-      height 100px
-      margin 16px 0
+    .hv-categories
+      margin-left 8px
+      .hv-category
+        overflow hidden
+        color $main-control-main-color
+
   .dv-citation
     color var(--app-main-color)
     a
@@ -640,8 +674,10 @@ export default {
       .dv-figure-wait
         .q-spinner
           color var(--app-main-color)
+      .hv-categories .hv-category
+          color var(--app-text-color)
       .hv-data-value, .hv-tooltip
-        color var(--app-main-color)
+        color var(--app-text-color)
       .hv-data-details
         color var(--app-text-color)
     .dv-resource-container

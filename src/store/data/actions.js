@@ -1,9 +1,10 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES } from 'shared/Constants';
+import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS,
+  OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
-import { DOCUMENTATION_TYPES } from '../../shared/Constants';
+import { getI18N } from 'plugins/vue-i18n';
 
 export default {
 
@@ -682,16 +683,30 @@ export default {
   refreshDocumentation: ({ commit }, { view, documentation }) => {
     const tree = [];
     const items = [];
+    const indexes = new Map();
     const buildTree = (node, item, l, idx) => {
-      const indexes = new Map();
       let label;
-      const levelIdx = l === null ? `${idx}.` : `${l}${idx}.`;
+      let index;
+      if (item.type === DOCUMENTATION_TYPES.SECTION) {
+        if (l === null) {
+          index = `${idx}.`;
+        } else {
+          index = `${l}${idx}.`;
+        }
+      } else {
+        if (indexes.has(item.type)) {
+          index = indexes.get(item.type) + 1;
+        } else {
+          index = 1;
+        }
+        indexes.set(item.type, index);
+      }
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
-          label = `${levelIdx} ${item.title}`;
+          label = `${index} ${item.title}`;
           break;
         case DOCUMENTATION_TYPES.TABLE:
-          label = item.bodyText;
+          label = `${getI18N().tc('label.reportTable')} ${index}. ${item.bodyText}`;
           break;
         case DOCUMENTATION_TYPES.RESOURCE:
           label = item.title;
@@ -703,7 +718,7 @@ export default {
           label = item.id;
           break;
         case DOCUMENTATION_TYPES.FIGURE:
-          ({ label } = item.figure);
+          label = `${getI18N().tc('label.reportFigure')} ${index}. ${item.figure.label}`;
           break;
         default:
           label = item.type;
@@ -711,26 +726,25 @@ export default {
       const e = {
         type: item.type,
         id: item.id,
+        index,
         parentId: item.parentId,
         previousId: item.previousId,
         nextId: item.nextId,
         label,
         children: [],
       };
+      let sectionCounter = 0;
       item.children.forEach((c) => {
-        let i;
-        if (indexes.has(item.type)) {
-          i = indexes.get(item.type) + 1;
-        } else {
-          i = 1;
+        let i = -1;
+        if (c.type === DOCUMENTATION_TYPES.SECTION) {
+          i = ++sectionCounter;
         }
-        indexes.set(item.type, i);
-        buildTree(e.children, c, levelIdx, i);
+        buildTree(e.children, c, index, i);
       });
       node.push(e);
       items.push({
         id: item.id,
-        internalIndex: levelIdx,
+        index,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,
@@ -743,8 +757,9 @@ export default {
         reference: item.reference,
       });
     };
+    let sectionCounter = 0;
     documentation.forEach((doc, index) => {
-      buildTree(tree, doc, null, index + 1);
+      buildTree(tree, doc, null, doc.type === DOCUMENTATION_TYPES.SECTION ? ++sectionCounter : index);
     });
     commit('SET_DOCUMENTATION', { view, tree });
     commit('ADD_DOCUMENTATION', items);

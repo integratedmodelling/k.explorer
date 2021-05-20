@@ -19,13 +19,13 @@ export function getI18N(reload = false) {
     let cookieLocale = 'en';
     if (Cookies.has(WEB_CONSTANTS.COOKIE_LANG)) {
       cookieLocale = Cookies.get(WEB_CONSTANTS.COOKIE_LANG);
-      console.debug(`Locale setted from cookie to ${cookieLocale}`);
+      console.debug(`Locale set from cookie to ${cookieLocale}`);
     } else {
       Cookies.set(WEB_CONSTANTS.COOKIE_LANG, cookieLocale, {
         expires: 30,
         path: '/',
       });
-      console.debug(`Lang cookie setted to ${cookieLocale}`);
+      console.debug(`Lang cookie set to ${cookieLocale}`);
     }
     klabI18N = new VueI18n({
       locale: cookieLocale,
