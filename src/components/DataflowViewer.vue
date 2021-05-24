@@ -62,7 +62,6 @@ export default {
   methods: {
     ...mapActions('data', [
       'addDataflow',
-      'setDataflowInfo',
     ]),
     loadDataflow() {
       console.info('Ask for dataflow');

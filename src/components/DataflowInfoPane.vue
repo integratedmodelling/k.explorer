@@ -105,9 +105,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('data', [
-      'setDataflowInfo',
-    ]),
     ...mapActions('view', [
       'setLeftMenuState',
       'setLeftMenuContent',
