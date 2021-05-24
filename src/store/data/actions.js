@@ -578,19 +578,25 @@ export default {
     commit('SET_DATAFLOW_STATUS', { id, status });
   },
 
-  setDataflowInfo: ({ commit }, { id, html, rateable, rating, averageRating }) => {
-    if (id !== null && id !== '') {
-      const splitted = id.split('.');
-      const elementId = splitted[splitted.length - 1];
-      const elementTypes = splitted.slice(0, splitted.length - 1);
-      commit('SET_DATAFLOW_INFO', {
-        elementId,
-        elementTypes,
-        html,
-        rateable,
-        rating,
-        averageRating,
-      });
+  setDataflowInfo: ({ commit }, dataflowInfo) => {
+    if (dataflowInfo === null) {
+      // is reset
+      commit('SET_DATAFLOW_INFO', null);
+    } else {
+      const { id, html, rateable, rating, averageRating } = dataflowInfo;
+      if (id !== null && id !== '') {
+        const split = id.split('.');
+        const elementId = split[split.length - 1];
+        const elementTypes = split.slice(0, split.length - 1);
+        commit('SET_DATAFLOW_INFO', {
+          elementId,
+          elementTypes,
+          html,
+          rateable,
+          rating,
+          averageRating,
+        });
+      }
     }
   },
 
