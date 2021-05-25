@@ -1,11 +1,11 @@
 <template>
   <div class="dfv-wrapper">
-    <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': infoIsOpen }">
+    <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': dataflowInfoOpen }">
       <div id="sprotty"></div>
       <q-resize-observable @resize="resize" :debounce="300" />
     </div>
-    <div class="dfv-info-container" v-if="infoIsOpen">
-      <dataflow-info width="infoWidth" v-on:closepanel="closePanel"></dataflow-info>
+    <div class="dfv-info-container" v-if="dataflowInfoOpen">
+      <dataflow-info width="infoWidth"></dataflow-info>
     </div>
   </div>
 </template>
@@ -36,7 +36,6 @@ export default {
       processing: false,
       visible: false,
       needsUpdate: true,
-      infoIsOpen: false,
     };
   },
   computed: {
@@ -50,6 +49,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'leftMenuState',
+      'dataflowInfoOpen',
     ]),
     reloadDataflow: {
       get() {
@@ -63,6 +63,9 @@ export default {
   methods: {
     ...mapActions('data', [
       'addDataflow',
+    ]),
+    ...mapActions('view', [
+      'setDataflowInfoOpen',
     ]),
     loadDataflow() {
       console.info('Ask for dataflow');
@@ -124,7 +127,7 @@ export default {
       if (action !== null && action.selectedElementsIDs) {
         const { length } = action.selectedElementsIDs;
         if (length === 0) {
-          this.infoIsOpen = false;
+          this.setDataflowInfoOpen(false);
           return;
         }
         for (let i = length - 1; i >= 0; i -= 1) {
@@ -138,7 +141,7 @@ export default {
       }
     },
     closePanel() {
-      this.infoIsOpen = false;
+      this.setDataflowInfoOpen(false);
     },
     resize() {
       this.$nextTick(() => {
@@ -173,16 +176,16 @@ export default {
     },
     dataflowInfo(newValue, oldValue) {
       if (newValue === null) {
-        this.infoIsOpen = false;
+        this.setDataflowInfoOpen(false);
       } else if (oldValue === null) {
-        this.infoIsOpen = true;
-      } else if (newValue.elementId === oldValue.elementId && this.infoIsOpen) {
-        this.infoIsOpen = false;
+        this.setDataflowInfoOpen(true);
+      } else if (newValue.elementId === oldValue.elementId && this.dataflowInfoOpen) {
+        this.setDataflowInfoOpen(false);
       } else {
-        this.infoIsOpen = true;
+        this.setDataflowInfoOpen(true);
       }
     },
-    infoIsOpen() {
+    dataflowInfoOpen() {
       this.resize();
     },
   },

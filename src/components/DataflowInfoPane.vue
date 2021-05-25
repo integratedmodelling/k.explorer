@@ -109,6 +109,7 @@ export default {
       'setLeftMenuState',
       'setLeftMenuContent',
       'setModalMode',
+      'setDataflowInfoOpen',
     ]),
     activateComment() {
       this.commentContent = '';
@@ -132,7 +133,7 @@ export default {
       });
     },
     closePanel() {
-      this.$emit('closepanel');
+      this.setDataflowInfoOpen(false);
     },
   },
   watch: {

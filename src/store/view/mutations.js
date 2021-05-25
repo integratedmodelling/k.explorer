@@ -227,6 +227,10 @@ export default {
     state.reloadDataflow = reload;
   },
 
+  SET_DATAFLOW_INFO_OPEN: (state, open) => {
+    state.dataflowInfoOpen = open;
+  },
+
   SET_OBSERVATION_INFO: (state, observation) => {
     if (observation === null) {
       state.treeSelected = null;

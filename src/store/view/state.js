@@ -127,7 +127,7 @@ export default {
    * Need to notify that we have unview dataflow too
    */
   reloadDataflow: false,
-
+  dataflowInfoOpen: false,
 
   /**
    * More info content

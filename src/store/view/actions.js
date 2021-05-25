@@ -280,6 +280,10 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
+  setDataflowInfoOpen: ({ commit }, open) => {
+    commit('SET_DATAFLOW_INFO_OPEN', open);
+  },
+
   setObservationInfo: ({ commit }, observation) => {
     commit('SET_OBSERVATION_INFO', observation);
   },

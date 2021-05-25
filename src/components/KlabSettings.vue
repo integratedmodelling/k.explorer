@@ -1,6 +1,6 @@
 <template>
   <div class="klab-settings-container" v-show="hasShowSettings">
-    <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible }">
+    <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible, 'klab-df-info-open': dataflowInfoOpen }">
       <q-fab
         ref="klab-settings"
         color="app-main-color"
@@ -160,6 +160,7 @@ export default {
       },
       fabVisible: false,
       closeTimeout: null,
+      modalTimeout: null,
       appsList: [],
       TERMINAL_TYPES,
     };
@@ -174,6 +175,7 @@ export default {
       'klabApp',
       'hasShowSettings',
       'layout',
+      'dataflowInfoOpen',
     ]),
     modalsAreFocused() {
       return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);
@@ -275,6 +277,8 @@ export default {
     },
     mouseActionEnter(actionName) {
       // console.warn(`Enter in action ${actionName}`);
+      clearTimeout(this.modalTimeout);
+      this.modalTimeout = null;
       this.$nextTick(() => {
         this.models[actionName] = true;
         Object.keys(this.models).forEach((key) => {
@@ -294,16 +298,24 @@ export default {
         if (!this.popupsOver[actionName]) {
           this.models[actionName] = false;
         }
-      }, 100);
+      }, 500);
     },
     mousePopupEnter(actionName) {
       this.popupsOver[actionName] = true;
+      clearTimeout(this.modalTimeout);
+      this.modalTimeout = null;
     },
     mousePopupLeave(actionName) {
       this.popupsOver[actionName] = false;
       this.models[actionName] = false;
+      this.modalTimeout = setTimeout(() => {
+        this.closeAll();
+        this.modalTimeout = null;
+      }, 500);
     },
     mouseFabEnter() {
+      clearTimeout(this.modalTimeout);
+      this.modalTimeout = null;
       // wait for animation
       setTimeout(() => {
         this.fabVisible = true;
@@ -316,12 +328,15 @@ export default {
       }
       this.closeTimeout = setTimeout(() => {
         if (!this.modalsAreFocused) {
-          this.fabVisible = false;
-          Object.keys(this.models).forEach((key) => {
-            this.models[key] = false;
-          });
+          this.closeAll();
         }
-      }, 100);
+      }, 500);
+    },
+    closeAll() {
+      this.fabVisible = false;
+      Object.keys(this.models).forEach((key) => {
+        this.models[key] = false;
+      });
     },
     openTerminal(type = null) {
       this.mousePopupLeave('userDetails');
@@ -350,6 +365,8 @@ export default {
       bottom 28px
       right 26px
       opacity 0.2
+      &.klab-df-info-open
+        right 346px
       .q-btn-fab
         height 32px
         width 32px
