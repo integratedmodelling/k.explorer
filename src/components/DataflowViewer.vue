@@ -20,31 +20,7 @@ import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
-import { TYPES, FitToScreenAction, InitializeCanvasBoundsAction, FitToScreenCommand, center, isValidDimension } from 'sprotty/lib';
-
-// Override original function for an error on code. TODO: update sprotty
-// eslint-disable-next-line
-FitToScreenCommand.prototype.getNewViewport = function (bounds, model) {
-  if (!isValidDimension(model.canvasBounds)) {
-    return undefined;
-  }
-  const c = center(bounds);
-  const delta = this.action.padding === undefined
-    ? 0
-    : 2 * this.action.padding;
-  let zoom = Math.min(model.canvasBounds.width / (bounds.width + delta), model.canvasBounds.height / (bounds.height + delta));
-  if (this.action.maxZoom !== undefined) {
-    zoom = Math.min(zoom, this.action.maxZoom);
-  }
-  return {
-    scroll: {
-      x: c.x - 0.5 * model.canvasBounds.width / zoom,
-      y: c.y - 0.5 * model.canvasBounds.height / zoom,
-    },
-    zoom,
-  };
-};
-
+import { TYPES, FitToScreenAction, InitializeCanvasBoundsAction } from 'sprotty/lib';
 
 export default {
   name: 'DataflowViewer',
@@ -167,6 +143,9 @@ export default {
     resize() {
       this.$nextTick(() => {
         const el = document.getElementById('sprotty');
+        if (el === null) {
+          return;
+        }
         const bounds = el.getBoundingClientRect();
         this.actionDispatcher.dispatch(new InitializeCanvasBoundsAction({
           x: bounds.left,

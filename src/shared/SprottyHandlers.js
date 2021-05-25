@@ -1,6 +1,6 @@
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { eventBus } from 'plugins/initApp';
-import { SelectCommand, ViewportCommand } from 'sprotty/lib';
+import { SetViewportCommand, SelectCommand } from 'sprotty/lib';
 
 const inversify = require('inversify');
 
@@ -21,7 +21,7 @@ class KlabActionHandler {
           prevent = false;
         }, delay);
         break;
-      case ViewportCommand.KIND:
+      case SetViewportCommand.KIND:
         clearTimeout(timer);
         prevent = true;
         break;
@@ -33,7 +33,7 @@ class KlabActionHandler {
 
   initialize(registry) {
     registry.register(SelectCommand.KIND, this);
-    registry.register(ViewportCommand.KIND, this);
+    registry.register(SetViewportCommand.KIND, this);
   }
 }
 
