@@ -1,10 +1,11 @@
 <template>
   <div class="dfv-wrapper">
-    <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': dataflowInfo !== null }">
+    <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': infoIsOpen }">
       <div id="sprotty"></div>
+      <q-resize-observable @resize="resize" debounce="300" />
     </div>
     <div class="dfv-info-container" v-if="infoIsOpen">
-      <dataflow-info width="infoWidth" v-on:closepanel="infoIsOpen = false"></dataflow-info>
+      <dataflow-info width="infoWidth" v-on:closepanel="closePanel"></dataflow-info>
     </div>
   </div>
 </template>
@@ -19,7 +20,31 @@ import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
-import { TYPES, FitToScreenAction } from 'sprotty/lib';
+import { TYPES, FitToScreenAction, InitializeCanvasBoundsAction, FitToScreenCommand, center, isValidDimension } from 'sprotty/lib';
+
+// Override original function for an error on code. TODO: update sprotty
+// eslint-disable-next-line
+FitToScreenCommand.prototype.getNewViewport = function (bounds, model) {
+  if (!isValidDimension(model.canvasBounds)) {
+    return undefined;
+  }
+  const c = center(bounds);
+  const delta = this.action.padding === undefined
+    ? 0
+    : 2 * this.action.padding;
+  let zoom = Math.min(model.canvasBounds.width / (bounds.width + delta), model.canvasBounds.height / (bounds.height + delta));
+  if (this.action.maxZoom !== undefined) {
+    zoom = Math.min(zoom, this.action.maxZoom);
+  }
+  return {
+    scroll: {
+      x: c.x - 0.5 * model.canvasBounds.width / zoom,
+      y: c.y - 0.5 * model.canvasBounds.height / zoom,
+    },
+    zoom,
+  };
+};
+
 
 export default {
   name: 'DataflowViewer',
@@ -122,6 +147,10 @@ export default {
     graphNodeSelectedListener(action) {
       if (action !== null && action.selectedElementsIDs) {
         const { length } = action.selectedElementsIDs;
+        if (length === 0) {
+          this.infoIsOpen = false;
+          return;
+        }
         for (let i = length - 1; i >= 0; i -= 1) {
           this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({
             nodeId: action.selectedElementsIDs[i],
@@ -131,6 +160,22 @@ export default {
         // this is needed to take the edge up if they go down an element
         this.modelSource.updateModel();
       }
+    },
+    closePanel() {
+      this.infoIsOpen = false;
+    },
+    resize() {
+      this.$nextTick(() => {
+        const el = document.getElementById('sprotty');
+        const bounds = el.getBoundingClientRect();
+        this.actionDispatcher.dispatch(new InitializeCanvasBoundsAction({
+          x: bounds.left,
+          y: bounds.top,
+          width: bounds.width,
+          height: bounds.height,
+        }));
+        this.actionDispatcher.dispatch(new FitToScreenAction(this.dataflow ? this.dataflow.children.map(c => c.id) : [], 40));
+      });
     },
   },
   watch: {
@@ -147,7 +192,6 @@ export default {
       },
       deep: true,
     },
-
     dataflowInfo(newValue, oldValue) {
       if (newValue === null) {
         this.infoIsOpen = false;
@@ -158,24 +202,15 @@ export default {
       } else {
         this.infoIsOpen = true;
       }
-      //  this.actionDispatcher.dispatch(new FitToScreenAction(this.dataflow ? this.dataflow.children.map(c => c.id) : [], 30, undefined, false));
-      // }
     },
-    /*
-    reloadDataflow() {
-      // eslint-disable-next-line no-underscore-dangle
-      if (!this._inactive) {
-        this.loadDataflow();
-      }
+    infoIsOpen() {
+      this.resize();
     },
-    */
   },
 
   mounted() {
     const sprottyContainer = createContainer({ needsClientLayout: false, needsServerLayout: true }, 'info');
     sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(KlabActionHandler);
-
-
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
     this.$eventBus.$on(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, this.graphNodeSelectedListener);
@@ -206,6 +241,11 @@ export default {
     s('rgba(var(%s), %s)', variable, opacity)
 
   .dfv-container
+    width 100%
+    &.dfv-with-info
+      width calc(100% - 320px)
+      #sprotty
+        right 320px
     #sprotty
       position absolute
       background-color #e0e0e0
