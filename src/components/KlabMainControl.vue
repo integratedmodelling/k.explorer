@@ -370,8 +370,9 @@ export default {
       }
       if (event && event.target.classList
         && (event.target.classList.contains('mcm-button')
-        || event.target.classList.contains('q-icon')
-        || event.target.classList.contains('q-btn-inner'))) {
+          || event.target.classList.contains('q-icon')
+          || event.target.classList.contains('q-btn')
+          || event.target.classList.contains('q-btn-inner'))) {
         return;
       }
       if (!this.searchIsActive) {

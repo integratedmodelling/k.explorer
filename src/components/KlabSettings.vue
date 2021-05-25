@@ -76,7 +76,7 @@
                 <div class="kud-owner-email"><span class="kud-label">{{ $t('label.userEmail') }}</span><span class="kud-value">{{ owner.email }}</span></div>
                 <div class="kud-owner-lastlogin"><span class="kud-label">{{ $t('label.userLastLogin') }}</span><span class="kud-value">{{ owner.lastLogin }}</span></div>
                 <div class="kud-owner-groups"><span class="kud-label kud-group">{{ $t('label.userGroups') }}</span>
-                  <div v-if="owner.groups.length == 0" class="kud-value">{{ $t('message.noGroupsAssigned') }}</div>
+                  <div v-if="owner.groups.length == 0" class="kud-value">{{ $t('messages.noGroupsAssigned') }}</div>
                   <div v-else v-for="group in owner.groups" :key="group.id" class="kud-value kud-group">
                     <img v-if="group.iconUrl" :src="group.iconUrl" class="kud-img-logo" :alt="group.id" />
                     <div v-else class="kud-no-group-icon">{{ group.id.charAt(0).toUpperCase() }}</div>
