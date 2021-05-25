@@ -2,7 +2,7 @@
   <div class="dfv-wrapper">
     <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': infoIsOpen }">
       <div id="sprotty"></div>
-      <q-resize-observable @resize="resize" debounce="300" />
+      <q-resize-observable @resize="resize" :debounce="300" />
     </div>
     <div class="dfv-info-container" v-if="infoIsOpen">
       <dataflow-info width="infoWidth" v-on:closepanel="closePanel"></dataflow-info>
