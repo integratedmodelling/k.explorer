@@ -11,6 +11,11 @@ is not available.
 - Figure with colormap and legends
 - Better report
 - Style improvements
+- Upgrade sprotty library
+- Dataflow working better
+### Fixes
+- Showing dataflow info works
+- Report numeration
 
 ## 0.20.0
 ### Features

@@ -984,6 +984,7 @@ export const DEFAULT_STYLES = {
   default: {
     'main-color': 'rgb(0, 92, 129)',
     'background-color': 'rgb(250, 250, 250)',
+    'alt-background': 'rgb(222, 222, 222)',
     'text-color': 'rgb(0, 92, 129)',
     'control-text-color': 'rgb(250, 250, 250)',
     'title-color': 'rgb(0, 92, 129)',

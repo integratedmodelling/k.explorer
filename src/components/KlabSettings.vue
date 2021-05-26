@@ -1,6 +1,6 @@
 <template>
   <div class="klab-settings-container" v-show="hasShowSettings">
-    <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible, 'klab-df-info-open': dataflowInfoOpen }">
+    <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible, 'klab-df-info-open': hasDataflowInfo }">
       <q-fab
         ref="klab-settings"
         color="app-main-color"
@@ -144,7 +144,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 // import { getBase64Resource } from 'shared/Helpers';
 import { URLS } from 'shared/MessagesConstants';
-import { APPS_DEFAULT_VALUES, TERMINAL_TYPES } from 'shared/Constants';
+import { APPS_DEFAULT_VALUES, TERMINAL_TYPES, VIEWERS } from 'shared/Constants';
 
 export default {
   name: 'KlabSettings',
@@ -176,7 +176,11 @@ export default {
       'hasShowSettings',
       'layout',
       'dataflowInfoOpen',
+      'mainViewerName',
     ]),
+    hasDataflowInfo() {
+      return this.dataflowInfoOpen && this.mainViewerName === VIEWERS.DATAFLOW_VIEWER.name;
+    },
     modalsAreFocused() {
       return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);
     },
