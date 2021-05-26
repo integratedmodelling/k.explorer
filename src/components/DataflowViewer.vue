@@ -119,7 +119,6 @@ export default {
         const node = findNodeById(this.graph, id);
         if (node !== null) {
           node.status = status;
-          this.modelSource.updateModel();
         }
       }
     },
@@ -136,8 +135,6 @@ export default {
             contextId: this.context.id,
           }, this.session).body);
         }
-        // this is needed to take the edge up if they go down an element
-        this.modelSource.updateModel();
       }
     },
     closePanel() {

@@ -751,6 +751,7 @@ export default {
       items.push({
         id: item.id,
         index,
+        label,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,

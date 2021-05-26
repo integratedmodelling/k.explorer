@@ -55,7 +55,7 @@
                   ></histogram-viewer>
                 </div>
               </div>
-              <div class="dv-figure-caption row">{{ `${$t('label.reportFigure')} ${doc.index }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
+              <div class="dv-figure-caption row">{{ `${doc.label} ${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
