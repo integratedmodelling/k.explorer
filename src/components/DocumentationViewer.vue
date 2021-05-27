@@ -8,13 +8,13 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.index }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="doc.id">{{ doc.idx }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.index}. ${doc.title}` }}</div>
+              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.idx}. ${doc.title}` }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
               <div class="dv-table-bottom text-right">
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
@@ -55,7 +55,7 @@
                   ></histogram-viewer>
                 </div>
               </div>
-              <div class="dv-figure-caption row">{{ `${doc.label} ${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
+              <div class="dv-figure-caption row">{{ `${$t('label.reportFigure')} ${doc.idx }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -132,6 +132,8 @@ export default {
       tableCounter: 0,
       referenceCounter: 0,
       viewport: null,
+      needUpdates: false,
+      visible: false,
     };
   },
   computed: {
@@ -349,6 +351,23 @@ export default {
     clearCache() {
       this.cache.clear();
     },
+    updateThings() {
+      if (this.visible && this.needUpdates) {
+        console.debug('Update things');
+        this.$nextTick(() => {
+          this.tables.forEach((table) => {
+            table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
+          });
+          this.images.forEach((image) => {
+            this.getImage(image.id, image.url);
+          });
+          this.figures.forEach((figure) => {
+            this.getFigure(figure.id, figure.instance);
+          });
+          this.needUpdates = false;
+        });
+      }
+    },
   },
   watch: {
     tree() {
@@ -365,43 +384,44 @@ export default {
       nodelist.forEach((node) => {
         node.setAttribute('src', '');
       });
+      this.needUpdates = true;
       const self = this;
       this.rawDocumentation.forEach((doc) => {
         const content = self.documentationContent.get(doc.id);
         if (content.bodyText) {
           content.bodyText = self.getLinkedText(content.bodyText);
         }
-        this.content.push(content);
+        self.content.push(content);
         switch (doc.type) {
           case DOCUMENTATION_TYPES.PARAGRAPH:
-            // this.content += content.bodyText;
+            // self.content += content.bodyText;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.RESOURCE:
-            this.images.push({
+            self.images.push({
               id: doc.id,
               url: content.resource.spaceDescriptionUrl,
             });
-            // this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
+            // self.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.SECTION:
-            // this.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
+            // self.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.TABLE:
-            this.tables.push({
+            self.tables.push({
               id: content.id,
               name: content.bodyText.replaceAll(' ', '_').toLowerCase(),
               tabulator: {
                 clipboard: 'copy',
                 data: content.table.rows,
-                // data: this.rows,
-                columns: this.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
-                // columns: this.formatColumns(this.columns),
+                // data: self.rows,
+                columns: self.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
+                // columns: self.formatColumns(self.columns),
                 clipboardCopied: () => {
-                  this.$q.notify({
-                    message: this.$t('messages.tableCopied'),
+                  self.$q.notify({
+                    message: self.$t('messages.tableCopied'),
                     type: 'info',
                     icon: 'mdi-information',
                     timeout: 1000,
@@ -412,8 +432,8 @@ export default {
             // });
             break;
           case DOCUMENTATION_TYPES.FIGURE: {
-            this.$set(content.figure, 'colormap', null);
-            this.figures.push({
+            self.$set(content.figure, 'colormap', null);
+            self.figures.push({
               id: content.id,
               instance: content.figure,
             });
@@ -424,17 +444,7 @@ export default {
             break;
         }
       });
-      this.$nextTick(() => {
-        this.tables.forEach((table) => {
-          table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
-        });
-        this.images.forEach((image) => {
-          this.getImage(image.id, image.url);
-        });
-        this.figures.forEach((figure) => {
-          this.getFigure(figure.id, figure.instance);
-        });
-      });
+      this.updateThings();
     },
     documentationSelected(newValue) {
       Array.prototype.forEach.call(document.getElementsByClassName('dv-selected'), (e) => {
@@ -452,6 +462,13 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
     this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
     this.viewport = Math.min(document.body.clientWidth, 640);
+  },
+  activated() {
+    this.visible = true;
+    this.updateThings();
+  },
+  deactivated() {
+    this.visible = false;
   },
   updated() {
     if (this.documentationSelected !== null) {
@@ -558,7 +575,7 @@ $legend-min-width-small = 160px
       width $legend-min-width-big
       max-width $legend-min-width-big
     .dv-figure-wait
-      width $img-max-width-big
+      max-width $img-max-width-big
       height ($img-max-width-big / 2)
       border 1px solid $grey-3
       text-align center
