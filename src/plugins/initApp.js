@@ -60,22 +60,26 @@ export default ({ store }) => {
   Cookies.set(WEB_CONSTANTS.COOKIE_MODE, mode, {
     expires: 30,
     path: '/',
+    secure: true,
   });
   Vue.prototype.$logVisibility = log;
   Cookies.set(WEB_CONSTANTS.COOKIE_LOG, log, {
     expires: 30,
     path: '/',
+    secure: true,
   });
   Vue.prototype.$baseLayer = baseLayer;
   Cookies.set(WEB_CONSTANTS.COOKIE_BASELAYER, baseLayer, {
     expires: 30,
     path: '/',
+    secure: true,
   });
   Vue.prototype.$mapDefaults = mapDefaults;
   store.state.view.saveLocation = saveLocation;
   Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
     expires: 30,
     path: '/',
+    secure: true,
   });
   store.state.view.saveDockedStatus = saveDockedStatus;
   if (saveDockedStatus) {

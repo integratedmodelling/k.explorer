@@ -326,15 +326,18 @@ export default {
       Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
         expires: 30,
         path: '/',
+        secure: true,
       });
       if (!saveLocation) {
         Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
           expires: 30,
           path: '/',
+          secure: true,
         });
         Cookies.set(WEB_CONSTANTS.COOKIE_MAPDEFAULT, { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom }, {
           expires: 30,
           path: '/',
+          secure: true,
         });
       }
     },
@@ -344,6 +347,7 @@ export default {
         Cookies.set(WEB_CONSTANTS.COOKIE_DOCKED_STATUS, this.isMainControlDocked, {
           expires: 30,
           path: '/',
+          secure: true,
         });
       } else {
         Cookies.remove(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);

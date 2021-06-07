@@ -131,6 +131,7 @@ export default {
       Cookies.set(WEB_CONSTANTS.COOKIE_DOCKED_STATUS, docked, {
         expires: 30,
         path: '/',
+        secure: true,
       });
     }
   },

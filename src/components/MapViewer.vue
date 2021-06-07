@@ -301,6 +301,7 @@ export default {
           Cookies.set(WEB_CONSTANTS.COOKIE_MAPDEFAULT, { center: this.view.getCenter(), zoom: this.view.getZoom() }, {
             expires: 30,
             path: '/',
+            secure: true,
           });
         }
       }
@@ -904,6 +905,7 @@ export default {
           Cookies.set(WEB_CONSTANTS.COOKIE_BASELAYER, layer.get('name'), {
             expires: 30,
             path: '/',
+            secure: true,
           });
         }
       });
