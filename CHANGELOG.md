@@ -13,9 +13,10 @@ is not available.
 - Style improvements
 - Upgrade sprotty library
 - Dataflow working better
-### Fixes
+### Solved
 - Showing dataflow info works
 - Report numeration
+- Tree groups broke visualisation when switch from report or datafalow view to map
 
 ## 0.20.0
 ### Features
