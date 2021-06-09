@@ -363,6 +363,7 @@ export default {
         Cookies.set(WEB_CONSTANTS.COOKIE_HELP_ON_START, false, {
           expires: 30,
           path: '/',
+          secure: true,
         });
       } else {
         Cookies.remove(WEB_CONSTANTS.COOKIE_HELP_ON_START);

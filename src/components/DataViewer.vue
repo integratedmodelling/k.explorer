@@ -99,7 +99,7 @@ export default {
       handler(newValue) {
         const newMain = newValue.length > 0 ? newValue.find(v => v.main) : null;
         this.$nextTick(() => {
-          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, { ...(newMain !== null && { idx: newMain.idx }) });
+          this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, { ...(newMain !== null && typeof newMain !== 'undefined' && { idx: newMain.idx }) });
         });
       },
       deep: true,

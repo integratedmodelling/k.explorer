@@ -157,6 +157,7 @@ export default {
         Cookies.set(WEB_CONSTANTS.COOKIE_TERMINAL_SIZE, this.selectedSize, {
           expires: 30,
           path: '/',
+          secure: true,
         });
       }
     },

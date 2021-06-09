@@ -530,6 +530,10 @@ export default {
       if (oldValues.length > newValues.length) {
         // some node was deselected
         const unselectedId = oldValues.filter(n => newValues.indexOf(n) < 0)[0];
+        // skip STUB
+        if (unselectedId.startsWith('STUB')) {
+          return;
+        }
         const unselectedNode = findNodeById(this.tree, unselectedId);
         if (unselectedNode) {
           this.setVisibility({
@@ -543,7 +547,10 @@ export default {
       } else {
         // checked some new
         const { [newValues.length - 1]: selectedId } = newValues;
-        // this.selectNode(selectedId);
+        // skip stub
+        if (selectedId.startsWith('STUB')) {
+          return;
+        }
         const selectedNode = findNodeById(this.tree, selectedId);
         if (selectedNode !== null) {
           if (selectedNode.isContainer) {

@@ -568,7 +568,7 @@ $legend-min-width-small = 160px
       overflow hidden
       max-width $img-max-width-big
       img
-        width auto
+        width 100%
         max-width $img-max-width-big
     .dv-figure-legend
       padding-left 16px
