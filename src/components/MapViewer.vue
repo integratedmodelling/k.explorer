@@ -88,7 +88,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
-import { createMarker } from 'shared/Utils';
+import { createMarker, copyToClipboard } from 'shared/Utils';
 import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -108,6 +108,9 @@ import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
 import { getArea, getCenter, intersects, containsCoordinate } from 'ol/extent';
+import MousePosition from 'ol/control/MousePosition';
+import { createStringXY } from 'ol/coordinate';
+import { defaults as defaultControls } from 'ol/control';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -181,6 +184,7 @@ export default {
       previousTopLayer: null,
       lockedObservations: [],
       contextMenuObservationId: null,
+      coordinatesControl: undefined,
     };
   },
   computed: {
@@ -212,6 +216,7 @@ export default {
     ]),
     ...mapState('view', [
       'saveLocation',
+      'viewCoordinates',
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
@@ -758,6 +763,29 @@ export default {
       }
       return layerId;
     },
+    copyCoordinates() {
+      const range = document.createRange();
+      range.selectNode(document.querySelector('.ol-mouse-position'));
+      window.getSelection().removeAllRanges(); // clear current selection
+      window.getSelection().addRange(range); // to select text
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+    },
+    setCoordinatesControl() {
+      const el = document.querySelector('.ol-mouse-position');
+      if (this.viewCoordinates) {
+        this.map.addControl(this.coordinatesControl);
+        document.querySelector('.ol-mouse-position').addEventListener('click', this.copyCoordinates);
+      } else if (el) {
+        document.querySelector('.ol-mouse-position').removeEventListener('click', this.copyCoordinates);
+        this.map.removeControl(this.coordinatesControl);
+      }
+      Cookies.set(WEB_CONSTANTS.COOKIE_VIEW_COORDINATES, this.viewCoordinates, {
+        expires: 365,
+        path: '/',
+        secure: true,
+      });
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -882,6 +910,9 @@ export default {
         });
       }
       this.setShowSettings(!this.hasExtentMap);
+    },
+    viewCoordinates() {
+      this.setCoordinatesControl();
     },
   },
   created() {
@@ -1055,6 +1086,16 @@ export default {
       controls: [],
 
     });
+    this.coordinatesControl = new MousePosition({
+      coordinateFormat: createStringXY(6),
+      projection: 'EPSG:4326',
+      // comment the following two lines to have the mouse position
+      // be placed within the map.
+      // className: 'custom-mouse-position',
+      // target: document.getElementById('mouse-position'),
+      undefinedHTML: '...',
+    });
+    this.setCoordinatesControl();
     this.drawContext();
     this.drawObservations();
     this.drawProposedContext();
@@ -1166,6 +1207,16 @@ export default {
         height 1px
         border-top 1px solid rgba(124,124,124,0.3)
         margin 0 auto
+  .ol-mouse-position
+    right 50px !important
+    top 14px
+    margin 1px
+    padding 4px 8px
+    color white
+    font-size 0.9em
+    text-align center
+    background-color rgba(0,60,136,0.5)
+    border 4px solid rgba(255,255,255,0.7)
   #mv-extent-map
     width 200px
     height 200px

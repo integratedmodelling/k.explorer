@@ -153,6 +153,16 @@
             </q-item-side>
           </div>
         </q-item>
+        <q-item>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.viewCoordinates') }}</div>
+            </div>
+            <q-item-side right>
+              <q-toggle v-model="coordinates" color="mc-main"></q-toggle>
+            </q-item-side>
+          </div>
+        </q-item>
         <template v-if="!hasContext">
           <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuSettings') }}</q-list-header>
           <q-item-separator></q-item-separator>
@@ -271,6 +281,14 @@ export default {
       },
       set(value) {
         this.setInteractiveMode(value);
+      },
+    },
+    coordinates: {
+      get() {
+        return this.$store.state.view.viewCoordinates;
+      },
+      set(value) {
+        this.$store.state.view.viewCoordinates = value;
       },
     },
     isVisible() {

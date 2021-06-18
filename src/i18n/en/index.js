@@ -156,6 +156,7 @@ export default {
     resettingContext: 'Resetting context',
     reportTable: 'Table',
     reportFigure: 'Figure',
+    viewCoordinates: 'Show coordinates',
   },
   messages: {
     connectionClosed: 'Connection closed',

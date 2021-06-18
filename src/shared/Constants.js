@@ -437,6 +437,7 @@ export const WEB_CONSTANTS = {
   COOKIE_DOCKED_STATUS: 'klab_dockedstatus', // will be true | false | not set
   COOKIE_NOTIFICATIONS: 'klab_notifications',
   COOKIE_TERMINAL_SIZE: 'klab_terminalsize',
+  COOKIE_VIEW_COORDINATES: 'klab_coordinates',
   LOCAL_STORAGE_APP_ID: 'klab:appId',
   LOCAL_STORAGE_TERMINAL_COMMANDS: 'klab:terminalCommands',
 };
