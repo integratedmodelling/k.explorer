@@ -763,21 +763,35 @@ export default {
       }
       return layerId;
     },
-    copyCoordinates() {
-      const range = document.createRange();
-      range.selectNode(document.querySelector('.ol-mouse-position'));
-      window.getSelection().removeAllRanges(); // clear current selection
-      window.getSelection().addRange(range); // to select text
-      document.execCommand('copy');
-      window.getSelection().removeAllRanges();
+    copyCoordinates(event) {
+      const coordinate = transform(event.coordinate, MAP_CONSTANTS.PROJ_EPSG_3857, MAP_CONSTANTS.PROJ_EPSG_4326);
+      const textArea = document.createElement('textarea');
+      textArea.value = coordinate;
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.position = 'fixed';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'successful' : 'unsuccessful';
+        this.$q.notify({
+          message: this.$t('messages.copiedToClipboard'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 1000,
+        });
+      } catch (err) {
+        console.error('Oops, unable to copy', err);
+      }
+      document.body.removeChild(textArea);
     },
     setCoordinatesControl() {
       const el = document.querySelector('.ol-mouse-position');
       if (this.viewCoordinates) {
         this.map.addControl(this.coordinatesControl);
-        document.querySelector('.ol-mouse-position').addEventListener('click', this.copyCoordinates);
       } else if (el) {
-        document.querySelector('.ol-mouse-position').removeEventListener('click', this.copyCoordinates);
         this.map.removeControl(this.coordinatesControl);
       }
       Cookies.set(WEB_CONSTANTS.COOKIE_VIEW_COORDINATES, this.viewCoordinates, {
@@ -962,6 +976,10 @@ export default {
     this.map.on('moveend', this.onMoveEnd);
 
     this.map.on('click', (event) => {
+      if (this.viewCoordinates && event.originalEvent.ctrlKey) {
+        this.copyCoordinates(event);
+        return;
+      }
       if (this.isDrawMode) {
         event.preventDefault();
         event.stopPropagation();
