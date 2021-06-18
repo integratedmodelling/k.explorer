@@ -146,4 +146,5 @@ export default {
   documentationSelected: state => state.documentationSelected,
   tableFontSize: state => state.tableFontSize,
   textFontSize: state => state.textFontSize,
+  viewCoordinates: state => state.viewCoordinates,
 };

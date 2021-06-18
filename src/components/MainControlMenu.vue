@@ -253,6 +253,7 @@ export default {
       'isDrawMode',
       'isScaleEditing',
       'isMainControlDocked',
+      'viewCoordinates',
     ]),
     ...mapState('view', [
       'saveLocation',
@@ -285,10 +286,10 @@ export default {
     },
     coordinates: {
       get() {
-        return this.$store.state.view.viewCoordinates;
+        return this.viewCoordinates;
       },
       set(value) {
-        this.$store.state.view.viewCoordinates = value;
+        this.setViewCoordinates(value);
       },
     },
     isVisible() {
@@ -310,6 +311,7 @@ export default {
     ]),
     ...mapActions('view', [
       'setDrawMode',
+      'setViewCoordinates',
     ]),
     startDraw() {
       this.setDrawMode(!this.isDrawMode);

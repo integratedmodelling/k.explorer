@@ -548,4 +548,7 @@ export default {
   setTextFontSize: ({ commit }, size) => {
     commit('SET_TABLE_FONT_SIZE', size);
   },
+  setViewCoordinates: ({ commit }, view) => {
+    commit('SET_VIEW_COORDINATES', view);
+  },
 };

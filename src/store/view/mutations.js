@@ -517,4 +517,7 @@ export default {
   SET_TEXT_FONT_SIZE: (state, size) => {
     state.textFontSize = size;
   },
+  SET_VIEW_COORDINATES: (state, view) => {
+    state.viewCoordinates = view;
+  },
 };

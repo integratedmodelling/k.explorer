@@ -213,10 +213,10 @@ export default {
       'isDrawMode',
       'topLayer',
       'mainViewer',
+      'viewCoordinates',
     ]),
     ...mapState('view', [
       'saveLocation',
-      'viewCoordinates',
     ]),
     hasCustomContextFeatures() {
       return this.drawerLayer && this.drawerLayer.getSource().getFeatures().length > 0;
@@ -764,7 +764,7 @@ export default {
       return layerId;
     },
     copyCoordinates(event) {
-      const coordinate = transform(event.coordinate, MAP_CONSTANTS.PROJ_EPSG_3857, MAP_CONSTANTS.PROJ_EPSG_4326);
+      const coordinate = this.coordinatesControl.element.innerText;
       const textArea = document.createElement('textarea');
       textArea.value = coordinate;
       textArea.style.top = '0';
@@ -976,7 +976,7 @@ export default {
     this.map.on('moveend', this.onMoveEnd);
 
     this.map.on('click', (event) => {
-      if (this.viewCoordinates && event.originalEvent.ctrlKey) {
+      if (this.viewCoordinates && event.originalEvent.ctrlKey && !event.originalEvent.altKey) {
         this.copyCoordinates(event);
         return;
       }
@@ -986,7 +986,7 @@ export default {
         return;
       }
       /* EASTER EGG */
-      if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
+      if (event.originalEvent.ctrlKey && event.originalEvent.altKey && event.originalEvent.shiftKey) {
         const lastLayer = baseLayersGroup.getLayersArray().slice(-1)[0];
         if (lastLayer && lastLayer.get('name') === 'mapbox_got') {
           baseLayersGroup.getLayers().pop();
@@ -1106,7 +1106,7 @@ export default {
     });
     this.coordinatesControl = new MousePosition({
       coordinateFormat: createStringXY(6),
-      projection: 'EPSG:4326',
+      projection: MAP_CONSTANTS.PROJ_EPSG_4326,
       // comment the following two lines to have the mouse position
       // be placed within the map.
       // className: 'custom-mouse-position',
