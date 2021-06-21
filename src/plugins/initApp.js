@@ -85,6 +85,7 @@ export default ({ store }) => {
   if (saveDockedStatus) {
     store.state.view.mainControlDocked = Cookies.get(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
   }
+  store.state.view.viewCoordinates = Cookies.has(WEB_CONSTANTS.COOKIE_VIEW_COORDINATES) && Cookies.get(WEB_CONSTANTS.COOKIE_VIEW_COORDINATES);
 
   store.state.data.local = local;
   store.state.data.token = token;

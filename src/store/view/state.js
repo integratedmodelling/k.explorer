@@ -261,4 +261,5 @@ export default {
   documentationSelected: null,
   tableFontSize: 12,
   textFontSize: 10,
+  viewCoordinates: true,
 };
