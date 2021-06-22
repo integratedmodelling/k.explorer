@@ -13,6 +13,7 @@
       self="top left"
       ref="mcm-main-popover"
       :persistent="false"
+      max-height="95vh"
     >
       <q-btn
         icon="mdi-close"
