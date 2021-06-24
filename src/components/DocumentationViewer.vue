@@ -34,28 +34,52 @@
               </div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
-              <div class="dv-figure-wrapper row content-center">
-                <div class="dv-figure-content col">
-                  <div class="dv-figure-wait row items-center" v-show="loadingImages.includes(doc.id)">
-                    <q-spinner size="3em" class="col"></q-spinner>
+              <div class="dv-figure-wrapper col">
+                <div class="content-center row">
+                  <div class="dv-figure-content col">
+                    <div class="dv-figure-caption-wrapper row items-end">
+                      <div class="dv-figure-caption col">{{ `${$t('label.reportFigure')} ${doc.idx }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
+                      <div v-if="doc.figure.timeString && doc.figure.timeString !== ''" class="dv-figure-timestring col">{{ doc.figure.timeString }}</div>
+                    </div>
                   </div>
-                  <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
-                    <img src="" :id="`figimg-${documentationView}-${doc.id}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                  <div class="dv-col-fill col"></div>
+                </div>
+                <div class="row content-center">
+                  <div class="dv-figure-content col">
+                    <div class="dv-figure-wait row items-center" :style="{ height: `${waitHeight}px` }" v-show="loadingImages.includes(doc.id)">
+                      <q-spinner size="3em" class="col"></q-spinner>
+                    </div>
+                    <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
+                      <img src="" :id="`figimg-${documentationView}-${doc.id}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                    </div>
+                  </div>
+                  <div class="dv-figure-legend col">
+                    <histogram-viewer
+                      class="dv-figure-colormap"
+                      :dataSummary="doc.figure.dataSummary"
+                      :colormap="doc.figure.colormap"
+                      :id="doc.observationId"
+                      direction="vertical"
+                      :tooltips="false"
+                      :legend="true"
+                    ></histogram-viewer>
                   </div>
                 </div>
-                <div class="dv-figure-legend col">
-                  <histogram-viewer
-                    class="dv-figure-colormap"
-                    :dataSummary="doc.figure.dataSummary"
-                    :colormap="doc.figure.colormap"
-                    :id="doc.observationId"
-                    direction="vertical"
-                    :tooltips="false"
-                    :legend="true"
-                  ></histogram-viewer>
+                <div class="row content-center">
+                  <div class="dv-figure-content col">
+                    <div class="dv-figure-time col">
+                      <figure-timeline
+                        :start="doc.figure.startTime"
+                        :end="doc.figure.endTime"
+                        :raw-slices="doc.figure.timeSlices"
+                        :observationId="doc.figure.observationId"
+                        v-on:timestampchange="changeTime($event, doc.id)"
+                      ></figure-timeline>
+                    </div>
+                  </div>
+                  <div class="dv-col-fill col"></div>
                 </div>
               </div>
-              <div class="dv-figure-caption row">{{ `${$t('label.reportFigure')} ${doc.idx }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -112,10 +136,12 @@ import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS,
   DOCUMENTATION_TYPES_VIEWS, GEOMETRY_CONSTANTS } from 'shared/Constants';
 import { flattenTree, getColormap } from 'shared/Helpers';
 import { axiosInstance } from 'plugins/axios';
+import FigureTimeline from 'components/FigureTimeline';
 
 export default {
   name: 'DocumentationViewer',
   components: {
+    FigureTimeline,
     HistogramViewer,
   },
   data() {
@@ -134,6 +160,7 @@ export default {
       viewport: null,
       needUpdates: false,
       visible: false,
+      waitHeight: 320, // initial wait height
     };
   },
   computed: {
@@ -269,16 +296,21 @@ export default {
         }
       }
     },
-    getFigure(figureId, instance, timestamp = -1) {
+    getFigure(figureId, instance, timestamp = -1, timeString = '') {
       const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
       if (image) {
         const content = this.documentationContent.get(figureId);
         const imageId = `${instance.observationId}/${timestamp}`;
+        content.figure.timeString = timeString;
+        if (image.src !== '') {
+          this.waitHeight = image.clientHeight;
+        }
         if (this.cache.has(imageId)) {
           image.src = this.cache.get(imageId).src;
           content.figure.colormap = this.cache.get(imageId).colormap;
         } else if (!this.loadingImages.includes(figureId)) {
           this.loadingImages.push(figureId);
+          image.src = '';
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
               format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -348,9 +380,6 @@ export default {
         console.warn('table not found');
       }
     },
-    clearCache() {
-      this.cache.clear();
-    },
     updateThings() {
       if (this.visible && this.needUpdates) {
         console.debug('Update things');
@@ -362,14 +391,26 @@ export default {
             this.getImage(image.id, image.url);
           });
           this.figures.forEach((figure) => {
-            this.getFigure(figure.id, figure.instance);
+            this.getFigure(figure.id, figure.instance, figure.time, figure.timeString);
           });
           this.needUpdates = false;
         });
       }
     },
+    clearCache() {
+      this.cache.clear();
+      this.needUpdates = true;
+    },
+    changeTime(event, id) {
+      const figure = this.figures.find(f => f.id === id);
+      if (figure) {
+        figure.time = event.time;
+        this.getFigure(figure.id, figure.instance, figure.time, event.timeString);
+      }
+    },
   },
   watch: {
+
     tree() {
       this.rawDocumentation.splice(0, this.rawDocumentation.length);
       this.content.splice(0, this.content.length);
@@ -433,9 +474,12 @@ export default {
             break;
           case DOCUMENTATION_TYPES.FIGURE: {
             self.$set(content.figure, 'colormap', null);
+            self.$set(content.figure, 'timeString', '');
             self.figures.push({
               id: content.id,
               instance: content.figure,
+              time: -1,
+              timeString: '',
             });
             break;
           }
@@ -558,10 +602,15 @@ $legend-min-width-small = 160px
     margin 16px 0
     border 1px solid $main-control-main-color
     max-width ($img-max-width-big + $legend-min-width-big)
+    .dv-figure-caption-wrapper
+      padding-bottom 8px
     .dv-figure-caption
       color $main-control-main-color
       font-style italic
-      padding-top 8px
+    .dv-figure-timestring
+      color $main-control-main-color
+      font-size .8em
+      text-align right
   .dv-figure-wrapper
     .dv-figure-image
       text-align center
@@ -571,12 +620,14 @@ $legend-min-width-small = 160px
         width 100%
         max-width $img-max-width-big
     .dv-figure-legend
+    .dv-col-fill
       padding-left 16px
       width $legend-min-width-big
       max-width $legend-min-width-big
     .dv-figure-wait
       max-width $img-max-width-big
-      height ($img-max-width-big / 2)
+      min-height ($img-max-width-big / 2)
+      height auto
       border 1px solid $grey-3
       text-align center
       .q-spinner
@@ -688,6 +739,8 @@ $legend-min-width-small = 160px
     .dv-figure-container
       .dv-figure-caption
         color var(--app-text-color)
+      .dv-figure-timestring
+        color var(--app-main-color)
       .dv-figure-wait
         .q-spinner
           color var(--app-main-color)

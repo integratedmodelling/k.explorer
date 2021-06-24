@@ -78,6 +78,7 @@ export default {
     unitMinute: 'Minute',
     unitSecond: 'Second',
     unitMillisecond: 'Millisecond',
+    timeOrigin: 'Initial time',
     labelTimeStart: 'Start time',
     labelTimeEnd: 'End time',
     labelSpatial: 'spatial',
