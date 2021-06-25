@@ -416,6 +416,8 @@ export default {
       this.content.splice(0, this.content.length);
       this.tables.splice(0, this.tables.length);
       this.images.splice(0, this.images.length);
+      this.figures.splice(0, this.figures.length);
+      this.cache.clear();
       this.tree.forEach((doc) => {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);
