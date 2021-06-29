@@ -34,6 +34,7 @@ export default {
       Cookies.set(WEB_CONSTANTS.COOKIE_LANG, this.activeLocale, {
         expires: 30,
         path: '/',
+        secure: true,
       });
       console.info(`New locale = ${this.$i18n.locale} : activeLocale = ${this.activeLocale}`);
     },

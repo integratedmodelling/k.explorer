@@ -7,10 +7,19 @@ is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
 ## 0.20.1
+### Features
+- Figure in report with colormap, legends and timelime
+- Coordinates widget and CTRL+click to copy then
 ### Improvements
-- Figure with colormap and legends
-- Better report
+- Various improvements in report
 - Style improvements
+- Upgrade sprotty library
+- Dataflow working in more consistent way
+### Solved
+- Showing dataflow info works
+- Report numeration
+- Tree groups broke visualisation when switch from report or datafalow view to map
+- Secured cookies
 
 ## 0.20.0
 ### Features

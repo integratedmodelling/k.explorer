@@ -8,13 +8,13 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.index }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="doc.id">{{ doc.idx }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.index}. ${doc.title}` }}</div>
+              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.idx}. ${doc.title}` }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
               <div class="dv-table-bottom text-right">
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
@@ -34,28 +34,52 @@
               </div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
-              <div class="dv-figure-wrapper row content-center">
-                <div class="dv-figure-content col">
-                  <div class="dv-figure-wait row items-center" v-show="loadingImages.includes(doc.id)">
-                    <q-spinner size="3em" class="col"></q-spinner>
+              <div class="dv-figure-wrapper col">
+                <div class="content-center row">
+                  <div class="dv-figure-content col">
+                    <div class="dv-figure-caption-wrapper row items-end">
+                      <div class="dv-figure-caption col">{{ `${$t('label.reportFigure')} ${doc.idx }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
+                      <div v-if="doc.figure.timeString && doc.figure.timeString !== ''" class="dv-figure-timestring col">{{ doc.figure.timeString }}</div>
+                    </div>
                   </div>
-                  <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
-                    <img src="" :id="`figimg-${documentationView}-${doc.id}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                  <div class="dv-col-fill col"></div>
+                </div>
+                <div class="row content-center">
+                  <div class="dv-figure-content col">
+                    <div class="dv-figure-wait row items-center" :style="{ height: `${waitHeight}px` }" v-show="loadingImages.includes(doc.id)">
+                      <q-spinner size="3em" class="col"></q-spinner>
+                    </div>
+                    <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
+                      <img src="" :id="`figimg-${documentationView}-${doc.id}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                    </div>
+                  </div>
+                  <div class="dv-figure-legend col">
+                    <histogram-viewer
+                      class="dv-figure-colormap"
+                      :dataSummary="doc.figure.dataSummary"
+                      :colormap="doc.figure.colormap"
+                      :id="doc.observationId"
+                      direction="vertical"
+                      :tooltips="false"
+                      :legend="true"
+                    ></histogram-viewer>
                   </div>
                 </div>
-                <div class="dv-figure-legend col">
-                  <histogram-viewer
-                    class="dv-figure-colormap"
-                    :dataSummary="doc.figure.dataSummary"
-                    :colormap="doc.figure.colormap"
-                    :id="doc.observationId"
-                    direction="vertical"
-                    :tooltips="false"
-                    :legend="true"
-                  ></histogram-viewer>
+                <div class="row content-center">
+                  <div class="dv-figure-content col">
+                    <div class="dv-figure-time col">
+                      <figure-timeline
+                        :start="doc.figure.startTime"
+                        :end="doc.figure.endTime"
+                        :raw-slices="doc.figure.timeSlices"
+                        :observationId="doc.figure.observationId"
+                        v-on:timestampchange="changeTime($event, doc.id)"
+                      ></figure-timeline>
+                    </div>
+                  </div>
+                  <div class="dv-col-fill col"></div>
                 </div>
               </div>
-              <div class="dv-figure-caption row">{{ `${$t('label.reportFigure')} ${doc.index }${doc.figure.caption !== '' ? `. ${doc.figure.caption}` : ''}` }}</div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
               <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
@@ -112,10 +136,12 @@ import { DOCUMENTATION_TYPES, TABLE_TYPES, CUSTOM_EVENTS,
   DOCUMENTATION_TYPES_VIEWS, GEOMETRY_CONSTANTS } from 'shared/Constants';
 import { flattenTree, getColormap } from 'shared/Helpers';
 import { axiosInstance } from 'plugins/axios';
+import FigureTimeline from 'components/FigureTimeline';
 
 export default {
   name: 'DocumentationViewer',
   components: {
+    FigureTimeline,
     HistogramViewer,
   },
   data() {
@@ -132,6 +158,9 @@ export default {
       tableCounter: 0,
       referenceCounter: 0,
       viewport: null,
+      needUpdates: false,
+      visible: false,
+      waitHeight: 320, // initial wait height
     };
   },
   computed: {
@@ -267,16 +296,21 @@ export default {
         }
       }
     },
-    getFigure(figureId, instance, timestamp = -1) {
+    getFigure(figureId, instance, timestamp = -1, timeString = '') {
       const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
       if (image) {
         const content = this.documentationContent.get(figureId);
         const imageId = `${instance.observationId}/${timestamp}`;
+        content.figure.timeString = timeString;
+        if (image.src !== '') {
+          this.waitHeight = image.clientHeight;
+        }
         if (this.cache.has(imageId)) {
           image.src = this.cache.get(imageId).src;
           content.figure.colormap = this.cache.get(imageId).colormap;
         } else if (!this.loadingImages.includes(figureId)) {
           this.loadingImages.push(figureId);
+          image.src = '';
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
               format: GEOMETRY_CONSTANTS.TYPE_RASTER,
@@ -346,16 +380,44 @@ export default {
         console.warn('table not found');
       }
     },
+    updateThings() {
+      if (this.visible && this.needUpdates) {
+        console.debug('Update things');
+        this.$nextTick(() => {
+          this.tables.forEach((table) => {
+            table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
+          });
+          this.images.forEach((image) => {
+            this.getImage(image.id, image.url);
+          });
+          this.figures.forEach((figure) => {
+            this.getFigure(figure.id, figure.instance, figure.time, figure.timeString);
+          });
+          this.needUpdates = false;
+        });
+      }
+    },
     clearCache() {
       this.cache.clear();
+      this.needUpdates = true;
+    },
+    changeTime(event, id) {
+      const figure = this.figures.find(f => f.id === id);
+      if (figure) {
+        figure.time = event.time;
+        this.getFigure(figure.id, figure.instance, figure.time, event.timeString);
+      }
     },
   },
   watch: {
+
     tree() {
       this.rawDocumentation.splice(0, this.rawDocumentation.length);
       this.content.splice(0, this.content.length);
       this.tables.splice(0, this.tables.length);
       this.images.splice(0, this.images.length);
+      this.figures.splice(0, this.figures.length);
+      this.cache.clear();
       this.tree.forEach((doc) => {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);
@@ -365,43 +427,44 @@ export default {
       nodelist.forEach((node) => {
         node.setAttribute('src', '');
       });
+      this.needUpdates = true;
       const self = this;
       this.rawDocumentation.forEach((doc) => {
         const content = self.documentationContent.get(doc.id);
         if (content.bodyText) {
           content.bodyText = self.getLinkedText(content.bodyText);
         }
-        this.content.push(content);
+        self.content.push(content);
         switch (doc.type) {
           case DOCUMENTATION_TYPES.PARAGRAPH:
-            // this.content += content.bodyText;
+            // self.content += content.bodyText;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.RESOURCE:
-            this.images.push({
+            self.images.push({
               id: doc.id,
               url: content.resource.spaceDescriptionUrl,
             });
-            // this.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
+            // self.content += `<span class="dv-citation"><a href="#" title="${content.bodyText}">${content.bodyText}</a></span>`;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.SECTION:
-            // this.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
+            // self.content += `<h1 id="${content.id}">${content.title}</h1>${content.subtitle ? `<h4>${doc.subtitle}` : ''}`;
             // console.warn(content);
             break;
           case DOCUMENTATION_TYPES.TABLE:
-            this.tables.push({
+            self.tables.push({
               id: content.id,
               name: content.bodyText.replaceAll(' ', '_').toLowerCase(),
               tabulator: {
                 clipboard: 'copy',
                 data: content.table.rows,
-                // data: this.rows,
-                columns: this.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
-                // columns: this.formatColumns(this.columns),
+                // data: self.rows,
+                columns: self.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
+                // columns: self.formatColumns(self.columns),
                 clipboardCopied: () => {
-                  this.$q.notify({
-                    message: this.$t('messages.tableCopied'),
+                  self.$q.notify({
+                    message: self.$t('messages.tableCopied'),
                     type: 'info',
                     icon: 'mdi-information',
                     timeout: 1000,
@@ -412,10 +475,13 @@ export default {
             // });
             break;
           case DOCUMENTATION_TYPES.FIGURE: {
-            this.$set(content.figure, 'colormap', null);
-            this.figures.push({
+            self.$set(content.figure, 'colormap', null);
+            self.$set(content.figure, 'timeString', '');
+            self.figures.push({
               id: content.id,
               instance: content.figure,
+              time: -1,
+              timeString: '',
             });
             break;
           }
@@ -424,17 +490,7 @@ export default {
             break;
         }
       });
-      this.$nextTick(() => {
-        this.tables.forEach((table) => {
-          table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
-        });
-        this.images.forEach((image) => {
-          this.getImage(image.id, image.url);
-        });
-        this.figures.forEach((figure) => {
-          this.getFigure(figure.id, figure.instance);
-        });
-      });
+      this.updateThings();
     },
     documentationSelected(newValue) {
       Array.prototype.forEach.call(document.getElementsByClassName('dv-selected'), (e) => {
@@ -452,6 +508,13 @@ export default {
     this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
     this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
     this.viewport = Math.min(document.body.clientWidth, 640);
+  },
+  activated() {
+    this.visible = true;
+    this.updateThings();
+  },
+  deactivated() {
+    this.visible = false;
   },
   updated() {
     if (this.documentationSelected !== null) {
@@ -541,25 +604,32 @@ $legend-min-width-small = 160px
     margin 16px 0
     border 1px solid $main-control-main-color
     max-width ($img-max-width-big + $legend-min-width-big)
+    .dv-figure-caption-wrapper
+      padding-bottom 8px
     .dv-figure-caption
       color $main-control-main-color
       font-style italic
-      padding-top 8px
+    .dv-figure-timestring
+      color $main-control-main-color
+      font-size .8em
+      text-align right
   .dv-figure-wrapper
     .dv-figure-image
       text-align center
       overflow hidden
       max-width $img-max-width-big
       img
-        width auto
+        width 100%
         max-width $img-max-width-big
     .dv-figure-legend
+    .dv-col-fill
       padding-left 16px
       width $legend-min-width-big
       max-width $legend-min-width-big
     .dv-figure-wait
-      width $img-max-width-big
-      height ($img-max-width-big / 2)
+      max-width $img-max-width-big
+      min-height ($img-max-width-big / 2)
+      height auto
       border 1px solid $grey-3
       text-align center
       .q-spinner
@@ -671,6 +741,8 @@ $legend-min-width-small = 160px
     .dv-figure-container
       .dv-figure-caption
         color var(--app-text-color)
+      .dv-figure-timestring
+        color var(--app-main-color)
       .dv-figure-wait
         .q-spinner
           color var(--app-main-color)

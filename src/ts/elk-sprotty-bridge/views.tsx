@@ -7,6 +7,7 @@
  *******************************************************************************/
 import * as snabbdom from "snabbdom-jsx"
 import { VNode } from "snabbdom/vnode"
+import { injectable } from "inversify";
 import {
     RenderingContext, SEdge, IView, PolylineEdgeView, RectangularNodeView, CircularNodeView,
     Point, toDegrees, SLabel, angleOfPoint
@@ -42,6 +43,7 @@ export class ElkPortView extends RectangularNodeView {
 }
 
 export class ElkEdgeView extends PolylineEdgeView {
+
     protected renderLine(edge: SEdge, segments: Point[], context: RenderingContext): VNode {
         const firstPoint = segments[0];
         let path = `M ${firstPoint.x},${firstPoint.y}`;
@@ -62,6 +64,7 @@ export class ElkEdgeView extends PolylineEdgeView {
     }
 }
 
+@injectable()
 export class ElkLabelView implements IView {
     render(label: SLabel, context: RenderingContext): VNode {
         /*

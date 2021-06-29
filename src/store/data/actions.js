@@ -579,19 +579,25 @@ export default {
     commit('SET_DATAFLOW_STATUS', { id, status });
   },
 
-  setDataflowInfo: ({ commit }, { id, html, rateable, rating, averageRating }) => {
-    if (id !== null && id !== '') {
-      const splitted = id.split('.');
-      const elementId = splitted[splitted.length - 1];
-      const elementTypes = splitted.slice(0, splitted.length - 1);
-      commit('SET_DATAFLOW_INFO', {
-        elementId,
-        elementTypes,
-        html,
-        rateable,
-        rating,
-        averageRating,
-      });
+  setDataflowInfo: ({ commit }, dataflowInfo) => {
+    if (dataflowInfo === null) {
+      // is reset
+      commit('SET_DATAFLOW_INFO', null);
+    } else {
+      const { id, html, rateable, rating, averageRating } = dataflowInfo;
+      if (id !== null && id !== '') {
+        const split = id.split('.');
+        const elementId = split[split.length - 1];
+        const elementTypes = split.slice(0, split.length - 1);
+        commit('SET_DATAFLOW_INFO', {
+          elementId,
+          elementTypes,
+          html,
+          rateable,
+          rating,
+          averageRating,
+        });
+      }
     }
   },
 
@@ -684,29 +690,29 @@ export default {
     const tree = [];
     const items = [];
     const indexes = new Map();
-    const buildTree = (node, item, l, idx) => {
+    const buildTree = (node, item, l, i) => {
       let label;
-      let index;
+      let idx;
       if (item.type === DOCUMENTATION_TYPES.SECTION) {
         if (l === null) {
-          index = `${idx}.`;
+          idx = `${i}.`;
         } else {
-          index = `${l}${idx}.`;
+          idx = `${l}${i}.`;
         }
       } else {
         if (indexes.has(item.type)) {
-          index = indexes.get(item.type) + 1;
+          idx = indexes.get(item.type) + 1;
         } else {
-          index = 1;
+          idx = 1;
         }
-        indexes.set(item.type, index);
+        indexes.set(item.type, idx);
       }
       switch (item.type) {
         case DOCUMENTATION_TYPES.SECTION:
-          label = `${index} ${item.title}`;
+          label = `${idx} ${item.title}`;
           break;
         case DOCUMENTATION_TYPES.TABLE:
-          label = `${getI18N().tc('label.reportTable')} ${index}. ${item.bodyText}`;
+          label = `${getI18N().tc('label.reportTable')} ${idx}. ${item.bodyText}`;
           break;
         case DOCUMENTATION_TYPES.RESOURCE:
           label = item.title;
@@ -718,7 +724,7 @@ export default {
           label = item.id;
           break;
         case DOCUMENTATION_TYPES.FIGURE:
-          label = `${getI18N().tc('label.reportFigure')} ${index}. ${item.figure.label}`;
+          label = `${getI18N().tc('label.reportFigure')} ${idx}. ${item.figure.label}`;
           break;
         default:
           label = item.type;
@@ -726,7 +732,7 @@ export default {
       const e = {
         type: item.type,
         id: item.id,
-        index,
+        idx,
         parentId: item.parentId,
         previousId: item.previousId,
         nextId: item.nextId,
@@ -735,16 +741,17 @@ export default {
       };
       let sectionCounter = 0;
       item.children.forEach((c) => {
-        let i = -1;
+        let localCounter = -1;
         if (c.type === DOCUMENTATION_TYPES.SECTION) {
-          i = ++sectionCounter;
+          localCounter = ++sectionCounter;
         }
-        buildTree(e.children, c, index, i);
+        buildTree(e.children, c, idx, localCounter);
       });
       node.push(e);
       items.push({
         id: item.id,
-        index,
+        idx,
+        label,
         type: item.type,
         title: item.title,
         subtitle: item.subtitle,

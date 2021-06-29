@@ -1,5 +1,5 @@
 <template>
-  <div class="klab-menu-component full-height dip-container">
+  <div class="klab-menu-component dip-container full-height" data-simplebar>
     <div class="dip-close">
       <q-btn
         flat
@@ -10,10 +10,10 @@
         @click.native="closePanel"
       ></q-btn>
     </div>
-    <div v-if="dataflowInfo !== null" class="dip-scroll-container">
+    <div class="dip-scroll-container">
       <div class="dip-content" v-html="dataflowInfo.html"></div>
     </div>
-    <div v-else>{{ $t('messages.noDataflowInfo') }}</div>
+    <!-- TODO implementation server side
     <div class="dip-bottom" v-if="dataflowInfo !== null && dataflowInfo.rateable">
       <div class="dip-comment">
         <q-icon
@@ -65,13 +65,13 @@
         <q-btn color="info" :label="$t('label.sendComment')" @click="props.ok"></q-btn>
       </template>
     </q-dialog>
+    -->
   </div>
 </template>
 
 <script>
 
 import { mapGetters, mapActions } from 'vuex';
-import SimpleBar from 'simplebar';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabQRating from 'components/custom/KlabQRating';
 
@@ -109,6 +109,7 @@ export default {
       'setLeftMenuState',
       'setLeftMenuContent',
       'setModalMode',
+      'setDataflowInfoOpen',
     ]),
     activateComment() {
       this.commentContent = '';
@@ -132,8 +133,7 @@ export default {
       });
     },
     closePanel() {
-      this.setLeftMenuContent(this.mainViewer.leftMenuContent);
-      this.setLeftMenuState(this.mainViewer.leftMenuState);
+      this.setDataflowInfoOpen(false);
     },
   },
   watch: {
@@ -141,22 +141,18 @@ export default {
       this.setModalMode(newValue);
     },
   },
-  mounted() {
-    const container = document.querySelector('.dip-container');
-    if (container) {
-      this.scrollBar = new SimpleBar(container);
-    }
-  },
 };
 
 </script>
 
 <style lang="stylus">
   @import '~variables'
+  opaque(variable, opacity = 1)
+    s('rgba(var(%s), %s)', variable, opacity)
   .dip-container
     color white
-    position relative
     padding-top 30px
+    width 100%
     .dip-content
       margin-bottom 40px
     .dip-close
@@ -165,6 +161,7 @@ export default {
       position absolute
       left 0
       top 0
+      color white
     .simplebar-scrollbar:before
       background #888
     article
@@ -176,11 +173,11 @@ export default {
         border-top 1px solid rgba(24,24,24,0.5)
         border-bottom 1px solid #444
       h1
+        color $main-control-main-color
         font-size 1.4em
         margin 0 0 10px 0
-        color $main-control-main-color
         font-weight bold
-
+        word-break break-all
       .dfe-fixed
         color rgba(255, 255, 255, .6)
         font-size .7em
@@ -207,8 +204,39 @@ export default {
           padding 5px
           border-radius 5px
           background-color rgba(152, 152, 152, .4)
+          word-break break-all
           p
             margin-bottom .5em
+  .kd-is-app
+    .dip-container
+      color var(--app-text-color)
+    .dip-close
+      color var(--app-main-color)
+    .simplebar-scrollbar:before
+      background var(--app-main-color)
+    article
+      hr
+        // border-top 1px solid var(--app-lighten-main-color)
+        border-top none
+        border-bottom 1px solid var(--app-main-color)
+      h1
+        color var(--app-title-color)
+      .dfe-fixed
+        color var(--app-lighten-main-color)
+      .dfe-content
+        table
+          th
+            color var(--app-title-color)
+          tr
+            &:nth-child(even)
+              background-color var(--app-darken-background-color, .1)
+        mark
+          color var(--app-title-color)
+        div
+          background-color var(--app-darken-background-color, .4)
+          p
+            margin-bottom .5em
+    /*
     .dip-bottom
       background-color rgb(57, 57, 57)
       height 36px
@@ -238,4 +266,6 @@ export default {
       .q-rating i:not(.active)
         color $grey-8
         opacity 1
+
+     */
 </style>

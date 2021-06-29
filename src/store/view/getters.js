@@ -84,6 +84,8 @@ export default {
   searchHistory: state => state.searchHistory,
   searchInApp: state => state.searchInApp,
 
+  dataflowInfoOpen: state => state.dataflowInfoOpen,
+
   observationInfo: state => state.observationInfo,
   mapSelection: state => state.mapSelection,
 
@@ -144,4 +146,5 @@ export default {
   documentationSelected: state => state.documentationSelected,
   tableFontSize: state => state.tableFontSize,
   textFontSize: state => state.textFontSize,
+  viewCoordinates: state => state.viewCoordinates,
 };

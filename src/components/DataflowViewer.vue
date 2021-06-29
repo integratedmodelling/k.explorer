@@ -1,6 +1,12 @@
 <template>
-  <div class="fit no-padding with-background" id="dfv-container">
-    <div id="sprotty"></div>
+  <div class="dfv-wrapper">
+    <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': dataflowInfoOpen }">
+      <div id="sprotty"></div>
+      <q-resize-observable @resize="resize" :debounce="300" />
+    </div>
+    <div class="dfv-info-container" v-if="dataflowInfoOpen">
+      <dataflow-info width="infoWidth"></dataflow-info>
+    </div>
   </div>
 </template>
 
@@ -13,11 +19,14 @@ import { URLS } from 'shared/MessagesConstants';
 import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
-import { TYPES, FitToScreenAction } from 'sprotty/lib';
-
+import DataflowInfo from 'components/DataflowInfoPane.vue';
+import { TYPES, FitToScreenAction, InitializeCanvasBoundsAction } from 'sprotty/lib';
 
 export default {
   name: 'DataflowViewer',
+  components: {
+    DataflowInfo,
+  },
   data() {
     return {
       graph: null, // the sprotty dataflow
@@ -32,6 +41,7 @@ export default {
   computed: {
     ...mapGetters('data', [
       'dataflow',
+      'dataflowInfo',
       'dataflowStatuses',
       'contextId',
       'session',
@@ -39,6 +49,7 @@ export default {
     ]),
     ...mapGetters('view', [
       'leftMenuState',
+      'dataflowInfoOpen',
     ]),
     reloadDataflow: {
       get() {
@@ -53,12 +64,10 @@ export default {
     ...mapActions('data', [
       'addDataflow',
     ]),
+    ...mapActions('view', [
+      'setDataflowInfoOpen',
+    ]),
     loadDataflow() {
-      /* This is possible?
-      if (!this.hasContext) {
-        reject(new Error('Ask for dataflow but no context'));
-      }
-      */
       console.info('Ask for dataflow');
       this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
         .then(({ data }) => {
@@ -92,7 +101,7 @@ export default {
       this.processing = true;
       this.graph = new ElkGraphJsonToSprotty().transform(dataflow);
       this.modelSource.setModel(this.graph);
-      this.actionDispatcher.dispatch(new FitToScreenAction([]));
+      this.actionDispatcher.dispatch(new FitToScreenAction([], 40));
       this.processing = false;
       this.reloadDataflow = false;
     },
@@ -110,22 +119,42 @@ export default {
         const node = findNodeById(this.graph, id);
         if (node !== null) {
           node.status = status;
-          this.modelSource.updateModel();
         }
       }
     },
     graphNodeSelectedListener(action) {
       if (action !== null && action.selectedElementsIDs) {
         const { length } = action.selectedElementsIDs;
+        if (length === 0) {
+          this.setDataflowInfoOpen(false);
+          return;
+        }
         for (let i = length - 1; i >= 0; i -= 1) {
           this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({
             nodeId: action.selectedElementsIDs[i],
             contextId: this.context.id,
           }, this.session).body);
         }
-        // this is needed to take the edge up if they go down an element
-        this.modelSource.updateModel();
       }
+    },
+    closePanel() {
+      this.setDataflowInfoOpen(false);
+    },
+    resize() {
+      this.$nextTick(() => {
+        const el = document.getElementById('sprotty');
+        if (el === null) {
+          return;
+        }
+        const bounds = el.getBoundingClientRect();
+        this.actionDispatcher.dispatch(new InitializeCanvasBoundsAction({
+          x: bounds.left,
+          y: bounds.top,
+          width: bounds.width,
+          height: bounds.height,
+        }));
+        this.actionDispatcher.dispatch(new FitToScreenAction(this.dataflow ? this.dataflow.children.map(c => c.id) : [], 40));
+      });
     },
   },
   watch: {
@@ -142,34 +171,28 @@ export default {
       },
       deep: true,
     },
-
-    /*
-    reloadDataflow() {
-      // eslint-disable-next-line no-underscore-dangle
-      if (!this._inactive) {
-        this.loadDataflow();
+    dataflowInfo(newValue, oldValue) {
+      if (newValue === null) {
+        this.setDataflowInfoOpen(false);
+      } else if (oldValue === null) {
+        this.setDataflowInfoOpen(true);
+      } else if (newValue.elementId === oldValue.elementId && this.dataflowInfoOpen) {
+        this.setDataflowInfoOpen(false);
+      } else {
+        this.setDataflowInfoOpen(true);
       }
     },
-    */
+    dataflowInfoOpen() {
+      this.resize();
+    },
   },
 
   mounted() {
     const sprottyContainer = createContainer({ needsClientLayout: false, needsServerLayout: true }, 'info');
     sprottyContainer.bind(TYPES.IActionHandlerInitializer).to(KlabActionHandler);
-
-
     this.modelSource = sprottyContainer.get(TYPES.ModelSource);
     this.actionDispatcher = sprottyContainer.get(TYPES.IActionDispatcher);
     this.$eventBus.$on(CUSTOM_EVENTS.GRAPH_NODE_SELECTED, this.graphNodeSelectedListener);
-    /*
-    this.$eventBus.$on(CUSTOM_EVENTS.NEED_FIT_MAP, () => {
-      if (this.actionDispatcher !== null) {
-        setTimeout(() => {
-          this.handleResize();
-        }, 1000);
-      }
-    });
-    */
   },
 
   activated() {
@@ -193,18 +216,25 @@ export default {
 
 <style lang="stylus">
   @import '~variables'
+  opaque(variable, opacity = 1)
+    s('rgba(var(%s), %s)', variable, opacity)
 
-  #dfv-container
+  .dfv-container
+    width 100%
+    &.dfv-with-info
+      width calc(100% - 320px)
+      #sprotty
+        right 320px
     #sprotty
       position absolute
+      background-color #e0e0e0
       top 0
       left 0
       right 0
       bottom 0
-      background-color #e0e0e0
       svg
         width 100%
-        height 99%
+        height 100%
         cursor default
         &:focus
           outline-style none
@@ -280,9 +310,21 @@ export default {
             fill $grey-6
             stroke $grey-7
 
-.kd-is-app
-  #dfv-container #sprotty
-    background-color var(--app-darken-background-color)
-    padding-left 16px
-
+  .dfv-info-container
+    position absolute
+    background-color rgba(35,35,35,0.9)
+    overflow: hidden
+    height 100% !important
+    width 320px
+    left calc(100% - 320px);
+    right 0
+    bottom 0
+    top 0
+    z-index 1001
+  .kd-is-app
+    #dfv-container #sprotty
+      background-color var(--app-darken-background-color)
+      padding-left 16px
+    .dfv-info-container
+      background-color opaque(--app-rgb-background-color, 0.9)
 </style>

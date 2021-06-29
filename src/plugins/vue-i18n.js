@@ -24,6 +24,7 @@ export function getI18N(reload = false) {
       Cookies.set(WEB_CONSTANTS.COOKIE_LANG, cookieLocale, {
         expires: 30,
         path: '/',
+        secure: true,
       });
       console.debug(`Lang cookie set to ${cookieLocale}`);
     }

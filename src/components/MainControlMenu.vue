@@ -13,6 +13,7 @@
       self="top left"
       ref="mcm-main-popover"
       :persistent="false"
+      max-height="95vh"
     >
       <q-btn
         icon="mdi-close"
@@ -153,6 +154,16 @@
             </q-item-side>
           </div>
         </q-item>
+        <q-item>
+          <div class="mcm-container">
+            <div class="klab-menuitem">
+              <div class="klab-item">{{ $t('label.viewCoordinates') }}</div>
+            </div>
+            <q-item-side right>
+              <q-toggle v-model="coordinates" color="mc-main"></q-toggle>
+            </q-item-side>
+          </div>
+        </q-item>
         <template v-if="!hasContext">
           <q-list-header style="padding: 8px 16px 0 16px; min-height: 0">{{ $t('label.mcMenuSettings') }}</q-list-header>
           <q-item-separator></q-item-separator>
@@ -243,6 +254,7 @@ export default {
       'isDrawMode',
       'isScaleEditing',
       'isMainControlDocked',
+      'viewCoordinates',
     ]),
     ...mapState('view', [
       'saveLocation',
@@ -273,6 +285,14 @@ export default {
         this.setInteractiveMode(value);
       },
     },
+    coordinates: {
+      get() {
+        return this.viewCoordinates;
+      },
+      set(value) {
+        this.setViewCoordinates(value);
+      },
+    },
     isVisible() {
       return !this.isDrawMode && !this.isScaleEditing;
     },
@@ -292,6 +312,7 @@ export default {
     ]),
     ...mapActions('view', [
       'setDrawMode',
+      'setViewCoordinates',
     ]),
     startDraw() {
       this.setDrawMode(!this.isDrawMode);
@@ -326,15 +347,18 @@ export default {
       Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
         expires: 30,
         path: '/',
+        secure: true,
       });
       if (!saveLocation) {
         Cookies.set(WEB_CONSTANTS.COOKIE_SAVELOCATION, saveLocation, {
           expires: 30,
           path: '/',
+          secure: true,
         });
         Cookies.set(WEB_CONSTANTS.COOKIE_MAPDEFAULT, { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom }, {
           expires: 30,
           path: '/',
+          secure: true,
         });
       }
     },
@@ -344,6 +368,7 @@ export default {
         Cookies.set(WEB_CONSTANTS.COOKIE_DOCKED_STATUS, this.isMainControlDocked, {
           expires: 30,
           path: '/',
+          secure: true,
         });
       } else {
         Cookies.remove(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);

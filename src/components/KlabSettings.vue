@@ -1,6 +1,6 @@
 <template>
   <div class="klab-settings-container" v-show="hasShowSettings">
-    <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible }">
+    <div class="klab-settings-button" :class="{ 'klab-fab-open': fabVisible, 'klab-df-info-open': hasDataflowInfo }">
       <q-fab
         ref="klab-settings"
         color="app-main-color"
@@ -76,7 +76,7 @@
                 <div class="kud-owner-email"><span class="kud-label">{{ $t('label.userEmail') }}</span><span class="kud-value">{{ owner.email }}</span></div>
                 <div class="kud-owner-lastlogin"><span class="kud-label">{{ $t('label.userLastLogin') }}</span><span class="kud-value">{{ owner.lastLogin }}</span></div>
                 <div class="kud-owner-groups"><span class="kud-label kud-group">{{ $t('label.userGroups') }}</span>
-                  <div v-if="owner.groups.length == 0" class="kud-value">{{ $t('message.noGroupsAssigned') }}</div>
+                  <div v-if="owner.groups.length == 0" class="kud-value">{{ $t('messages.noGroupsAssigned') }}</div>
                   <div v-else v-for="group in owner.groups" :key="group.id" class="kud-value kud-group">
                     <img v-if="group.iconUrl" :src="group.iconUrl" class="kud-img-logo" :alt="group.id" />
                     <div v-else class="kud-no-group-icon">{{ group.id.charAt(0).toUpperCase() }}</div>
@@ -144,7 +144,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 // import { getBase64Resource } from 'shared/Helpers';
 import { URLS } from 'shared/MessagesConstants';
-import { APPS_DEFAULT_VALUES, TERMINAL_TYPES } from 'shared/Constants';
+import { APPS_DEFAULT_VALUES, TERMINAL_TYPES, VIEWERS } from 'shared/Constants';
 
 export default {
   name: 'KlabSettings',
@@ -160,6 +160,7 @@ export default {
       },
       fabVisible: false,
       closeTimeout: null,
+      modalTimeout: null,
       appsList: [],
       TERMINAL_TYPES,
     };
@@ -174,7 +175,12 @@ export default {
       'klabApp',
       'hasShowSettings',
       'layout',
+      'dataflowInfoOpen',
+      'mainViewerName',
     ]),
+    hasDataflowInfo() {
+      return this.dataflowInfoOpen && this.mainViewerName === VIEWERS.DATAFLOW_VIEWER.name;
+    },
     modalsAreFocused() {
       return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);
     },
@@ -275,6 +281,8 @@ export default {
     },
     mouseActionEnter(actionName) {
       // console.warn(`Enter in action ${actionName}`);
+      clearTimeout(this.modalTimeout);
+      this.modalTimeout = null;
       this.$nextTick(() => {
         this.models[actionName] = true;
         Object.keys(this.models).forEach((key) => {
@@ -294,16 +302,24 @@ export default {
         if (!this.popupsOver[actionName]) {
           this.models[actionName] = false;
         }
-      }, 100);
+      }, 500);
     },
     mousePopupEnter(actionName) {
       this.popupsOver[actionName] = true;
+      clearTimeout(this.modalTimeout);
+      this.modalTimeout = null;
     },
     mousePopupLeave(actionName) {
       this.popupsOver[actionName] = false;
       this.models[actionName] = false;
+      this.modalTimeout = setTimeout(() => {
+        this.closeAll();
+        this.modalTimeout = null;
+      }, 500);
     },
     mouseFabEnter() {
+      clearTimeout(this.modalTimeout);
+      this.modalTimeout = null;
       // wait for animation
       setTimeout(() => {
         this.fabVisible = true;
@@ -316,12 +332,15 @@ export default {
       }
       this.closeTimeout = setTimeout(() => {
         if (!this.modalsAreFocused) {
-          this.fabVisible = false;
-          Object.keys(this.models).forEach((key) => {
-            this.models[key] = false;
-          });
+          this.closeAll();
         }
-      }, 100);
+      }, 500);
+    },
+    closeAll() {
+      this.fabVisible = false;
+      Object.keys(this.models).forEach((key) => {
+        this.models[key] = false;
+      });
     },
     openTerminal(type = null) {
       this.mousePopupLeave('userDetails');
@@ -350,6 +369,8 @@ export default {
       bottom 28px
       right 26px
       opacity 0.2
+      &.klab-df-info-open
+        right 346px
       .q-btn-fab
         height 32px
         width 32px

@@ -131,6 +131,7 @@ export default {
       Cookies.set(WEB_CONSTANTS.COOKIE_DOCKED_STATUS, docked, {
         expires: 30,
         path: '/',
+        secure: true,
       });
     }
   },
@@ -225,6 +226,10 @@ export default {
 
   SET_RELOAD_DATAFLOW: (state, reload) => {
     state.reloadDataflow = reload;
+  },
+
+  SET_DATAFLOW_INFO_OPEN: (state, open) => {
+    state.dataflowInfoOpen = open;
   },
 
   SET_OBSERVATION_INFO: (state, observation) => {
@@ -511,5 +516,8 @@ export default {
   },
   SET_TEXT_FONT_SIZE: (state, size) => {
     state.textFontSize = size;
+  },
+  SET_VIEW_COORDINATES: (state, view) => {
+    state.viewCoordinates = view;
   },
 };

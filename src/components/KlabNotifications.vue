@@ -82,6 +82,7 @@ export default {
         Cookies.set(WEB_CONSTANTS.COOKIE_NOTIFICATIONS, this.cooked, {
           expires: 365,
           path: '/',
+          secure: true,
         });
         this.remember = false;
       }

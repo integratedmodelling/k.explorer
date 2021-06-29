@@ -88,7 +88,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 import { MAP_CONSTANTS, BASE_LAYERS, MAP_STYLES, Layers } from 'shared/MapConstants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders.js';
 import { getLayerObject, isRasterObservation } from 'shared/Helpers';
-import { createMarker } from 'shared/Utils';
+import { createMarker, copyToClipboard } from 'shared/Utils';
 import { CONSTANTS, CUSTOM_EVENTS, VIEWERS, MESSAGE_TYPES, WEB_CONSTANTS, SPINNER_CONSTANTS } from 'shared/Constants';
 import UploadFiles from 'shared/UploadFilesDirective';
 import { Cookies } from 'quasar';
@@ -108,6 +108,9 @@ import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import Point from 'ol/geom/Point';
 import { getArea, getCenter, intersects, containsCoordinate } from 'ol/extent';
+import MousePosition from 'ol/control/MousePosition';
+import { createStringXY } from 'ol/coordinate';
+import { defaults as defaultControls } from 'ol/control';
 import 'ol-layerswitcher/src/ol-layerswitcher.css';
 
 export default {
@@ -181,6 +184,7 @@ export default {
       previousTopLayer: null,
       lockedObservations: [],
       contextMenuObservationId: null,
+      coordinatesControl: undefined,
     };
   },
   computed: {
@@ -209,6 +213,7 @@ export default {
       'isDrawMode',
       'topLayer',
       'mainViewer',
+      'viewCoordinates',
     ]),
     ...mapState('view', [
       'saveLocation',
@@ -301,6 +306,7 @@ export default {
           Cookies.set(WEB_CONSTANTS.COOKIE_MAPDEFAULT, { center: this.view.getCenter(), zoom: this.view.getZoom() }, {
             expires: 30,
             path: '/',
+            secure: true,
           });
         }
       }
@@ -757,6 +763,43 @@ export default {
       }
       return layerId;
     },
+    copyCoordinates(event) {
+      const coordinate = this.coordinatesControl.element.innerText;
+      const textArea = document.createElement('textarea');
+      textArea.value = coordinate;
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.position = 'fixed';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'successful' : 'unsuccessful';
+        this.$q.notify({
+          message: this.$t('messages.copiedToClipboard'),
+          type: 'info',
+          icon: 'mdi-information',
+          timeout: 1000,
+        });
+      } catch (err) {
+        console.error('Oops, unable to copy', err);
+      }
+      document.body.removeChild(textArea);
+    },
+    setCoordinatesControl() {
+      const el = document.querySelector('.ol-mouse-position');
+      if (this.viewCoordinates) {
+        this.map.addControl(this.coordinatesControl);
+      } else if (el) {
+        this.map.removeControl(this.coordinatesControl);
+      }
+      Cookies.set(WEB_CONSTANTS.COOKIE_VIEW_COORDINATES, this.viewCoordinates, {
+        expires: 365,
+        path: '/',
+        secure: true,
+      });
+    },
   },
   watch: {
     contextGeometry(newContextGeometry, oldContextGeometry) {
@@ -882,6 +925,9 @@ export default {
       }
       this.setShowSettings(!this.hasExtentMap);
     },
+    viewCoordinates() {
+      this.setCoordinatesControl();
+    },
   },
   created() {
     this.waitingGeolocation = 'geolocation' in navigator && !Cookies.has(WEB_CONSTANTS.COOKIE_MAPDEFAULT);
@@ -904,6 +950,7 @@ export default {
           Cookies.set(WEB_CONSTANTS.COOKIE_BASELAYER, layer.get('name'), {
             expires: 30,
             path: '/',
+            secure: true,
           });
         }
       });
@@ -929,13 +976,17 @@ export default {
     this.map.on('moveend', this.onMoveEnd);
 
     this.map.on('click', (event) => {
+      if (this.viewCoordinates && event.originalEvent.ctrlKey && !event.originalEvent.altKey) {
+        this.copyCoordinates(event);
+        return;
+      }
       if (this.isDrawMode) {
         event.preventDefault();
         event.stopPropagation();
         return;
       }
       /* EASTER EGG */
-      if (window.event.ctrlKey && window.event.altKey && window.event.shiftKey) {
+      if (event.originalEvent.ctrlKey && event.originalEvent.altKey && event.originalEvent.shiftKey) {
         const lastLayer = baseLayersGroup.getLayersArray().slice(-1)[0];
         if (lastLayer && lastLayer.get('name') === 'mapbox_got') {
           baseLayersGroup.getLayers().pop();
@@ -1053,6 +1104,16 @@ export default {
       controls: [],
 
     });
+    this.coordinatesControl = new MousePosition({
+      coordinateFormat: createStringXY(6),
+      projection: MAP_CONSTANTS.PROJ_EPSG_4326,
+      // comment the following two lines to have the mouse position
+      // be placed within the map.
+      // className: 'custom-mouse-position',
+      // target: document.getElementById('mouse-position'),
+      undefinedHTML: '...',
+    });
+    this.setCoordinatesControl();
     this.drawContext();
     this.drawObservations();
     this.drawProposedContext();
@@ -1164,6 +1225,16 @@ export default {
         height 1px
         border-top 1px solid rgba(124,124,124,0.3)
         margin 0 auto
+  .ol-mouse-position
+    right 50px !important
+    top 14px
+    margin 1px
+    padding 4px 8px
+    color white
+    font-size 0.9em
+    text-align center
+    background-color rgba(0,60,136,0.5)
+    border 4px solid rgba(255,255,255,0.7)
   #mv-extent-map
     width 200px
     height 200px

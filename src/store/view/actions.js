@@ -280,6 +280,10 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
+  setDataflowInfoOpen: ({ commit }, open) => {
+    commit('SET_DATAFLOW_INFO_OPEN', open);
+  },
+
   setObservationInfo: ({ commit }, observation) => {
     commit('SET_OBSERVATION_INFO', observation);
   },
@@ -543,5 +547,8 @@ export default {
   },
   setTextFontSize: ({ commit }, size) => {
     commit('SET_TABLE_FONT_SIZE', size);
+  },
+  setViewCoordinates: ({ commit }, view) => {
+    commit('SET_VIEW_COORDINATES', view);
   },
 };

@@ -8,9 +8,29 @@
 // TODO license things
 import { Container, ContainerModule } from "inversify"
 import {
-    TYPES, defaultModule, boundsModule, fadeModule, viewportModule, selectModule, moveModule, hoverModule,
-    exportModule, SGraphView, ConsoleLogger, LogLevel, configureViewerOptions, SvgExporter, configureModelElement,
-    SGraph, SGraphFactory, SLabel, edgeEditModule, LocalModelSource
+  TYPES,
+  defaultModule,
+  boundsModule,
+  viewportModule,
+  selectModule,
+  moveModule,
+  hoverModule,
+  exportModule,
+  SGraphView,
+  ConsoleLogger,
+  LogLevel,
+  configureViewerOptions,
+  SvgExporter,
+  configureModelElement,
+  SGraph,
+  SLabel,
+  LocalModelSource,
+  modelSourceModule,
+  routingModule,
+  graphModule,
+  updateModule,
+  zorderModule,
+  edgeEditModule
 } from "sprotty/lib"
 import { ElkNodeView, ElkPortView, ElkEdgeView, ElkLabelView, JunctionView } from "./views"
 import { KlabElkNode, ElkPort, ElkEdge, ElkJunction, /* ClickHandlerInitializer /*, HoverHandlerInitializer */} from "./sprotty-model";
@@ -28,7 +48,7 @@ export function createContainer({ needsClientLayout = false, needsServerLayout =
         bind(TYPES.ModelSource).to(LocalModelSource).inSingletonScope();
         rebind(TYPES.ILogger).to(ConsoleLogger).inSingletonScope();
         rebind(TYPES.LogLevel).toConstantValue(logLevelObj);
-        rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
+        // rebind(TYPES.IModelFactory).to(SGraphFactory).inSingletonScope();
         rebind(TYPES.SvgExporter).to(FilteringSvgExporter).inSingletonScope();
         const context = { bind, unbind, isBound, rebind };
         configureModelElement(context, 'graph', SGraph, SGraphView);
@@ -43,8 +63,23 @@ export function createContainer({ needsClientLayout = false, needsServerLayout =
         });
     });
     const container = new Container();
-    container.load(defaultModule, selectModule, boundsModule, moveModule, fadeModule, hoverModule, viewportModule, exportModule,
-        edgeEditModule, elkGraphModule);
+    container.load(
+      defaultModule,
+      selectModule,
+      boundsModule,
+      moveModule,
+      // fadeModule,
+      hoverModule,
+      viewportModule,
+      exportModule,
+      edgeEditModule,
+      modelSourceModule,
+      elkGraphModule,
+      routingModule,
+      graphModule,
+      updateModule,
+      zorderModule
+    );
     return container;
 }
 
