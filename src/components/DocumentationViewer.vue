@@ -8,14 +8,14 @@
         <div class="dv-content">
           <div class="dv-item" v-for="doc in content" :key="doc.id">
             <template v-if="doc.type === DOCUMENTATION_TYPES.SECTION">
-              <h1 :id="doc.id">{{ doc.idx }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
+              <h1 :id="getId(doc.id)">{{ doc.idx }} {{ doc.title }}</h1><h4 v-if="doc.subtitle">{{  doc.subtitle }}</h4>
             </template>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.PARAGRAPH" class="dv-paragraph" v-html="doc.bodyText"></div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="doc.id" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.REFERENCE" class="dv-reference" :id="getId(doc.id)" @click="selectElement(`.link-${doc.id}`)" v-html="doc.bodyText"></div>
             <span v-else-if="doc.type === DOCUMENTATION_TYPES.CITATION" class="dv-citation"><a href="#" :title="doc.bodyText">{{ doc.bodyText }}</a></span>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
-              <div class="dv-table-title" :id="doc.id">{{ `${$t('label.reportTable')} ${doc.idx}. ${doc.title}` }}</div>
-              <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${doc.id}-table`"></div>
+              <div class="dv-table-title" :id="getId(doc.id)">{{ `${$t('label.reportTable')} ${doc.idx}. ${doc.title}` }}</div>
+              <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${getId(doc.id)}-table`"></div>
               <div class="dv-table-bottom text-right">
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
                   <q-tooltip
@@ -33,7 +33,7 @@
                 </q-btn>
               </div>
             </div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="doc.id">
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.FIGURE" class="dv-figure-container" :id="getId(doc.id)">
               <div class="dv-figure-wrapper col">
                 <div class="content-center row">
                   <div class="dv-figure-content col">
@@ -50,7 +50,7 @@
                       <q-spinner size="3em" class="col"></q-spinner>
                     </div>
                     <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
-                      <img src="" :id="`figimg-${documentationView}-${doc.id}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                      <img src="" :id="`figimg-${documentationView}-${getId(doc.id)}`" class="dv-figure-img" :alt="doc.figure.caption" />
                     </div>
                   </div>
                   <div class="dv-figure-legend col">
@@ -58,7 +58,7 @@
                       class="dv-figure-colormap"
                       :dataSummary="doc.figure.dataSummary"
                       :colormap="doc.figure.colormap"
-                      :id="doc.observationId"
+                      :id="getId(doc.observationId)"
                       direction="vertical"
                       :tooltips="false"
                       :legend="true"
@@ -82,9 +82,9 @@
               </div>
             </div>
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.MODEL" class="dv-model-container">
-              <div :id="doc.id" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
+              <div :id="getId(doc.id)" class="dv-model-code" v-html="getModelCode(doc.bodyText)"></div>
             </div>
-            <div v-else-if="doc.type === DOCUMENTATION_TYPES.RESOURCE" class="dv-resource-container" :id="doc.id" >
+            <div v-else-if="doc.type === DOCUMENTATION_TYPES.RESOURCE" class="dv-resource-container" :id="getId(doc.id)" >
               <div class="dv-resource-title-container">
                 <div class="dv-resource-title">{{ doc.title }}</div>
                 <div class="dv-resource-originator">{{ doc.resource.originatorDescription }}</div>
@@ -100,7 +100,7 @@
                 <div class="dv-map-container col self-start">
                   <div class="dv-resource-map-wrapper row justify-center">
                     <div class="dv-resource-map">
-                      <img src="" :id="`resimg-${doc.id}`" wdith=360 height=180 />
+                      <img src="" :id="`resimg-${getId(doc.id)}`" wdith=360 height=180 />
                       <div class="dv-resource-authors" v-if="doc.resource.authors.length > 0">
                         <div class="dv-resource-author-wrapper" v-for="(author, index) in doc.resource.authors" :key="index">
                           <span class="dv-resource-author">{{ author }}</span>
@@ -140,6 +140,12 @@ import FigureTimeline from 'components/FigureTimeline';
 
 export default {
   name: 'DocumentationViewer',
+  props: {
+    printSuffix: {
+      type: String,
+      default: null,
+    },
+  },
   components: {
     FigureTimeline,
     HistogramViewer,
@@ -149,7 +155,6 @@ export default {
       content: [],
       tables: [],
       images: [],
-      cache: new Map(),
       loadingImages: [],
       figures: [],
       rawDocumentation: [],
@@ -172,6 +177,7 @@ export default {
       'documentationView',
       'documentationSelected',
       'tableFontSize',
+      'documentationCache',
     ]),
     tree() {
       return this.documentationTrees.find(dt => dt.view === this.documentationView).tree;
@@ -181,6 +187,12 @@ export default {
     ...mapActions('view', [
       'setDocumentation',
     ]),
+    getId(originalId) {
+      if (this.printSuffix) {
+        return `${originalId}-${this.printSuffix}`;
+      }
+      return originalId;
+    },
     getFormatter(data, params) {
       let { numberFormat } = params;
       if (!numberFormat) {
@@ -222,7 +234,7 @@ export default {
       if (id.startsWith('.')) {
         el = document.querySelector(id);
       } else {
-        el = document.getElementById(id);
+        el = document.getElementById(this.getId(id));
       }
       if (el) {
         // Use el.scrollIntoView() to instantly scroll to the element
@@ -272,12 +284,12 @@ export default {
       return text;
     },
     getImage(id, url) {
-      const docImage = document.getElementById(`resimg-${id}`);
+      const docImage = document.getElementById(`resimg-${this.getId(id)}`);
       if (docImage) {
-        if (this.cache.has(id)) {
-          const src = this.cache.get(id);
+        if (this.documentationCache.has(id)) {
+          const src = this.documentationCache.get(id);
           if (src !== null) {
-            docImage.src = this.cache.get(id);
+            docImage.src = this.documentationCache.get(id);
           } else {
             docImage.style.display = 'none';
           }
@@ -286,18 +298,18 @@ export default {
             .then(({ data: image }) => {
               if (image && image.byteLength > 0) {
                 docImage.src = `data:image/png;base64,${Buffer.from(image, 'binary').toString('base64')}`;
-                this.cache.set(id, docImage.src);
+                this.documentationCache.set(id, docImage.src);
               } else {
                 // docImage.src = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
                 docImage.style.display = 'none';
-                this.cache.set(id, null);
+                this.documentationCache.set(id, null);
               }
             });
         }
       }
     },
     getFigure(figureId, instance, timestamp = -1, timeString = '') {
-      const image = document.getElementById(`figimg-${this.documentationView}-${figureId}`);
+      const image = document.getElementById(`figimg-${this.documentationView}-${this.getId(figureId)}`);
       if (image) {
         const content = this.documentationContent.get(figureId);
         const imageId = `${instance.observationId}/${timestamp}`;
@@ -305,9 +317,9 @@ export default {
         if (image.src !== '') {
           this.waitHeight = image.clientHeight;
         }
-        if (this.cache.has(imageId)) {
-          image.src = this.cache.get(imageId).src;
-          content.figure.colormap = this.cache.get(imageId).colormap;
+        if (this.documentationCache.has(imageId)) {
+          image.src = this.documentationCache.get(imageId).src;
+          content.figure.colormap = this.documentationCache.get(imageId).colormap;
         } else if (!this.loadingImages.includes(figureId)) {
           this.loadingImages.push(figureId);
           image.src = '';
@@ -346,11 +358,11 @@ export default {
                       content.figure.colormap = getColormap(colormapResponse.data);
                       cachedImage.colormap = content.figure.colormap;
                     }
-                    this.cache.set(imageId, cachedImage);
+                    this.documentationCache.set(imageId, cachedImage);
                   })
                   .catch((error) => {
                     console.error(error);
-                    this.cache.set(imageId, cachedImage);
+                    this.documentationCache.set(imageId, cachedImage);
                   });
               }
             })
@@ -385,7 +397,7 @@ export default {
         console.debug('Update things');
         this.$nextTick(() => {
           this.tables.forEach((table) => {
-            table.instance = new Tabulator(`#${table.id}-table`, table.tabulator);
+            table.instance = new Tabulator(`#${this.getId(table.id)}-table`, table.tabulator);
           });
           this.images.forEach((image) => {
             this.getImage(image.id, image.url);
@@ -398,7 +410,7 @@ export default {
       }
     },
     clearCache() {
-      this.cache.clear();
+      this.documentationCache.clear();
       this.needUpdates = true;
     },
     changeTime(event, id) {
@@ -417,7 +429,7 @@ export default {
       this.tables.splice(0, this.tables.length);
       this.images.splice(0, this.images.length);
       this.figures.splice(0, this.figures.length);
-      this.cache.clear();
+      this.documentationCache.clear();
       this.tree.forEach((doc) => {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);

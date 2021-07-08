@@ -259,6 +259,7 @@ export default {
    */
   documentationView: DOCUMENTATION_VIEWS.REPORT,
   documentationSelected: null,
+  documentationCache: new Map(),
   tableFontSize: 12,
   textFontSize: 10,
   viewCoordinates: true,

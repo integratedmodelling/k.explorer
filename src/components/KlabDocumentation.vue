@@ -21,6 +21,10 @@
         </div>
       </q-page>
     </q-page-container>
+    <q-modal class="kd-modal" v-model="print" @show="launchPrint" no-backdrop-dismiss no-esc-dismiss>
+      <documentation-viewer print-suffix="fp" :visible="print"></documentation-viewer>
+      <q-btn icon="mdi-close" round flat size="sm" class="dv-print-hide print-hide" color="mc-main" @click="print=false"></q-btn>
+    </q-modal>
   </q-layout>
 </template>
 
@@ -49,6 +53,7 @@ export default {
     return {
       leftMenu: true,
       LEFTMENU_CONSTANTS,
+      print: false,
     };
   },
   computed: {
@@ -75,6 +80,17 @@ export default {
         this.loadDocumentation(view);
       }
     },
+    printDocumentation() {
+      this.print = true;
+    },
+    launchPrint() {
+      this.$nextTick(() => {
+        window.print();
+      });
+    },
+    closePrint() {
+      this.print = false;
+    },
   },
   watch: {
     documentationView() {
@@ -87,15 +103,26 @@ export default {
         this.load();
       });
     },
+    print() {
+      if (this.print) {
+        setTimeout(() => {
+          this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
+        }, 600);
+      }
+    },
   },
   activated() {
     this.load();
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
+    this.$eventBus.$on(CUSTOM_EVENTS.PRINT_DOCUMENTATION, this.printDocumentation);
+    window.addEventListener('afterprint', this.closePrint);
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.load);
+    this.$eventBus.$off(CUSTOM_EVENTS.PRINT_DOCUMENTATION, this.printDocumentation);
+    window.removeEventListener('afterprint', this.closePrint);
   },
 };
 </script>
@@ -103,4 +130,44 @@ export default {
 <style lang="stylus">
 .kexplorer-container.kd-is-app
   background-color var(--app-background-color)
+@media print
+  #q-app
+    display none
+  .kd-modal
+    &.fullscreen
+      position static
+    .modal-content
+      min-width none
+      max-height none
+
+  .dv-documentation-wrapper table td
+  .dv-documentation-wrapper p
+    word-break break-word
+
+  .dv-documentation-wrapper
+    display block !important
+    position relative !important
+    overflow visible !important
+    overflow-y visible !important
+    width 100% !important
+    height 100% !important
+    margin 0 !important
+    left 0 !important
+    border none !important
+
+.kd-modal
+  .modal-content
+    border-radius 20px
+    padding 20px 0
+    background-color white
+    overflow hidden
+    width 1024px
+    min-height 80vh
+  .dv-documentation-wrapper
+    .dv-content
+      padding-top 0
+  .dv-print-hide
+    position absolute
+    top 5px
+    right 20px
 </style>
