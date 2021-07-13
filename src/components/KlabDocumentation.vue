@@ -22,7 +22,7 @@
       </q-page>
     </q-page-container>
     <q-modal class="kd-modal" v-model="print" @show="launchPrint" no-backdrop-dismiss no-esc-dismiss>
-      <documentation-viewer print-suffix="fp" :visible="print"></documentation-viewer>
+      <documentation-viewer :for-printing="true"></documentation-viewer>
       <q-btn icon="mdi-close" round flat size="sm" class="dv-print-hide print-hide" color="mc-main" @click="print=false"></q-btn>
     </q-modal>
   </q-layout>
@@ -83,13 +83,16 @@ export default {
     printDocumentation() {
       this.print = true;
     },
-    launchPrint() {
-      this.$nextTick(() => {
-        window.print();
-      });
-    },
     closePrint() {
       this.print = false;
+    },
+    launchPrint() {
+      setTimeout(() => {
+        this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
+        this.$nextTick(() => {
+          window.print();
+        });
+      }, 600);
     },
   },
   watch: {
@@ -102,13 +105,6 @@ export default {
       this.$nextTick(() => {
         this.load();
       });
-    },
-    print() {
-      if (this.print) {
-        setTimeout(() => {
-          this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
-        }, 600);
-      }
     },
   },
   activated() {
@@ -139,7 +135,9 @@ export default {
     .modal-content
       min-width none
       max-height none
-
+      box-shadow none
+      width 100% !important
+      border-radius 0 !important
   .dv-documentation-wrapper table td
   .dv-documentation-wrapper p
     word-break break-word
@@ -154,6 +152,9 @@ export default {
     margin 0 !important
     left 0 !important
     border none !important
+
+  .modal-backdrop
+    background transparent !important
 
 .kd-modal
   .modal-content

@@ -16,7 +16,7 @@
             <div v-else-if="doc.type === DOCUMENTATION_TYPES.TABLE" class="dv-table-container">
               <div class="dv-table-title" :id="getId(doc.id)">{{ `${$t('label.reportTable')} ${doc.idx}. ${doc.title}` }}</div>
               <div class="dv-table" :style="{ 'font-size': `${tableFontSize}px` }" :id="`${getId(doc.id)}-table`"></div>
-              <div class="dv-table-bottom text-right">
+              <div class="dv-table-bottom text-right print-hide">
                 <q-btn class="dv-button" flat color="mc-main" icon="mdi-content-copy" @click="tableCopy(doc.id)">
                   <q-tooltip
                     anchor="bottom middle"
@@ -50,7 +50,11 @@
                       <q-spinner size="3em" class="col"></q-spinner>
                     </div>
                     <div class="dv-figure-image col" :class="`dv-figure-${documentationView.toLowerCase()}`">
-                      <img src="" :id="`figimg-${documentationView}-${getId(doc.id)}`" class="dv-figure-img" :alt="doc.figure.caption" />
+                      <img src=""
+                           :id="`figimg-${documentationView}-${getId(doc.id)}`"
+                           class="dv-figure-img"
+                           :class="[forPrinting ? 'dv-figure-print' : 'dv-figure-display' ]"
+                           :alt="doc.figure.caption" />
                     </div>
                   </div>
                   <div class="dv-figure-legend col">
@@ -141,9 +145,9 @@ import FigureTimeline from 'components/FigureTimeline';
 export default {
   name: 'DocumentationViewer',
   props: {
-    printSuffix: {
-      type: String,
-      default: null,
+    forPrinting: {
+      type: Boolean,
+      default: false,
     },
   },
   components: {
@@ -176,8 +180,8 @@ export default {
     ...mapGetters('view', [
       'documentationView',
       'documentationSelected',
-      'tableFontSize',
       'documentationCache',
+      'tableFontSize',
     ]),
     tree() {
       return this.documentationTrees.find(dt => dt.view === this.documentationView).tree;
@@ -188,8 +192,8 @@ export default {
       'setDocumentation',
     ]),
     getId(originalId) {
-      if (this.printSuffix) {
-        return `${originalId}-${this.printSuffix}`;
+      if (this.forPrinting) {
+        return `${originalId}-fp`;
       }
       return originalId;
     },
@@ -252,8 +256,14 @@ export default {
       if (event === 'table') {
         if (this.tables.length > 0) {
           this.tables.forEach((t) => {
-            t.instance.redraw(true);
+            if (t.instance) {
+              t.instance.redraw(true);
+            }
           });
+        }
+        if (this.forPrinting) {
+          this.visible = true;
+          this.build();
         }
       }
     },
@@ -323,18 +333,19 @@ export default {
         } else if (!this.loadingImages.includes(figureId)) {
           this.loadingImages.push(figureId);
           image.src = '';
+          const self = this;
           axiosInstance.get(`${process.env.WS_BASE_URL}${process.env.ENGINE_URL}${instance.baseUrl}`, {
             params: {
               format: GEOMETRY_CONSTANTS.TYPE_RASTER,
-              viewport: this.viewport,
+              viewport: self.viewport,
               ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
             },
             responseType: 'blob',
           })
             .then((response) => {
-              const liIdx = this.loadingImages.indexOf(figureId);
+              const liIdx = self.loadingImages.indexOf(figureId);
               if (liIdx !== -1) {
-                this.loadingImages.splice(this.loadingImages.indexOf(figureId), 1);
+                self.loadingImages.splice(self.loadingImages.indexOf(figureId), 1);
               }
               if (response) {
                 const reader = new FileReader();
@@ -358,18 +369,18 @@ export default {
                       content.figure.colormap = getColormap(colormapResponse.data);
                       cachedImage.colormap = content.figure.colormap;
                     }
-                    this.documentationCache.set(imageId, cachedImage);
+                    self.documentationCache.set(imageId, cachedImage);
                   })
                   .catch((error) => {
                     console.error(error);
-                    this.documentationCache.set(imageId, cachedImage);
+                    self.documentationCache.set(imageId, cachedImage);
                   });
               }
             })
             .catch((error) => {
-              const liIdx = this.loadingImages.indexOf(figureId);
+              const liIdx = self.loadingImages.indexOf(figureId);
               if (liIdx !== -1) {
-                this.loadingImages.splice(this.loadingImages.indexOf(figureId), 1);
+                self.loadingImages.splice(self.loadingImages.indexOf(figureId), 1);
               }
               console.error(error);
             });
@@ -395,10 +406,20 @@ export default {
     updateThings() {
       if (this.visible && this.needUpdates) {
         console.debug('Update things');
+        const self = this;
         this.$nextTick(() => {
-          this.tables.forEach((table) => {
-            table.instance = new Tabulator(`#${this.getId(table.id)}-table`, table.tabulator);
-          });
+          try {
+            this.tables.forEach((table) => {
+              const el = document.querySelector(`#${self.getId(table.id)}-table`);
+              if (el) {
+                table.instance = new Tabulator(`#${self.getId(table.id)}-table`, table.tabulator);
+              } else {
+                throw new Error('hidden');
+              }
+            });
+          } catch (e) {
+            console.error('Viewer is hidden');
+          }
           this.images.forEach((image) => {
             this.getImage(image.id, image.url);
           });
@@ -420,22 +441,19 @@ export default {
         this.getFigure(figure.id, figure.instance, figure.time, event.timeString);
       }
     },
-  },
-  watch: {
-
-    tree() {
+    build() {
       this.rawDocumentation.splice(0, this.rawDocumentation.length);
       this.content.splice(0, this.content.length);
       this.tables.splice(0, this.tables.length);
       this.images.splice(0, this.images.length);
       this.figures.splice(0, this.figures.length);
-      this.documentationCache.clear();
+      // this.cache.clear();
       this.tree.forEach((doc) => {
         flattenTree(doc, 'children').forEach((e) => {
           this.rawDocumentation.push(e);
         });
       });
-      const nodelist = document.querySelectorAll('.dv-figure-img');
+      const nodelist = document.querySelectorAll(`.dv-figure-${this.forPrinting ? 'print' : 'display'}`);
       nodelist.forEach((node) => {
         node.setAttribute('src', '');
       });
@@ -470,6 +488,7 @@ export default {
               name: content.bodyText.replaceAll(' ', '_').toLowerCase(),
               tabulator: {
                 clipboard: 'copy',
+                printAsHtml: true,
                 data: content.table.rows,
                 // data: self.rows,
                 columns: self.formatColumns(content.table.columns, { ...(content.table.numberFormat && { numberFormat: content.table.numberFormat }) }),
@@ -504,6 +523,11 @@ export default {
       });
       this.updateThings();
     },
+  },
+  watch: {
+    tree() {
+      this.build();
+    },
     documentationSelected(newValue) {
       Array.prototype.forEach.call(document.getElementsByClassName('dv-selected'), (e) => {
         e.classList.remove('dv-selected');
@@ -514,12 +538,14 @@ export default {
     },
   },
   mounted() {
-    if (this.documentationSelected !== null) {
-      this.selectElement(this.documentationSelected);
-    }
-    this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
-    this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
     this.viewport = Math.min(document.body.clientWidth, 640);
+    this.$eventBus.$on(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
+    if (!this.forPrinting) {
+      if (this.documentationSelected !== null) {
+        this.selectElement(this.documentationSelected);
+      }
+      this.$eventBus.$on(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
+    }
   },
   activated() {
     this.visible = true;
@@ -529,25 +555,29 @@ export default {
     this.visible = false;
   },
   updated() {
-    if (this.documentationSelected !== null) {
-      this.selectElement(this.documentationSelected);
-    }
-    if (this.links.size > 0) {
-      this.links.forEach((l, k) => {
-        document.querySelectorAll(`.link-${k}`).forEach((link) => {
-          link.onclick = () => {
-            this.setDocumentation({ id: l.id, view: DOCUMENTATION_TYPES_VIEWS[l.type] });
-          };
+    if (!this.forPrinting) {
+      if (this.documentationSelected !== null) {
+        this.selectElement(this.documentationSelected);
+      }
+      if (this.links.size > 0) {
+        this.links.forEach((l, k) => {
+          document.querySelectorAll(`.link-${k}`).forEach((link) => {
+            link.onclick = () => {
+              this.setDocumentation({ id: l.id, view: DOCUMENTATION_TYPES_VIEWS[l.type] });
+            };
+          });
         });
-      });
-      this.links.clear();
-      this.tableCounter = 0;
-      this.referenceCounter = 0;
+        this.links.clear();
+        this.tableCounter = 0;
+        this.referenceCounter = 0;
+      }
     }
   },
   beforeDestroy() {
+    if (!this.forPrinting) {
+      this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
+    }
     this.$eventBus.$off(CUSTOM_EVENTS.FONT_SIZE_CHANGE, this.fontSizeChangeListener);
-    this.$eventBus.$off(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, this.clearCache);
   },
 };
 </script>
@@ -555,6 +585,7 @@ export default {
 <style lang="stylus">
 @import '~variables'
 $img-max-width-big = 640px
+$img-max-width-print = 320px
 $legend-min-width-big = 320px
 $img-max-width-normal = 512px
 $legend-min-width-normal = 256px
@@ -802,4 +833,35 @@ $legend-min-width-small = 160px
     opacity 1
   }
 }
+@media print
+  .kd-modal .modal-content
+    .dv-figure-container
+      border none
+      .dv-figure-caption
+        color black
+      .dv-figure-timestring
+        color black
+    .hv-category
+      color black !important
+  .ft-container
+    .ft-time .ft-date-container
+      background-color white
+    .ft-time-origin-container
+      color black
+      .ft-time-origin
+        color black
+        &.ft-time-origin-active
+          color black
+    .ft-timeline-container
+      .ft-timeline
+        background-color white
+        .ft-timeline-viewer
+          background-color black
+        .ft-slice-container
+          .ft-slice
+            background-color black
+          .ft-slice-caption
+            color black
+        .ft-actual-time
+          color black
 </style>
