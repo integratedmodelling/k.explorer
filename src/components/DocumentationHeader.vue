@@ -104,12 +104,14 @@ export default {
       },
       set(value) {
         this.$store.dispatch('view/setDocumentationView', value, { root: true });
+        this.setDocumentationSelected(null);
       },
     },
   },
   methods: {
     ...mapActions('view', [
       'setTableFontSize',
+      'setDocumentationSelected',
     ]),
     tableFontSizeChange(amount) {
       this.setTableFontSize(this.tableFontSize + amount);
