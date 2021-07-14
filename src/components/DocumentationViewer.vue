@@ -408,18 +408,12 @@ export default {
         console.debug('Update things');
         const self = this;
         this.$nextTick(() => {
-          try {
-            this.tables.forEach((table) => {
-              const el = document.querySelector(`#${self.getId(table.id)}-table`);
-              if (el) {
-                table.instance = new Tabulator(`#${self.getId(table.id)}-table`, table.tabulator);
-              } else {
-                throw new Error('hidden');
-              }
-            });
-          } catch (e) {
-            console.error('Viewer is hidden');
-          }
+          this.tables.forEach((table) => {
+            const el = document.querySelector(`#${self.getId(table.id)}-table`);
+            if (el) {
+              table.instance = new Tabulator(`#${self.getId(table.id)}-table`, table.tabulator);
+            }
+          });
           this.images.forEach((image) => {
             this.getImage(image.id, image.url);
           });
@@ -835,6 +829,9 @@ $legend-min-width-small = 160px
 }
 @media print
   .kd-modal .modal-content
+    .dv-figure-wrapper
+    .dv-resource-container
+      break-inside avoid
     .dv-figure-container
       border none
       .dv-figure-caption
@@ -843,25 +840,39 @@ $legend-min-width-small = 160px
         color black
     .hv-category
       color black !important
-  .ft-container
-    .ft-time .ft-date-container
-      background-color white
-    .ft-time-origin-container
-      color black
-      .ft-time-origin
-        color black
-        &.ft-time-origin-active
-          color black
-    .ft-timeline-container
-      .ft-timeline
+    .ft-container
+      .ft-time .ft-date-container
         background-color white
-        .ft-timeline-viewer
-          background-color black
-        .ft-slice-container
-          .ft-slice
-            background-color black
-          .ft-slice-caption
-            color black
-        .ft-actual-time
+      .ft-time-origin-container
+        color black
+        .ft-time-origin
           color black
+          &.ft-time-origin-active
+            color black
+      .ft-timeline-container
+        .ft-timeline
+          background-color white
+          .ft-timeline-viewer
+            background-color black
+          .ft-slice-container
+            .ft-slice
+              background-color black
+            .ft-slice-caption
+              color black
+          .ft-actual-time
+            color black
+    .dv-resource-container
+    .dv-model-container
+      color black
+    .dv-resource-container
+      border 1px solid black
+      .dv-resource-title-container
+        background-color white
+        .dv-resource-keywords
+          .dv-resource-keyword-wrapper
+          .dv-resource-keyword
+          .dv-resource-keyword-separator
+            color black
+      .dv-resource-urls .klab-link
+        color black
 </style>

@@ -87,11 +87,9 @@ export default {
       this.print = false;
     },
     launchPrint() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
       setTimeout(() => {
-        this.$eventBus.$emit(CUSTOM_EVENTS.FONT_SIZE_CHANGE, 'table');
-        this.$nextTick(() => {
-          window.print();
-        });
+        window.print();
       }, 600);
     },
   },
