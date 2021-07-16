@@ -20,6 +20,7 @@ is not available.
 - Report numeration
 - Tree groups broke visualisation when switch from report or datafalow view to map
 - Secured cookies
+- Print documentation was restored
 
 ## 0.20.0
 ### Features
