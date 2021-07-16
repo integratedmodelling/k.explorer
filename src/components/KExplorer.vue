@@ -52,7 +52,6 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import KlabMainControl from 'components/KlabMainControl.vue';
 import DataViewer from 'components/DataViewer.vue';
 import KlabDocumentation from 'components/KlabDocumentation.vue';
-import ReportViewer from 'components/ReportViewer.vue';
 import DataflowViewer from 'components/DataflowViewer.vue';
 import InputRequestModal from 'components/InputRequestModal.vue';
 import ScaleChangeDialog from 'components/ScaleChangeDialog.vue';
@@ -67,7 +66,6 @@ export default {
     KlabMainControl,
     DataViewer,
     KlabDocumentation,
-    ReportViewer,
     DataflowViewer,
     InputRequestModal,
     ScaleChangeDialog,

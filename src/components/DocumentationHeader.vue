@@ -22,6 +22,14 @@
           :delay="1000"
         >{{ $t('label.appReload')}}</q-tooltip>
       </q-btn>
+      <q-btn icon="mdi-printer" class="dh-button" flat color="mc-main" @click="print">
+        <q-tooltip
+          :offset="[0, 8]"
+          self="bottom middle"
+          anchor="top middle"
+          :delay="1000"
+        >{{ $t('label.appPrint')}}</q-tooltip>
+      </q-btn>
       <template v-if="selectedTab === DOCUMENTATION_VIEWS.TABLES">
         <q-btn class="dh-button" :disable="tableFontSize - 1 < 8" @click="tableFontSizeChange(-1)" flat icon="mdi-format-font-size-decrease" color="mc-main"></q-btn>
         <q-btn class="dh-button" :disable="tableFontSize + 1 > 50" @click="tableFontSizeChange(1)" flat icon="mdi-format-font-size-increase" color="mc-main"></q-btn>
@@ -96,12 +104,14 @@ export default {
       },
       set(value) {
         this.$store.dispatch('view/setDocumentationView', value, { root: true });
+        this.setDocumentationSelected(null);
       },
     },
   },
   methods: {
     ...mapActions('view', [
       'setTableFontSize',
+      'setDocumentationSelected',
     ]),
     tableFontSizeChange(amount) {
       this.setTableFontSize(this.tableFontSize + amount);
@@ -109,6 +119,9 @@ export default {
     },
     forceReload() {
       this.$eventBus.$emit(CUSTOM_EVENTS.REFRESH_DOCUMENTATION, { force: true });
+    },
+    print() {
+      this.$eventBus.$emit(CUSTOM_EVENTS.PRINT_DOCUMENTATION);
     },
   },
 };

@@ -549,6 +549,7 @@ export const CUSTOM_EVENTS = {
   TERMINAL_FOCUSED: 'terminalfocused',
   COMMAND_RESPONSE: 'commandresponse',
   REFRESH_DOCUMENTATION: 'refreshdocumentation',
+  PRINT_DOCUMENTATION: 'printdocumentation',
   SHOW_DOCUMENTATION: 'showdowcumentation',
   FONT_SIZE_CHANGE: 'fontsizechange',
   DOWNLOAD_URL: 'downloadurl',
