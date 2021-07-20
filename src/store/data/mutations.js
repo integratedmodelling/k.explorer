@@ -267,7 +267,8 @@ export default {
     }
     const isRoot = context.id === context.rootContextId;
     if ((isRoot && node.rootContextId !== context.id) || (!isRoot && node.contextId !== context.id)) {
-      console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
+      // console.warn(`Try to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
+      console.info(`Subcontext or trying to add to tree an observation of other context. Actual: ${context.id} / Node: ${node.rootContextId}`);
     }
     if (context.id === node.id) {
       console.error('Try to add context to tree, check it!');
