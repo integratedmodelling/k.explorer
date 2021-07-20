@@ -46,6 +46,10 @@ export default class Stack {
     return this.items.findIndex(what);
   }
 
+  findItem(id) {
+    return this.items.find(item => item.id === id);
+  }
+
   map(how) {
     return this.items.map(how);
   }

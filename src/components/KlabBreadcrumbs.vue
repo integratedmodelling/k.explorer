@@ -3,14 +3,15 @@
     <span
       v-for="(element, index) in contextsLabels"
       :key="element.id"
-      @click="loadContext(element.contextId, index)"
+      @click="load(element.contextId, index)"
     >{{ element.label }}</span>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import LoadContext from 'shared/LoadContextMixin';
+import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 
 export default {
   name: 'KlabBreadcrumbs',
@@ -21,12 +22,27 @@ export default {
     ...mapGetters('data', [
       'contextsLabels',
       'contextsCount',
+      'contextById',
     ]),
   },
   methods: {
-    loadContext(contextId, index) {
+    ...mapActions('data', [
+      'loadContext',
+    ]),
+    load(contextId, index) {
       if (index !== this.contextsCount - 1) {
-        this.loadOrReloadContext(contextId);
+        const observation = this.$store.state.data.observations.find(o => o.id === contextId);
+        let context;
+        if (observation) {
+          context = observation;
+        } else {
+          context = this.contextById(contextId);
+        }
+        this.sendStompMessage(MESSAGES_BUILDERS.CONTEXTUALIZATION_REQUEST(
+          { contextId: context.id, ...(context.contextId && { parentContext: context.contextId }) },
+          this.$store.state.data.session,
+        ).body);
+        this.loadContext(contextId);
       }
     },
   },

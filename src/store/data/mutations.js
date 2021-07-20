@@ -19,13 +19,13 @@ export default {
     // the previous store is delegate to actions because a mutations cannot commit another mutation
     if (context === null) {
       state.contexts.empty();
-    } else if (isRecontext) {
-      const actualContext = state.contexts.peek();
-      context.scaleReference = actualContext.scaleReference;
-      state.contexts.push(context);
     } else {
       const exists = state.contexts.findIndex(ctxt => ctxt.id === context.id);
       if (exists === -1) {
+        if (isRecontext) {
+          const actualContext = state.contexts.peek();
+          context.scaleReference = actualContext.scaleReference;
+        }
         state.contexts.push(context);
       } else {
         state.contexts.pop(exists);
