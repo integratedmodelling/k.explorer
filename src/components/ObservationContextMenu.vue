@@ -37,6 +37,7 @@ export default {
   methods: {
     ...mapActions('data', [
       'setContext',
+      'loadContext',
       'setContextMenuObservationId',
     ]),
     initContextMenu() {
@@ -94,7 +95,8 @@ export default {
               { contextId: this.itemObservation.id, parentContext: this.itemObservation.contextId },
               this.$store.state.data.session,
             ).body);
-            this.setContext({ context: this.itemObservation, isRecontext: true });
+            // this.setContext({ context: this.itemObservation, isRecontext: true });
+            this.loadContext(this.itemObservation.id);
             break;
           case 'AddToCache':
             console.log('Ask for Add to cache, no action for now'); // TODO: add to cache action on engine
