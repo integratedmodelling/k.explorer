@@ -1,4 +1,5 @@
 import moment from 'moment';
+import qs from 'qs';
 import { eventBus } from 'plugins/initApp';
 import { VIEWERS, VIEWER_COMPONENTS, LEFTMENU_CONSTANTS, CONSTANTS, OBSERVATION_CONSTANTS,
   SPINNER_CONSTANTS, CUSTOM_EVENTS, VIEW_SETTING, WEB_CONSTANTS, DOCUMENTATION_TYPES_VIEWS, DOCUMENTATION_VIEWS } from 'shared/Constants';
@@ -301,6 +302,7 @@ export default {
           format: 'SCALAR',
           locator: `${time}S0(1){latlon=[${coordinates[0]} ${coordinates[1]}]}`,
         },
+        paramsSerializer: p => qs.stringify(p, { arrayFormat: 'repeat' }),
       }, (response, callback) => {
         let value = 'No value';
         if (response && typeof response.data !== 'undefined') {
