@@ -125,14 +125,18 @@ export default {
 .kexplorer-container.kd-is-app
   background-color var(--app-background-color)
 @media print
+  body
+    min-width 100%
   #q-app
     display none
   .kd-modal
     &.fullscreen
       position static
     .modal-content
-      min-width none
-      max-height none
+      min-width 100%
+      max-width 100%
+      min-height 100%
+      max-height 100%
       box-shadow none
       width 100% !important
       border-radius 0 !important
