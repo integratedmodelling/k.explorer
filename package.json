@@ -1,6 +1,6 @@
 {
   "name": "klab.explorer",
-  "version": "0.20.1",
+  "version": "0.21.0",
   "description": "Web based explorer for k.LAB engine",
   "productName": "k.Explorer",
   "license": "AGPL-3.0-only",
@@ -31,6 +31,7 @@
     "ol-layerswitcher": "^3.0.0",
     "printf": "^0.6.1",
     "proj4": "^2.4.4",
+    "qs": "^6.10.1",
     "quasar": "^0.0.18",
     "reflect-metadata": "^0.1.13",
     "simplebar": "3.0.0-beta.5",
