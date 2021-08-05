@@ -124,6 +124,21 @@ export default {
 <style lang="stylus">
 .kexplorer-container.kd-is-app
   background-color var(--app-background-color)
+.kd-modal
+  .modal-content
+    border-radius 20px
+    padding 20px 0
+    background-color white
+    overflow hidden
+    width 1024px
+    min-height 80vh
+  .dv-documentation-wrapper
+    .dv-content
+      padding-top 0
+  .dv-print-hide
+    position absolute
+    top 5px
+    right 20px
 @media print
   body
     min-width 100%
@@ -158,19 +173,4 @@ export default {
   .modal-backdrop
     background transparent !important
 
-.kd-modal
-  .modal-content
-    border-radius 20px
-    padding 20px 0
-    background-color white
-    overflow hidden
-    width 1024px
-    min-height 80vh
-  .dv-documentation-wrapper
-    .dv-content
-      padding-top 0
-  .dv-print-hide
-    position absolute
-    top 5px
-    right 20px
 </style>

@@ -831,6 +831,7 @@ $legend-min-width-small = 160px
   .kd-modal .modal-content
     .dv-figure-wrapper
     .dv-resource-container
+    .dv-table-container
       break-inside avoid
     .dv-figure-container
       border none
@@ -842,7 +843,7 @@ $legend-min-width-small = 160px
       color black !important
     .ft-container
       .ft-time .ft-date-container
-        background-color white
+          background-color white
       .ft-time-origin-container
         color black
         .ft-time-origin
