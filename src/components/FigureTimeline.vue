@@ -49,7 +49,7 @@
             </div>
             <div
               class="ft-slice-container"
-              :style="{ left: `calc(${calculatePosition(end)}px - 2px` }"
+              :style="{ left: `calc(${calculatePosition(end)}px - 2px)` }"
             >
               <div class="ft-slice"></div>
               <div class="ft-slice-caption">{{ getLabel(end) }}</div>
