@@ -48,6 +48,26 @@
 
       </template>
     </q-layout-drawer>
+    <q-layout-drawer
+      side="right"
+      :class="{ 'kapp-main':  isRootLayout}"
+      class="kapp-right-container kapp-container print-hide"
+      content-class="kapp-right-inner-container"
+      v-if="showRightPanel"
+      v-model="showRightPanel"
+      :width="rightPanelWidth"
+    >
+      <template v-if="rightPanel">
+        <klab-app-viewer
+          :id="`kapp-${idSuffix}-right-0`"
+          :component="layout.rightPanels[0]"
+          direction="vertical"
+          class="kapp-right-wrapper"
+        >
+        </klab-app-viewer>
+
+      </template>
+    </q-layout-drawer>
     <q-page-container>
       <k-explorer v-if="!layout || layout.panels.length === 0" class="kapp-main-container is-kexplorer" :id="`kapp-${idSuffix}-main`" :mainPanelStyle="mainPanelStyle"></k-explorer>
       <template v-else>
@@ -121,8 +141,11 @@ export default {
         width: 0,
         height: 0,
       },
+      rightPanel: {
+        width: 0,
+        height: 0,
+      },
       logoImage: APPS_DEFAULT_VALUES.DEFAULT_LOGO,
-      showLeft: true,
       resetTimeout: null,
       blockApp: false,
     };
@@ -152,12 +175,23 @@ export default {
         // nothing to do
       },
     },
+    showRightPanel: {
+      get() {
+        return this.layout && this.layout.rightPanels.length > 0;
+      },
+      set() {
+        // nothing to do
+      },
+    },
     leftPanelWidth() {
       return this.layout && this.layout.leftPanels && this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 512;
     },
+    rightPanelWidth() {
+      return this.layout && this.layout.rightPanels && this.layout.rightPanels.length > 0 && this.layout.rightPanels[0].attributes.width ? parseInt(this.layout.rightPanels[0].attributes.width, 10) : 512;
+    },
     mainPanelStyle() {
       return {
-        width: this.header.width - this.leftPanel.width,
+        width: this.header.width - this.leftPanel.width - this.rightPanel.width,
         height: this.leftPanel.height,
       };
     },
@@ -201,7 +235,8 @@ export default {
             console.error('Error parsing style specs', error);
           }
         }
-        const bodyMinWidth = this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 0;
+        const bodyMinWidth = (this.layout.leftPanels.length > 0 && this.layout.leftPanels[0].attributes.width ? parseInt(this.layout.leftPanels[0].attributes.width, 10) : 0)
+          + (this.layout.rightPanels.length > 0 && this.layout.rightPanels[0].attributes.width ? parseInt(this.layout.rightPanels[0].attributes.width, 10) : 0);
         if (bodyMinWidth !== 0) {
           document.documentElement.style.setProperty('--body-min-width', `calc(640px + ${bodyMinWidth}px)`);
         }
@@ -250,6 +285,11 @@ export default {
           // eslint-disable-next-line no-new
           new SimpleBar(leftInnerContainer);
         }
+        const rightInnerContainer = document.querySelector('.kapp-right-inner-container');
+        if (leftInnerContainer) {
+          // eslint-disable-next-line no-new
+          new SimpleBar(rightInnerContainer);
+        }
       });
     },
     updateLayout(layoutChanged = false) {
@@ -267,6 +307,13 @@ export default {
         this.leftPanel.width = width(leftPanels);
       } else {
         this.leftPanel.width = 0;
+      }
+      this.rightPanel.height = window.innerHeight - this.header.height;
+      const rightPanels = document.querySelector('.kapp-main.kapp-right-container aside');
+      if (rightPanels) {
+        this.rightPanel.width = width(rightPanels);
+      } else {
+        this.rightPanel.width = 0;
       }
       this.$nextTick(() => {
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED, { type: 'changelayout', align: (this.layout && this.layout.leftPanels.length > 0) ? 'right' : 'left' });
@@ -385,6 +432,7 @@ export default {
     .kapp-header-container
     .kapp-footer-container
     .kapp-left-inner-container
+    .kapp-right-inner-container
     .kapp-main-container:not(.is-kexplorer)
       color var(--app-text-color)
       font-family var(--app-font-family)
@@ -393,6 +441,10 @@ export default {
       background-color var(--app-background-color)
       padding 0
       margin 0
+    .kapp-right-inner-container
+      position absolute !important
+      .kapp-right-wrapper
+        overflow hidden
     .kapp-left-inner-container
       position absolute !important
       .kapp-left-wrapper
