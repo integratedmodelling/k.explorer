@@ -105,7 +105,18 @@ import { dom } from 'quasar';
 
 const { lighten } = colors;
 const { width, height } = dom;
-
+const EMPTY_VIEWACTION_MESSAGE = {
+  component: null,
+  componentTag: null,
+  applicationId: null,
+  booleanValue: null,
+  doubleValue: null,
+  intValue: null,
+  stringValue: null,
+  dateValue: null,
+  data: null,
+  listValue: [],
+};
 export default {
   name: 'KlabLayout',
   components: {
@@ -286,7 +297,7 @@ export default {
           new SimpleBar(leftInnerContainer);
         }
         const rightInnerContainer = document.querySelector('.kapp-right-inner-container');
-        if (leftInnerContainer) {
+        if (rightInnerContainer) {
           // eslint-disable-next-line no-new
           new SimpleBar(rightInnerContainer);
         }
@@ -380,11 +391,21 @@ export default {
         if (this.isRootLayout) {
           this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
           this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+          this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
         }
       } else {
         this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
         this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+        this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
       }
+    },
+    componentClickedListener(event) {
+      delete event.component.attributes.parentAttributes;
+      delete event.component.attributes.parentId;
+      this.sendStompMessage(MESSAGES_BUILDERS.VIEW_ACTION({
+        ...EMPTY_VIEWACTION_MESSAGE,
+        ...event,
+      }, this.$store.state.data.session).body);
     },
   },
   watch: {

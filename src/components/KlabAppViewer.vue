@@ -1,23 +1,8 @@
 <script>
 import { createComponent } from 'shared/DefaultViewComponents';
-import { CUSTOM_EVENTS } from 'shared/Constants';
-import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { dom } from 'quasar';
 
 const { height } = dom;
-
-const EMPTY_VIEWACTION_MESSAGE = {
-  component: null,
-  componentTag: null,
-  applicationId: null,
-  booleanValue: null,
-  doubleValue: null,
-  intValue: null,
-  stringValue: null,
-  dateValue: null,
-  data: null,
-  listValue: [],
-};
 
 export default {
   name: 'KlabAppViewer',
@@ -61,14 +46,6 @@ export default {
      */
   },
   methods: {
-    componentClickedListener(event) {
-      delete event.component.attributes.parentAttributes;
-      delete event.component.attributes.parentId;
-      this.sendStompMessage(MESSAGES_BUILDERS.VIEW_ACTION({
-        ...EMPTY_VIEWACTION_MESSAGE,
-        ...event,
-      }, this.$store.state.data.session).body);
-    },
     calculateMinHeight() {
       this.$nextTick(() => {
         const bottomPanels = document.querySelectorAll('.kcv-group-bottom');
@@ -84,11 +61,9 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
     // this.$eventBus.$on(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
   },
   beforeDestroy() {
-    this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
     // this.$eventBus.$off(CUSTOM_EVENTS.LAYOUT_CHANGED, this.calculateMinHeight);
   },
   updated() {
