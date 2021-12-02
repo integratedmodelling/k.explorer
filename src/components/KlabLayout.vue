@@ -385,10 +385,15 @@ export default {
         this.resetContextListener();
       }
     },
-    updateListeners() {
+    updateListeners(removePrevious = false) {
       if (this.layout !== null) {
         // check reset events
         if (this.isRootLayout) {
+          if (removePrevious) {
+            this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
+            this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
+            this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
+          }
           this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
           this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
           this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
@@ -410,8 +415,9 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
+      const newApp = oldLayout === null || newLayout.applicationId !== oldLayout.applicationId;
       // this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
-      if (!this.isApp) {
+      if (!this.isApp && newApp) {
         // setTimeout(() => {
         this.$nextTick(() => {
           this.updateLayout(true);
@@ -428,7 +434,7 @@ export default {
           }
         }
       }
-      this.updateListeners();
+      this.updateListeners(oldLayout !== null);
     },
   },
   created() {},
