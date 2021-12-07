@@ -153,9 +153,15 @@ export default {
     const observation = state.observations.find(o => o.id === modificationEvent.id);
     observation.childrenCount = modificationEvent.newSize;
     observation.empty = false;
+    if (modificationEvent.exportFormats) {
+      observation.exportFormats = modificationEvent.exportFormats;
+    }
     const updateNode = (n) => {
       if (n) {
         n.childrenCount = modificationEvent.newSize;
+        if (modificationEvent.exportFormats) {
+          n.exportFormats = modificationEvent.exportFormats;
+        }
         n.children.forEach((child) => {
           child.siblingsCount = modificationEvent.newSize;
         });
