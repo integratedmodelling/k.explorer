@@ -385,15 +385,10 @@ export default {
         this.resetContextListener();
       }
     },
-    updateListeners(removePrevious = false) {
+    updateListeners() {
       if (this.layout !== null) {
         // check reset events
         if (this.isRootLayout) {
-          if (removePrevious) {
-            this.$eventBus.$off(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
-            this.$eventBus.$off(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
-            this.$eventBus.$off(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
-          }
           this.$eventBus.$on(CUSTOM_EVENTS.RESET_CONTEXT, this.resetContextListener);
           this.$eventBus.$on(CUSTOM_EVENTS.VIEW_ACTION, this.viewActionListener);
           this.$eventBus.$on(CUSTOM_EVENTS.COMPONENT_ACTION, this.componentClickedListener);
@@ -434,7 +429,9 @@ export default {
           }
         }
       }
-      this.updateListeners(oldLayout !== null);
+      if (oldLayout === null) {
+        this.updateListeners();
+      }
     },
   },
   created() {},
