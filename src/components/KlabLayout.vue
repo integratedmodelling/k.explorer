@@ -410,8 +410,9 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
+      const newApp = oldLayout === null || newLayout.applicationId !== oldLayout.applicationId;
       // this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
-      if (!this.isApp) {
+      if (!this.isApp && newApp) {
         // setTimeout(() => {
         this.$nextTick(() => {
           this.updateLayout(true);
@@ -428,7 +429,9 @@ export default {
           }
         }
       }
-      this.updateListeners();
+      if (oldLayout === null) {
+        this.updateListeners();
+      }
     },
   },
   created() {},
