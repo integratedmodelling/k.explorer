@@ -124,9 +124,15 @@
                   <div class="kal-logo">
                     <img valign="middle" :src="app.logoSrc"/>
                   </div>
-                  <div class="kal-info" @click="runApp(app.name)">
-                    <div class="kal-name" v-html="app.label ? app.label : app.name ? app.name : $t('label.noLayoutLabel')"></div>
-                    <div class="kal-description" v-html="app.description ? app.description : $t('label.noLayoutDescription')"></div>
+                  <div class="kal-info">
+                    <div class="kal-name" @click="runApp(app.name)" v-html="app.label ? app.label : app.name ? app.name : $t('label.noLayoutLabel')"></div>
+                    <div class="kal-description" @click="runApp(app.name)" v-html="app.description ? app.description : $t('label.noLayoutDescription')"></div>
+                    <div class="kal-locales" v-if="app.locales && app.locales.length > 1">
+                      <div v-for="(locale) in app.locales" :key="locale" class="row inline">
+                        <div class="kal-locale klab-link" @click="runApp(`${app.name.substring(0, app.name.lastIndexOf('.'))}.${locale}`)">
+                          <span class="mdi mdi-earth"></span><span class="kal-locale-name">{{ getLocaleName(locale) }}</span></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -145,6 +151,8 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 // import { getBase64Resource } from 'shared/Helpers';
 import { URLS } from 'shared/MessagesConstants';
 import { APPS_DEFAULT_VALUES, TERMINAL_TYPES, VIEWERS } from 'shared/Constants';
+import ISO_LOCALE from 'shared/locales';
+// import 'flag-icon-css/css/flag-icons.min.css';
 
 export default {
   name: 'KlabSettings',
@@ -163,6 +171,7 @@ export default {
       modalTimeout: null,
       appsList: [],
       TERMINAL_TYPES,
+      ISO_LOCALE,
     };
   },
   computed: {
@@ -202,6 +211,13 @@ export default {
       'setLayout',
       'setShowSettings',
     ]),
+    getLocaleName(locale) {
+      const l = ISO_LOCALE[locale];
+      if (l && l.nativeName) {
+        return l.nativeName.charAt(0).toUpperCase() + l.nativeName.slice(1);
+      }
+      return locale.toUpperCase();
+    },
     loadApplications() {
       this.appsList.splice(0);
       if (this.sessionReference && this.sessionReference.publicApps) {
@@ -474,10 +490,21 @@ export default {
           .kal-description
             color var(--app-text-color)
             font-size 80%
-
-
-            font-size 80%
-
+        .kal-locale
+          color var(--app-text-color)
+          padding 12px 12px 0 0
+          // margin 6px 6px 6px 0
+          font-size 80%
+          // border 1px solid var(--app-main-color)
+          // border-radius 4px
+          //&:hover
+            //color var(--app-background-color)
+            // background-color var(--app-main-color)
+          span
+            display inline-block
+            padding-left 2px
+            &.flag-icon
+              font-size 90%
     // modals are out of container
     .kud-group-id
     .kud-group-detail
