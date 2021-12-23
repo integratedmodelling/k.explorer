@@ -110,18 +110,19 @@ export default {
             ...apps.map(r => `apps[]=${r}`),
           ].join('&');
         }
+        const self = this;
         jsonp(`${APP_URLS.NOTIFICATIONS_URL}${qs !== '' ? `?${qs}` : ''}`, { param: 'callback', timeout: 5000 }, (error, notifications) => {
           if (error) {
             console.error(`Error loading notifications: ${error.message}`);
           } else if (notifications.length > 0) {
             notifications.forEach((n, index) => {
-              const read = this.cooked.findIndex(c => c === `${n.id}`) !== -1;
-              this.notifications.push({
+              const read = self.cooked.findIndex(c => c === `${n.id}`) !== -1;
+              self.notifications.push({
                 ...n,
                 read,
               });
-              if (this.actualNotificationIndex === -1 && !read) {
-                this.actualNotificationIndex = index;
+              if (self.actualNotificationIndex === -1 && !read) {
+                self.actualNotificationIndex = index;
               }
             });
           } else {
