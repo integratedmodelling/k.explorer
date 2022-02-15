@@ -486,8 +486,8 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
           .catch((error) => {
             store.dispatch('view/setSpinner', {
               ...SPINNER_CONSTANTS.SPINNER_ERROR,
-              owner: src,
-              errorMessage: error,
+              owner: `${src}${timestamp}`,
+              errorMessage: error.message, // error is blob
             }, { root: true });
             store.dispatch('data/setLoadingLayers', { loading: false, observation });
             throw error;
