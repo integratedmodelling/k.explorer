@@ -185,6 +185,9 @@ const PARSERS = {
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Network status received', message);
   },
+  [IN.TYPE_AUTHORITYDOCUMENTATION]: ({ payload: message }, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Authority documentation message received', message);
+  },
   [IN.TYPE_SETUPINTERFACE]: ({ payload: layout }, { dispatch }) => {
     dispatch('view/setLayout', layout, { root: true });
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, `App ${layout.name} loaded`, layout, true);
