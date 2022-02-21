@@ -357,7 +357,7 @@ export default {
       // need to create new layer
       try {
         console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
-        const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
+        const layer = await getLayerObject(observation, { projection: this.proj, timestamp, realTimestamp: this.timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
         } else {

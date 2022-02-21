@@ -391,8 +391,11 @@ export const getColormap = (colormap) => {
  * @param viewport not used for now. If not set, for now is the double of height/width of browser
  * @return layer
  */
-export async function getLayerObject(observation, { viewport = null, timestamp = -1 /* , projection = null */ }) {
+export async function getLayerObject(observation, { viewport = null, timestamp = -1, realTimestamp = undefined /* , projection = null */ }) {
   // const { geometryTypes } = observation;
+  if (typeof realTimestamp === 'undefined') {
+    realTimestamp = timestamp;
+  }
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
   if (isRaster) {
@@ -450,7 +453,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
             viewport,
-            ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+            ...(realTimestamp !== -1 && { locator: `T1(1){time=${realTimestamp}}` }),
           },
           responseType: 'blob',
         })
