@@ -185,6 +185,7 @@ export default {
           observationIndex: existingObservationIndex,
           newObservation: observation,
         });
+        commit('UPDATE_TIME_EVENTS', observation);
         console.debug(`Observation$ ${observation.label} updated`);
       } else {
         dispatch('view/addToKexplorerLog', {
@@ -221,6 +222,7 @@ export default {
 
       // add observation. Children attribute is override to prevent reactivity on then
       commit('ADD_OBSERVATION', { observation: { ...observation, children: [] }, restored });
+      commit('UPDATE_TIME_EVENTS', observation);
       if (observation.observationType === OBSERVATION_CONSTANTS.TYPE_INITIAL) {
         // is default observation, nothing needed
         return resolve();
@@ -307,6 +309,7 @@ export default {
         observationType: OBSERVATION_CONSTANTS.TYPE_INITIAL,
         noTick: true,
         parentId: node.id,
+        dynamic: false,
         ...(node.userNode && { userNode: node.userNode }),
       },
       parentId: node.id,

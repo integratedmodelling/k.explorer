@@ -139,7 +139,7 @@ export const getNodeFromObservation = (observation) => {
       label: observation.literalValue || observation.label,
       observable: observation.observable,
       type: observation.shapeType,
-      dynamic: false, // used if we receive some modification event
+      dynamic: observation.dynamic || false, // used if we receive some modification event
       needUpdate: !observation.contextualized,
       viewerIdx: observation.viewerIdx,
       viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
