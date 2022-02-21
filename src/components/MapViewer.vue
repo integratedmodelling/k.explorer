@@ -248,7 +248,6 @@ export default {
     ]),
     handleResize() {
       if (this.map !== null) {
-        // console.debug('HandleResize called!!!');
         this.map.updateSize();
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
       }
@@ -357,7 +356,7 @@ export default {
       }
       // need to create new layer
       try {
-        console.log(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
+        console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
         const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
@@ -539,11 +538,12 @@ export default {
               if (layers !== null) {
                 const { founds, layer } = layers;
                 layer.setOpacity(observation.layerOpacity);
+                layer.setVisible(observation.visible);
                 let { zIndex } = observation;
                 if (observation.top) {
                   zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
                 } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
-                  zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
+                  zIndex = Math.max(layer.get('zIndex') - 10, 1); // - this.lockedObservationsIds.indexOf(observation.id);
                 }
                 if (!waitForLayerLoading) {
                   layer.setZIndex(zIndex);

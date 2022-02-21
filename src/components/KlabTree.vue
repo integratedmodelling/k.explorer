@@ -351,9 +351,10 @@ export default {
           this.fitMap(node, meta, geometry);
         }
       }
-      if (this.timeEventsOfObservation(node.id).length > 0) {
-        this.setTimestamp(-1);
-      }
+      // TODO analyze if need
+      // if (!this.timeEventsOfObservation(node.id).length > 0) {
+      //   this.setTimestamp(-1);
+      // }
     },
     fitMap(node, meta, geometry = null) {
       this.$eventBus.$emit(CUSTOM_EVENTS.NEED_FIT_MAP, { geometry });
