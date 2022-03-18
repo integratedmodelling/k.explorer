@@ -345,7 +345,7 @@ export default {
       return -1;
     },
 
-    async findLayerById({ observation, timestamp = -1 }) {
+    async findLayerById({ observation, timestamp = -1, isBuffer = false }) {
       const founds = this.findExistingLayerById(observation.id);
       if (founds.length > 0) {
         const id = `${observation.id}T${timestamp}`;
@@ -357,7 +357,7 @@ export default {
       // need to create new layer
       try {
         console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
-        const layer = await getLayerObject(observation, { projection: this.proj, timestamp, realTimestamp: this.timestamp /* , viewport: this.contextViewport */});
+        const layer = await getLayerObject(observation, { projection: this.proj, timestamp, realTimestamp: isBuffer ? timestamp : this.timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
         } else {
@@ -392,7 +392,7 @@ export default {
           // if (modifications[index].timestamp <= buffer) {
           const observation = this.observations.find(obs => obs.id === modifications[index].id);
           if (observation) {
-            this.findLayerById({ observation, timestamp: modifications[index].timestamp }).then(({ layer }) => {
+            this.findLayerById({ observation, timestamp: modifications[index].timestamp, isBuffer: true }).then(({ layer }) => {
               const image = layer.getSource().image_;
               if (image && image.state === 0) {
                 image.load();
