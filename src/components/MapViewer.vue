@@ -381,6 +381,9 @@ export default {
     },
 
     bufferLayerImages(buffer) {
+      if (buffer.stop >= this.scaleReference.end) {
+        buffer.stop = this.scaleReference.end - 1;
+      }
       console.debug(`Ask preload from ${buffer.start} to ${buffer.stop}`);
       const modifications = this.timeEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
       const mtll = modifications.length;

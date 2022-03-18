@@ -1,12 +1,13 @@
 import * as colors from 'shared/colors';
-import { geom as jstsGeom, operation as jstsOperation, io as jstsIo } from 'jsts';
 import { transform } from 'ol/proj';
 import { fromCircle } from 'ol/geom/Polygon';
 import Style from 'ol/style/Style';
 import { MAP_CONSTANTS, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
 import LinearRing from 'ol/geom/LinearRing';
-
+import * as jstsGeom from 'jsts/org/locationtech/jts/geom';
+import * as jstsOperation from 'jsts/org/locationtech/jts/operation';
+import * as jstsIo from 'jsts/org/locationtech/jts/io';
 /**
  * RegExp to detect a color string as rgba(...)
  * @type {RegExp}

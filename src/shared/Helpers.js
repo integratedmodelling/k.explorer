@@ -277,7 +277,7 @@ export async function getError(axiosError) {
     // that falls out of the range of 2xx
     ret = {
       status: axiosError.response.data.status || axiosError.response.status, // if blob we don't have a valid data object
-      message: axiosError.response.data.message || axiosError.response.data || (axiosError.response.statusText !== '' ? axiosError.response.statusText : 'Unknown'),
+      message: axiosError.response.data.message || axiosError.response.data.error || axiosError.response.data || (axiosError.response.statusText !== '' ? axiosError.response.statusText : 'Unknown'),
       axiosError,
     };
   } else if (axiosError.request) {
