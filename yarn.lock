@@ -6529,7 +6529,7 @@ qs@^6.10.1:
   dependencies:
     side-channel "^1.0.4"
 
-quasar-cli@^0.17.20:
+quasar-cli@^0.17.26:
   version "0.17.26"
   resolved "https://registry.yarnpkg.com/quasar-cli/-/quasar-cli-0.17.26.tgz#536d4c535062db911976bb70112fde2e7ff979dc"
   integrity sha512-Kn5Yhgc6QKLulpcejYccwNsnyciACectqM1afMdLHuXXiKi31w59nv07AOqdDExHia5VF6RY60ArHs/2vSMkvw==
