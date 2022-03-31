@@ -5,7 +5,7 @@
     class="kn-modal-container"
   >
     <!-- This or use "title" prop on <q-dialog> -->
-    <div slot="title" class="kn-title">{{ actualNotification.title }}</div>
+    <div slot="title" class="kn-title" v-html="actualNotification.title"></div>
 
     <!-- This or use "message" prop on <q-dialog> -->
     <div slot="message" class="kn-content" v-html="actualNotification.content"></div>

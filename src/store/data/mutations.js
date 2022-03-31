@@ -100,6 +100,18 @@ export default {
     state.dataflowInfo = dataflowInfo;
   },
 
+  UPDATE_TIME_EVENTS: (state, observation) => {
+    if (observation.timeEvents && observation.timeEvents.length > 0) {
+      observation.timeEvents.forEach((te) => {
+        state.timeEvents.push({
+          id: observation.id,
+          timestamp: te,
+        });
+      });
+      console.debug(`Added ${observation.timeEvents.length} events`);
+    }
+  },
+
   ADD_OBSERVATION: (state, { observation }) => {
     state.observations.push(observation);
     console.info(`Added observation: ${observation.label}`);

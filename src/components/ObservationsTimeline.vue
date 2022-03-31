@@ -2,9 +2,9 @@
   <div class="ot-wrapper" :class="{ 'ot-no-timestamp': timeEvents.length === 0 || timestamp === -1 }">
     <div
       class="ot-container"
-      :class="{ 'ot-active-timeline': visibleEvents.length > 0, 'ot-docked': isMainControlDocked,  }"
+      :class="{ 'ot-active-timeline': isVisible, 'ot-docked': isMainControlDocked,  }"
     >
-      <div class="ot-player" v-show="visibleEvents.length > 0">
+      <div class="ot-player" v-show="isVisible">
         <q-icon
           :name="playTimer === null ? 'mdi-play' : 'mdi-pause'"
           :color="timestamp < scaleReference.end ? 'mc-main' : 'grey-7'"
@@ -38,11 +38,11 @@
           </q-popover>
         </div>
       </div>
-      <div class="ot-time row" :class="{ 'ot-time-full': visibleEvents.length === 0 }">
+      <div class="ot-time row" :class="{ 'ot-time-full': !isVisible }">
         <div class="ot-date-container">
           <div
             class="ot-date ot-date-start col"
-            :class="{ 'ot-with-modifications': timeEvents.length !== 0 ,'ot-date-loaded': engineTimestamp > 0 }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0 && isVisible ,'ot-date-loaded': engineTimestamp > 0 }"
             @click.self="onClick($event, () => { changeTimestamp(scaleReference.start); })"
             @dblclick="onDblClick($event, () => { changeTimestamp(-1); })"
           >
@@ -62,7 +62,7 @@
             ></q-tooltip>
 
           </div>
-          <div class="ot-date-text" v-show="visibleEvents.length === 0">{{ startDate }}</div>
+          <div class="ot-date-text" v-show="!isVisible">{{ startDate }}</div>
         </div>
         <div
           class="ot-timeline-container col"
@@ -71,14 +71,14 @@
         >
           <div
             class="ot-timeline"
-            :class="{ 'ot-with-modifications': timeEvents.length !== 0 }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0 && isVisible }"
             ref="ot-timeline"
             @mousemove="moveOnTimeline"
             @mouseenter="timelineActivated = true"
             @mouseleave="timelineActivated = false"
             @click="changeTimestamp(getDateFromPosition($event))"
           >
-            <div class="ot-timeline-viewer" v-show="visibleEvents.length > 0"></div>
+            <div class="ot-timeline-viewer" v-show="isVisible"></div>
             <div
               v-for="(modification) in visibleEvents"
               :key="`${modification.id}-${modification.timestamp}`"
@@ -119,7 +119,7 @@
           <div
             class="ot-date ot-date-end col"
             @click.self="changeTimestamp(scaleReference.end)"
-            :class="{ 'ot-with-modifications': timeEvents.length !== 0, 'ot-date-loaded': engineTimestamp === scaleReference.end }"
+            :class="{ 'ot-with-modifications': timeEvents.length !== 0 && isVisible, 'ot-date-loaded': engineTimestamp === scaleReference.end }"
           ><q-tooltip
             v-if="timeEvents.length !== 0"
             :offset="[0, 8]"
@@ -128,7 +128,7 @@
             v-html="formatDate(scaleReference.end)"
           ></q-tooltip>
           </div>
-          <div class="ot-date-text" v-show="visibleEvents.length === 0">{{ endDate }}</div>
+          <div class="ot-date-text" v-show="!isVisible">{{ endDate }}</div>
         </div>
       </div>
     </div>
@@ -194,6 +194,9 @@ export default {
     endDate() {
       return this.scaleReference !== null ? this.formatDate(this.scaleReference.end, true) : '';
     },
+    isVisible() {
+      return this.visibleEvents.length > 0;
+    },
   },
   methods: {
     ...mapActions('data', [
@@ -244,7 +247,7 @@ export default {
       return date;
     },
     changeTimestamp(date) {
-      if (this.timeEvents.length === 0) {
+      if (this.timeEvents.length === 0 || !this.isVisible) {
         return;
       }
       if (date === -1) {

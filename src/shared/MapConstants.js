@@ -1,6 +1,7 @@
 import { COLORS } from 'shared/Constants';
 import Tile from 'ol/layer/Tile';
-import ArcGISRest from 'ol/source/TileArcGISRest';
+import TileArcGISRest from 'ol/source/TileArcGISRest';
+// import ImageArcGISRest from 'ol/source/ImageArcGISRest';
 import OSM from 'ol/source/OSM';
 import XYZ from 'ol/source/XYZ';
 import Style from 'ol/style/Style';
@@ -163,16 +164,53 @@ export const Layers = {
     }),
     visible: false,
   }),
-  ARCGIS_LAYER: new Tile({
-    name: 'arcgis_layer',
+  CLEARMAP_TOPO_LAYER: new Tile({
+    name: 'clearmap_topo_layer',
     title: 'UN Clear Map',
     type: 'base',
-    source: new ArcGISRest({
+    source: new TileArcGISRest({
       url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebTopo/MapServer/export',
     }),
     visible: false,
   }),
+  CLEARMAP_PLAIN_LAYER: new Tile({
+    name: 'clearmap_plain_layer',
+    title: 'UN Clear Map Plain',
+    type: 'base',
+    source: new TileArcGISRest({
+      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer/export',
+    }),
+    visible: false,
+  }),
+  CLEARMAP_DARK_LAYER: new Tile({
+    name: 'clearmap_dark_layer',
+    title: 'UN Clear Map Dark',
+    type: 'base',
+    source: new TileArcGISRest({
+      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebDark/MapServer/export',
+    }),
+    visible: false,
+  }),
+  CLEARMAP_GRAY_LAYER: new Tile({
+    name: 'clearmap_gray_layer',
+    title: 'UN Clear Map Gray',
+    type: 'base',
+    source: new TileArcGISRest({
+      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebGray/MapServer/export',
+    }),
+    visible: false,
+  }),
+  // Not working
   /*
+  CLEARMAP_IMAGERY_LAYER: new Tile({
+    name: 'clearmap_imagery_layer',
+    title: 'UN Clear Map Imagery',
+    type: 'base',
+    source: new TileArcGISRest({
+      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebImagery/MapServer/export',
+    }),
+    visible: false,
+  }),
   // Not professional
   STAMEN_WATER_COLOR_LAYER: new Tile({
     name: 'stamen_water_color_layer',
@@ -256,6 +294,18 @@ export const Layers = {
     }),
     visible: false,
   }),
+  MAPBOX_TERRAIN: new Tile({
+    name: 'mapbox_terrain',
+    title: 'Mapbox Terrain',
+    type: 'base',
+    source: new XYZ({
+      crossOrigin: 'anonymous',
+      format: 'pbf',
+      url: `https://api.mapbox.com/styles/v1/k-lab/cl1dgarpr005f15ntep34yq88/tiles/256/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`,
+      attribution: MAPBOX_ATTRIBUTIONS,
+    }),
+    visible: false,
+  }),
   MAPBOX_GOT: new Tile({
     name: 'mapbox_got',
     title: 'k.LAB Mapbox GOT',
@@ -332,8 +382,13 @@ export const BASE_LAYERS = {
     // Layers.GOOGLE_STREET,
     // Layers.GOOGLE_HYBRID,
     // Layers.GOOGLE_TERRAIN,
+    Layers.CLEARMAP_TOPO_LAYER,
     Layers.MAPBOX_MINIMO,
-    // Layers.ARCGIS_LAYER,
+    Layers.MAPBOX_TERRAIN,
+    // Layers.CLEARMAP_PLAIN_LAYER,
+    // Layers.CLEARMAP_GRAY_LAYER,
+    // Layers.CLEARMAP_DARK_LAYER,
+    // Layers.CLEARMAP_IMAGERY_LAYER,
     Layers.OSM_LAYER,
     // Layers.MAPBOX_CALI_TERRAIN,
     // Layers.MAPBOX_GOT, // Game of throne joke

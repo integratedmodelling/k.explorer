@@ -244,6 +244,9 @@ export default {
           }
         }
       }
+      if (errorMessage !== null && typeof errorMessage === 'object') {
+        errorMessage = JSON.stringify(errorMessage);
+      }
       commit('SET_SPINNER', { animated, color, errorMessage });
       if (time !== null && then !== null) {
         // time and then for error are defined in Constants

@@ -139,7 +139,7 @@ export const getNodeFromObservation = (observation) => {
       label: observation.literalValue || observation.label,
       observable: observation.observable,
       type: observation.shapeType,
-      dynamic: false, // used if we receive some modification event
+      dynamic: observation.dynamic || false, // used if we receive some modification event
       needUpdate: !observation.contextualized,
       viewerIdx: observation.viewerIdx,
       viewerType: observation.viewerIdx !== null ? store.getters['view/viewer'](observation.viewerIdx).type : null,
@@ -277,7 +277,7 @@ export async function getError(axiosError) {
     // that falls out of the range of 2xx
     ret = {
       status: axiosError.response.data.status || axiosError.response.status, // if blob we don't have a valid data object
-      message: axiosError.response.data.message || axiosError.response.data || (axiosError.response.statusText !== '' ? axiosError.response.statusText : 'Unknown'),
+      message: axiosError.response.data.message || axiosError.response.data.error || axiosError.response.data || (axiosError.response.statusText !== '' ? axiosError.response.statusText : 'Unknown'),
       axiosError,
     };
   } else if (axiosError.request) {
@@ -391,8 +391,11 @@ export const getColormap = (colormap) => {
  * @param viewport not used for now. If not set, for now is the double of height/width of browser
  * @return layer
  */
-export async function getLayerObject(observation, { viewport = null, timestamp = -1 /* , projection = null */ }) {
+export async function getLayerObject(observation, { viewport = null, timestamp = -1, realTimestamp = undefined /* , projection = null */ }) {
   // const { geometryTypes } = observation;
+  if (typeof realTimestamp === 'undefined') {
+    realTimestamp = timestamp;
+  }
   const isRaster = isRasterObservation(observation); // geometryTypes && typeof geometryTypes.find(gt => gt === Constants.GEOMTYP_RASTER) !== 'undefined';
   let spatialProjection;
   if (isRaster) {
@@ -450,7 +453,7 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
           params: {
             format: GEOMETRY_CONSTANTS.TYPE_RASTER,
             viewport,
-            ...(timestamp !== -1 && { locator: `T1(1){time=${timestamp}}` }),
+            ...(realTimestamp !== -1 && { locator: `T1(1){time=${realTimestamp}}` }),
           },
           responseType: 'blob',
         })
@@ -486,8 +489,8 @@ export async function getLayerObject(observation, { viewport = null, timestamp =
           .catch((error) => {
             store.dispatch('view/setSpinner', {
               ...SPINNER_CONSTANTS.SPINNER_ERROR,
-              owner: src,
-              errorMessage: error,
+              owner: `${src}${timestamp}`,
+              errorMessage: error.message, // error is blob
             }, { root: true });
             store.dispatch('data/setLoadingLayers', { loading: false, observation });
             throw error;

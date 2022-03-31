@@ -248,7 +248,6 @@ export default {
     ]),
     handleResize() {
       if (this.map !== null) {
-        // console.debug('HandleResize called!!!');
         this.map.updateSize();
         this.$eventBus.$emit(CUSTOM_EVENTS.MAP_SIZE_CHANGED);
       }
@@ -346,7 +345,7 @@ export default {
       return -1;
     },
 
-    async findLayerById({ observation, timestamp = -1 }) {
+    async findLayerById({ observation, timestamp = -1, isBuffer = false }) {
       const founds = this.findExistingLayerById(observation.id);
       if (founds.length > 0) {
         const id = `${observation.id}T${timestamp}`;
@@ -357,8 +356,8 @@ export default {
       }
       // need to create new layer
       try {
-        console.log(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
-        const layer = await getLayerObject(observation, { projection: this.proj, timestamp /* , viewport: this.contextViewport */});
+        console.debug(`Creating layer: ${observation.label} with timestamp ${timestamp}`);
+        const layer = await getLayerObject(observation, { projection: this.proj, timestamp, realTimestamp: isBuffer ? timestamp : this.timestamp /* , viewport: this.contextViewport */});
         if (founds && founds.length > 0) { // we have one observation with different timestamp, copy the zIndex
           layer.setZIndex(observation.zIndex);
         } else {
@@ -382,6 +381,9 @@ export default {
     },
 
     bufferLayerImages(buffer) {
+      if (buffer.stop >= this.scaleReference.end) {
+        buffer.stop = this.scaleReference.end - 1;
+      }
       console.debug(`Ask preload from ${buffer.start} to ${buffer.stop}`);
       const modifications = this.timeEvents.filter(me => me.timestamp > buffer.start && me.timestamp <= buffer.stop);
       const mtll = modifications.length;
@@ -390,7 +392,7 @@ export default {
           // if (modifications[index].timestamp <= buffer) {
           const observation = this.observations.find(obs => obs.id === modifications[index].id);
           if (observation) {
-            this.findLayerById({ observation, timestamp: modifications[index].timestamp }).then(({ layer }) => {
+            this.findLayerById({ observation, timestamp: modifications[index].timestamp, isBuffer: true }).then(({ layer }) => {
               const image = layer.getSource().image_;
               if (image && image.state === 0) {
                 image.load();
@@ -539,11 +541,12 @@ export default {
               if (layers !== null) {
                 const { founds, layer } = layers;
                 layer.setOpacity(observation.layerOpacity);
+                layer.setVisible(observation.visible);
                 let { zIndex } = observation;
                 if (observation.top) {
                   zIndex = observation.zIndexOffset + (MAP_CONSTANTS.ZINDEX_TOP);
                 } else if (this.lockedObservationsIds.length > 0 && this.lockedObservationsIds.includes(observation.id)) {
-                  zIndex = layer.get('zIndex') - 10; // - this.lockedObservationsIds.indexOf(observation.id);
+                  zIndex = Math.max(layer.get('zIndex') - 10, 1); // - this.lockedObservationsIds.indexOf(observation.id);
                 }
                 if (!waitForLayerLoading) {
                   layer.setZIndex(zIndex);

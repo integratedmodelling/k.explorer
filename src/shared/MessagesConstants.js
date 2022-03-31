@@ -108,6 +108,7 @@ export const IN = Object.freeze({
   TYPE_COMMANDRESPONSE: 'CommandResponse',
   TYPE_DOCUMENTATIONCHANGED: 'DocumentationChanged',
   TYPE_CREATEMODALWINDOW: 'CreateModalWindow',
+  TYPE_AUTHORITYDOCUMENTATION: 'AuthorityDocumentation',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',

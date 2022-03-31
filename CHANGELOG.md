@@ -6,6 +6,17 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.21.1
+### Improvement
+- Observations are asked using real timestamp, not slices
+- Dynamic observation at second level in tree, now works
+- Read languages in apps and show then as list
+### Solved
+- Layer visibility error solved when more than one temporal layer is shown
+- Error when loading last images in a temporal series
+- Better error message management to avoid undefined
+- Quasar cli update
+-
 ## 0.21.0
 ### Features
 - Figure in report with colormap, legends and timelime
