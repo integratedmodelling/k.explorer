@@ -113,6 +113,8 @@ export const MESSAGES_BUILDERS = {
     urn,
     contextId,
     searchContextId = null,
+    estimate = false,
+    estimatedCost = 0,
   }, session) => buildMessage(
     OUT.CLASS_OBSERVATIONLIFECYCLE,
     OUT.TYPE_REQUESTOBSERVATION,
@@ -121,6 +123,8 @@ export const MESSAGES_BUILDERS = {
       urn,
       ...(contextId !== null && { contextId }),
       ...(searchContextId !== null && { searchContextId }),
+      estimate,
+      estimatedCost,
     },
     session,
   ),
