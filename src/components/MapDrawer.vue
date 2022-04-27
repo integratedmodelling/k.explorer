@@ -31,7 +31,7 @@ import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style.js';
 import { Draw, Modify } from 'ol/interaction.js';
 import Feature from 'ol/Feature';
-import { createIDLPolygon, jstsParser, jstsParseGeometry, jstsUnion } from 'shared/Utils';
+import { createIDLPolygon, jstsParser, jstsParseGeometry, jstsIsValid, jstsUnion } from 'shared/Utils';
 import { Polygon, Circle } from 'ol/geom';
 /**
  * Used to draw path and modify existing path
@@ -139,10 +139,8 @@ export default {
         source: this.drawerLayer.getSource(),
         type: this.drawType,
       });
-      /*
       this.drawer.on('drawend', (event) => {
         const jstsGeomTemp = jstsParseGeometry(event.feature.getGeometry());
-        /*
         if (!jstsIsValid(jstsGeomTemp)) {
           this.$q.notify({
             message: this.$t('messages.invalidGeometry'),
@@ -153,7 +151,6 @@ export default {
           event.feature.setGeometry(null);
         }
       });
-    */
       this.map.addInteraction(this.drawer);
     },
   },
