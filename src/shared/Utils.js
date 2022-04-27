@@ -5,8 +5,11 @@ import Style from 'ol/style/Style';
 import { MAP_CONSTANTS, MAP_STYLE_ELEMENTS } from 'shared/MapConstants';
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, Circle } from 'ol/geom';
 import LinearRing from 'ol/geom/LinearRing';
+import IsValidOp from 'jsts/org/locationtech/jts/operation/valid/IsValidOp';
+import OverlayOp from 'jsts/org/locationtech/jts/operation/overlay/OverlayOp';
+import RelateOp from 'jsts/org/locationtech/jts/operation/relate/RelateOp.js';
+import Polygonizer from 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer';
 import * as jstsGeom from 'jsts/org/locationtech/jts/geom';
-import * as jstsOperation from 'jsts/org/locationtech/jts/operation';
 import * as jstsIo from 'jsts/org/locationtech/jts/io';
 /**
  * RegExp to detect a color string as rgba(...)
@@ -406,6 +409,9 @@ export const jstsParseGeometry = (geometry) => {
   return jstsParser.read(geometry);
 };
 
+export const jstsIsValid = geometry => new IsValidOp(geometry).isValid();
+
+export const jstsUnion = (geometry, other) => OverlayOp.union(geometry, other);
 /**
  * Check if a polygon cross IDL
  * @param polygon polygon
@@ -414,10 +420,10 @@ export const jstsParseGeometry = (geometry) => {
 export function checkIDL(polygon) {
   const idl = [];
   // check if polygon cross IDL and where
-  if (polygon.crosses(JSTS_IDLS.left)) {
+  if (OverlayOp.intersection(polygon, JSTS_IDLS.left)) {
     idl.push(JSTS_IDLS.left);
   }
-  if (polygon.crosses(JSTS_IDLS.right)) {
+  if (OverlayOp.intersection(polygon, JSTS_IDLS.right)) {
     idl.push(JSTS_IDLS.right);
   }
   return idl;
@@ -437,11 +443,11 @@ export function createIDLPolygon(originalPolygon) {
   // generate a multyline with the IDL...
   let united = originalPolygon.getExteriorRing();
   idl.forEach((line) => {
-    united = united.union(line);
+    united = OverlayOp.union(united, line);
   });
 
   // generate polygons
-  const polygonizer = new jstsOperation.polygonize.Polygonizer();
+  const polygonizer = new Polygonizer();
   polygonizer.add(united);
   const polygons = polygonizer.getPolygons();
 
@@ -450,7 +456,7 @@ export function createIDLPolygon(originalPolygon) {
     let polygon = i.next();
     // if the polygon is not contained, we need to change all its vertices
     // all this is done thinking in open layer with a flat earth, TODO: check if it work!
-    if (!JSTS_ALL_WORLD.contains(polygon)) {
+    if (!RelateOp.contains(JSTS_ALL_WORLD, polygon)) {
       const newVertices = [];
       const vertices = polygon.getCoordinates();
       const vxl = vertices.length;
@@ -465,7 +471,7 @@ export function createIDLPolygon(originalPolygon) {
     if (result === null) {
       result = polygon;
     } else {
-      result = result.union(polygon);
+      result = OverlayOp.union(result, polygon);
     }
   }
   return result;
