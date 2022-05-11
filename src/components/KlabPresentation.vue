@@ -195,7 +195,7 @@ export default {
     },
     showHelp: {
       get() {
-        return this.connectionUp && !this.waitingGeolocation && this.isLocal && this.needHelp && !this.isInModalMode;
+        return this.connectionUp && !this.waitingGeolocation && this.needHelp && !this.isInModalMode;
       },
       set(needHelp) {
         this.needHelp = needHelp;
@@ -384,7 +384,7 @@ export default {
     */
     // load configuration and donwnload content
 
-    this.needHelp = !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
+    this.needHelp = this.isLocal && !Cookies.has(WEB_CONSTANTS.COOKIE_HELP_ON_START);
     this.remember = !this.needHelp;
     this.$eventBus.$on(CUSTOM_EVENTS.NEED_HELP, this.helpNeededEvent);
     window.addEventListener('resize', this.onResize);
