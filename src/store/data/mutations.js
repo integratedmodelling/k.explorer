@@ -79,8 +79,12 @@ export default {
     }
   },
 
-  ADD_DATAFLOW: (state, dataflow) => {
-    state.dataflow = dataflow;
+  ADD_DATAFLOW: (state, { dataflow, type }) => {
+    if (type === 'DATAFLOW') {
+      state.dataflow = dataflow;
+    } else {
+      state.provenance = dataflow;
+    }
   },
 
   SET_DATAFLOW_STATUS: (state, { id, status }) => {

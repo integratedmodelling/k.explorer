@@ -569,12 +569,34 @@ export default {
     }
   },
 
-  addDataflow: ({ commit }, dataflow) => {
+  loadDataflow: ({ dispatch, getters }, { target = 'DATAFLOW', full = false }) => {
+    console.info(`Ask for dataflow ${target}`);
+    const exportTarget = target === 'DATAFLOW' ? 'dataflow' : (full ? 'provenance_full' : 'provenance_simplified');
+    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_API_EXPORT}/${exportTarget}/${getters.contextId}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(({ data }) => {
+        if (typeof data !== 'undefined' && data !== null) {
+          try {
+            data.restored = getters.context.restored;
+            dispatch('addDataflow', { dataflow: data, type: target });
+          } catch (e) {
+            console.error(`Error in dataflow layout for the context ${this.contextId}: ${e}`);
+          }
+        } else {
+          console.error(`Dataflow in context ${this.contextId} has no layout`);
+        }
+      });
+  },
+
+  addDataflow: ({ commit }, { dataflow, type }) => {
     if (typeof dataflow === 'undefined' || dataflow === null) {
       console.warn('Try to layout an empty ELK dataflow');
     } else {
-      commit('ADD_DATAFLOW', dataflow);
-      commit('view/SET_RELOAD_DATAFLOW', true, { root: true });
+      commit('ADD_DATAFLOW', { dataflow, type });
+      commit('view/SET_RELOAD_DATAFLOW', { reload: true, type }, { root: true });
     }
   },
 

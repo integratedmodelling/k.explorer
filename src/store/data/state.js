@@ -163,7 +163,7 @@ export default {
   nextScale: null,
   /**
    * Store of all observation data
-   Observatio object: {
+   Observation object: {
     "shapeType",
    "encodedShape"
    "spatialProjection"
@@ -265,6 +265,10 @@ export default {
    * The dataflow of context as JSON ELK object
    */
   dataflow: null,
+  /**
+   * the provenance of context as JSON ELK object
+   */
+  provenance: null,
   /**
    * Used to store the state of task processed
    * { id: [id of observation]; status: [DATAFLOW_STATUS.WAITING|DATAFLOW_STATUS.PROCESSING|DATAFLOW_STATUS.PROCESSED]

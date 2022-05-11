@@ -266,7 +266,7 @@ export default {
     logout() {
       const url = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}${this.isApp ? `?app=${this.klabApp}` : ''}`;
       if (this.token !== null) {
-        axiosInstance.post(`${process.env.WS_BASE_URL}${process.env.API_LOGOUT}`, {})
+        axiosInstance.post(`${process.env.WS_BASE_URL}${URLS.REST_API_LOGOUT}`, {})
           .then(({ status }) => {
             if (status === 205 /* Reset Content */) {
               window.location = url;

@@ -59,7 +59,7 @@ module.exports = function (ctx) {
         ENGINE_URL: JSON.stringify('/modeler'),
         ENGINE_SHARED: JSON.stringify('/modeler/shared/'),
         ENGINE_LOGIN: JSON.stringify('/modeler'),
-        API_LOGOUT: JSON.stringify('/modeler/api/v2/users/log-out'),
+        API: JSON.stringify('/modeler/api/v2'),
         WS_URL: JSON.stringify('/modeler/message'),
         WS_SUBSCRIBE: JSON.stringify('/message'),
         WS_MESSAGE_DESTINATION: JSON.stringify('/klab/message'),

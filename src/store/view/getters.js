@@ -84,6 +84,7 @@ export default {
   searchHistory: state => state.searchHistory,
   searchInApp: state => state.searchInApp,
 
+  reloadDataflow: state => state.reloadDataflow,
   dataflowInfoOpen: state => state.dataflowInfoOpen,
 
   observationInfo: state => state.observationInfo,

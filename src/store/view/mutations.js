@@ -224,8 +224,12 @@ export default {
     state.searchHistory.unshift(searchArray);
   },
 
-  SET_RELOAD_DATAFLOW: (state, reload) => {
-    state.reloadDataflow = reload;
+  SET_RELOAD_DATAFLOW: (state, { reload, type }) => {
+    if (type === 'DATAFLOW') {
+      state.reloadDataflow = reload;
+    } else {
+      state.reloadProvenance = reload;
+    }
   },
 
   SET_DATAFLOW_INFO_OPEN: (state, open) => {

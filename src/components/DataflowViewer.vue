@@ -15,7 +15,6 @@ import { mapGetters, mapActions } from 'vuex';
 import { findNodeById } from 'shared/Helpers';
 import { CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
-import { URLS } from 'shared/MessagesConstants';
 import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
@@ -50,40 +49,14 @@ export default {
     ...mapGetters('view', [
       'leftMenuState',
       'dataflowInfoOpen',
+      'reloadDataflow',
     ]),
-    reloadDataflow: {
-      get() {
-        return this.$store.state.view.reloadDataflow;
-      },
-      set(value) {
-        this.$store.state.view.reloadDataflow = value;
-      },
-    },
   },
   methods: {
-    ...mapActions('data', [
-      'addDataflow',
-    ]),
     ...mapActions('view', [
       'setDataflowInfoOpen',
+      'setReloadDataflow',
     ]),
-    loadDataflow() {
-      console.info('Ask for dataflow');
-      this.$axios.get(`${process.env.WS_BASE_URL}${URLS.REST_SESSION_OBSERVATION}dataflow/${this.contextId}`, {})
-        .then(({ data }) => {
-          if (typeof data.jsonElkLayout !== 'undefined' && data.jsonElkLayout !== null) {
-            try {
-              const jsonElkLayout = JSON.parse(data.jsonElkLayout);
-              jsonElkLayout.restored = this.context.restored;
-              this.addDataflow(jsonElkLayout);
-            } catch (e) {
-              console.error(`Error in dataflow layout for the context ${data.taskId}: ${e}`);
-            }
-          } else {
-            console.error(`Dataflow in task ${data.taskId} has no layout`);
-          }
-        });
-    },
     doGraph() {
       if (this.dataflow === null) {
         return;
@@ -103,7 +76,7 @@ export default {
       this.modelSource.setModel(this.graph);
       this.actionDispatcher.dispatch(new FitToScreenAction([], 40));
       this.processing = false;
-      this.reloadDataflow = false;
+      this.setReloadDataflow(false);
     },
     updateStatuses() {
       if (!this.visible) {
@@ -159,6 +132,7 @@ export default {
   },
   watch: {
     dataflow() {
+      console.warn(`Dataflow: ${this.dataflow}`);
       if (this.dataflow !== null) {
         this.doGraph();
       }
@@ -197,9 +171,7 @@ export default {
 
   activated() {
     this.visible = true;
-    if (this.dataflow === null) {
-      this.loadDataflow();
-    } else if (this.needsUpdate) {
+    if (this.needsUpdate) {
       this.doGraph();
       this.updateStatuses();
       this.needsUpdate = false;

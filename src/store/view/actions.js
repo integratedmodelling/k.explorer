@@ -284,6 +284,10 @@ export default {
     commit('SEARCH_INAPP', inApp);
   },
 
+  setReloadDataflow: ({ commit }, reload) => {
+    commit('SET_RELOAD_DATAFLOW', reload);
+  },
+
   setDataflowInfoOpen: ({ commit }, open) => {
     commit('SET_DATAFLOW_INFO_OPEN', open);
   },

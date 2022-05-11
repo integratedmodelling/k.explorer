@@ -129,6 +129,7 @@ export default {
   reloadDataflow: false,
   dataflowInfoOpen: false,
 
+  reloadProvenance: false,
   /**
    * More info content
    */
