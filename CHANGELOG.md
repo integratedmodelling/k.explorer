@@ -6,6 +6,19 @@ and this project versioning adheres to [Semantic Versioning](https://semver.org/
 is not available.
 
 **The version of k.Explorer software is self-referred and is not linked to the k.LAB version, so is possible that some features are not available in the stable version of the engine.**
+## 0.22.0
+### Features
+- Provenance simplified is now available
+### Improvements
+- Add clear map and terrain
+- Check if polygon is valid
+- Various libs updates
+### Solved
+- Help issue on remote
+- Solve error loading last image and colormap
+- Solve problem sending real timestamp buffering
+- Bugs dues to libs updates
+
 ## 0.21.1
 ### Improvement
 - Observations are asked using real timestamp, not slices
