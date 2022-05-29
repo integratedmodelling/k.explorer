@@ -123,10 +123,9 @@ export default {
   searchInApp: false,
 
   /**
-   * If true, when dataflow button is clicked, if dataflow not exists we ask for it.
-   * Need to notify that we have unview dataflow too
+   * If true, indicate that provenance or dataflow are updated
    */
-  reloadDataflow: false,
+  flowchartSelected: CONSTANTS.GRAPH_DATAFLOW,
   dataflowInfoOpen: false,
 
   /**

@@ -85,6 +85,7 @@ export const IN = Object.freeze({
   CLASS_AUTHORIZATION: 'Authorization',
   CLASS_VIEWACTOR: 'ViewActor',
 
+
   TYPE_DATAFLOWCOMPILED: 'DataflowCompiled',
   TYPE_DATAFLOWSTATECHANGED: 'DataflowStateChanged',
   TYPE_DATAFLOWDOCUMENTATION: 'DataflowDocumentation',
@@ -109,6 +110,7 @@ export const IN = Object.freeze({
   TYPE_DOCUMENTATIONCHANGED: 'DocumentationChanged',
   TYPE_CREATEMODALWINDOW: 'CreateModalWindow',
   TYPE_AUTHORITYDOCUMENTATION: 'AuthorityDocumentation',
+  TYPE_PROVENANCECHANGED: 'ProvenanceChanged',
 
   TYPE_TASKSTARTED: 'TaskStarted',
   TYPE_TASKFINISHED: 'TaskFinished',
@@ -119,7 +121,7 @@ export const IN = Object.freeze({
   TYPE_ERROR: 'Error',
 
   PAYLOAD_CLASS_TASKREFERENCE: 'TaskReference',
-  PAYLOAD_CLASS_DATAFLOWREFERENCE: 'DataflowReference',
+  PAYLOAD_CLASS_CONTEXTUALIZATIONNOTIFICATION: 'ContextualizationNotification',
   PAYLOAD_CLASS_DATAFLOWSTATE: 'DataflowState',
   PAYLOAD_CLASS_OBSERVATIONREFERENCE: 'ObservationReference',
   PAYLOAD_CLASS_SEARCHRESPONSE: 'SearchResponse',
@@ -145,4 +147,6 @@ export const URLS = Object.freeze({
   REST_SESSION_OBSERVATION: `${process.env.ENGINE_URL}/engine/session/observation/`,
   REST_UPLOAD: `${process.env.ENGINE_URL}/resource/put`,
   REST_GET_PROJECT_RESOURCE: `${process.env.ENGINE_URL}/engine/project/resource/get`,
+  REST_API_LOGOUT: `${process.env.API}/users/log-out`,
+  REST_API_EXPORT: `${process.env.API}/public/export`,
 });

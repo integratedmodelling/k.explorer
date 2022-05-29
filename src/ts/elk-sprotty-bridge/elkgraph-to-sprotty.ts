@@ -167,8 +167,8 @@ export class ElkGraphJsonToSprotty {
     }
 
     private checkAndRememberId(e: ElkGraphElement, set: Set<string>) {
-        if (e.id == undefined) {
-            throw Error("An element is missing an id.")
+        if (e.id === undefined || e.id === null) {
+            throw Error("An element is missing an id: " + e);
         } else if (set.has(e.id)) {
             // TODO must be an error, but we need to understand why the id is duplicate
             // console.error("Duplicate id: " + e.id + ".");

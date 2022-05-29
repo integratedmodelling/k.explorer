@@ -46,13 +46,13 @@
         @click="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext ? click(VIEWERS.DATAFLOW_VIEWER) : false"
         :class="[{ active: mainViewerName === VIEWERS.DATAFLOW_VIEWER.name, disabled: mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && !hasContext}]"
       ><q-icon name="mdi-sitemap">
-        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && reloadDataflow"></span>
+        <span class="klab-button-notification" v-if="mainViewerName !== VIEWERS.DATAFLOW_VIEWER.name && hasContext && flowchartsUpdatable"></span>
         <q-tooltip
           :delay="600"
           :offset="[0, 8]"
           :self="tooltipAnchor('top')"
           :anchor="tooltipAnchor('bottom')"
-        >{{ hasDataflow || reloadDataflow ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
+        >{{flowchartsUpdatable ? $t('tooltips.dataflowViewer') : $t('tooltips.noDataflow') }}</q-tooltip>
       </q-icon></div>
       <!-- PROVENANCE (disabled) -->
       <!-- in the future
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import { VIEWERS, CUSTOM_EVENTS } from 'shared/Constants';
 
 export default {
@@ -94,12 +94,9 @@ export default {
     return {};
   },
   computed: {
-    ...mapState('view', [
-      'reloadDataflow',
-    ]),
     ...mapGetters('data', [
       'hasObservations',
-      'hasDataflow',
+      'flowchartsUpdatable',
       'hasContext',
     ]),
     ...mapGetters('view', [

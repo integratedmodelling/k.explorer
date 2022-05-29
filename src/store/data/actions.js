@@ -1,6 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS,
+import { CONSTANTS, MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS,
   OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
@@ -569,13 +569,33 @@ export default {
     }
   },
 
-  addDataflow: ({ commit }, dataflow) => {
-    if (typeof dataflow === 'undefined' || dataflow === null) {
-      console.warn('Try to layout an empty ELK dataflow');
-    } else {
-      commit('ADD_DATAFLOW', dataflow);
-      commit('view/SET_RELOAD_DATAFLOW', true, { root: true });
-    }
+  loadFlowchart: ({ commit, getters }, target = CONSTANTS.GRAPH_DATAFLOW) => new Promise((resolve, reject) => {
+    console.info(`Ask for flowchart ${target}`);
+    axiosInstance.get(`${process.env.WS_BASE_URL}${URLS.REST_API_EXPORT}/${target}/${getters.contextId}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then(({ data }) => {
+        if (typeof data !== 'undefined' && data !== null) {
+          try {
+            data.restored = getters.context.restored;
+            commit('ADD_FLOWCHART', { flowchart: data, target });
+            resolve();
+          } catch (e) {
+            reject(new Error(`Error in dataflow layout for the context ${this.contextId}: ${e}`));
+          }
+        } else {
+          reject(new Error(`Dataflow in context ${this.contextId} has no layout`));
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  }),
+
+  setReloadFlowchart: ({ commit }, { target }) => {
+    commit('SET_RELOAD_FLOWCHART', target);
   },
 
   setDataflowStatus: ({ commit }, { id, status }) => {

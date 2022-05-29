@@ -78,6 +78,7 @@ export default {
     commit('SET_MAIN_VIEWER', viewer);
     commit('RESET_MAIN_DATA_VIEWER', null);
     commit('SET_MAP_SELECTION', CONSTANTS.EMPTY_MAP_SELECTION);
+    commit('SET_FLOWCHART_SELECTED', CONSTANTS.GRAPH_DATAFLOW);
   },
   /*
   addViewerElement: ({ commit }, { main = false, type }) => new Promise((resolve) => {
@@ -282,6 +283,10 @@ export default {
 
   searchInApp: ({ commit }, inApp) => {
     commit('SEARCH_INAPP', inApp);
+  },
+
+  setFlowchartSelected: ({ commit }, target) => {
+    commit('SET_FLOWCHART_SELECTED', target);
   },
 
   setDataflowInfoOpen: ({ commit }, open) => {

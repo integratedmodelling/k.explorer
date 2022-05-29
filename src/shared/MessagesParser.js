@@ -23,17 +23,22 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
-  [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch }) => {
-    if (typeof payload.jsonElkLayout !== 'undefined' && payload.jsonElkLayout !== null) {
-      try {
-        const jsonEklLayout = JSON.parse(payload.jsonElkLayout);
-        addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Dataflow compiled in task ${payload.taskId}`);
-        dispatch('data/addDataflow', jsonEklLayout, { root: true });
-      } catch (e) {
-        addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_ERROR, `Error in dataflos layout in task ${payload.taskId}: ${e}`);
-      }
+  [IN.TYPE_PROVENANCECHANGED]: ({ payload }, { dispatch, rootGetters }) => {
+    if (payload.contextId && rootGetters['data/context'] !== null && rootGetters['data/context'].id !== payload.contextId) {
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Provenance of incorrect context received');
+      console.warn(rootGetters['data/context'].id, payload.contextId);
     } else {
-      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_WARN, `Dataflow in task ${payload.taskId} has no layout`);
+      dispatch('data/setReloadFlowchart', { target: payload.target }, { root: true });
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Provenance available in context ${payload.contextId}`);
+    }
+  },
+  [IN.TYPE_DATAFLOWCOMPILED]: ({ payload }, { dispatch, rootGetters }) => {
+    if (payload.contextId && rootGetters['data/context'] !== null && rootGetters['data/context'].id !== payload.contextId) {
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Dataflow of incorrect context received');
+      console.warn(rootGetters['data/context'].id, payload.contextId);
+    } else {
+      dispatch('data/setReloadFlowchart', { target: payload.target }, { root: true });
+      addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Dataflow compiled in context ${payload.contextId}`);
     }
   },
   [IN.TYPE_DATAFLOWSTATECHANGED]: ({ payload }, { dispatch }) => {
@@ -50,7 +55,7 @@ const PARSERS = {
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
   [IN.TYPE_DATAFLOWDOCUMENTATION]: ({ payload }, { dispatch }) => {
-    if (payload && payload !== null && payload.dataflowId && payload.htmlDescription) {
+    if (payload && payload.dataflowId && payload.htmlDescription) {
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', payload);
       dispatch('data/setDataflowInfo', {
         id: payload.dataflowId,
@@ -221,6 +226,7 @@ const PARSERS = {
     eventBus.$emit(CUSTOM_EVENTS.COMMAND_RESPONSE, payload);
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Command response received', payload);
   },
+
 };
 
 /**
