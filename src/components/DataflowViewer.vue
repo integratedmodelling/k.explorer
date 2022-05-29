@@ -1,5 +1,5 @@
 <template>
-  <div class="dfv-wrapper">
+  <div class="dfv-wrapper" :class="`dfv-${flowchartSelected}`">
     <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': dataflowInfoOpen }">
       <div class="dfv-graph-info">
         <div class="dfv-graph-type"><span>{{ flowchart(flowchartSelected) ? flowchart(flowchartSelected).label : 'Nothing' }}</span></div>
@@ -150,6 +150,7 @@ export default {
           node.status = status;
         }
       }
+      this.modelSource.updateModel();
     },
     graphNodeSelectedListener(action) {
       if (this.flowchartSelected === CONSTANTS.GRAPH_DATAFLOW) {
@@ -348,6 +349,34 @@ export default {
           &.elk-table
             fill $grey-4
             stroke $grey-5
+          // provenance
+          &.elk-resource_entity
+            fill $teal-3
+            stroke blue-$grey-4
+          &.elk-semantic_entity
+            fill $teal-2
+            stroke $teal-3
+          &.elk-literal_entity
+            fill $teal-3
+            stroke $teal-4
+          &.elk-model_activity
+            fill $teal-4
+            stroke $teal-5
+          &.elk-task_activity
+            fill $teal-1
+            stroke $teal-2
+          &.elk-dataflow_plan
+            fill $teal-2
+            stroke $teal-3
+          &.elk-klab_agent
+            fill $teal-3
+            stroke $teal-4
+          &.elk-user_agent
+            fill $teal-4
+            stroke $teal-5
+          &.elk-view_entity
+            fill $teal-4
+            stroke $teal-5
         .processed
           &.elk-resource
             fill $green-2
@@ -372,7 +401,14 @@ export default {
           &.elk-table
             fill $grey-6
             stroke $grey-7
-
+  /*
+  .dfv-wrapper
+    &.dfv-provenance_simplified
+    &.dfv-dataflow
+      .elk-resolver
+        fill $grey-3 !important
+        stroke $grey-4 !important
+*/
   .dfv-info-container
     position absolute
     background-color rgba(35,35,35,0.9)
