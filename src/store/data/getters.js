@@ -63,8 +63,16 @@ export default {
   timestamp: state => state.timestamp,
   engineTimestamp: state => state.engineTimestamp,
 
-  dataflow: state => state.dataflow,
-  hasDataflow: state => state.dataflow !== null,
+  flowcharts: state => state.flowcharts,
+  flowchart: state => type => state.flowcharts.find(f => f.type === type),
+  flowchartsUpdatable: state => state.flowcharts.find(f => f.updatable),
+  flowchartUpdatable: state => (target) => {
+    const f = state.flowcharts.find(fc => fc.type === target);
+    if (f) {
+      return f.updatable;
+    }
+    return false;
+  },
 
   dataflowStatuses: state => state.dataflowStatuses,
   dataflowInfo: state => state.dataflowInfo,

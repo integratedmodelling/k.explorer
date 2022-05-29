@@ -36,7 +36,12 @@ export default {
     state.lasts = [];
     state.observations = [];
     state.knowledgeViews = [];
-    state.dataflow = null;
+    state.flowcharts.forEach((f) => {
+      f.flowchart = null;
+      f.graph = null;
+      f.updatable = false;
+      f.visible = false;
+    });
     state.dataflowStatuses = [];
     state.dataflowInfo = null;
     state.nodeSelected = null;
@@ -79,11 +84,20 @@ export default {
     }
   },
 
-  ADD_DATAFLOW: (state, { dataflow, type }) => {
-    if (type === 'DATAFLOW') {
-      state.dataflow = dataflow;
+  SET_RELOAD_FLOWCHART: (state, target) => {
+    state.flowcharts.filter(fc => fc.target === target).forEach((fc) => {
+      fc.updatable = true;
+      fc.visible = false;
+    });
+  },
+
+  ADD_FLOWCHART: (state, { flowchart, target }) => {
+    const f = state.flowcharts.find(fc => fc.type === target);
+    if (f) {
+      f.flowchart = flowchart;
+      f.updatable = false;
     } else {
-      state.provenance = dataflow;
+      console.warn(`Unknown target to add flowchart: ${target}`);
     }
   },
 

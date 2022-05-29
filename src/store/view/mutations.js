@@ -224,12 +224,8 @@ export default {
     state.searchHistory.unshift(searchArray);
   },
 
-  SET_RELOAD_DATAFLOW: (state, { reload, type }) => {
-    if (type === 'DATAFLOW') {
-      state.reloadDataflow = reload;
-    } else {
-      state.reloadProvenance = reload;
-    }
+  SET_FLOWCHART_SELECTED: (state, selected) => {
+    state.flowchartSelected = selected;
   },
 
   SET_DATAFLOW_INFO_OPEN: (state, open) => {

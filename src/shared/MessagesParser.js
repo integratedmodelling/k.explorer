@@ -23,12 +23,12 @@ const PARSERS = {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Ended task with id ${task.id}`);
     dispatch('view/removeFromStatusTexts', task.id, { root: true });
   },
-  [IN.TYPE_PROVENANCECHANGED]: (payload, { dispatch, rootGetters }) => {
+  [IN.TYPE_PROVENANCECHANGED]: ({ payload }, { dispatch, rootGetters }) => {
     if (payload.contextId && rootGetters['data/context'] !== null && rootGetters['data/context'].id !== payload.contextId) {
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Provenance of incorrect context received');
       console.warn(rootGetters['data/context'].id, payload.contextId);
     } else {
-      dispatch('data/loadDataflow', { target: payload.target }, { root: true });
+      dispatch('data/setReloadFlowchart', { target: payload.target }, { root: true });
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Provenance available in context ${payload.contextId}`);
     }
   },
@@ -37,7 +37,7 @@ const PARSERS = {
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Dataflow of incorrect context received');
       console.warn(rootGetters['data/context'].id, payload.contextId);
     } else {
-      dispatch('data/loadDataflow', { target: payload.target }, { root: true });
+      dispatch('data/setReloadFlowchart', { target: payload.target }, { root: true });
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, `Dataflow compiled in context ${payload.contextId}`);
     }
   },
@@ -55,7 +55,7 @@ const PARSERS = {
     dispatch('data/setDataflowStatus', { id: payload.nodeId, status }, { root: true });
   },
   [IN.TYPE_DATAFLOWDOCUMENTATION]: ({ payload }, { dispatch }) => {
-    if (payload && payload !== null && payload.dataflowId && payload.htmlDescription) {
+    if (payload && payload.dataflowId && payload.htmlDescription) {
       addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_DEBUG, 'Dataflow element info received', payload);
       dispatch('data/setDataflowInfo', {
         id: payload.dataflowId,

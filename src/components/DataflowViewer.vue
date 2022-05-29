@@ -1,6 +1,40 @@
 <template>
   <div class="dfv-wrapper">
     <div class="fit no-padding with-background dfv-container" :class="{ 'dfv-with-info': dataflowInfoOpen }">
+      <div class="dfv-graph-info">
+        <div class="dfv-graph-type"><span>{{ flowchart(flowchartSelected) ? flowchart(flowchartSelected).label : 'Nothing' }}</span></div>
+        <div class="dfv-graph-selector">
+          <q-btn
+            :disable="!(flowchart(CONSTANTS.GRAPH_DATAFLOW).flowchart || flowchart(CONSTANTS.GRAPH_DATAFLOW).updatable)"
+            icon="mdi-sitemap"
+            class="dfv-button"
+            flat
+            color="app-main-color"
+            :class="flowchartSelected === CONSTANTS.GRAPH_DATAFLOW ? 'dfv-graph-selected' : ''"
+            @click="flowchartSelected !== CONSTANTS.GRAPH_DATAFLOW ? setFlowchartSelected(CONSTANTS.GRAPH_DATAFLOW) : false">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="bottom middle"
+              anchor="top middle"
+              :delay="500"
+            >{{ flowchart(CONSTANTS.GRAPH_DATAFLOW).label }}</q-tooltip>
+          </q-btn>
+          <q-btn
+            :disable="!(flowchart(CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED).flowchart || flowchart(CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED).updatable)"
+            icon="mdi-graph-outline"
+            flat
+            color="app-main-color"
+            :class="flowchartSelected ===  CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED ? 'dfv-graph-selected' : ''"
+            @click="flowchartSelected !== CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED ? setFlowchartSelected(CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED) : false">
+            <q-tooltip
+              :offset="[0, 8]"
+              self="bottom middle"
+              anchor="top middle"
+              :delay="500"
+            >{{ flowchart(CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED).label }}</q-tooltip>
+          </q-btn>
+        </div>
+      </div>
       <div id="sprotty"></div>
       <q-resize-observable @resize="resize" :debounce="300" />
     </div>
@@ -13,13 +47,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { findNodeById } from 'shared/Helpers';
-import { CUSTOM_EVENTS } from 'shared/Constants';
+import { CONSTANTS, CUSTOM_EVENTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import 'reflect-metadata';
 import { KlabActionHandler } from 'shared/SprottyHandlers';
 import { createContainer, ElkGraphJsonToSprotty } from 'ts/elk-sprotty-bridge/index';
 import DataflowInfo from 'components/DataflowInfoPane.vue';
-import { TYPES, FitToScreenAction, InitializeCanvasBoundsAction } from 'sprotty/lib';
+import { TYPES, FitToScreenAction, CenterAction, InitializeCanvasBoundsAction } from 'sprotty/lib';
 
 export default {
   name: 'DataflowViewer',
@@ -28,18 +62,19 @@ export default {
   },
   data() {
     return {
-      graph: null, // the sprotty dataflow
       modelSource: null,
       actionDispatcher: null,
       interval: null,
       processing: false,
       visible: false,
       needsUpdate: true,
+      CONSTANTS,
     };
   },
   computed: {
     ...mapGetters('data', [
-      'dataflow',
+      'flowchart',
+      'flowcharts',
       'dataflowInfo',
       'dataflowStatuses',
       'contextId',
@@ -48,35 +83,56 @@ export default {
     ]),
     ...mapGetters('view', [
       'leftMenuState',
+      'flowchartSelected',
       'dataflowInfoOpen',
-      'reloadDataflow',
     ]),
   },
   methods: {
+    ...mapActions('data', [
+      'loadFlowchart',
+    ]),
     ...mapActions('view', [
+      'setFlowchartSelected',
       'setDataflowInfoOpen',
-      'setReloadDataflow',
     ]),
     doGraph() {
-      if (this.dataflow === null) {
-        return;
+      const flowchartObject = this.flowchart(this.flowchartSelected);
+      if (flowchartObject) {
+        if (this.processing) {
+          setTimeout(this.doGraph(), 100);
+          return;
+        }
+        if (flowchartObject.updatable) {
+          this.loadFlowchart(this.flowchartSelected)
+            .then(() => {
+              // clone dataflow to avoid modification while processing
+              const graph = JSON.parse(JSON.stringify(flowchartObject.flowchart));
+              this.processing = true;
+              flowchartObject.graph = new ElkGraphJsonToSprotty().transform(graph);
+              this.setModel(flowchartObject);
+              this.centerGraph();
+              this.processing = false;
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        } else if (flowchartObject.graph !== null && !flowchartObject.visible) {
+          this.setModel(flowchartObject);
+          this.centerGraph();
+        }
       }
-      if (this.processing) {
-        setTimeout(this.doGraph(), 100);
-        return;
+    },
+    setModel(flowchartObject) {
+      this.modelSource.setModel(flowchartObject.graph);
+      this.flowcharts.forEach((f) => { f.visible = false; });
+      flowchartObject.visible = true;
+    },
+    centerGraph() {
+      if (this.flowchartSelected === CONSTANTS.GRAPH_DATAFLOW) {
+        this.actionDispatcher.dispatch(new FitToScreenAction([], 40));
+      } else {
+        this.actionDispatcher.dispatch(new CenterAction([], 40));
       }
-      if (!this.visible) {
-        this.needsUpdate = true;
-        return;
-      }
-      // clone dataflow to avoid modification while processing
-      const dataflow = JSON.parse(JSON.stringify(this.dataflow));
-      this.processing = true;
-      this.graph = new ElkGraphJsonToSprotty().transform(dataflow);
-      this.modelSource.setModel(this.graph);
-      this.actionDispatcher.dispatch(new FitToScreenAction([], 40));
-      this.processing = false;
-      this.setReloadDataflow(false);
     },
     updateStatuses() {
       if (!this.visible) {
@@ -89,24 +145,26 @@ export default {
       const { length } = this.dataflowStatuses;
       for (let i = 0; i < length; i++) {
         const { id, status } = this.dataflowStatuses[i];
-        const node = findNodeById(this.graph, id);
+        const node = findNodeById(this.flowchart(this.flowchartSelected).graph, id);
         if (node !== null) {
           node.status = status;
         }
       }
     },
     graphNodeSelectedListener(action) {
-      if (action !== null && action.selectedElementsIDs) {
-        const { length } = action.selectedElementsIDs;
-        if (length === 0) {
-          this.setDataflowInfoOpen(false);
-          return;
-        }
-        for (let i = length - 1; i >= 0; i -= 1) {
-          this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({
-            nodeId: action.selectedElementsIDs[i],
-            contextId: this.context.id,
-          }, this.session).body);
+      if (this.flowchartSelected === CONSTANTS.GRAPH_DATAFLOW) {
+        if (action !== null && action.selectedElementsIDs) {
+          const { length } = action.selectedElementsIDs;
+          if (length === 0) {
+            this.setDataflowInfoOpen(false);
+            return;
+          }
+          for (let i = length - 1; i >= 0; i -= 1) {
+            this.sendStompMessage(MESSAGES_BUILDERS.DATAFLOW_NODE_DETAILS({
+              nodeId: action.selectedElementsIDs[i],
+              contextId: this.context.id,
+            }, this.session).body);
+          }
         }
       }
     },
@@ -126,20 +184,27 @@ export default {
           width: bounds.width,
           height: bounds.height,
         }));
-        this.actionDispatcher.dispatch(new FitToScreenAction(this.dataflow ? this.dataflow.children.map(c => c.id) : [], 40));
+        this.centerGraph();
       });
     },
   },
   watch: {
-    dataflow() {
-      console.warn(`Dataflow: ${this.dataflow}`);
-      if (this.dataflow !== null) {
+    flowchartSelected() {
+      if (this.visible) {
         this.doGraph();
       }
     },
+    flowcharts: {
+      handler() {
+        if (this.visible) {
+          this.doGraph();
+        }
+      },
+      deep: true,
+    },
     dataflowStatuses: {
       handler() {
-        if (this.dataflow !== null) {
+        if (this.flowchartSelected === CONSTANTS.GRAPH_DATAFLOW && this.flowchart(this.flowchartSelected) !== null) {
           this.updateStatuses();
         }
       },
@@ -171,8 +236,8 @@ export default {
 
   activated() {
     this.visible = true;
-    if (this.needsUpdate) {
-      this.doGraph();
+    this.doGraph();
+    if (this.flowchartSelected === CONSTANTS.GRAPH_DATAFLOW && this.needsUpdate) {
       this.updateStatuses();
       this.needsUpdate = false;
     }
@@ -197,16 +262,42 @@ export default {
       width calc(100% - 320px)
       #sprotty
         right 320px
+    .dfv-graph-info
+      position absolute
+      top 0
+      left 0
+      width 100%
+
+      background-color #e0e0e0
+      border-bottom 1px solid rgba(135,135,135,0.2)
+      .dfv-graph-type
+        padding 10px
+        font-weight 500
+        min-width 100px
+        width 50%
+        float left
+        color var(--app-title-color)
+      .dfv-graph-selector
+        text-align right
+        min-width 100px
+        width 50%
+        right 0
+        height 40px
+        float left
+      .dfv-graph-selected
+          cursor default
+          background-color var(--app-main-color);
+          color white
     #sprotty
       position absolute
       background-color #e0e0e0
-      top 0
+      top 40px
       left 0
       right 0
       bottom 0
       svg
         width 100%
-        height 100%
+        height calc(100% - 5px)
         cursor default
         &:focus
           outline-style none
@@ -229,7 +320,7 @@ export default {
           stroke #000
           fill #000
           font-family Roboto
-          font-size 10pt
+          font-size 12px
           dominant-baseline middle
         .elkjunction
           stroke none

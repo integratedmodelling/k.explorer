@@ -1,5 +1,5 @@
 import Stack from 'classes/Stack';
-import { CONSTANTS, WEB_CONSTANTS, DOCUMENTATION_VIEWS } from 'shared/Constants';
+import { INIT_FLOWCHARTS, CONSTANTS, WEB_CONSTANTS, DOCUMENTATION_VIEWS } from 'shared/Constants';
 
 /**
  * Data states
@@ -262,13 +262,10 @@ export default {
   engineTimestamp: -1,
 
   /**
-   * The dataflow of context as JSON ELK object
+   * The flowcharts fot this context, will be dataflow, provenance simplified and full as JSON ELK object
    */
-  dataflow: null,
-  /**
-   * the provenance of context as JSON ELK object
-   */
-  provenance: null,
+  flowcharts: INIT_FLOWCHARTS,
+
   /**
    * Used to store the state of task processed
    * { id: [id of observation]; status: [DATAFLOW_STATUS.WAITING|DATAFLOW_STATUS.PROCESSING|DATAFLOW_STATUS.PROCESSED]

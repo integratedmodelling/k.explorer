@@ -31,7 +31,39 @@ export const CONSTANTS = {
   SEARCHBAR_SIZE: 512,
   SEARCHBAR_INCREMENT: 128,
   MAX_SEARCHBAR_INCREMENTS: 6,
+
+  TARGET_DATAFLOW: 'DATAFLOW',
+  TARGET_PROVENANCE: 'PROVENANCE',
+  GRAPH_DATAFLOW: 'dataflow',
+  GRAPH_PROVENANCE_FULL: 'provenance_full',
+  GRAPH_PROVENANCE_SIMPLIFIED: 'provenance_simplified',
 };
+
+export const INIT_FLOWCHARTS = [{
+  flowchart: null,
+  graph: null,
+  updatable: false,
+  visible: false,
+  target: CONSTANTS.TARGET_DATAFLOW,
+  type: CONSTANTS.GRAPH_DATAFLOW,
+  label: 'Dataflow',
+}, {
+  flowchart: null,
+  graph: null,
+  updatable: false,
+  visible: false,
+  target: CONSTANTS.TARGET_PROVENANCE,
+  type: CONSTANTS.GRAPH_PROVENANCE_FULL,
+  label: 'Provenance full',
+}, {
+  flowchart: null,
+  graph: null,
+  updatable: false,
+  visible: false,
+  target: CONSTANTS.TARGET_PROVENANCE,
+  type: CONSTANTS.GRAPH_PROVENANCE_SIMPLIFIED,
+  label: 'Provenance simplified',
+}];
 
 export const LEFTMENU_CONSTANTS = {
   /**
