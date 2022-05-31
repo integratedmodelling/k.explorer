@@ -35,8 +35,10 @@
           </q-btn>
         </div>
       </div>
-      <div id="sprotty"></div>
-      <q-resize-observable @resize="resize" :debounce="300" />
+      <div>
+        <div id="sprotty"></div>
+        <q-resize-observable @resize="resize" :debounce="300" />
+      </div>
     </div>
     <div class="dfv-info-container" v-if="dataflowInfoOpen">
       <dataflow-info width="infoWidth"></dataflow-info>
@@ -268,7 +270,7 @@ export default {
       top 0
       left 0
       width 100%
-
+      height 40px
       background-color #e0e0e0
       border-bottom 1px solid rgba(135,135,135,0.2)
       .dfv-graph-type
@@ -283,12 +285,11 @@ export default {
         min-width 100px
         width 50%
         right 0
-        height 40px
         float left
       .dfv-graph-selected
-          cursor default
-          background-color var(--app-main-color);
-          color white
+        cursor default
+        background-color var(--app-main-color);
+        color white
     #sprotty
       position absolute
       background-color #e0e0e0
