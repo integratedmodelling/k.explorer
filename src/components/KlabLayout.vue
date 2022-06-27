@@ -410,9 +410,9 @@ export default {
   },
   watch: {
     layout(newLayout, oldLayout) {
-      const newApp = oldLayout === null || newLayout.applicationId !== oldLayout.applicationId;
+      const newApp = newLayout !== null && (oldLayout === null || newLayout.applicationId !== oldLayout.applicationId);
       // this.$eventBus.$emit(CUSTOM_EVENTS.LAYOUT_CHANGED);
-      if (!this.isApp && newApp) {
+      if (newLayout === null || (!this.isApp && newApp)) {
         // setTimeout(() => {
         this.$nextTick(() => {
           this.updateLayout(true);
