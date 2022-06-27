@@ -282,6 +282,8 @@ export default {
                 document.documentElement.style.setProperty(`--app-darklight-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -5 * multiplier));
                 document.documentElement.style.setProperty(`--app-darken-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, -20 * multiplier));
                 document.documentElement.style.setProperty(`--app-lighten-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 20 * multiplier));
+                document.documentElement.style.setProperty(`--app-lighten90-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 90 * multiplier));
+                document.documentElement.style.setProperty(`--app-lighten75-${key}`, lighten(`rgb(${color.rgb.r},${color.rgb.g},${color.rgb.b})`, 75 * multiplier));
               }
             } catch (error) {
               console.warn(`Error trying to parse a color from the layout style: ${key}: ${value}`);

@@ -8,8 +8,7 @@
         icon="mdi-cog"
         direction="up"
         v-model="fabVisible"
-        @mouseenter.native="mouseFabEnter"
-        @mouseleave.native="mouseFabLeave"
+        @click.native="mouseFabClick($event)"
       >
         <q-fab-action
           v-if="!isLocal"
@@ -44,7 +43,6 @@
           text-color="app-main-color"
           icon="mdi-account-circle"
           @mouseenter.native="mouseActionEnter('userDetails')"
-          @mouseleave.native="mouseActionLeave('userDetails')"
         >
           <!-- <q-tooltip class="klab-setting-tooltip" anchor="center left" self="center right" :offset="[16, 0]">{{ $t('label.userDetails') }}</q-tooltip> -->
           <q-popover
@@ -54,8 +52,6 @@
             self="bottom right"
             :offset="[8, 0]"
             class="ks-container"
-            @mouseenter.native="mousePopupEnter('userDetails')"
-            @mouseleave.native="mousePopupLeave('userDetails')"
           >
             <!--
             <div class="ks-close-button">
@@ -96,7 +92,6 @@
           text-color="app-main-color"
           icon="mdi-apps"
           @mouseenter.native="mouseActionEnter('appsList')"
-          @mouseleave.native="mouseActionLeave('appsList')"
         >
           <!-- <q-tooltip class="klab-setting-tooltip" anchor="center left" self="center right" :offset="[16, 0]">{{ $t('label.appsList') }}</q-tooltip> -->
           <q-popover
@@ -106,8 +101,7 @@
             self="bottom right"
             :offset="[8, 0]"
             class="ks-container"
-            @mouseenter.native="mousePopupEnter('appsList')"
-            @mouseleave.native="mousePopupLeave('appsList')"
+            persistent
           >
             <div class="ks-title">
               <div class="ks-title-text">{{ $t('label.appsList') }}</div>
@@ -121,18 +115,23 @@
               <div class="kal-no-apps" v-if="appsList.length === 0">{{ $t('messages.noAppsAvailable') }}</div>
               <template v-else>
                 <div  v-for="(app, index) in appsList" :key="index" class="kal-app" :class="{ 'kal-active':layout && layout.name === app.name }">
-                  <div class="kal-logo">
-                    <img valign="middle" :src="app.logoSrc"/>
-                  </div>
-                  <div class="kal-info">
-                    <div class="kal-name" @click="runApp(app.name)" v-html="app.label ? app.label : app.name ? app.name : $t('label.noLayoutLabel')"></div>
-                    <div class="kal-description" @click="runApp(app.name)" v-html="app.description ? app.description : $t('label.noLayoutDescription')"></div>
-                    <div class="kal-locales" v-if="app.locales && app.locales.length > 1">
-                      <div v-for="(locale) in app.locales" :key="locale" class="row inline">
-                        <div class="kal-locale klab-link" @click="runApp(`${app.name.substring(0, app.name.lastIndexOf('.'))}.${locale}`)">
-                          <span class="mdi mdi-earth"></span><span class="kal-locale-name">{{ getLocaleName(locale) }}</span></div>
-                      </div>
+                  <div class="kal-app-description">
+                    <div class="kal-logo">
+                      <img valign="middle" :src="app.logoSrc"/>
                     </div>
+                    <div class="kal-info">
+                      <div class="kal-name" @click="runApp(app)" v-html="getLocalizedString(app, 'label')"></div>
+                      <div class="kal-description" @click="runApp(app)" v-html="getLocalizedString(app, 'description')"></div>
+                    </div>
+                  </div>
+                  <div class="kal-locales row reverse" v-if="app.localizations && app.localizations.length > 1">
+                    <q-select
+                      v-model="app.selectedLocale"
+                      :options="app.localeOptions"
+                      color="app-main-color"
+                      class="kal-lang-selector"
+                      hide-underline
+                    ></q-select>
                   </div>
                 </div>
               </template>
@@ -170,6 +169,8 @@ export default {
       closeTimeout: null,
       modalTimeout: null,
       appsList: [],
+      localeOptions: [],
+      test: 'es',
       TERMINAL_TYPES,
       ISO_LOCALE,
     };
@@ -191,7 +192,7 @@ export default {
       return this.dataflowInfoOpen && this.mainViewerName === VIEWERS.DATAFLOW_VIEWER.name;
     },
     modalsAreFocused() {
-      return Object.keys(this.popupsOver).some(key => this.popupsOver[key]);
+      return Object.keys(this.popupsOver).some(key => this.popupsOver[key]) || this.selectOpen;
     },
     owner() {
       return (this.sessionReference && this.sessionReference.owner) ? this.sessionReference.owner : {
@@ -211,12 +212,24 @@ export default {
       'setLayout',
       'setShowSettings',
     ]),
-    getLocaleName(locale) {
-      const l = ISO_LOCALE[locale];
-      if (l && l.nativeName) {
-        return l.nativeName.charAt(0).toUpperCase() + l.nativeName.slice(1);
+    getLocalizedString(app, type) {
+      if (app.selectedLocale) {
+        const local = app.localizations.find(l => l.isoCode === app.selectedLocale);
+        if (local) {
+          if (type === 'label') {
+            return local.localizedLabel;
+          }
+          return local.localizedDescription;
+        }
+        if (type === 'description') {
+          return this.$t('label.noLayoutDescription');
+        }
+        if (app.name) {
+          return app.name;
+        }
+        this.$t('label.noLayoutLabel');
       }
-      return locale.toUpperCase();
+      return '';
     },
     loadApplications() {
       this.appsList.splice(0);
@@ -230,16 +243,25 @@ export default {
             app.logoSrc = APPS_DEFAULT_VALUES.DEFAULT_LOGO;
             this.appsList.push(app);
           }
+          this.$set(app, 'selectedLocale', app.localizations[0].isoCode);
+          app.localeOptions = app.localizations.map(local => ({
+            label: local.languageDescription,
+            value: local.isoCode,
+            icon: 'mdi-earth',
+            className: 'kal-locale-options',
+          }));
         });
       }
     },
-    runApp(app) {
-      if (this.layout && this.layout.name === app.name) {
+    runApp(app, locale = app.selectedLocale) {
+      const localeApp = `${app.name}.${locale}`;
+      if (this.layout && this.layout.name === localeApp) {
         // the same app is loaded
         return;
       }
+      app.selectedLocale = locale;
       this.sendStompMessage(MESSAGES_BUILDERS.RUN_APPLICATION(
-        { applicationId: app },
+        { applicationId: localeApp },
         this.$store.state.data.session,
       ).body);
       this.$nextTick(() => {
@@ -308,59 +330,34 @@ export default {
         });
       });
     },
-    mouseActionLeave(actionName) {
-      // console.warn(`Exit from action ${actionName}`);
-      if (this.closeTimeout) {
-        clearTimeout(this.closeTimeout);
-        this.closeTimeout = null;
-      }
-      this.closeTimeout = setTimeout(() => {
-        if (!this.popupsOver[actionName]) {
-          this.models[actionName] = false;
+    mouseFabClick(event) {
+      if (!this.fabVisible) {
+        if (this.closeTimeout) {
+          clearTimeout(this.closeTimeout);
+          this.closeTimeout = null;
         }
-      }, 500);
-    },
-    mousePopupEnter(actionName) {
-      this.popupsOver[actionName] = true;
-      clearTimeout(this.modalTimeout);
-      this.modalTimeout = null;
-    },
-    mousePopupLeave(actionName) {
-      this.popupsOver[actionName] = false;
-      this.models[actionName] = false;
-      this.modalTimeout = setTimeout(() => {
-        this.closeAll();
-        this.modalTimeout = null;
-      }, 500);
-    },
-    mouseFabEnter() {
-      clearTimeout(this.modalTimeout);
-      this.modalTimeout = null;
-      // wait for animation
-      setTimeout(() => {
-        this.fabVisible = true;
-      }, 300);
-    },
-    mouseFabLeave() {
-      if (this.closeTimeout) {
-        clearTimeout(this.closeTimeout);
-        this.closeTimeout = null;
-      }
-      this.closeTimeout = setTimeout(() => {
         if (!this.modalsAreFocused) {
-          this.closeAll();
+          this.closeAll(event, 500);
         }
-      }, 500);
+      } else {
+        event.stopPropagation();
+        event.preventDefault();
+        setTimeout(() => {
+          window.addEventListener('click', this.closeAll);
+        }, 300);
+      }
     },
-    closeAll() {
-      this.fabVisible = false;
-      Object.keys(this.models).forEach((key) => {
-        this.models[key] = false;
-      });
+    closeAll(timeoutMillis = 0) {
+      this.closeTimeout = setTimeout(() => {
+        Object.keys(this.models).forEach((key) => {
+          this.models[key] = false;
+        });
+        this.$refs['klab-settings'].hide();
+        window.removeEventListener('click', this.closeAll);
+      }, timeoutMillis);
     },
     openTerminal(type = null) {
-      this.mousePopupLeave('userDetails');
-      this.mouseFabLeave();
+      this.closeAll();
       setTimeout(() => {
         this.addTerminal({ ...(type && { type }) });
       }, 200);
@@ -385,13 +382,20 @@ export default {
       bottom 28px
       right 26px
       opacity 0.2
+      &:hover
+        opacity 1
+        .q-btn-fab
+          height 56px
+          width 56px
+          .q-icon
+            font-size 28px
       &.klab-df-info-open
         right 346px
       .q-btn-fab
-        height 32px
-        width 32px
+        height 42px
+        width 42px
         .q-icon
-          font-size 16px
+          font-size 21px
       .q-btn-fab-mini
         height 24px
         width 24px
@@ -461,51 +465,53 @@ export default {
 
     .kal-apps
       .kal-app
-        display flex
-        padding 8px 16px
-        border 1px solid transparent
-        border-radius 6px
-        &:not(.kal-active)
-          cursor pointer
-        &.kal-active
-          border-color var(--app-darken-main-color)
-        &:hover
-          border-color var(--app-main-color)
-        .kal-logo
-          align-self start;
-          flex 0 0 auto
-          width 50px
-          height 50px
-          margin 0 16px 0 0
-          img
-            display block
-            max-width 50px
-            max-height 50px
-            vertical-align middle
-        .kal-info
-          flex: 1 1 auto;
-          .kal-name
-            color var(--app-title-color)
-            font-weight 400
-          .kal-description
-            color var(--app-text-color)
-            font-size 80%
-        .kal-locale
-          color var(--app-text-color)
-          padding 12px 12px 0 0
-          // margin 6px 6px 6px 0
-          font-size 80%
-          // border 1px solid var(--app-main-color)
-          // border-radius 4px
-          //&:hover
-            //color var(--app-background-color)
-            // background-color var(--app-main-color)
-          span
-            display inline-block
-            padding-left 2px
-            &.flag-icon
-              font-size 90%
-    // modals are out of container
+        margin-bottom 16px
+        .kal-app-description
+          display flex
+          padding 8px 16px
+          border 1px solid transparent
+          border-radius 6px 16px 6px 16px
+          border-color var(--app-lighten75-main-color)
+
+          &:not(.kal-active)
+            cursor pointer
+          &.kal-active
+            border-color var(--app-darken-main-color)
+          &:hover
+            background-color var(--app-lighten75-main-color)
+          .kal-logo
+            align-self start;
+            flex 0 0 auto
+            width 50px
+            height 50px
+            margin 0 16px 0 0
+            img
+              display block
+              max-width 50px
+              max-height 50px
+              vertical-align middle
+          .kal-info
+            flex: 1 1 auto;
+            .kal-name
+              color var(--app-title-color)
+              font-weight 400
+            .kal-description
+              color var(--app-text-color)
+              font-size 80%
+      .kal-locales
+        span
+          display inline-block
+          padding-left 2px
+          &.flag-icon
+            font-size 90%
+        .kal-lang-selector
+          height 32px
+          font-size 90%
+          padding 0 4px
+          border-radius 4px
+          .q-input-target
+            color var(--app-main-color)
+  // modals are out of container
     .kud-group-id
     .kud-group-detail
       text-align center
@@ -529,6 +535,10 @@ export default {
       vertical-align middle
   .klab-setting-tooltip
     background-color var(--app-main-color)
-
-
+  .kal-locale-options
+    color var(--app-main-color)
+    font-size 90%
+    .q-item-side
+      color var(--app-main-color)
+      min-width 0
 </style>
