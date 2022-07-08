@@ -85,7 +85,7 @@ export default {
   },
 
   SET_RELOAD_FLOWCHART: (state, target) => {
-    state.flowcharts.filter(fc => fc.target === target).forEach((fc) => {
+    state.flowcharts.filter(fc => target === null || fc.target === target).forEach((fc) => {
       fc.updatable = true;
       fc.visible = false;
     });

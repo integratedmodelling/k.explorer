@@ -86,7 +86,7 @@ export default {
       context.restored = true;
       // remove children so no reactive observations are loaded
       await dispatch('setContext', { context: { ...context, children: [] } });
-      commit('view/SET_RELOAD_DATAFLOW', true, { root: true }); // if we have context, we have dataflow
+      commit('data/SET_RELOAD_FLOWCHART', { target: null }, { root: true }); // if we have context, we have dataflow
       console.debug(`Context received with id ${context.id}`);
       // console.dir(context);
       if (context.children.length > 0) {
