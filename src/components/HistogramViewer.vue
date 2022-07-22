@@ -37,7 +37,7 @@
       </div>
       <div class="hv-legend hv-categories full-height" v-if="legend && dataSummary.categories.length > 0">
         <div v-for="(category, index) in dataSummary.categories" :key="index" class="hv-category" :style="{ 'line-height': `${calculateFontSize()}px`, 'font-size': `${calculateFontSize()}px` }">
-          <span v-if="dataSummary.categorized">{{ category }}</span>
+          <span v-if="dataSummary.categorized" :class="{ 'hv-zero-category': dataSummary.histogram[index] === 0 }">{{ category }}</span>
           <span v-else>{{ category.split(" ")[0] }}</span>
         </div>
         <div v-if="!dataSummary.categorized" class="hv-category">{{ histogramMax }}</div>
@@ -290,6 +290,9 @@ export default {
     align-items  flex-end
     flex-direction row
     font-size 12px
+.hv-zero-category
+  font-style italic
+  opacity .5
 
 .hv-data-value, .hv-data-nodetail
   width "calc(100% - %s)" % ($hv-histogram-minmax-width * 2)
