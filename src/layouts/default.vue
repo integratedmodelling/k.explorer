@@ -1,11 +1,11 @@
 <template>
   <div class="klab-main-app">
     <!-- TODO removed to permit load of context from application startup, check how to solve better -->
-    <!-- <template  v-if="!isApp || !waitApp"> -->
-    <klab-layout :layout="layout"></klab-layout>
-    <klab-modal-window v-if="modalWindow !== null" :modal="modalWindow"></klab-modal-window>
-    <app-dialogs></app-dialogs>
-    <!-- </template> -->
+    <template  v-if="!isApp || layout !== null">
+      <klab-layout :layout="layout"></klab-layout>
+      <klab-modal-window v-if="modalWindow !== null" :modal="modalWindow"></klab-modal-window>
+      <app-dialogs></app-dialogs>
+    </template>
     <klab-notifications></klab-notifications>
     <klab-terminal v-for="terminal in terminals" :terminal="terminal" :key="terminal.id"></klab-terminal>
     <klab-presentation></klab-presentation>
