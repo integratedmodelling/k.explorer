@@ -8,7 +8,6 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 // import { URLS } from 'shared/MessagesConstants';
 // import { axiosInstance } from '../plugins/axios';
 
-
 export const COMPONENTS = {
   LAYOUT: layout => Vue.component('KAppLayout', {
     render(h) {
@@ -664,6 +663,7 @@ export const COMPONENTS = {
           popupCover: false,
           dense: true,
           disable: component.attributes.disabled === 'true',
+          dark: this.$store.getters['view/appStyle'] === 'dark',
         },
         on: {
           change: (value) => {
