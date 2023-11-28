@@ -681,6 +681,8 @@ $legend-min-width-small = 160px
         color $main-control-main-color
 
   .dv-citation
+  .dv-paragraph
+  .dv-reference
     color var(--app-main-color)
     a
       display inline-block
