@@ -338,6 +338,11 @@ export default {
     background-color var(--app-negative-color)
   .kcv-browser
     border-radius 8px
+  // special styles
+  .kcv-style-dark
+    .kcv-reset-button
+      color #fa7575 !important
+      //filter: invert(1) hue-rotate(180deg)
 
   @keyframes flash-button {
     50% {

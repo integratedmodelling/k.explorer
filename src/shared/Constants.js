@@ -975,12 +975,12 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
 export const DEFAULT_STYLES = {
   dark: {
     'main-color': 'white',
-    'background-color': 'black',
+    'background-color': 'rgb(18, 18, 18)',
     'alt-background': 'rgb(99,99,99)',
     'text-color': 'white',
     'control-text-color': 'black',
     'title-color': 'white',
-    'alt-color': 'rgb(0,138,150)',
+    'alt-color': 'rgb(0, 204, 204)',
     'font-family': '\'Roboto\', \'-apple-system\', \'Helvetica Neue\', Helvetica, Arial, sans-serif',
     'font-size': '1em',
     'title-size': '26px',

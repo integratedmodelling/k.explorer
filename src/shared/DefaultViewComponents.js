@@ -35,7 +35,7 @@ export const COMPONENTS = {
   MAIN: component => Vue.component('KAppMain', {
     render(h) {
       return h('div', {
-        class: ['kcv-main-container', `kcv-dir-${component.direction}`],
+        class: ['kcv-main-container', `kcv-dir-${component.direction}`, `kcv-style-${this.$store.getters['view/appStyle']}`],
         attrs: {
           id: `${component.applicationId}-${component.id}`,
           ref: 'main-container',
