@@ -478,6 +478,9 @@ export default {
     if (state.layout || state.modalWindow) {
       const component = findInLayout(state.layout, action.component.id) || (state.modalWindow !== null && findInLayout(state.modalWindow, action.component.id));
       if (component) {
+        if (action.component.components.length === 0 && component.components.length !== 0) {
+          delete action.component.components;
+        }
         Object.assign(component, action.component);
       }
     }

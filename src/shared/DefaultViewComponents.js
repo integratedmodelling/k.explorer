@@ -143,80 +143,87 @@ export const COMPONENTS = {
   SEPARATOR: component => Vue.component('KAppSeparator', {
     render(h) {
       const self = this;
-      return h('div', {
-        class: 'kcv-separator',
-        attrs: {
-          id: `${component.applicationId}-${component.id}`,
-        },
-        style: DEFAULT_STYLE_FUNCTION(component),
-      }, [
-        component.attributes.iconname
-          ? h(QIcon, {
-            class: 'kcv-separator-icon',
-            props: {
-              name: `mdi-${component.attributes.iconname}`,
-              color: 'app-main-color',
-            },
-          })
-          : null,
-        component.title
-          ? h('div', {
-            class: 'kcv-separator-title',
-          }, component.title)
-          : null,
-        component.attributes.iconbutton
-          ? h(QIcon, {
-            class: 'kcv-separator-right',
-            props: {
-              name: `mdi-${component.attributes.iconbutton}`,
-              color: 'app-main-color',
-            },
-            nativeOn: {
-              click: () => {
-                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
-                  operation: APPS_OPERATION.USER_ACTION,
-                  component: {
-                    ...component,
-                    components: [],
-                  },
-                  booleanValue: true,
-                });
+      return component.attributes.empty
+        ? h('hr', {
+          class: 'kcv-hr-separator',
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
+        })
+        : h('div', {
+          class: 'kcv-separator',
+          attrs: {
+            id: `${component.applicationId}-${component.id}`,
+          },
+          style: DEFAULT_STYLE_FUNCTION(component),
+        }, [
+          component.attributes.iconname
+            ? h(QIcon, {
+              class: 'kcv-separator-icon',
+              props: {
+                name: `mdi-${component.attributes.iconname}`,
+                color: 'app-main-color',
               },
-            },
-          })
-          : null,
-        component.attributes.info
-          ? h(QIcon, {
-            class: 'kcv-separator-right',
-            props: {
-              name: 'mdi-information-outline',
-              color: 'app-main-color',
-            },
-            nativeOn: {
-              mouseover: () => {
-                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
-                  operation: APPS_OPERATION.USER_ACTION,
-                  component: {
-                    ...component,
-                    components: [],
-                  },
-                  booleanValue: true,
-                });
+            })
+            : null,
+          component.title
+            ? h('div', {
+              class: 'kcv-separator-title',
+            }, component.title)
+            : null,
+          component.attributes.iconbutton
+            ? h(QIcon, {
+              class: 'kcv-separator-right',
+              props: {
+                name: `mdi-${component.attributes.iconbutton}`,
+                color: 'app-main-color',
               },
-              mouseleave: () => {
-                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
-                  operation: APPS_OPERATION.USER_ACTION,
-                  component: {
-                    ...component,
-                    components: [],
-                  },
-                  booleanValue: false,
-                });
+              nativeOn: {
+                click: () => {
+                  self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                    operation: APPS_OPERATION.USER_ACTION,
+                    component: {
+                      ...component,
+                      components: [],
+                    },
+                    booleanValue: true,
+                  });
+                },
               },
-            },
-          })
-          : null,
-      ]);
+            })
+            : null,
+          component.attributes.info
+            ? h(QIcon, {
+              class: 'kcv-separator-right',
+              props: {
+                name: 'mdi-information-outline',
+                color: 'app-main-color',
+              },
+              nativeOn: {
+                mouseover: () => {
+                  self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                    operation: APPS_OPERATION.USER_ACTION,
+                    component: {
+                      ...component,
+                      components: [],
+                    },
+                    booleanValue: true,
+                  });
+                },
+                mouseleave: () => {
+                  self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                    operation: APPS_OPERATION.USER_ACTION,
+                    component: {
+                      ...component,
+                      components: [],
+                    },
+                    booleanValue: false,
+                  });
+                },
+              },
+            })
+            : null,
+        ]);
     },
   }),
   TREE: (component) => {

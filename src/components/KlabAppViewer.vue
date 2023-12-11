@@ -203,6 +203,10 @@ export default {
       padding-left var(--app-smaller-mp)
     */
   // separator
+  .kcv-hr-separator
+    width 100%
+    color var(--app-main-color)
+    height 1px
   .kcv-separator
     padding var(--app-large-mp) var(--app-small-mp)
     position relative
