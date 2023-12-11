@@ -975,6 +975,8 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
 export const DEFAULT_STYLES = {
   dark: {
     'main-color': 'white',
+    'positive-color': 'rgb(116, 212, 116)',
+    'negative-color': 'rgb(250, 117, 117)',
     'background-color': 'rgb(18, 18, 18)',
     'alt-background': 'rgb(99,99,99)',
     'text-color': 'white',
