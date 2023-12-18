@@ -167,6 +167,12 @@ export default {
       background-color var(--app-background-color)
       color var(--app-title-color)
       border-bottom 1px solid var(--app-darken-background-color)
+      .q-item-side-left
+        min-width 0
+        .q-icon
+          // margin-right var(--app-small-mp)
+          font-size 1.2em
+          width 1.2em
       .q-item-label
         font-size var(--app-font-size)
       .q-item-side

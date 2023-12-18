@@ -127,6 +127,7 @@ export const COMPONENTS = {
             separator: false,
             ...(!component.attributes.parentAttributes.multiple && { group: component.attributes.parentId }),
             label: component.name,
+            ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
           },
           on: {
             hide() {
