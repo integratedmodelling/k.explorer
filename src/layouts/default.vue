@@ -122,7 +122,7 @@ export default {
         if (this.isApp && this.layout === null) {
           this.errorLoading = true;
         }
-      }, 7000);
+      }, 15000);
     }
     window.addEventListener('beforeunload', (e) => {
       // Cancel the event
