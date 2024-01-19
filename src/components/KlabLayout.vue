@@ -455,6 +455,8 @@ export default {
   body
     .klab-main-app
       position relative
+    .km-modal-window
+      background-color var(--app-background-color)
     .kapp-header-container
     .kapp-footer-container
     .kapp-left-inner-container

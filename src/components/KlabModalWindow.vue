@@ -5,7 +5,7 @@
     no-esc-dismiss
     no-backdrop-dismiss
   >
-    <q-modal-layout>
+    <q-modal-layout class="km-modal-window">
       <q-toolbar slot="header" v-if="modal.label" class="km-title">
         <q-toolbar-title>{{ modal.label }}</q-toolbar-title>
         <span slot="subtitle" v-if="modal.subtitle" class="km-subtitle">{{ modal.subtitle }}</span>
@@ -74,8 +74,8 @@ export default {
     overflow hidden
    */
   .km-title
-    background-color var(--app-main-color) !important
-    color var(--app-background-color)
+    background-color var(--app-background-color) !important
+    color var(--app-main-color) !important
     .q-toolbar-title
       font-size var(--app-modal-title-size)
     .km-subtitle
