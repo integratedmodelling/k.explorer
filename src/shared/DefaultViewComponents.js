@@ -109,6 +109,8 @@ export const COMPONENTS = {
   SHELF: (component) => {
     if (!component.attributes.opened) {
       component.attributes.opened = false;
+    } else if (component.attributes.opened === 'true') {
+      component.attributes.opened = true;
     }
     return Vue.component('KAppShelf', {
       data() {
