@@ -21,7 +21,7 @@
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
         <div class="kapp-header-menu-container" v-if="layout.menu && layout.menu.length > 0">
-          <div class="kapp-header-menu-item klab-link" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id)">{{ item.text }}</div>
+          <div class="kapp-header-menu-item klab-link" :class="item.url ? 'klab-external-link' : ''" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id, item.url)">{{ item.text }}</div>
         </div>
         <div class="kapp-actions-container row items-end justify-end">
           <main-actions-buttons :is-header="true" class="col items-end"></main-actions-buttons>
@@ -360,7 +360,10 @@ export default {
         console.error(error);
       });
     },
-    clickOnMenu(id) {
+    clickOnMenu(id, url) {
+      if (url) {
+        window.open(url);
+      }
       if (this.layout) {
         const { applicationId, identity } = this.layout;
         this.sendStompMessage(MESSAGES_BUILDERS.MENU_ACTION({

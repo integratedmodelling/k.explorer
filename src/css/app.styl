@@ -406,6 +406,15 @@ body
   display inline-block
   text-decoration none
   color $light-blue-9
+  &.klab-external-link::after
+    content '\1F517'
+    color transparent
+    text-shadow 0 0 0 var(--app-text-color)
+    font-size 0.7em
+    display inline
+    margin 0 0 0 3px
+    vertical-align middle
+    border none
   &:visited
     color $cyan-9
   &::after
