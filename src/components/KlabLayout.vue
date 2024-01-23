@@ -457,6 +457,8 @@ export default {
       position relative
     .km-modal-window
       background-color var(--app-background-color)
+      iframe
+        background-color white
     .kapp-header-container
     .kapp-footer-container
     .kapp-left-inner-container
