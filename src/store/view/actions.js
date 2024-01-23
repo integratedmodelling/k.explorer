@@ -413,7 +413,12 @@ export default {
   },
 
   setModalWindow: ({ commit }, modal) => {
-    commit('SET_MODAL_WINDOW', modal);
+    if (modal && modal.panels[0] && modal.panels[0].components[0] && modal.panels[0].components[0].components[0]
+      && modal.panels[0].components[0].components[0].attributes.blank && modal.panels[0].components[0].components[0].content) {
+      window.open(modal.panels[0].components[0].components[0].content);
+    } else {
+      commit('SET_MODAL_WINDOW', modal);
+    }
   },
 
   /*
