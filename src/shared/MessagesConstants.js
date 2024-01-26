@@ -96,6 +96,7 @@ export const IN = Object.freeze({
   TYPE_SCALEDEFINED: 'ScaleDefined',
   TYPE_USERINPUTREQUESTED: 'UserInputRequested',
   TYPE_USERPROJECTOPENED: 'UserProjectOpened',
+  TYPE_PROJECTFILEMODIFIED: 'ProjectFileModified',
   TYPE_SCHEDULINGSTARTED: 'SchedulingStarted',
   TYPE_SCHEDULINGFINISHED: 'SchedulingFinished',
   TYPE_NETWORKSTATUS: 'NetworkStatus',

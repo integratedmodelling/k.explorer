@@ -187,6 +187,9 @@ const PARSERS = {
   [IN.TYPE_USERPROJECTOPENED]: (context, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project opened in k.Modeler');
   },
+  [IN.TYPE_PROJECTFILEMODIFIED]: (context, { dispatch }) => {
+    addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Project modified in k.Modeler');
+  },
   [IN.TYPE_NETWORKSTATUS]: ({ payload: message }, { dispatch }) => {
     addToKexplorerLog(dispatch, MESSAGE_TYPES.TYPE_INFO, 'Network status received', message);
   },
