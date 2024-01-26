@@ -21,7 +21,8 @@
           <div class="kapp-subtitle" v-if="layout.description">{{ layout.description }}</div>
         </div>
         <div class="kapp-header-menu-container" v-if="layout.menu && layout.menu.length > 0">
-          <div class="kapp-header-menu-item klab-link" :class="item.url ? 'klab-external-link' : ''" v-for="item in layout.menu" :key="item.id" @click="clickOnMenu(item.id, item.url)">{{ item.text }}</div>
+          <div class="kapp-header-menu-item klab-link" v-for="item in layout.menu"
+               :key="item.id" @click="clickOnMenu(item.id, item.url)">{{ item.text }}<span class="klab-external-link" v-if="item.url">&#x1F865;</span></div>
         </div>
         <div class="kapp-actions-container row items-end justify-end">
           <main-actions-buttons :is-header="true" class="col items-end"></main-actions-buttons>
@@ -601,6 +602,11 @@ export default {
     &.klab-close-app-on-panel
       background-color var(--app-main-color)
       color var(--app-background-color)
+  .klab-link .klab-external-link
+    color var(--app-text-color)
+    font-weight bold
+    display inline
+    margin 0 0 0 3px
   .kapp-loading
     background-color var(--app-background-color)
     padding 16px
