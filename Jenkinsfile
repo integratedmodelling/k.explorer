@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Commit and PR') {
             when {
-                branch 'master'
+                anyOf { branch 'develop'; branch 'master' }
             }
             steps {
                 dir('k.explorer') {
@@ -46,7 +46,7 @@ pipeline {
                     }
                     withCredentials([file(credentialsId: 'klab-bot-gh-cli', variable: 'TOKEN')]) {
                         sh 'gh auth login --with-token < $TOKEN'
-                        sh "gh pr create --base develop --title '[AUTOMATED UPDATE] k.Explorer - Rev ${env.REV}' --body 'Automated update' --assignee '@me' --reviewer integratedmodelling/reviewers"
+                        sh "gh pr create --base ${env.BRANCH_NAME} --title '[AUTOMATED UPDATE] k.Explorer - Rev ${env.REV}' --body 'Automated update' --assignee '@me' --reviewer integratedmodelling/reviewers"
                     }
                 }
             }
