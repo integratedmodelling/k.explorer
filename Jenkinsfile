@@ -7,10 +7,6 @@ pipeline {
                 dir('k.explorer') {
                     git url: 'https://github.com/integratedmodelling/k.explorer.git'
                 }
-                dir('klab') {
-                    git credentialsId: '2f30d924-29e5-4235-b61f-a0dbe2bb7783', branch: 'develop', url: 'git@github.com:integratedmodelling/klab.git'
-                }
-
             }
         }
         stage('Build k.Explorer') {
@@ -29,9 +25,11 @@ pipeline {
                 dir('k.explorer') {
                     script {
                         env.REV = sh(script: 'git rev-parse HEAD | cut -c -7', returnStdout: true).trim()
+                        env.BASE_BRANCH = env.BRANCH_NAME == 'master' ? 'master' : 'develop';
                     }
                 }
                 dir('klab') {
+                    git credentialsId: '2f30d924-29e5-4235-b61f-a0dbe2bb7783', branch: "${env.BASE_BRANCH}", url: 'git@github.com:integratedmodelling/klab.git'
                     configFileProvider([configFile(fileId: '817052da-4dcc-45b9-92e2-d91978010da0', variable: 'GH_SSH_KEYS')]) {
                         sh 'mkdir ~/.ssh && cp $GH_SSH_KEYS ~/.ssh/known_hosts && chmod 600 ~/.ssh/known_hosts'
                     }
@@ -46,7 +44,7 @@ pipeline {
                     }
                     withCredentials([file(credentialsId: 'klab-bot-gh-cli', variable: 'TOKEN')]) {
                         sh 'gh auth login --with-token < $TOKEN'
-                        sh "gh pr create --base ${env.BRANCH_NAME} --title '[AUTOMATED UPDATE] k.Explorer - Rev ${env.REV}' --body 'Automated update' --assignee '@me' --reviewer integratedmodelling/reviewers"
+                        sh "gh pr create --base ${env.BASE_BRANCH} --title '[AUTOMATED UPDATE] k.Explorer - Rev ${env.REV}' --body 'Automated update' --assignee '@me' --reviewer integratedmodelling/reviewers"
                     }
                 }
             }
