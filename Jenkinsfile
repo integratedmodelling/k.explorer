@@ -5,7 +5,7 @@ pipeline {
         stage ('Initialize') {
             steps {
                 dir('k.explorer') {
-                    git url: 'https://github.com/integratedmodelling/k.explorer.git'
+                    git url: 'https://github.com/integratedmodelling/k.explorer.git', branch: "${env.BRANCH_NAME}"
                 }
             }
         }
