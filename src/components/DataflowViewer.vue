@@ -271,8 +271,9 @@ export default {
       left 0
       width 100%
       height 40px
-      background-color #e0e0e0
-      border-bottom 1px solid rgba(135,135,135,0.2)
+      background-color var(--app-background-color)
+      border-bottom 1px solid "rgba(%s, .1)" % var(--app-rgb-main-color)
+      border-left 1px solid "rgba(%s, .1)" % var(--app-rgb-main-color)
       .dfv-graph-type
         padding 10px
         font-weight 500
@@ -286,10 +287,11 @@ export default {
         width 50%
         right 0
         float left
+        margin 1px 0
       .dfv-graph-selected
         cursor default
-        background-color var(--app-main-color);
-        color white
+        background-color var(--app-main-color)
+        color var(--app-background-color)
     #sprotty
       position absolute
       background-color #e0e0e0
