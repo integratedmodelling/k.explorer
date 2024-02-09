@@ -207,6 +207,34 @@ export default {
           word-break break-all
           p
             margin-bottom .5em
+        details
+          user-select none
+        details>summary span.dfe-arrow
+          // content "\25BC"
+          color $main-control-main-color
+          width 14px
+          height 14px
+          display block
+          margin-top 2px
+          transition all 0.3s
+          margin-left auto
+          cursor pointer
+        details[open] summary span.dfe-arrow
+          transform rotate(-180deg)
+        summary
+          display flex
+          width calc(100% - 6px)
+          cursor pointer
+          margin-bottom 0px
+          transition: margin 150ms ease-out;
+          & > mark
+            color $main-control-main-color
+
+        details[open] summary
+          margin-bottom: 10px
+        &::-webkit-details-marker
+          display none
+
   .kd-is-app
     .dip-container
       color var(--app-text-color)
@@ -236,6 +264,17 @@ export default {
           background-color var(--app-darken-background-color, .4)
           p
             margin-bottom .5em
+        details div div
+          background-color var(--app-alt-background)
+        details>summary span.dfe-arrow
+          // content "\25BC"
+          color var(--app-title-color)
+
+        summary
+          & > mark
+            color var(--app-title-color)
+
+
     /*
     .dip-bottom
       background-color rgb(57, 57, 57)
