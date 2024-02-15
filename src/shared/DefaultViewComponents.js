@@ -593,9 +593,9 @@ export const COMPONENTS = {
           component.attributes.tooltip
             ? h(QTooltip, {
               props: {
-                anchor: 'bottom left',
+                anchor: 'top right',
                 self: 'top left',
-                offset: [-10, 0],
+                offset: [10, 0],
               },
             }, component.attributes.tooltip === 'true' ? component.content : component.attributes.tooltip) : null,
         ]);
@@ -825,6 +825,14 @@ export const COMPONENTS = {
             },
           },
         }),
+        component.attributes.tooltip
+          ? h(QTooltip, {
+            props: {
+              anchor: 'top left',
+              self: 'top right',
+              offset: [52, 0],
+            },
+          }, component.attributes.tooltip === 'true' ? component.name : component.attributes.tooltip) : null,
         component.attributes.error && component.attributes.error !== 'true'
           ? h(QTooltip, {
             class: 'kcv-error-tooltip',
