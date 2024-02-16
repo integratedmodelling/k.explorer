@@ -325,6 +325,14 @@ export const COMPONENTS = {
               },
             },
           }),
+          component.attributes.tooltip
+            ? h(QTooltip, {
+              props: {
+                anchor: 'top right',
+                self: 'top left',
+                offset: [6, 0],
+              },
+            }, [component.attributes.tooltip]) : null,
         ]);
       },
     });
@@ -595,7 +603,7 @@ export const COMPONENTS = {
               props: {
                 anchor: 'top right',
                 self: 'top left',
-                offset: [10, 0],
+                offset: [6, 0],
               },
             }, component.attributes.tooltip === 'true' ? component.content : component.attributes.tooltip) : null,
         ]);
@@ -830,7 +838,7 @@ export const COMPONENTS = {
             props: {
               anchor: 'top left',
               self: 'top right',
-              offset: [52, 0],
+              offset: [(component.attributes.width ? 52 : 0), 0],
             },
           }, component.attributes.tooltip === 'true' ? component.name : component.attributes.tooltip) : null,
         component.attributes.error && component.attributes.error !== 'true'
