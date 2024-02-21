@@ -306,10 +306,12 @@ export const COMPONENTS = {
               'update:ticked': (values) => {
                 self.ticked = values;
                 component.tree.status.ticked = values;
+                const { status, ...cleanTree } = component.tree;
                 self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
                   operation: APPS_OPERATION.USER_ACTION,
                   component: {
                     ...component,
+                    tree: cleanTree,
                     components: [],
                   },
                   listValue: values,
