@@ -256,6 +256,12 @@ export default {
       margin-top var(--app-smaller-mp)
     &.kcv-clickable
       cursor pointer
+    &.kcv-label-error
+      color var(--app-negative-color)
+    &.kcv-label-info
+      color var(--app-positive-color)
+    &.kcv-label-waiting
+      color var(--app-waiting-color)
   .kcv-text
     margin var(--app-large-mp) var(--app-small-mp)
     text-align justify

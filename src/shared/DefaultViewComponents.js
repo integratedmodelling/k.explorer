@@ -566,7 +566,7 @@ export const COMPONENTS = {
                   self.autocompleteSelected(item, keyboard);
                 },
               },
-            }, 'Cacca'),
+            }),
           ]);
         }
         return h('div', {
@@ -576,6 +576,9 @@ export const COMPONENTS = {
             'kcv-clickable': component.attributes.disabled !== 'true' && component.attributes.tag === 'search',
             'kcv-ellipsis': component.attributes.ellipsis,
             'kcv-with-icon': component.attributes.iconname,
+            'kcv-label-error': component.attributes.error,
+            'kcv-label-info': component.attributes.info,
+            'kcv-label-waiting': component.attributes.waiting,
           },
           attrs: {
             id: `${component.applicationId}-${component.id}`,
@@ -617,7 +620,7 @@ export const COMPONENTS = {
       return {
         component,
         value: component.content,
-        type: 'number',
+        type: component.attributes.type || 'number',
       };
     },
     render(h) {
@@ -628,6 +631,7 @@ export const COMPONENTS = {
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,
+          rows: component.attributes.rows || 1,
         },
         props: {
           value: self.value,
@@ -727,55 +731,55 @@ export const COMPONENTS = {
         : component.attributes.error ? 'error' : component.attributes.done ? 'done' : null;
       const iconColor = component.attributes.waiting ? 'app-background-color' : component.attributes.computing ? 'app-alt-color'
         : component.attributes.error ? 'app-negative-color' : component.attributes.done ? 'app-positive-color' : 'app-background-color';
-      return h('div', {}, [
-        h(QBtn, {
-          class: [
-            round ? 'kcv-roundbutton' : 'kcv-pushbutton',
-            'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : '',
-          ],
-          style: {
-            ...DEFAULT_STYLE_FUNCTION(component),
-            ...((component.attributes.timeout && {
-              '--button-icon-color': 'app-background-color',
-              '--flash-color': component.attributes.error ? 'var(--app-negative-color)' : component.attributes.done ? 'var(--app-positive-color)' : 'var(--app-main-color)',
-              animation: `flash-button ${component.attributes.timeout}ms`,
-            }) || { '--button-icon-color': `var(--${iconColor})` }),
+      return h(QBtn, {
+        class: [
+          round ? 'kcv-roundbutton' : 'kcv-pushbutton',
+          'kcv-form-element', component.attributes.tag === 'breset' ? 'kcv-reset-button' : '',
+        ],
+        style: {
+          ...DEFAULT_STYLE_FUNCTION(component),
+          ...((component.attributes.timeout && {
+            '--button-icon-color': 'app-background-color',
+            '--flash-color': component.attributes.error ? 'var(--app-negative-color)' : component.attributes.done ? 'var(--app-positive-color)' : 'var(--app-main-color)',
+            animation: `flash-button ${component.attributes.timeout}ms`,
+          }) || { '--button-icon-color': `var(--${iconColor})` }),
+        },
+        attrs: {
+          id: `${component.applicationId}-${component.id}`,
+        },
+        props: {
+          ...(component.name && {
+            label: component.name,
+            'text-color': 'app-control-text-color',
+          }),
+          color: component.attributes.color ? component.attributes.color : 'app-main-color',
+          ...(round && { round: true, dense: true, flat: true }),
+          noCaps: true,
+          disable: component.attributes.disabled === 'true',
+          ...((this.state === 'error' && { icon: 'mdi-alert-circle' })
+             || (this.state === 'done' && { icon: 'mdi-check-circle' })
+             || (component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` })),
+          // ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
+          ...(this.state === 'waiting' && { loading: true }),
+        },
+        on: {
+          click: () => {
+            self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+              operation: APPS_OPERATION.USER_ACTION,
+              component: {
+                ...component,
+                components: [],
+              },
+            });
           },
-          attrs: {
-            id: `${component.applicationId}-${component.id}`,
-          },
-          props: {
-            ...(component.name && {
-              label: component.name,
-              'text-color': 'app-control-text-color',
-            }),
-            color: component.attributes.color ? component.attributes.color : 'app-main-color',
-            ...(round && { round: true, dense: true, flat: true }),
-            noCaps: true,
-            disable: component.attributes.disabled === 'true',
-            ...((this.state === 'error' && { icon: 'mdi-alert-circle' })
-               || (this.state === 'done' && { icon: 'mdi-check-circle' })
-               || (component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` })),
-            // ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
-            ...(this.state === 'waiting' && { loading: true }),
-          },
-          on: {
-            click: () => {
-              self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
-                operation: APPS_OPERATION.USER_ACTION,
-                component: {
-                  ...component,
-                  components: [],
-                },
-              });
-            },
-          },
-        }), component.attributes.tooltip
+        },
+      }, [
+        component.attributes.tooltip
           ? h(QTooltip, {
             props: {
               anchor: 'bottom left',
               self: 'top left',
-              offset: [-10, 0],
+              offset: [10, 0],
               delay: 600,
             },
           }, component.attributes.tooltip === 'true' ? component.content : component.attributes.tooltip) : null,

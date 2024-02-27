@@ -941,9 +941,11 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
         break;
       case 'top':
       case 'bottom':
-      case 'center':
-        if (component.attributes.parentAttributes && component.attributes.parentAttributes.hbox) {
+      case 'middle':
+        if (component.attributes.parentAttributes && (component.attributes.parentAttributes.hbox || component.attributes.parentAttributes.vbox)) {
           retStyle['align-self'] = key === 'top' ? 'flex-start' : key === 'bottom' ? 'flex-end' : 'center';
+        } else if (component.attributes.hbox || component.attributes.vbox) {
+          retStyle['justify-content'] = key;
         } else {
           retStyle['vertical-align'] = key;
         }
@@ -951,7 +953,9 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
       case 'hbox':
       case 'vbox':
         retStyle['flex-direction'] = key === 'hbox' ? 'row' : 'column';
-        // retStyle['align-items'] = 'center';
+        if (component.attributes.center) {
+          retStyle['align-items'] = 'center';
+        }
         break;
       case 'left':
       case 'right':
