@@ -83,7 +83,7 @@ export default {
   .km-content
     overflow hidden
     border-radius 8px
-    border 1px solid var(--app-main-color)
+    //border 1px solid "rgba(%s, .1)" % var(--app-rgb-main-color)
     margin 16px 16px 0 16px
     padding 8px
     background-color var(--app-background-color)

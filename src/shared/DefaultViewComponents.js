@@ -627,7 +627,7 @@ export const COMPONENTS = {
       // const isNumber = Number.isInteger(component.content);
       const self = this;
       return h(QInput, {
-        class: ['kcv-text-input', 'kcv-form-element'],
+        class: ['kcv-text-input', 'kcv-form-element', component.attributes.type === 'textarea' && 'kcv-textarea'],
         style: DEFAULT_STYLE_FUNCTION(component),
         attrs: {
           id: `${component.applicationId}-${component.id}`,

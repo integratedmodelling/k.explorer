@@ -318,6 +318,9 @@ export default {
     padding var(--app-smaller-mp) var(--app-small-mp)
     &.kcv-search
       margin-top var(--app-smaller-mp)
+    &.kcv-textarea
+      padding var(--app-small-mp)
+      border-color "rgba(%s, .25)" % var(--app-rgb-main-color)
   .kcv-combo
     padding 2px 10px
     background-color var(--app-background-color)
