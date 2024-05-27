@@ -195,6 +195,14 @@ export default {
           tr
             &:nth-child(even)
               background-color rgba(152, 152, 152, .1)
+          td
+            color rgba(255, 255, 255, .6)
+            font-weight bold
+            .text-sem-attribute
+            a
+              color rgba(255, 255, 255, .6)
+              font-weight bold
+
         mark
           background-color transparent
           color $main-control-yellow
@@ -258,6 +266,11 @@ export default {
           tr
             &:nth-child(even)
               background-color var(--app-darken-background-color, .1)
+          td
+            color var(--app-text-color)
+            .text-sem-attribute
+            a
+              color var(--app-text-color)
         mark
           color var(--app-title-color)
         div
