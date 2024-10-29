@@ -7,13 +7,9 @@ import Vue from 'vue';
 
 const eventBus = new Vue();
 
-console.debug('entro aki');
-console.log('entro aki');
-
 export default ({ store }) => {
   const urlParams = new URLSearchParams(window.location.search);
 
-  console.log(urlParams);
 
   // Session and mode
   const session = urlParams.get(WEB_CONSTANTS.PARAMS_SESSION)
@@ -31,7 +27,6 @@ export default ({ store }) => {
   const remoteDebug = urlParams.get(WEB_CONSTANTS.PARAMS_DEBUG_REMOTE);
   let local;
 
-  console.log(remoteDebug);
   if (remoteDebug) {
     local = remoteDebug !== 'true';
   } else {
