@@ -23,6 +23,7 @@ module.exports = function (ctx) {
     plugins: [
       'initApp',
       'axios',
+      'login',
       'vue-i18n',
       'djv',
       'vuex-stomp',

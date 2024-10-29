@@ -1176,3 +1176,15 @@ export default {
   TABLE_TYPES,
   DEFAULT_STYLE_FUNCTION,
 };
+
+export const KEYCLOAK = {
+  // URL: __ENV__.KEYCLOAK_URL,
+  // REALM: process.env.KEYCLOAK_REALM,
+  // CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
+  URL: 'http://localhost:8078',
+  REALM: 'im',
+  CLIENT_ID: 'k.Explorer',
+  TOKEN: 'vue-token',
+  REFRESH_TOKEN: 'vue-refresh-token',
+  BEARER: 'Bearer ',
+};
