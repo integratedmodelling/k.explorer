@@ -1,20 +1,11 @@
 import Vue from 'vue';
 import authentication from './authentication';
-import { WEB_CONSTANTS, KEYCLOAK } from '../shared/Constants';
+import { KEYCLOAK } from '../shared/Constants';
 
 
 export default () => {
-    const urlParams = new URLSearchParams(window.location.search);
-
-    console.log(urlParams);
-    const remoteDebug = urlParams.get(WEB_CONSTANTS.PARAMS_DEBUG_REMOTE);
-    console.log('hola');
-    console.log(remoteDebug);
-
-
-    Vue.config.productionTip = false;
     Vue.use(authentication);
-
+    // TODO USE __ENV__.profile
 
     Vue.$keycloak
         .init({ onLoad: 'login-required', checkLoginIframe: false, silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html` })
