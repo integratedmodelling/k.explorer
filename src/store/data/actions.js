@@ -134,7 +134,8 @@ export default {
           // the problem is with Spring JSESSION cookie, it seems
           // better to do this that change a lot of things to
           // stop spring to generate its session id
-          delete headers.common.Authorization;
+
+          delete headers.common.Klab_Authorization;
           return data;
         },
       ],
