@@ -1,7 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { CONSTANTS, MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS,
-  OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES } from 'shared/Constants';
+import { CONSTANTS, MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
 import { getI18N } from 'plugins/vue-i18n';
@@ -17,7 +16,7 @@ export default {
         }
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 403) {
           // invalid session, stop all
           reject(new Error('Invalid session'));
         } else {
