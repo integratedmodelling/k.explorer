@@ -1,7 +1,8 @@
 import Keycloak from 'keycloak-js';
+/* global __ENV__ */
 
 const options = {
-  url: 'http://localhost:8078',
+  url: __ENV__.KEYCLOAK_URL,
   realm: 'im',
   clientId: 'k.Explorer',
   enableCors: true,
