@@ -292,7 +292,7 @@ export default {
       if (this.token !== null) {
         axiosInstance.post(`${process.env.WS_BASE_URL}${URLS.REST_API_LOGOUT}`, { headers: { Authorization: `Bearer ${localStorage.getItem(KEYCLOAK.TOKEN)}` } })
           .then(({ status }) => {
-            if (status === 205 /* Reset Content */) {              
+            if (status === 205 /* Reset Content */) {    
               if (this.$store.state.data.isLocal) {
                 window.location = url;
               } else {
