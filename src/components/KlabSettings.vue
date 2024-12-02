@@ -151,6 +151,8 @@ import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { URLS } from 'shared/MessagesConstants';
 import { APPS_DEFAULT_VALUES, TERMINAL_TYPES, VIEWERS } from 'shared/Constants';
 import ISO_LOCALE from 'shared/locales';
+import Vue from 'vue';
+import { KEYCLOAK } from '../shared/Constants';
 // import 'flag-icon-css/css/flag-icons.min.css';
 
 export default {
@@ -288,10 +290,15 @@ export default {
     logout() {
       const url = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}${this.isApp ? `?app=${this.klabApp}` : ''}`;
       if (this.token !== null) {
-        axiosInstance.post(`${process.env.WS_BASE_URL}${URLS.REST_API_LOGOUT}`, {})
+        axiosInstance.post(`${process.env.WS_BASE_URL}${URLS.REST_API_LOGOUT}`, { headers: { Authorization: `Bearer ${localStorage.getItem(KEYCLOAK.TOKEN)}` } })
           .then(({ status }) => {
-            if (status === 205 /* Reset Content */) {
-              window.location = url;
+            if (status === 205 /* Reset Content */) {              
+              if (this.$store.state.data.isLocal) {
+                window.location = url;
+              } else {
+                const logoutOptions = { redirectUri: url };
+                Vue.$keycloak.logout(logoutOptions);
+              }
             } else {
               this.$q.notify({
                 message: this.$t('messages.errorLoggingOut'),
