@@ -18,6 +18,7 @@ function extendTypescriptToWebpack(cfg) {
 }
 
 module.exports = function (ctx) {
+  const DEV_ENGINE_BASE_URL = 'http://localhost:8283';
   return {
     // app plugins (/src/plugins)
     plugins: [
@@ -42,7 +43,7 @@ module.exports = function (ctx) {
       env: { // and on build (production):
         ...(ctx.dev)
           ? { // so on dev we'll have
-            WS_BASE_URL: JSON.stringify('http://localhost:8283'),
+            WS_BASE_URL: JSON.stringify(DEV_ENGINE_BASE_URL),
             STOMP_CLIENT_DEBUG: true,
             KEXPLORER_DEBUG: true,
             ROUTER_BASE: JSON.stringify(''),
@@ -116,8 +117,8 @@ module.exports = function (ctx) {
       // openPage: '/viewer?session=<session-id>',
       proxy: [
         {
-          context: ['/engine/environments'],
-          target: 'http://localhost:8283/modeler',
+          context: ['/modeler/engine/environments'],
+          target: DEV_ENGINE_BASE_URL,
         },
       ],
     },
