@@ -114,6 +114,12 @@ module.exports = function (ctx) {
       port: 8080,
       open: false, // doesn't opens browser window automatically
       // openPage: '/viewer?session=<session-id>',
+      proxy: [
+        {
+          context: ['/engine/environments'],
+          target: 'http://localhost:8283/modeler',
+        },
+      ],
     },
     framework: {
       components: [

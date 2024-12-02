@@ -5,6 +5,8 @@ import { axiosInstance } from 'plugins/axios';
 import { Cookies } from 'quasar';
 import Vue from 'vue';
 
+/* global __ENV__ */
+
 const eventBus = new Vue();
 
 export default ({ store }) => {
@@ -34,6 +36,9 @@ export default ({ store }) => {
     const host = window.location.hostname.toLowerCase();
     local = host.indexOf('integratedmodelling.org') === -1 && host.indexOf('klab.officialstatistics.org') === -1;
   }
+
+  local = __ENV__.ACTIVE_PROFILE === 'engine.remote ';
+  console.warn(local);
 
   const token = urlParams.get(WEB_CONSTANTS.PARAMS_TOKEN);
 

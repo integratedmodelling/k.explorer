@@ -2,6 +2,7 @@
  * Constants of application
  */
 import { getI18N } from 'plugins/vue-i18n';
+/* global __ENV__ */
 
 export const CONSTANTS = {
   /**
@@ -1178,10 +1179,7 @@ export default {
 };
 
 export const KEYCLOAK = {
-  // URL: __ENV__.KEYCLOAK_URL,
-  // REALM: process.env.KEYCLOAK_REALM,
-  // CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
-  URL: 'http://localhost:8078',
+  URL: __ENV__.KEYCLOAK_URL,
   REALM: 'im',
   CLIENT_ID: 'k.Explorer',
   TOKEN: 'vue-token',
