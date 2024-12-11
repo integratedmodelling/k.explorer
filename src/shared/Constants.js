@@ -1109,6 +1109,10 @@ export const DOCUMENTATION_TYPES_VIEWS = {
   [DOCUMENTATION_TYPES.ANCHOR]: DOCUMENTATION_VIEWS.REPORT,
 };
 
+export const HEADERS = {
+  KLAB_AUTHORIZATION: 'klab-authorization',
+};
+
 export const TABLE_TYPES = {
   NUMBER: 'NUMBER',
   BOOLEAN: 'BOOLEAN',
@@ -1128,6 +1132,15 @@ export const TABLE_TYPES = {
   VOID: 'VOID',
   MAP: 'MAP',
   TABLE: 'TABLE',
+};
+
+export const KEYCLOAK = {
+  URL: __ENV__.KEYCLOAK_URL,
+  REALM: 'im',
+  CLIENT_ID: 'k.Explorer',
+  TOKEN: 'vue-token',
+  REFRESH_TOKEN: 'vue-refresh-token',
+  BEARER: 'Bearer ',
 };
 
 export default {
@@ -1159,9 +1172,11 @@ export default {
   TIMES,
   SEARCH_MODES,
   SETTING_NAMES,
+  HEADERS,
   HELP_CONSTANTS,
   OBSERVATION_CONTEXT_EMPTY_ITEM,
   OBSERVATION_CONTEXT_ITEMS,
+  KEYCLOAK,
   KNOWLEDGE_VIEWS,
   VIEW_SETTING,
   ENGINE_EVENTS,
@@ -1176,13 +1191,4 @@ export default {
   DOCUMENTATION_TYPES,
   TABLE_TYPES,
   DEFAULT_STYLE_FUNCTION,
-};
-
-export const KEYCLOAK = {
-  URL: __ENV__.KEYCLOAK_URL,
-  REALM: 'im',
-  CLIENT_ID: 'k.Explorer',
-  TOKEN: 'vue-token',
-  REFRESH_TOKEN: 'vue-refresh-token',
-  BEARER: 'Bearer ',
 };
