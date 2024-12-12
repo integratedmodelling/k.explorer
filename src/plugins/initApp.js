@@ -38,7 +38,6 @@ export default ({ store }) => {
   }
 
   local = __ENV__.ACTIVE_PROFILE === 'engine.remote ';
-  console.warn(local);
 
   const token = urlParams.get(WEB_CONSTANTS.PARAMS_TOKEN);
 

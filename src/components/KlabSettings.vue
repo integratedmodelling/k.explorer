@@ -155,6 +155,8 @@ import Vue from 'vue';
 import { KEYCLOAK } from '../shared/Constants';
 // import 'flag-icon-css/css/flag-icons.min.css';
 
+/* global __ENV__ */
+
 export default {
   name: 'KlabSettings',
   data() {
@@ -288,15 +290,17 @@ export default {
       }
     },
     logout() {
+      const logoutOptions = { redirectUri: __ENV__.APP_BASE_URL };
       const url = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}${this.isApp ? `?app=${this.klabApp}` : ''}`;
       if (this.token !== null) {
         axiosInstance.post(`${process.env.WS_BASE_URL}${URLS.REST_API_LOGOUT}`, { headers: { Authorization: `Bearer ${localStorage.getItem(KEYCLOAK.TOKEN)}` } })
           .then(({ status }) => {
             if (status === 205 /* Reset Content */) {
               if (this.$store.state.data.isLocal) {
+                console.warn('paso por aqui');
                 window.location = url;
               } else {
-                const logoutOptions = { redirectUri: url };
+                console.warn('paso por aqui keycloak');
                 Vue.$keycloak.logout(logoutOptions);
               }
             } else {
