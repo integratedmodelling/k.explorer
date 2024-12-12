@@ -38,6 +38,8 @@ export const CONSTANTS = {
   GRAPH_DATAFLOW: 'dataflow',
   GRAPH_PROVENANCE_FULL: 'provenance_full',
   GRAPH_PROVENANCE_SIMPLIFIED: 'provenance_simplified',
+
+  APP_LOAD_TIMEOUT: 30000,
 };
 
 export const INIT_FLOWCHARTS = [{
