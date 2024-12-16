@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import authentication from './authentication';
 import { KEYCLOAK } from '../shared/Constants';
+import store from '../store';
 
 
 export default () => {
@@ -17,7 +18,7 @@ export default () => {
                 localStorage.setItem(KEYCLOAK.REFRESH_TOKEN, Vue.$keycloak.refreshToken);
                 console.debug(Vue.prototype.$axios.defaults.headers);
                 Vue.prototype.$axios.defaults.headers.common.Authorization = KEYCLOAK.BEARER + Vue.$keycloak.token;
-
+                store.commit('data/AUTH_SUCCESS');
                 console.debug('Authenticated');
             }
 

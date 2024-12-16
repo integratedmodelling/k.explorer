@@ -794,4 +794,10 @@ export default {
     commit('SET_DOCUMENTATION', { view, tree });
     commit('ADD_DOCUMENTATION', items);
   },
+
+  getAuthentication: ({ getters }) => new Promise((resolve) => {
+    setInterval(() => {
+      if (getters.isLoggedIn !== undefined) resolve(getters.isLoggedIn);
+    }, 600);
+  }),
 };

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 import routes from './routes';
+import store from '../store';
 
 Vue.use(VueRouter);
 
@@ -26,6 +27,17 @@ const Router = new VueRouter({
     return { x: 0, y: 0 };
   },
   routes,
+});
+
+
+Router.beforeEach(async (to, _, next) => {
+  store.dispatch('data/getAuthentication')
+    .then(() => {
+      next();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 });
 
 export default Router;

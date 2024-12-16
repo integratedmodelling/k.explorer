@@ -46,5 +46,6 @@ module.exports = {
     'no-nested-ternary': 0,
     'object-curly-newline': ['error', { 'ImportDeclaration': 'never', "ObjectExpression": { 'multiline': true, 'minProperties': 5, consistent: true } }],
     'indent': 0,
+    'no-lonely-if': 'off',
   }
 };

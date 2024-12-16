@@ -153,6 +153,7 @@ import { APPS_DEFAULT_VALUES, TERMINAL_TYPES, VIEWERS } from 'shared/Constants';
 import ISO_LOCALE from 'shared/locales';
 import Vue from 'vue';
 import { KEYCLOAK } from '../shared/Constants';
+import store from '../store';
 // import 'flag-icon-css/css/flag-icons.min.css';
 
 /* global __ENV__ */
@@ -297,11 +298,10 @@ export default {
           .then(({ status }) => {
             if (status === 205 /* Reset Content */) {
               if (this.$store.state.data.isLocal) {
-                console.warn('paso por aqui');
                 window.location = url;
               } else {
-                console.warn('paso por aqui keycloak');
                 Vue.$keycloak.logout(logoutOptions);
+                store.commit('auth/LOGOUT');
               }
             } else {
               this.$q.notify({
