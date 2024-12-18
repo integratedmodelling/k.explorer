@@ -26,7 +26,9 @@ export default ({ store }) => {
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
   const saveDockedStatus = Cookies.has(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
 
-  const local = __ENV__.ACTIVE_PROFILE === 'engine.remote ';
+  const local = __ENV__.ACTIVE_PROFILE !== 'engine.remote';
+
+  console.info('Engine local:', local);
 
   const token = urlParams.get(WEB_CONSTANTS.PARAMS_TOKEN);
 

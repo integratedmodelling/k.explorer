@@ -31,13 +31,17 @@ const Router = new VueRouter({
 
 
 Router.beforeEach(async (to, _, next) => {
-  store.dispatch('data/getAuthentication')
-    .then(() => {
-      next();
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  if (!store.state.data.local) {
+    store.dispatch('data/getAuthentication')
+      .then(() => {
+        next();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  } else {
+    next();
+  }
 });
 
 export default Router;

@@ -5,6 +5,8 @@ import store from '../store';
 
 
 export default () => {
+    if (store.state.data.local) return;
+
     Vue.use(authentication);
     // TODO USE __ENV__.profile
 
