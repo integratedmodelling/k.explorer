@@ -154,4 +154,9 @@ export default {
    */
   documentationTrees: state => state.documentationTrees,
   documentationContent: state => state.documentationContent,
+
+  /**
+   * Authentication
+   */
+  isLoggedIn: state => state.isAuthenticated,
 };

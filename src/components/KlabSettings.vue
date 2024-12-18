@@ -153,7 +153,10 @@ import { APPS_DEFAULT_VALUES, TERMINAL_TYPES, VIEWERS } from 'shared/Constants';
 import ISO_LOCALE from 'shared/locales';
 import Vue from 'vue';
 import { KEYCLOAK } from '../shared/Constants';
+import store from '../store';
 // import 'flag-icon-css/css/flag-icons.min.css';
+
+/* global __ENV__ */
 
 export default {
   name: 'KlabSettings',
@@ -288,6 +291,7 @@ export default {
       }
     },
     logout() {
+      const logoutOptions = { redirectUri: __ENV__.APP_BASE_URL };
       const url = `${process.env.WS_BASE_URL}${process.env.ENGINE_LOGIN}${this.isApp ? `?app=${this.klabApp}` : ''}`;
       if (this.token !== null) {
         axiosInstance.post(`${process.env.WS_BASE_URL}${URLS.REST_API_LOGOUT}`, { headers: { Authorization: `Bearer ${localStorage.getItem(KEYCLOAK.TOKEN)}` } })
@@ -296,8 +300,8 @@ export default {
               if (this.$store.state.data.isLocal) {
                 window.location = url;
               } else {
-                const logoutOptions = { redirectUri: url };
                 Vue.$keycloak.logout(logoutOptions);
+                store.commit('auth/LOGOUT');
               }
             } else {
               this.$q.notify({

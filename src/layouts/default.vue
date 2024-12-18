@@ -35,7 +35,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { WEB_CONSTANTS } from 'shared/Constants';
+import { CONSTANTS, WEB_CONSTANTS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import ConnectionStatus from 'components/ConnectionStatusModal';
 import KlabSettings from 'components/KlabSettings';
@@ -122,7 +122,7 @@ export default {
         if (this.isApp && this.layout === null) {
           this.errorLoading = true;
         }
-      }, 15000);
+      }, CONSTANTS.APP_LOAD_TIMEOUT);
     }
     window.addEventListener('beforeunload', (e) => {
       // Cancel the event

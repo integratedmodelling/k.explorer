@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { KEYCLOAK } from '../shared/Constants';
+import { KEYCLOAK, HEADERS } from '../shared/Constants';
 
 const axiosInstance = axios.create();
 
@@ -9,7 +9,7 @@ export default ({ Vue, store }) => {
   }
   console.debug(store.state.data.session);
   if (store.state.data.session) {
-    axiosInstance.defaults.headers.common.Klab_Authorization = store.state.data.session;
+    axiosInstance.defaults.headers.common[HEADERS.KLAB_AUTHORIZATION] = store.state.data.session;
 
     // axiosInstance.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
   } else {

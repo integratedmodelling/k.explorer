@@ -347,6 +347,11 @@ export default {
   token: null,
 
   /**
+   * Keycloak authentication
+   */
+  isAuthenticated: undefined,
+
+  /**
    * Version
    */
   packageVersion: process.env.PACKAGE_VERSION || '0',

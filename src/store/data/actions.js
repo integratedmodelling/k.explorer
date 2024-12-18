@@ -1,6 +1,6 @@
 import { axiosInstance } from 'plugins/axios';
 import { findNodeById, getAxiosContent, getNodeFromObservation, sendStompMessage } from 'shared/Helpers';
-import { CONSTANTS, MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES } from 'shared/Constants';
+import { CONSTANTS, MESSAGE_TYPES, OBSERVATION_CONSTANTS, SPINNER_CONSTANTS, OBSERVATION_DEFAULT, MODIFICATIONS_TYPE, TERMINAL_TYPES, DOCUMENTATION_TYPES, HEADERS } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 import { IN, URLS } from 'shared/MessagesConstants';
 import { getI18N } from 'plugins/vue-i18n';
@@ -134,7 +134,7 @@ export default {
           // better to do this that change a lot of things to
           // stop spring to generate its session id
 
-          delete headers.common.Klab_Authorization;
+          delete headers.common[HEADERS.KLAB_AUTHORIZATION];
           return data;
         },
       ],
@@ -794,4 +794,10 @@ export default {
     commit('SET_DOCUMENTATION', { view, tree });
     commit('ADD_DOCUMENTATION', items);
   },
+
+  getAuthentication: ({ getters }) => new Promise((resolve) => {
+    setInterval(() => {
+      if (getters.isLoggedIn !== undefined) resolve(getters.isLoggedIn);
+    }, 600);
+  }),
 };

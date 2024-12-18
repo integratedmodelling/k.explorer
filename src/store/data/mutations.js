@@ -594,6 +594,13 @@ export default {
     localStorage.setItem(WEB_CONSTANTS.LOCAL_STORAGE_TERMINAL_COMMANDS, JSON.stringify(state.terminalCommands));
   },
 
+  AUTH_SUCCESS: (state) => {
+    state.isAuthenticated = true;
+  },
+  LOGOUT: (state) => {
+    state.isAuthenticated = undefined;
+  },
+
   /**
    * Set the documentation tree for a view type
    * @param state
