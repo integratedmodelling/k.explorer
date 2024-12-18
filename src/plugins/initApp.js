@@ -5,10 +5,13 @@ import { axiosInstance } from 'plugins/axios';
 import { Cookies } from 'quasar';
 import Vue from 'vue';
 
+/* global __ENV__ */
+
 const eventBus = new Vue();
 
 export default ({ store }) => {
   const urlParams = new URLSearchParams(window.location.search);
+
 
   // Session and mode
   const session = urlParams.get(WEB_CONSTANTS.PARAMS_SESSION)
@@ -23,15 +26,9 @@ export default ({ store }) => {
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
   const saveDockedStatus = Cookies.has(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
 
-  const remoteDebug = urlParams.get(WEB_CONSTANTS.PARAMS_DEBUG_REMOTE);
-  let local;
-  if (remoteDebug) {
-    local = remoteDebug !== 'true';
-  } else {
-    // TODO temporary check if we are in integratedmodelling.org
-    const host = window.location.hostname.toLowerCase();
-    local = host.indexOf('integratedmodelling.org') === -1 && host.indexOf('klab.officialstatistics.org') === -1;
-  }
+  const local = __ENV__.ACTIVE_PROFILE !== 'engine.remote';
+
+  console.info('Engine local:', local);
 
   const token = urlParams.get(WEB_CONSTANTS.PARAMS_TOKEN);
 

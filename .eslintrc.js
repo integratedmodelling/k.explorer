@@ -15,7 +15,7 @@ module.exports = {
   extends: ['plugin:vue/essential', 'airbnb-base'],
   // required to lint *.vue files
   plugins: [
-    'vue'
+    'vue',
   ],
   globals: {
     'ga': true, // Google Analytics
@@ -44,6 +44,8 @@ module.exports = {
     'no-unused-expressions': [1, { "allowTernary": true }],
     'no-plusplus': 0,
     'no-nested-ternary': 0,
-    'object-curly-newline': ['error', { 'ImportDeclaration': 'never', "ObjectExpression": { 'multiline': true, 'minProperties': 5, consistent: true }}],
+    'object-curly-newline': ['error', { 'ImportDeclaration': 'never', "ObjectExpression": { 'multiline': true, 'minProperties': 5, consistent: true } }],
+    'indent': 0,
+    'no-lonely-if': 'off',
   }
 };
