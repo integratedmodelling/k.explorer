@@ -185,6 +185,23 @@ export default {
   },
   mounted() {
     this.$eventBus.$on(CUSTOM_EVENTS.SHOW_DATA_INFO, this.setInfoShowed);
+    if (this.colormap.colors.length > 255) {
+      const values = [];
+      const colors = [];
+      const labels = [];
+      const { length } = this.dataSummary.histogram;
+      for (let i = 0; i < length; i++) {
+        if (this.dataSummary.histogram[i] !== 0) {
+          values.push(this.dataSummary.histogram[i]);
+          colors.push(this.colormap.colors[i]);
+          labels.push(this.colormap.labels[i]);
+        }
+      }
+      this.dataSummary.histogram = values;
+      this.colormap.colors = colors;
+      this.colormap.labels = labels;
+      console.error(this.dataSummary.histogram.length);
+    }
   },
   beforeDestroy() {
     this.$eventBus.$off(CUSTOM_EVENTS.SHOW_DATA_INFO, this.setInfoShowed);
