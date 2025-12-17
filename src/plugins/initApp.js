@@ -4,6 +4,7 @@ import * as colors from 'shared/colors';
 import { axiosInstance } from 'plugins/axios';
 import { Cookies } from 'quasar';
 import Vue from 'vue';
+import { transform } from 'ol/proj';
 
 /* global __ENV__ */
 
@@ -22,7 +23,36 @@ export default ({ store }) => {
     || Cookies.get(WEB_CONSTANTS.COOKIE_LOG) || WEB_CONSTANTS.PARAMS_LOG_HIDDEN;
   const baseLayer = Cookies.get(WEB_CONSTANTS.COOKIE_BASELAYER) || MAP_CONSTANTS.DEFAULT_BASELAYER;
 
-  const mapDefaults = Cookies.get(WEB_CONSTANTS.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
+  const rawCenter = urlParams.get(WEB_CONSTANTS.PARAMS_CENTER);
+  let mapCenter = null;
+  // 1. Missing parameter
+  if (rawCenter) {
+    const parts = rawCenter.split(',');
+    if (parts.length === 2) {
+      const coords = parts.map(Number);
+      if (!coords.some(Number.isNaN)) {
+        const [lat, lng] = coords;
+        if (!(lat < -90 || lat > 90 || lng < -180 || lng > 180)) {
+          mapCenter = transform([lng, lat], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857);
+          console.warn(mapCenter, lat, lng);
+        } else {
+          console.error(`Invalid Coordinates: ${lat} , ${lng}`);
+        }
+      } else {
+        console.error(`Invalid numbers: ${parts[0]},${parts[1]}`);
+      }
+    } else {
+      console.log(`Invalid values: ${parts.length}`);
+    }
+  } else {
+    console.warn('No Center, use default');
+  }
+  let mapDefaults;
+  if (mapCenter) {
+    mapDefaults = { center: mapCenter, zoom: DEFAULT_OPTIONS.zoom };
+  } else {
+    mapDefaults = Cookies.get(WEB_CONSTANTS.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
+  }
   const saveLocation = Cookies.has(WEB_CONSTANTS.COOKIE_SAVELOCATION) ? Cookies.get(WEB_CONSTANTS.COOKIE_SAVELOCATION) : true;
   const saveDockedStatus = Cookies.has(WEB_CONSTANTS.COOKIE_DOCKED_STATUS);
 

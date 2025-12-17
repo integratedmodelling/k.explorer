@@ -457,6 +457,7 @@ export const WEB_CONSTANTS = {
   PARAMS_DEBUG_REMOTE: 'remote-debug',
   PARAMS_STOMP_DEBUG: 'stomp-debug',
   PARAMS_TOKEN: 'token',
+  PARAMS_CENTER: 'center',
   /**
    * Cookies name
    */
