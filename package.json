@@ -23,7 +23,7 @@
     "draggable-vue-directive": "^2.0.2",
     "elkjs": "^0.7.1",
     "jsonp": "^0.2.1",
-    "jsts": "^2.0.2",
+    "jsts": "2.6.1",
     "keycloak-js": "^19.0.3",
     "moment": "^2.22.1",
     "moment-timezone": "^0.5.31",
@@ -58,6 +58,10 @@
     "strip-ansi": "=3.0.1",
     "ts-loader": "^6.0.1",
     "typescript": "^3.4.5"
+  },
+  "resolutions": {
+    "jsts": "2.6.1",
+    "@babel/runtime": "7.0.0-beta.54"
   },
   "engines": {
     "node": ">= 8.9.0",
