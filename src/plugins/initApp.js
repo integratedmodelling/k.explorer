@@ -34,7 +34,7 @@ export default ({ store }) => {
         const [lat, lng] = coords;
         if (!(lat < -90 || lat > 90 || lng < -180 || lng > 180)) {
           mapCenter = transform([lng, lat], MAP_CONSTANTS.PROJ_EPSG_4326, MAP_CONSTANTS.PROJ_EPSG_3857);
-          console.warn(mapCenter, lat, lng);
+          console.info(`Using custom center: ${lat}, ${lng}`);
         } else {
           console.error(`Invalid Coordinates: ${lat} , ${lng}`);
         }
@@ -45,11 +45,24 @@ export default ({ store }) => {
       console.log(`Invalid values: ${parts.length}`);
     }
   } else {
-    console.warn('No Center, use default');
+    console.debug('No center, use default');
+  }
+  const rawZoom = urlParams.get(WEB_CONSTANTS.PARAMS_ZOOM);
+  let mapZoom = null;
+  if (rawZoom) {
+    const zoom = Number(rawZoom);
+    if (Number.isFinite(zoom) && (zoom >= 0 && zoom <= 22)) {
+        mapZoom = Math.round(zoom);
+        console.info(`Using custom zoom: ${zoom}`);
+    } else {
+      console.log(`Invalid value: ${zoom}`);
+    }
+  } else {
+    console.debug('No Zoom, use default');
   }
   let mapDefaults;
   if (mapCenter) {
-    mapDefaults = { center: mapCenter, zoom: DEFAULT_OPTIONS.zoom };
+    mapDefaults = { center: mapCenter, zoom: mapZoom || DEFAULT_OPTIONS.zoom };
   } else {
     mapDefaults = Cookies.get(WEB_CONSTANTS.COOKIE_MAPDEFAULT) || { center: DEFAULT_OPTIONS.center, zoom: DEFAULT_OPTIONS.zoom };
   }

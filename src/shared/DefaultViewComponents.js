@@ -1,9 +1,23 @@
 import Vue from 'vue';
-import { QDialog, QCollapsible, QTree, QRadio, QCheckbox, QInput, QSelect, QBtn, QIcon, QTooltip, QAutocomplete } from 'quasar';
+import {
+  QDialog,
+  QCollapsible,
+  QTree,
+  QRadio,
+  QCheckbox,
+  QInput,
+  QSelect,
+  QBtn,
+  QIcon,
+  QTooltip,
+  QAutocomplete,
+} from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
-import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES,
-  MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from 'shared/Constants';
+import {
+  APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES,
+  MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES,
+} from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 // import { URLS } from 'shared/MessagesConstants';
 // import { axiosInstance } from '../plugins/axios';
@@ -276,66 +290,66 @@ export const COMPONENTS = {
       render(h) {
         const self = this;
         return h('div', {
-          class: 'kcv-tree-container',
-          style: DEFAULT_STYLE_FUNCTION(component),
-        },
-        [
-          component.name
-            ? h('div', {
-              class: 'kcv-tree-legend',
-            }, component.name)
-            : null,
-          h(QTree, {
-            class: 'kcv-tree',
-            attrs: {
-              id: `${component.applicationId}-${component.id}`,
-            },
-            props: {
-              nodes: tree,
-              nodeKey: 'id',
-              tickStrategy: component.attributes.check ? 'leaf' : 'none',
-              ticked: self.ticked,
-              selected: self.selected,
-              expanded: self.expanded,
-              color: 'app-main-color',
-              controlColor: 'app-main-color',
-              textColor: 'app-main-color',
-              dense: true,
-            },
-            on: {
-              'update:ticked': (values) => {
-                self.ticked = values;
-                component.tree.status.ticked = values;
-                const { status, ...cleanTree } = component.tree;
-                self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
-                  operation: APPS_OPERATION.USER_ACTION,
-                  component: {
-                    ...component,
-                    tree: cleanTree,
-                    components: [],
-                  },
-                  listValue: values,
-                });
+            class: 'kcv-tree-container',
+            style: DEFAULT_STYLE_FUNCTION(component),
+          },
+          [
+            component.name
+              ? h('div', {
+                class: 'kcv-tree-legend',
+              }, component.name)
+              : null,
+            h(QTree, {
+              class: 'kcv-tree',
+              attrs: {
+                id: `${component.applicationId}-${component.id}`,
               },
-              'update:selected': (values) => {
-                self.selected = values;
-                component.tree.status.selected = values;
-              },
-              'update:expanded': (values) => {
-                self.expanded = values;
-                component.tree.status.expanded = values;
-              },
-            },
-          }),
-          component.attributes.tooltip
-            ? h(QTooltip, {
               props: {
-                anchor: 'top right',
-                self: 'top left',
-                offset: [6, 0],
+                nodes: tree,
+                nodeKey: 'id',
+                tickStrategy: component.attributes.check ? 'leaf' : 'none',
+                ticked: self.ticked,
+                selected: self.selected,
+                expanded: self.expanded,
+                color: 'app-main-color',
+                controlColor: 'app-main-color',
+                textColor: 'app-main-color',
+                dense: true,
               },
-            }, [component.attributes.tooltip]) : null,
-        ]);
+              on: {
+                'update:ticked': (values) => {
+                  self.ticked = values;
+                  component.tree.status.ticked = values;
+                  const { status, ...cleanTree } = component.tree;
+                  self.$eventBus.$emit(CUSTOM_EVENTS.COMPONENT_ACTION, {
+                    operation: APPS_OPERATION.USER_ACTION,
+                    component: {
+                      ...component,
+                      tree: cleanTree,
+                      components: [],
+                    },
+                    listValue: values,
+                  });
+                },
+                'update:selected': (values) => {
+                  self.selected = values;
+                  component.tree.status.selected = values;
+                },
+                'update:expanded': (values) => {
+                  self.expanded = values;
+                  component.tree.status.expanded = values;
+                },
+              },
+            }),
+            component.attributes.tooltip
+              ? h(QTooltip, {
+                props: {
+                  anchor: 'top right',
+                  self: 'top left',
+                  offset: [6, 0],
+                },
+              }, [component.attributes.tooltip]) : null,
+          ]);
       },
     });
   },
@@ -757,8 +771,8 @@ export const COMPONENTS = {
           noCaps: true,
           disable: component.attributes.disabled === 'true',
           ...((this.state === 'error' && { icon: 'mdi-alert-circle' })
-             || (this.state === 'done' && { icon: 'mdi-check-circle' })
-             || (component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` })),
+            || (this.state === 'done' && { icon: 'mdi-check-circle' })
+            || (component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` })),
           // ...(component.attributes.iconname && { icon: `mdi-${component.attributes.iconname}` }),
           ...(this.state === 'waiting' && { loading: true }),
         },
