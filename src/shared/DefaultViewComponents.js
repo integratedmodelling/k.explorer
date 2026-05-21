@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import {
-  QDialog,
+import { QDialog,
   QCollapsible,
   QTree,
   QRadio,
@@ -10,14 +9,11 @@ import {
   QBtn,
   QIcon,
   QTooltip,
-  QAutocomplete,
-} from 'quasar';
+  QAutocomplete } from 'quasar';
 import KlabLayout from 'components/KlabLayout';
 import { findNodeById } from 'shared/Helpers';
-import {
-  APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES,
-  MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES,
-} from 'shared/Constants';
+import { APPS_OPERATION, CUSTOM_EVENTS, DEFAULT_STYLE_FUNCTION, APPS_COMPONENTS, APPS_DEFAULT_VALUES,
+  MATCH_TYPES, SEARCH_MODES, SEMANTIC_TYPES } from 'shared/Constants';
 import { MESSAGES_BUILDERS } from 'shared/MessageBuilders';
 // import { URLS } from 'shared/MessagesConstants';
 // import { axiosInstance } from '../plugins/axios';
