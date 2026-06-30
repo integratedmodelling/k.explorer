@@ -177,8 +177,8 @@ export const Layers = {
     name: 'clearmap_plain_layer',
     title: 'UN Clear Map Plain',
     type: 'base',
-    source: new TileArcGISRest({
-      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer/export',
+    source: new XYZ({
+      url: 'https://geoservices.un.org/arcgis/rest/services/ClearMap_WebPlain/MapServer/tile/{z}/{y}/{x}?blankTile=false',
     }),
     visible: false,
   }),
@@ -382,10 +382,10 @@ export const BASE_LAYERS = {
     // Layers.GOOGLE_STREET,
     // Layers.GOOGLE_HYBRID,
     // Layers.GOOGLE_TERRAIN,
-    Layers.CLEARMAP_TOPO_LAYER,
+    // Layers.CLEARMAP_TOPO_LAYER,
     Layers.MAPBOX_MINIMO,
     Layers.MAPBOX_TERRAIN,
-    // Layers.CLEARMAP_PLAIN_LAYER,
+    Layers.CLEARMAP_PLAIN_LAYER,
     // Layers.CLEARMAP_GRAY_LAYER,
     // Layers.CLEARMAP_DARK_LAYER,
     // Layers.CLEARMAP_IMAGERY_LAYER,
