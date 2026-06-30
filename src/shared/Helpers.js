@@ -186,7 +186,7 @@ export const findProjection = spatialProjection => new Promise((resolve, reject)
     if (dataProjection === null) {
       // unknows projection, need ask for it
       const toAsk = spatialProjection.substring(5); // ask without ESPG
-      fetch(`https://epsg.io/?format=json&q=${toAsk}`)
+      fetch(`https://epsg.io/${toAsk}.json`)
         .then(response => response.json().then((json) => {
           const { results } = json;
           if (results && results.length > 0) {
