@@ -186,37 +186,48 @@ export const findProjection = spatialProjection => new Promise((resolve, reject)
     if (dataProjection === null) {
       // unknows projection, need ask for it
       const toAsk = spatialProjection.substring(5); // ask without ESPG
-      fetch(`https://epsg.io/${toAsk}.json`)
-        .then(response => response.json().then((json) => {
-          const { results } = json;
-          if (results && results.length > 0) {
-            for (let i = 0, ii = results.length; i < ii; i += 1) {
-              const result = results[i];
-              if (result) {
-                const { code, proj4: proj4def, bbox } = result;
-                if (code && code.length > 0 && proj4def && proj4def.length > 0
-                  && bbox && bbox.length === 4) {
-                  const newProjCode = `EPSG:${code}`;
-                  proj4.defs(newProjCode, proj4def);
-                  register(proj4);
-                  dataProjection = getProjection(newProjCode);
-                  const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, dataProjection);
-                  // very approximate calculation of projection extent
-                  const extent = applyTransform([bbox[1], bbox[2], bbox[3], bbox[0]], fromLonLat);
-                  dataProjection.setExtent(extent);
-                  console.info(`New projection registered: ${newProjCode}`);
-                  resolve(dataProjection);
-                } else {
-                  reject(new Error(`Some error in projection search result: ${JSON.stringify(result)}`));
-                }
-              } else {
-                reject(new Error('Some error in projection search result: no results'));
-              }
-            }
+      Promise.all([
+        fetch(`https://epsg.io/${toAsk}.proj4`).then(response => response.text()),
+        fetch(`https://epsg.io/${toAsk}.json`).then(response => response.json()),
+      ])
+        .then(([proj4def, json]) => {
+          const { bbox, id } = json;
+
+          const code = id && id.code ? `${id.code}` : toAsk;
+
+          if (code && code.length > 0
+            && proj4def && proj4def.length > 0
+            && bbox
+            && bbox.south_latitude !== undefined
+            && bbox.west_longitude !== undefined
+            && bbox.north_latitude !== undefined
+            && bbox.east_longitude !== undefined) {
+            const newProjCode = `EPSG:${code}`;
+
+            proj4.defs(newProjCode, proj4def);
+            register(proj4);
+
+            dataProjection = getProjection(newProjCode);
+
+            const fromLonLat = getTransform(MAP_CONSTANTS.PROJ_EPSG_4326, dataProjection);
+
+            // very approximate calculation of projection extent
+            const extent = applyTransform([
+              bbox.west_longitude,
+              bbox.south_latitude,
+              bbox.east_longitude,
+              bbox.north_latitude,
+            ], fromLonLat);
+
+            dataProjection.setExtent(extent);
+
+            console.info(`New projection registered: ${newProjCode}`);
+            resolve(dataProjection);
           } else {
-            reject(new Error(`Unknown projection: ${spatialProjection}`));
+            reject(new Error(`Some error in projection result: ${JSON.stringify(json)}`));
           }
-        }));
+        })
+        .catch(error => reject(new Error(`Unknown projection: ${spatialProjection}. ${error.message}`)));
     } else {
       resolve(dataProjection);
     }
