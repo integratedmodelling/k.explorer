@@ -969,6 +969,8 @@ export const DEFAULT_STYLE_FUNCTION = (component) => {
       default:
         // retStyle.key = value;
         break;
+      case 'fsize':
+        retStyle['font-size'] = value;
     }
     /*
     if (component.attributes.parentAttributes) {

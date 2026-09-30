@@ -832,7 +832,7 @@ export const COMPONENTS = {
             }),
           },
           attrs: {
-            id: `${component.applicationId}-${component.id}`,
+            id: `${component.applicationId}-${component.id}${component.id === 'trigger' ? Math.random() : ''}`,
           },
           on: {
             input: (value) => {
